@@ -1,0 +1,1633 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-seguranca.schema.json",
+  "title": "Contratos internos do Departamento de Seguranca",
+  "description": "Tarefa e contribuicao por agente, achado rastreavel, evidencia com proveniencia e custodia de chave, lacuna de capacidade e ledger da rodada com mapa de cobertura, gates locais e recomendacao de risco. Os envelopes de fronteira (DEPARTMENT_MISSION e DEPARTMENT_RETURN) pertencem ao schema do diretor-de-lentes e nao sao redefinidos aqui; JUDGMENT_REQUEST, DEPARTMENT_JUDGE_REPORT e DIRECTOR_CAPABILITY_GAP tambem sao dele e nunca sao emitidos por este pacote. Este schema nao tem campo de nota, peso ou corte: nota e veredito pertencem ao departamento-juizes. Regra em references/protocolo-seguranca.md; dominio e admissibilidade em references/cobertura-e-admissibilidade.md.",
+  "oneOf": [
+    { "$ref": "#/$defs/securityTask" },
+    { "$ref": "#/$defs/securityContribution" },
+    { "$ref": "#/$defs/securityFinding" },
+    { "$ref": "#/$defs/securityEvidence" },
+    { "$ref": "#/$defs/securityCapabilityGap" },
+    { "$ref": "#/$defs/securityLedger" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "digestOrNa": {
+      "oneOf": [
+        { "$ref": "#/$defs/digest" },
+        { "type": "string", "pattern": "^n/a:.{5,}$" }
+      ]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "artifactRef": { "type": "string", "minLength": 3, "maxLength": 512 },
+    "artifactRefOrNa": {
+      "oneOf": [
+        {
+          "allOf": [
+            { "$ref": "#/$defs/artifactRef" },
+            { "not": { "const": "n/a" } }
+          ]
+        },
+        { "const": "n/a" }
+      ]
+    },
+    "identifierOrNa": {
+      "oneOf": [
+        { "$ref": "#/$defs/identifier" },
+        { "const": "n/a" }
+      ]
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "uniqueItems": true
+    },
+    "identifierList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "counter": { "type": "integer", "minimum": 0 },
+    "reason": { "type": "string", "minLength": 3 },
+    "agentIdentity": {
+      "enum": [
+        "agente-modelagem-de-ameacas",
+        "agente-identidade-e-acesso",
+        "agente-seguranca-de-aplicacao",
+        "agente-configuracao-e-hardening",
+        "agente-cadeia-de-suprimentos",
+        "agente-privacidade-e-dados-pessoais",
+        "agente-deteccao-e-resposta",
+        "agente-prova-e-reteste"
+      ]
+    },
+    "agentIdentityOrDepartment": {
+      "oneOf": [
+        { "$ref": "#/$defs/agentIdentity" },
+        { "const": "departamento-seguranca" }
+      ]
+    },
+    "securityRole": {
+      "enum": [
+        "THREATS",
+        "IAM",
+        "CODE_APPSEC",
+        "CLOUD_CONFIG",
+        "SUPPLY_CHAIN",
+        "DATA_LGPD",
+        "DETECTION_RESPONSE",
+        "EVIDENCE"
+      ]
+    },
+    "coverageArea": {
+      "enum": [
+        "assets_boundaries",
+        "threats_stride",
+        "iam",
+        "application_api",
+        "crypto_secrets",
+        "cloud_config_exceptions",
+        "supply_chain",
+        "data_lgpd",
+        "detection_response",
+        "ai_llm",
+        "testing_evidence"
+      ]
+    },
+    "coverageState": {
+      "enum": [
+        "COBERTO",
+        "PARCIAL",
+        "NAO_APLICAVEL",
+        "NAO_AVALIADO"
+      ]
+    },
+    "coverageEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "owner",
+        "justification",
+        "linked_asset_or_flow",
+        "evidence_refs"
+      ],
+      "properties": {
+        "state": { "$ref": "#/$defs/coverageState" },
+        "owner": { "$ref": "#/$defs/agentIdentityOrDepartment" },
+        "justification": { "type": "string", "minLength": 3 },
+        "linked_asset_or_flow": { "type": "string", "minLength": 1 },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "state": { "const": "NAO_APLICAVEL" } },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "justification": { "minLength": 20 },
+              "linked_asset_or_flow": {
+                "minLength": 3,
+                "not": { "const": "n/a" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "state": { "const": "COBERTO" } },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "evidence_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "coverageClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "area",
+        "state",
+        "justification",
+        "linked_asset_or_flow",
+        "evidence_refs"
+      ],
+      "properties": {
+        "area": { "$ref": "#/$defs/coverageArea" },
+        "state": { "$ref": "#/$defs/coverageState" },
+        "justification": { "type": "string", "minLength": 3 },
+        "linked_asset_or_flow": { "type": "string", "minLength": 1 },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "state": { "const": "NAO_APLICAVEL" } },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "justification": { "minLength": 20 },
+              "linked_asset_or_flow": {
+                "minLength": 3,
+                "not": { "const": "n/a" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "state": { "const": "COBERTO" } },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "evidence_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "coverageMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assets_boundaries",
+        "threats_stride",
+        "iam",
+        "application_api",
+        "crypto_secrets",
+        "cloud_config_exceptions",
+        "supply_chain",
+        "data_lgpd",
+        "detection_response",
+        "ai_llm",
+        "testing_evidence",
+        "not_assessed"
+      ],
+      "properties": {
+        "assets_boundaries": { "$ref": "#/$defs/coverageEntry" },
+        "threats_stride": { "$ref": "#/$defs/coverageEntry" },
+        "iam": { "$ref": "#/$defs/coverageEntry" },
+        "application_api": { "$ref": "#/$defs/coverageEntry" },
+        "crypto_secrets": { "$ref": "#/$defs/coverageEntry" },
+        "cloud_config_exceptions": { "$ref": "#/$defs/coverageEntry" },
+        "supply_chain": { "$ref": "#/$defs/coverageEntry" },
+        "data_lgpd": { "$ref": "#/$defs/coverageEntry" },
+        "detection_response": { "$ref": "#/$defs/coverageEntry" },
+        "ai_llm": { "$ref": "#/$defs/coverageEntry" },
+        "testing_evidence": { "$ref": "#/$defs/coverageEntry" },
+        "not_assessed": { "$ref": "#/$defs/optionalStrings" }
+      }
+    },
+    "activityClass": {
+      "enum": ["ESTATICA", "ATIVA"]
+    },
+    "activeAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorization_ref",
+        "authorized_by",
+        "issued_at",
+        "window_start",
+        "window_end",
+        "authorized_targets",
+        "authorized_environments",
+        "data_classes_allowed",
+        "test_accounts",
+        "allowed_actions",
+        "prohibited_actions",
+        "rate_and_volume_limits",
+        "stop_conditions",
+        "emergency_contact",
+        "production_or_real_user_data",
+        "validity"
+      ],
+      "properties": {
+        "authorization_ref": { "$ref": "#/$defs/identifier" },
+        "authorized_by": { "type": "string", "minLength": 3 },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "window_start": { "$ref": "#/$defs/timestamp" },
+        "window_end": { "$ref": "#/$defs/timestamp" },
+        "authorized_targets": { "$ref": "#/$defs/requiredStrings" },
+        "authorized_environments": { "$ref": "#/$defs/requiredStrings" },
+        "data_classes_allowed": { "$ref": "#/$defs/requiredStrings" },
+        "test_accounts": { "$ref": "#/$defs/requiredStrings" },
+        "allowed_actions": { "$ref": "#/$defs/requiredStrings" },
+        "prohibited_actions": { "$ref": "#/$defs/requiredStrings" },
+        "rate_and_volume_limits": { "$ref": "#/$defs/requiredStrings" },
+        "stop_conditions": { "$ref": "#/$defs/requiredStrings" },
+        "emergency_contact": { "type": "string", "minLength": 3 },
+        "production_or_real_user_data": { "const": false },
+        "validity": { "const": "valid" }
+      }
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "target_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": { "$ref": "#/$defs/identifierList" },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "target_digest": { "$ref": "#/$defs/digestOrNa" },
+        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "producer": { "const": "departamento-seguranca" },
+        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "severity": {
+      "enum": ["critical", "high", "medium", "low", "informational"]
+    },
+    "confidence": {
+      "enum": ["high", "medium", "low"]
+    },
+    "findingStatus": {
+      "enum": ["confirmed", "suspected", "not_applicable", "closed"]
+    },
+    "retestBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["performed", "evidence_id", "result"],
+      "properties": {
+        "performed": { "type": "boolean" },
+        "evidence_id": { "$ref": "#/$defs/identifierOrNa" },
+        "result": { "enum": ["pass", "fail", "not_applicable"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "performed": { "const": true } },
+            "required": ["performed"]
+          },
+          "then": {
+            "properties": {
+              "evidence_id": { "not": { "const": "n/a" } }
+            }
+          }
+        }
+      ]
+    },
+    "secretResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "secret_validity",
+        "redaction_status",
+        "revocation_status",
+        "rotation_status",
+        "incident_id",
+        "incident_status",
+        "containment_actions",
+        "close_when",
+        "responder_agent"
+      ],
+      "properties": {
+        "secret_validity": {
+          "enum": ["valid", "invalid", "unknown", "not_applicable"]
+        },
+        "redaction_status": {
+          "enum": ["required", "pending", "completed", "not_applicable"]
+        },
+        "revocation_status": {
+          "enum": ["required", "pending", "completed", "not_applicable"]
+        },
+        "rotation_status": {
+          "enum": ["required", "pending", "completed", "not_applicable"]
+        },
+        "incident_id": { "$ref": "#/$defs/identifierOrNa" },
+        "incident_status": {
+          "enum": ["opened", "contained", "monitoring", "closed", "not_applicable"]
+        },
+        "containment_actions": { "$ref": "#/$defs/optionalStrings" },
+        "close_when": { "type": "string", "minLength": 1 },
+        "responder_agent": {
+          "oneOf": [
+            { "const": "agente-deteccao-e-resposta" },
+            { "const": "n/a" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "secret_validity": { "enum": ["valid", "unknown"] }
+            },
+            "required": ["secret_validity"]
+          },
+          "then": {
+            "properties": {
+              "incident_id": { "not": { "const": "n/a" } },
+              "responder_agent": { "const": "agente-deteccao-e-resposta" },
+              "redaction_status": { "enum": ["pending", "completed"] },
+              "incident_status": {
+                "enum": ["opened", "contained", "monitoring", "closed"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidenceType": {
+      "enum": [
+        "source",
+        "config",
+        "sast",
+        "dast",
+        "sca",
+        "secret_scan",
+        "fuzz",
+        "pentest",
+        "retest",
+        "log",
+        "screenshot",
+        "document",
+        "attestation"
+      ]
+    },
+    "evidenceResult": {
+      "enum": ["pass", "fail", "partial", "skip", "informational"]
+    },
+    "admissibility": {
+      "enum": ["ADMISSIVEL", "INADMISSIVEL"]
+    },
+    "rejectionReason": {
+      "enum": [
+        "ALEGACAO_SEM_ARTEFATO",
+        "SCREENSHOT_SEM_ORIGEM",
+        "FERRAMENTA_SEM_SAIDA",
+        "SCAN_FORA_DA_VERSAO",
+        "TESTE_ATIVO_SEM_AUTORIZACAO",
+        "EVIDENCIA_DO_PROPRIO_AVALIADOR",
+        "SEGREDO_EM_CLARO",
+        "SKIP_COMO_PASS",
+        "ATESTADO_SEM_PRIMARIA",
+        "n/a"
+      ]
+    },
+    "aclBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readers", "writers", "owners", "checked_at"],
+      "properties": {
+        "readers": { "$ref": "#/$defs/optionalStrings" },
+        "writers": { "$ref": "#/$defs/optionalStrings" },
+        "owners": { "$ref": "#/$defs/requiredStrings" },
+        "checked_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "retentionBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_ref", "retain_until", "legal_hold"],
+      "properties": {
+        "policy_ref": { "$ref": "#/$defs/identifierOrNa" },
+        "retain_until": {
+          "oneOf": [
+            { "$ref": "#/$defs/timestamp" },
+            { "const": "n/a" }
+          ]
+        },
+        "legal_hold": { "type": "boolean" }
+      }
+    },
+    "disposalBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "status"],
+      "properties": {
+        "method": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["pending", "disposed", "not_applicable"] }
+      }
+    },
+    "provenanceBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "builder_identity",
+        "source_digest",
+        "build_recipe_digest",
+        "attestation_type",
+        "attestation_ref",
+        "verified_by",
+        "trust_anchor_ref",
+        "verification_status"
+      ],
+      "properties": {
+        "builder_identity": { "type": "string", "minLength": 1 },
+        "source_digest": { "$ref": "#/$defs/digestOrNa" },
+        "build_recipe_digest": { "$ref": "#/$defs/digestOrNa" },
+        "attestation_type": { "type": "string", "minLength": 1 },
+        "attestation_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "verified_by": { "type": "string", "minLength": 1 },
+        "trust_anchor_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "verification_status": {
+          "enum": ["valid", "invalid", "unknown", "not_applicable"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "verification_status": { "const": "valid" } },
+            "required": ["verification_status"]
+          },
+          "then": {
+            "properties": {
+              "attestation_ref": { "not": { "const": "n/a" } },
+              "trust_anchor_ref": { "not": { "const": "n/a" } }
+            }
+          }
+        }
+      ]
+    },
+    "signingKeyCustodyBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key_id",
+        "custodian",
+        "storage_class",
+        "access_review_ref",
+        "rotation_status",
+        "revocation_status"
+      ],
+      "properties": {
+        "key_id": { "$ref": "#/$defs/identifierOrNa" },
+        "custodian": { "type": "string", "minLength": 1 },
+        "storage_class": { "type": "string", "minLength": 1 },
+        "access_review_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "rotation_status": {
+          "enum": ["current", "due", "rotated", "not_applicable"]
+        },
+        "revocation_status": {
+          "enum": ["active", "revoked", "unknown", "not_applicable"]
+        }
+      }
+    },
+    "gateId": {
+      "enum": [
+        "CONFIANCA",
+        "AUTORIZACAO",
+        "CAPACIDADE",
+        "COBERTURA",
+        "RASTREABILIDADE",
+        "EVIDENCIA",
+        "CONSISTENCIA",
+        "FAIL_CLOSED",
+        "RETESTE",
+        "RETORNO"
+      ]
+    },
+    "gateResult": {
+      "enum": ["PASS", "FAIL", "NAO_VERIFICADO", "NAO_APLICAVEL"]
+    },
+    "correctionOwner": {
+      "enum": [
+        "departamento",
+        "departamento_fora_de_alcance",
+        "diretor",
+        "jeremias",
+        "n/a"
+      ]
+    },
+    "gateEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate",
+        "result",
+        "method",
+        "evidence",
+        "finding",
+        "correction_condition",
+        "correction_owner",
+        "verified_by"
+      ],
+      "properties": {
+        "gate": { "$ref": "#/$defs/gateId" },
+        "result": { "$ref": "#/$defs/gateResult" },
+        "method": { "type": "string", "minLength": 3 },
+        "evidence": { "type": "string", "minLength": 3 },
+        "finding": { "type": "string", "minLength": 1 },
+        "correction_condition": { "type": "string", "minLength": 1 },
+        "correction_owner": { "$ref": "#/$defs/correctionOwner" },
+        "verified_by": { "type": "string", "minLength": 3 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "result": { "const": "FAIL" } },
+            "required": ["result"]
+          },
+          "then": {
+            "properties": {
+              "finding": { "minLength": 3, "not": { "const": "n/a" } },
+              "correction_condition": {
+                "minLength": 3,
+                "not": { "const": "n/a" }
+              },
+              "correction_owner": { "not": { "const": "n/a" } }
+            }
+          }
+        }
+      ]
+    },
+    "blockingTrigger": {
+      "enum": [
+        "CRITICO_ABERTO",
+        "ALTO_EXPLORAVEL_SEM_COMPENSACAO",
+        "FAIL_OPEN",
+        "SEGREDO_VALIDO_EXPOSTO",
+        "CONTROLE_OBRIGATORIO_AUSENTE"
+      ]
+    },
+    "riskRecommendation": {
+      "enum": [
+        "LIBERAR",
+        "LIBERAR_COM_RESSALVAS",
+        "BLOQUEAR",
+        "INDETERMINADO"
+      ]
+    },
+    "residualRiskId": {
+      "enum": ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
+    },
+    "ledgerStatus": {
+      "enum": ["COMPLETED", "PARTIAL", "BLOCKED"]
+    },
+    "contributionStatus": {
+      "enum": ["COMPLETED", "PARTIAL", "BLOCKED", "CAPABILITY_GAP"]
+    },
+    "wave": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "skipEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what", "cause", "impact", "run_when"],
+      "properties": {
+        "what": { "type": "string", "minLength": 3 },
+        "cause": { "type": "string", "minLength": 3 },
+        "impact": { "type": "string", "minLength": 3 },
+        "run_when": { "type": "string", "minLength": 3 }
+      }
+    },
+    "openFindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "informational"
+      ],
+      "properties": {
+        "critical": { "$ref": "#/$defs/counter" },
+        "high": { "$ref": "#/$defs/counter" },
+        "medium": { "$ref": "#/$defs/counter" },
+        "low": { "$ref": "#/$defs/counter" },
+        "informational": { "$ref": "#/$defs/counter" }
+      }
+    },
+    "taskIssuanceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "worker_id", "issued_at", "artifact_ref"],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/agentIdentity" },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "artifact_ref": { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "securityTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "worker_id",
+        "role",
+        "wave",
+        "coverage_areas",
+        "activity_class",
+        "targets",
+        "environments",
+        "authorization",
+        "scope_in",
+        "scope_out",
+        "deliverables",
+        "evidence_required",
+        "depends_on",
+        "forbidden_context",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "SECURITY_TASK" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "worker_id": { "$ref": "#/$defs/agentIdentity" },
+        "role": { "$ref": "#/$defs/securityRole" },
+        "wave": { "$ref": "#/$defs/wave" },
+        "coverage_areas": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/coverageArea" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "activity_class": { "$ref": "#/$defs/activityClass" },
+        "targets": { "$ref": "#/$defs/requiredStrings" },
+        "environments": { "$ref": "#/$defs/requiredStrings" },
+        "authorization": {
+          "oneOf": [
+            { "$ref": "#/$defs/activeAuthorization" },
+            { "const": "n/a" }
+          ]
+        },
+        "scope_in": { "$ref": "#/$defs/requiredStrings" },
+        "scope_out": { "$ref": "#/$defs/requiredStrings" },
+        "deliverables": { "$ref": "#/$defs/requiredStrings" },
+        "evidence_required": { "$ref": "#/$defs/requiredStrings" },
+        "depends_on": { "$ref": "#/$defs/optionalStrings" },
+        "forbidden_context": { "$ref": "#/$defs/requiredStrings" },
+        "stop_when": { "$ref": "#/$defs/requiredStrings" },
+        "return_to": { "const": "departamento-seguranca" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "activity_class": { "const": "ATIVA" } },
+            "required": ["activity_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization": { "$ref": "#/$defs/activeAuthorization" },
+              "wave": { "minimum": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "activity_class": { "const": "ESTATICA" } },
+            "required": ["activity_class"]
+          },
+          "then": {
+            "properties": {
+              "authorization": { "const": "n/a" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "role": { "const": "EVIDENCE" } },
+            "required": ["role"]
+          },
+          "then": {
+            "properties": {
+              "worker_id": { "const": "agente-prova-e-reteste" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "role": { "const": "DETECTION_RESPONSE" } },
+            "required": ["role"]
+          },
+          "then": {
+            "properties": {
+              "worker_id": { "const": "agente-deteccao-e-resposta" }
+            }
+          }
+        }
+      ]
+    },
+    "securityContribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "worker_id",
+        "role",
+        "contract_digest",
+        "target_digest",
+        "status",
+        "status_reason",
+        "coverage_claimed",
+        "finding_refs",
+        "evidence_refs",
+        "claims_unverified",
+        "skips",
+        "divergences",
+        "authorization_events",
+        "embedded_instruction_findings",
+        "out_of_boundary_refusals",
+        "pending",
+        "return_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "SECURITY_CONTRIBUTION" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/agentIdentity" },
+        "role": { "$ref": "#/$defs/securityRole" },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "target_digest": { "$ref": "#/$defs/digestOrNa" },
+        "status": { "$ref": "#/$defs/contributionStatus" },
+        "status_reason": { "$ref": "#/$defs/reason" },
+        "coverage_claimed": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/coverageClaim" },
+          "minItems": 1
+        },
+        "finding_refs": { "$ref": "#/$defs/optionalRefs" },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
+        "claims_unverified": { "$ref": "#/$defs/optionalStrings" },
+        "skips": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/skipEntry" }
+        },
+        "divergences": { "$ref": "#/$defs/optionalStrings" },
+        "authorization_events": { "$ref": "#/$defs/optionalStrings" },
+        "embedded_instruction_findings": { "$ref": "#/$defs/optionalStrings" },
+        "out_of_boundary_refusals": { "$ref": "#/$defs/optionalStrings" },
+        "pending": { "$ref": "#/$defs/optionalStrings" },
+        "return_to": { "const": "departamento-seguranca" },
+        "returned_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "skips": { "minItems": 1 } },
+            "required": ["skips"]
+          },
+          "then": {
+            "properties": {
+              "status": { "not": { "const": "COMPLETED" } }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "CAPABILITY_GAP" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "pending": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "COMPLETED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "coverage_claimed": {
+                "not": {
+                  "contains": {
+                    "type": "object",
+                    "properties": {
+                      "state": { "const": "NAO_AVALIADO" }
+                    },
+                    "required": ["state"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "securityFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "trace_id",
+        "status",
+        "owner_agent",
+        "source_task_ref",
+        "asset",
+        "location",
+        "threat",
+        "trust_boundary",
+        "references",
+        "severity",
+        "confidence",
+        "preconditions",
+        "impact",
+        "control_expected",
+        "control_observed",
+        "required_treatment",
+        "evidence_ids",
+        "admissible_evidence_ids",
+        "acceptance_evidence",
+        "retest",
+        "risk_owner",
+        "risk_acceptance_ref",
+        "secret_response"
+      ],
+      "properties": {
+        "artifact_type": { "const": "SECURITY_FINDING" },
+        "trace_id": { "$ref": "#/$defs/identifier" },
+        "status": { "$ref": "#/$defs/findingStatus" },
+        "owner_agent": { "$ref": "#/$defs/agentIdentity" },
+        "source_task_ref": { "$ref": "#/$defs/identifier" },
+        "asset": { "type": "string", "minLength": 3 },
+        "location": { "type": "string", "minLength": 3 },
+        "threat": { "type": "string", "minLength": 3 },
+        "trust_boundary": { "type": "string", "minLength": 1 },
+        "references": { "$ref": "#/$defs/optionalStrings" },
+        "severity": { "$ref": "#/$defs/severity" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "preconditions": { "$ref": "#/$defs/optionalStrings" },
+        "impact": { "type": "string", "minLength": 3 },
+        "control_expected": { "type": "string", "minLength": 3 },
+        "control_observed": { "type": "string", "minLength": 3 },
+        "required_treatment": { "type": "string", "minLength": 3 },
+        "evidence_ids": { "$ref": "#/$defs/optionalRefs" },
+        "admissible_evidence_ids": { "$ref": "#/$defs/optionalRefs" },
+        "acceptance_evidence": { "type": "string", "minLength": 1 },
+        "retest": { "$ref": "#/$defs/retestBlock" },
+        "risk_owner": { "type": "string", "minLength": 1 },
+        "risk_acceptance_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "secret_response": { "$ref": "#/$defs/secretResponse" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": { "enum": ["confirmed", "closed"] }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "admissible_evidence_ids": { "minItems": 1 },
+              "evidence_ids": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "closed" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "retest": {
+                "properties": {
+                  "performed": { "const": true },
+                  "result": { "const": "pass" }
+                },
+                "required": ["performed", "result"]
+              },
+              "acceptance_evidence": {
+                "minLength": 3,
+                "not": { "const": "n/a" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "allOf": [
+              {
+                "properties": { "status": { "const": "closed" } },
+                "required": ["status"]
+              },
+              {
+                "properties": {
+                  "secret_response": {
+                    "properties": {
+                      "secret_validity": { "enum": ["valid", "unknown"] }
+                    },
+                    "required": ["secret_validity"]
+                  }
+                },
+                "required": ["secret_response"]
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "secret_response": {
+                "properties": {
+                  "redaction_status": { "const": "completed" },
+                  "revocation_status": { "const": "completed" },
+                  "rotation_status": { "const": "completed" },
+                  "incident_status": { "const": "closed" },
+                  "close_when": { "minLength": 3, "not": { "const": "n/a" } }
+                },
+                "required": [
+                  "redaction_status",
+                  "revocation_status",
+                  "rotation_status",
+                  "incident_status",
+                  "close_when"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "risk_acceptance_ref": { "not": { "const": "n/a" } }
+            },
+            "required": ["risk_acceptance_ref"]
+          },
+          "then": {
+            "properties": {
+              "risk_owner": { "minLength": 3, "not": { "const": "n/a" } }
+            }
+          }
+        },
+        {
+          "$comment": "ADR-010, decisão 5: quem descobre o segredo exposto não declara o incidente contido. Com secret_validity valid/unknown o responder_agent é travado em agente-deteccao-e-resposta acima; aqui o mesmo agente é proibido de ser o owner_agent do achado, senão ele descobriria e conteria.",
+          "if": {
+            "properties": {
+              "secret_response": {
+                "properties": {
+                  "secret_validity": { "enum": ["valid", "unknown"] }
+                },
+                "required": ["secret_validity"]
+              }
+            },
+            "required": ["secret_response"]
+          },
+          "then": {
+            "properties": {
+              "owner_agent": { "not": { "const": "agente-deteccao-e-resposta" } }
+            }
+          }
+        }
+      ]
+    },
+    "securityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "evidence_id",
+        "supports_trace_ids",
+        "type",
+        "origin",
+        "tool_version",
+        "artifact_version_or_hash",
+        "evidence_hash",
+        "collected_at",
+        "collected_by",
+        "scope",
+        "limits",
+        "authorization_ref",
+        "integrity_check",
+        "classification",
+        "storage_ref",
+        "acl",
+        "retention",
+        "disposal",
+        "redaction",
+        "incident_ref",
+        "provenance",
+        "signing_key_custody",
+        "result",
+        "sustains_critical_claim",
+        "admissibility",
+        "rejection_reason",
+        "ruled_by"
+      ],
+      "properties": {
+        "artifact_type": { "const": "SECURITY_EVIDENCE" },
+        "evidence_id": { "$ref": "#/$defs/identifier" },
+        "supports_trace_ids": { "$ref": "#/$defs/identifierList" },
+        "type": { "$ref": "#/$defs/evidenceType" },
+        "origin": { "type": "string", "minLength": 3 },
+        "tool_version": { "type": "string", "minLength": 1 },
+        "artifact_version_or_hash": { "type": "string", "minLength": 1 },
+        "evidence_hash": { "$ref": "#/$defs/digestOrNa" },
+        "collected_at": { "$ref": "#/$defs/timestamp" },
+        "collected_by": { "type": "string", "minLength": 3 },
+        "scope": { "$ref": "#/$defs/requiredStrings" },
+        "limits": { "$ref": "#/$defs/requiredStrings" },
+        "authorization_ref": { "$ref": "#/$defs/identifierOrNa" },
+        "integrity_check": { "type": "string", "minLength": 1 },
+        "classification": {
+          "enum": ["public", "internal", "confidential", "restricted"]
+        },
+        "storage_ref": { "$ref": "#/$defs/artifactRef" },
+        "acl": { "$ref": "#/$defs/aclBlock" },
+        "retention": { "$ref": "#/$defs/retentionBlock" },
+        "disposal": { "$ref": "#/$defs/disposalBlock" },
+        "redaction": { "type": "string", "minLength": 1 },
+        "incident_ref": { "$ref": "#/$defs/identifierOrNa" },
+        "provenance": { "$ref": "#/$defs/provenanceBlock" },
+        "signing_key_custody": { "$ref": "#/$defs/signingKeyCustodyBlock" },
+        "result": { "$ref": "#/$defs/evidenceResult" },
+        "sustains_critical_claim": { "type": "boolean" },
+        "admissibility": { "$ref": "#/$defs/admissibility" },
+        "rejection_reason": { "$ref": "#/$defs/rejectionReason" },
+        "ruled_by": { "const": "agente-prova-e-reteste" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "admissibility": { "const": "ADMISSIVEL" } },
+            "required": ["admissibility"]
+          },
+          "then": {
+            "properties": {
+              "rejection_reason": { "const": "n/a" },
+              "result": { "not": { "const": "skip" } },
+              "artifact_version_or_hash": { "not": { "const": "n/a" } }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "admissibility": { "const": "INADMISSIVEL" } },
+            "required": ["admissibility"]
+          },
+          "then": {
+            "properties": {
+              "rejection_reason": { "not": { "const": "n/a" } },
+              "sustains_critical_claim": { "const": false }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "result": { "const": "skip" } },
+            "required": ["result"]
+          },
+          "then": {
+            "properties": {
+              "admissibility": { "const": "INADMISSIVEL" },
+              "rejection_reason": { "const": "SKIP_COMO_PASS" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "enum": ["dast", "fuzz", "pentest"] },
+              "authorization_ref": { "const": "n/a" }
+            },
+            "required": ["type", "authorization_ref"]
+          },
+          "then": {
+            "properties": {
+              "admissibility": { "const": "INADMISSIVEL" },
+              "rejection_reason": { "const": "TESTE_ATIVO_SEM_AUTORIZACAO" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "attestation" },
+              "sustains_critical_claim": { "const": true }
+            },
+            "required": ["type", "sustains_critical_claim"]
+          },
+          "then": {
+            "properties": {
+              "admissibility": { "const": "INADMISSIVEL" },
+              "rejection_reason": { "const": "ATESTADO_SEM_PRIMARIA" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "enum": ["sast", "dast", "sca", "secret_scan", "fuzz"] }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "tool_version": { "not": { "const": "n/a" } }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "attestation" },
+              "admissibility": { "const": "ADMISSIVEL" }
+            },
+            "required": ["type", "admissibility"]
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": {
+                  "verification_status": { "const": "valid" }
+                },
+                "required": ["verification_status"]
+              },
+              "signing_key_custody": {
+                "properties": {
+                  "revocation_status": { "const": "active" },
+                  "rotation_status": {
+                    "enum": ["current", "rotated"]
+                  }
+                },
+                "required": ["revocation_status", "rotation_status"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "securityCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "gap_id",
+        "causal",
+        "role_required",
+        "agent_expected",
+        "capability_needed",
+        "discovery_evidence",
+        "attempted_resolutions",
+        "impact",
+        "blocked_deliverables",
+        "reversible_work_allowed",
+        "safe_alternatives",
+        "close_when",
+        "status",
+        "closure_evidence_ref",
+        "safe_state",
+        "escalated_to",
+        "detected_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "SECURITY_CAPABILITY_GAP" },
+        "gap_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "role_required": { "$ref": "#/$defs/securityRole" },
+        "agent_expected": { "$ref": "#/$defs/agentIdentity" },
+        "capability_needed": { "type": "string", "minLength": 3 },
+        "discovery_evidence": { "$ref": "#/$defs/requiredStrings" },
+        "attempted_resolutions": { "$ref": "#/$defs/requiredStrings" },
+        "impact": { "type": "string", "minLength": 3 },
+        "blocked_deliverables": { "$ref": "#/$defs/requiredStrings" },
+        "reversible_work_allowed": { "$ref": "#/$defs/optionalStrings" },
+        "safe_alternatives": { "$ref": "#/$defs/optionalStrings" },
+        "close_when": { "type": "string", "minLength": 3 },
+        "status": { "enum": ["open", "mitigated", "closed"] },
+        "closure_evidence_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "safe_state": { "const": "BLOQUEADO" },
+        "escalated_to": { "const": "diretor-de-lentes" },
+        "detected_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "closed" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "closure_evidence_ref": { "not": { "const": "n/a" } }
+            }
+          }
+        }
+      ]
+    },
+    "securityLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "ledger_id",
+        "causal",
+        "department_mission_ref",
+        "status",
+        "status_reason",
+        "waves_executed",
+        "task_issuance_records",
+        "coverage_map",
+        "local_gates",
+        "finding_refs",
+        "evidence_refs",
+        "open_findings",
+        "blocking_triggers",
+        "risk_recommendation",
+        "risk_reason",
+        "fail_closed_assessment",
+        "unauthorized_active_activity",
+        "skips",
+        "claims_unverified",
+        "divergences",
+        "accepted_risks",
+        "secret_incident_refs",
+        "supply_chain_attestation_refs",
+        "capability_gap_refs",
+        "delegated_dependencies",
+        "pending",
+        "residual_risks",
+        "report_self_approval",
+        "general_audit_gate",
+        "judgment_authority",
+        "returned_to",
+        "closed_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "SECURITY_LEDGER" },
+        "ledger_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "status": { "$ref": "#/$defs/ledgerStatus" },
+        "status_reason": { "$ref": "#/$defs/reason" },
+        "waves_executed": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/wave" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "task_issuance_records": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/taskIssuanceRecord" },
+          "uniqueItems": true
+        },
+        "coverage_map": { "$ref": "#/$defs/coverageMap" },
+        "local_gates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/gateEntry" },
+          "minItems": 10,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "CONFIANCA" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "AUTORIZACAO" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "CAPACIDADE" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "COBERTURA" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "RASTREABILIDADE" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "EVIDENCIA" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "CONSISTENCIA" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "FAIL_CLOSED" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "RETESTE" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": { "gate": { "const": "RETORNO" } },
+                "required": ["gate"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        },
+        "finding_refs": { "$ref": "#/$defs/optionalRefs" },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
+        "open_findings": { "$ref": "#/$defs/openFindings" },
+        "blocking_triggers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/blockingTrigger" },
+          "uniqueItems": true
+        },
+        "risk_recommendation": { "$ref": "#/$defs/riskRecommendation" },
+        "risk_reason": { "$ref": "#/$defs/reason" },
+        "fail_closed_assessment": {
+          "enum": ["FECHA", "ABRE", "NAO_DETERMINAVEL"]
+        },
+        "unauthorized_active_activity": { "type": "boolean" },
+        "skips": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/skipEntry" }
+        },
+        "claims_unverified": { "$ref": "#/$defs/optionalStrings" },
+        "divergences": { "$ref": "#/$defs/optionalStrings" },
+        "accepted_risks": { "$ref": "#/$defs/optionalStrings" },
+        "secret_incident_refs": { "$ref": "#/$defs/optionalRefs" },
+        "supply_chain_attestation_refs": { "$ref": "#/$defs/optionalRefs" },
+        "capability_gap_refs": { "$ref": "#/$defs/optionalRefs" },
+        "delegated_dependencies": { "$ref": "#/$defs/optionalStrings" },
+        "pending": { "$ref": "#/$defs/optionalStrings" },
+        "residual_risks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/residualRiskId" },
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": { "const": "R6" },
+          "minContains": 1
+        },
+        "report_self_approval": { "const": "prohibited" },
+        "general_audit_gate": { "const": "NOT_ISSUED_BY_THIS_DEPARTMENT" },
+        "judgment_authority": { "const": "departamento-juizes" },
+        "returned_to": { "const": "diretor-de-lentes" },
+        "closed_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "blocking_triggers": { "minItems": 1 } },
+            "required": ["blocking_triggers"]
+          },
+          "then": {
+            "properties": {
+              "risk_recommendation": { "const": "BLOQUEAR" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "open_findings": {
+                "properties": { "critical": { "minimum": 1 } },
+                "required": ["critical"]
+              }
+            },
+            "required": ["open_findings"]
+          },
+          "then": {
+            "properties": {
+              "risk_recommendation": { "const": "BLOQUEAR" },
+              "blocking_triggers": {
+                "contains": { "const": "CRITICO_ABERTO" },
+                "minContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "fail_closed_assessment": { "const": "ABRE" } },
+            "required": ["fail_closed_assessment"]
+          },
+          "then": {
+            "properties": {
+              "risk_recommendation": { "const": "BLOQUEAR" },
+              "blocking_triggers": {
+                "contains": { "const": "FAIL_OPEN" },
+                "minContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "risk_recommendation": {
+                "enum": ["LIBERAR", "LIBERAR_COM_RESSALVAS"]
+              }
+            },
+            "required": ["risk_recommendation"]
+          },
+          "then": {
+            "properties": {
+              "blocking_triggers": { "maxItems": 0 },
+              "open_findings": {
+                "properties": { "critical": { "const": 0 } },
+                "required": ["critical"]
+              },
+              "unauthorized_active_activity": { "const": false },
+              "fail_closed_assessment": { "const": "FECHA" },
+              "status": { "not": { "const": "BLOCKED" } }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "unauthorized_active_activity": { "const": true }
+            },
+            "required": ["unauthorized_active_activity"]
+          },
+          "then": {
+            "properties": {
+              "status": { "const": "BLOCKED" },
+              "risk_recommendation": { "const": "BLOQUEAR" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "COMPLETED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "task_issuance_records": { "minItems": 1 },
+              "skips": { "maxItems": 0 },
+              "capability_gap_refs": { "maxItems": 0 },
+              "local_gates": {
+                "not": {
+                  "contains": {
+                    "type": "object",
+                    "properties": {
+                      "result": {
+                        "enum": ["FAIL", "NAO_VERIFICADO"]
+                      }
+                    },
+                    "required": ["result"]
+                  }
+                }
+              },
+              "coverage_map": {
+                "properties": {
+                  "not_assessed": { "maxItems": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "capability_gap_refs": { "minItems": 1 } },
+            "required": ["capability_gap_refs"]
+          },
+          "then": {
+            "properties": {
+              "status": { "enum": ["PARTIAL", "BLOCKED"] }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

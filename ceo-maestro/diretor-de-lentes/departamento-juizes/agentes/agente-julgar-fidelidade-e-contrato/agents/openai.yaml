@@ -1,0 +1,4 @@
+interface:
+  display_name: "Juiz de Fidelidade e Contrato"
+  short_description: "Juiz de fidelidade ao contrato e ao escopo"
+  default_prompt: "Use $agente-julgar-fidelidade-e-contrato somente por JUDGE_ASSIGNMENT do departamento-juizes, para pontuar aderência ao INTENT, cobertura do DONE, escopo, restrições e ADR."

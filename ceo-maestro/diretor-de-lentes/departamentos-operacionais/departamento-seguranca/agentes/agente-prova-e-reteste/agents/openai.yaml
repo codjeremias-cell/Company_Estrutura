@@ -1,0 +1,4 @@
+interface:
+  display_name: "Julgador de Prova e Reteste"
+  short_description: "Prova admissível e reteste que fecha"
+  default_prompt: "Use $agente-prova-e-reteste somente por SECURITY_TASK do departamento-seguranca, para montar a matriz controle–teste–evidência, julgar a admissibilidade de cada prova com o motivo da tabela e retestar o que se alega corrigido — sem provar achado de autoria própria."

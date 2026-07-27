@@ -1,0 +1,4 @@
+interface:
+  display_name: "Drivers e Restrições"
+  short_description: "Transforma objetivo em driver medível"
+  default_prompt: "Use $agente-drivers-e-restricoes somente por ARCHITECTURE_TASK do departamento-arquitetura-software, para transformar objetivo, restrições e ADRs em drivers medíveis e priorizados, com como_se_mede e origem."

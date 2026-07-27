@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Fluxo, Estados e Transições"
+  short_description: "Fluxo, estados e transições"
+  default_prompt: "Use $agente-fluxo-estados-e-transicoes para desenhar o fluxo antes da tela, com os estados vazio, carregando e erro e o mapa de transições — sem escolher linguagem visual."

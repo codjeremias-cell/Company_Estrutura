@@ -1,0 +1,4 @@
+interface:
+  display_name: "Juiz de Robustez e Evidência"
+  short_description: "Juiz de robustez, bordas e prova conferível"
+  default_prompt: "Use $agente-julgar-robustez-e-evidencia somente por JUDGE_ASSIGNMENT do departamento-juizes, para pontuar corretude, bordas, coerência interna e rastreabilidade da prova."

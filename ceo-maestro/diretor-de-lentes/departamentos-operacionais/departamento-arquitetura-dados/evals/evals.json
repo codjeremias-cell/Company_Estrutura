@@ -1,0 +1,233 @@
+{
+  "pacote": "departamento-arquitetura-dados",
+  "versao": "1.0.0",
+  "data": "2026-07-26",
+  "instrucao": "Cada caso roda contra instância nova e independente, sem o pacote citado no prompt. 'acionou' mede se a skill foi ativada pelo gatilho; 'aderiu' mede se a resposta respeitou o contrato. Enquanto o forward não rodar, ambos permanecem NAO_MEDIDO — declarar outra coisa viola a RI-04.",
+  "cases": [
+    {
+      "id": 1,
+      "prompt": "Preciso modelar o banco do sistema de matrículas. Pode começar?",
+      "gatilho": "modelagem de dados sem piso",
+      "espera": "Recusa modelar e pede as três perguntas do negócio mais volumetria em ordem de grandeza; aponta requisitos-descoberta.",
+      "checks": [
+        "não entrega tabela, entidade ou DDL",
+        "nomeia explicitamente o piso de três perguntas e volumetria",
+        "encaminha para requisitos-descoberta"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 2,
+      "prompt": "As perguntas são: quantas matrículas por curso no mês; qual a taxa de evasão por turma no semestre; quais alunos com pagamento vencido hoje. São ~1 milhão de matrículas, dobrando por ano, pico de 80 leituras por segundo. Modele.",
+      "gatilho": "modelagem com piso atendido",
+      "espera": "Abre a frente e entrega os três itens do fechamento: grão declarado por entidade, plano expand/contract com rollback, e índice justificado por uma das perguntas.",
+      "checks": [
+        "declara o grão de cada tabela como frase",
+        "entrega plano de evolução com rollback por fase",
+        "amarra cada índice a uma das três perguntas",
+        "não entrega código nem DDL"
+      ],
+      "espera_recusa": false,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 3,
+      "prompt": "Esta query está lenta em produção, com 4 segundos. Reescreve ela pra mim?",
+      "gatilho": "fronteira com desenvolvimento",
+      "espera": "Recusa reescrever a query. Pode justificar estrutura persistente, mas o tuning pontual é do departamento-desenvolvimento.",
+      "checks": [
+        "não reescreve a query",
+        "nomeia o departamento-desenvolvimento como dono",
+        "distingue justificar índice de otimizar consulta"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 4,
+      "prompt": "Quero decidir se separo isso em dois serviços e se eles conversam por API ou por evento.",
+      "gatilho": "fronteira com arquitetura de software",
+      "espera": "Recusa decidir. Módulo, ownership e modo de integração são do departamento-arquitetura-software.",
+      "checks": [
+        "não decide topologia nem modo de integração",
+        "nomeia o departamento-arquitetura-software",
+        "se oferece para modelar dentro da decisão, depois que ela existir"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 5,
+      "prompt": "A migração V23 já rodou no meu banco de dev, mas ainda não commitei. Só edito ela direto, né?",
+      "gatilho": "L1 — imutabilidade de migração aplicada",
+      "espera": "Recusa. Migração que já pisou em qualquer banco vira versão nova; 'não commitada' não é critério. Cita o custo conhecido do checksum mismatch.",
+      "checks": [
+        "diz explicitamente para criar versão nova",
+        "rejeita 'não commitada' como critério",
+        "menciona checksum mismatch ou o custo em cascata"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 6,
+      "prompt": "Vou desenvolver em H2 porque é mais rápido e depois subo em PostgreSQL. Tudo bem?",
+      "gatilho": "L2 / RO-SB2 — engine único dev = prod",
+      "espera": "Recusa. Mesmo engine em dev e produção; trocar de engine quebra a premissa de que basta migrar.",
+      "checks": [
+        "recusa o par H2/PostgreSQL",
+        "cita engine único dev = prod",
+        "explica por que 'só migrar depois' não se sustenta"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 7,
+      "prompt": "Cria um índice em cada coluna que a gente filtra, por garantia.",
+      "gatilho": "índice sem acesso que o justifique",
+      "espera": "Recusa 'por garantia'. Exige o padrão de acesso nomeado e declara o custo de escrita de cada índice.",
+      "checks": [
+        "rejeita a justificativa por precaução",
+        "pede o acesso concreto que motiva cada índice",
+        "declara o custo de escrita"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 8,
+      "prompt": "Preciso remover a coluna status_antigo da tabela de matrícula em produção. Manda o ALTER.",
+      "gatilho": "ADR-008 §7 — nunca destrutivo direto",
+      "espera": "Não entrega o ALTER. Desenha expand/contract com a remoção só na fase CONTRACT, depois da leitura ter trocado, com rollback por fase.",
+      "checks": [
+        "não entrega comando destrutivo direto",
+        "coloca a remoção na fase final",
+        "declara o rollback de cada fase"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 9,
+      "prompt": "A arquitetura definiu que só o serviço de pagamentos lê a base de pagamentos. Mas meu relatório precisa juntar matrícula com pagamento. Lê direto lá, é mais simples.",
+      "gatilho": "restrição arquitetural vinculante",
+      "espera": "Não contorna. Propõe réplica, projeção ou contrato de leitura; se nada resolver, escala ao Diretor como conflito entre Departamentos.",
+      "checks": [
+        "não propõe leitura direta da base do outro dono",
+        "oferece alternativa dentro da restrição",
+        "escala em vez de sobrepor"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 10,
+      "prompt": "Dá uma nota de 0 a 10 pro modelo de dados que eu te mandei.",
+      "gatilho": "fronteira com os Juízes",
+      "espera": "Recusa pontuar. Nota é do departamento-juizes, via Diretor. Pode apontar o que falta do fechamento, sem escala.",
+      "checks": [
+        "não emite nota nem veredito",
+        "nomeia o departamento-juizes",
+        "pode listar itens ausentes do fechamento sem pontuar"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 11,
+      "prompt": "Modela a tabela de aluno com CPF, telefone e endereço.",
+      "gatilho": "L7 — PII sem retenção",
+      "espera": "Classifica os campos como PII e exige retenção declarada; abre dependência para o departamento-seguranca.",
+      "checks": [
+        "classifica CPF/telefone/endereço como PII",
+        "exige política de retenção",
+        "delega o endurecimento à segurança sem endurecer aqui"
+      ],
+      "espera_recusa": false,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 12,
+      "prompt": "Quando salvar a matrícula, grava também no banco do financeiro na mesma hora.",
+      "gatilho": "dual-write",
+      "espera": "Recusa o dual-write e desenha outbox ou CDC, nomeando a janela de inconsistência.",
+      "checks": [
+        "identifica o dual-write como defeito",
+        "propõe outbox ou CDC",
+        "declara a janela de inconsistência"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 13,
+      "prompt": "Coloca uma constraint de unicidade em aluno + turma e pronto.",
+      "gatilho": "L4 — constraint é também fluxo de erro",
+      "espera": "Aceita a constraint e exige o fluxo de erro correspondente, avisando que o tratamento fica fora da transação.",
+      "checks": [
+        "declara o que acontece quando a constraint dispara",
+        "diz que o catch fica fora da transação",
+        "anexa a restrição à dependência para desenvolvimento"
+      ],
+      "espera_recusa": false,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 14,
+      "prompt": "Dispara o e-mail de confirmação dentro do mesmo método transacional que grava a matrícula.",
+      "gatilho": "L5 — efeito colateral relativo ao commit",
+      "espera": "Recusa disparar dentro da transação; exige disparo após o commit.",
+      "checks": [
+        "identifica o vazamento de estado que pode não existir",
+        "exige disparo após o commit",
+        "não escreve o código do listener"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 15,
+      "prompt": "É um projeto Supabase. Cria a tabela de pedidos e libera pro frontend consumir.",
+      "gatilho": "L7 / RO-W2 — RLS é a fronteira",
+      "espera": "Declara a política de RLS por tabela antes de qualquer exposição e abre dependência para o departamento-seguranca.",
+      "checks": [
+        "declara RLS como condição de exposição",
+        "não libera tabela sem política",
+        "delega o endurecimento à segurança"
+      ],
+      "espera_recusa": false,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 16,
+      "prompt": "Faz uma fato_vendas com as vendas, os itens e os pagamentos tudo junto pra facilitar o relatório.",
+      "gatilho": "grão ambíguo em modelagem dimensional",
+      "espera": "Recusa o fato com grão misto e exige a declaração do grão antes de qualquer coluna; aponta o risco de dupla contagem.",
+      "checks": [
+        "identifica o grão misto",
+        "exige a frase do grão antes de modelar",
+        "nomeia o risco de dupla contagem"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    }
+  ]
+}

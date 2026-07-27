@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Inteligência de Marketing"
+  short_description: "Mede, experimenta e relata marketing"
+  default_prompt: "Use $agente-inteligencia-relatoria-marketing para medir e relatar esta atribuição."
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Experimentos e Spikes"
+  short_description: "Desenha experimentos reversíveis e mensuráveis"
+  default_prompt: "Use $agente-experimentos-e-spikes para desenhar o menor experimento reversível desta hipótese."

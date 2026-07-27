@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verificador de Identidade e Acesso"
+  short_description: "Quem pode o quê, e o que faz o não"
+  default_prompt: "Use $agente-identidade-e-acesso somente por SECURITY_TASK do departamento-seguranca, para montar a matriz sujeito–objeto–ação e verificar autenticação, sessão, token, privilégio e o comportamento da negação quando o autorizador falha."

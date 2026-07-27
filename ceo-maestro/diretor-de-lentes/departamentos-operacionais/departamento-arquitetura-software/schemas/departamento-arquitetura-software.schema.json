@@ -1,0 +1,817 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-arquitetura-software.schema.json",
+  "title": "Contratos internos do Departamento de Arquitetura de Software",
+  "description": "Plano, tarefa por ótica, retorno por kind, conjunto de opções, lacuna e livro-razão da rodada. Sem nota: pontuar é do departamento-juizes (ADR-006). Sem campo de entidade, schema, índice, migração, query ou código: modelo de dados é do departamento-arquitetura-dados e implementação é do departamento-desenvolvimento. Os envelopes de fronteira (DEPARTMENT_MISSION, DEPARTMENT_RETURN) pertencem ao schema do diretor-de-lentes e não são redefinidos aqui.",
+  "oneOf": [
+    { "$ref": "#/$defs/architecturePlan" },
+    { "$ref": "#/$defs/architectureTask" },
+    { "$ref": "#/$defs/architectureReturn" },
+    { "$ref": "#/$defs/optionSet" },
+    { "$ref": "#/$defs/architectureCapabilityGap" },
+    { "$ref": "#/$defs/architectureLedger" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "artifactRef": { "type": "string", "minLength": 3, "maxLength": 512 },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "uniqueItems": true
+    },
+    "kind": {
+      "enum": [
+        "DRIVERS",
+        "MODULARIDADE",
+        "INTEGRACAO",
+        "QUALIDADE",
+        "ALTERNATIVAS",
+        "ADR_C4"
+      ]
+    },
+    "workerId": {
+      "enum": [
+        "agente-drivers-e-restricoes",
+        "agente-modularidade-e-limites",
+        "agente-integracoes-e-contratos",
+        "agente-qualidade-e-operacao",
+        "agente-alternativas-e-tradeoffs",
+        "agente-adr-e-c4"
+      ]
+    },
+    "workerStatus": {
+      "enum": [ "COMPLETED", "BLOCKED", "SEM_RETORNO", "FALHO" ]
+    },
+    "dimension": {
+      "enum": [
+        "DRIVERS",
+        "MODULARIDADE",
+        "INTEGRACAO",
+        "QUALIDADE",
+        "ALTERNATIVAS",
+        "ADR_C4",
+        "EVIDENCIA",
+        "SIMPLICIDADE"
+      ]
+    },
+    "coverage": {
+      "enum": [ "COBERTA", "PARCIAL", "NAO_APLICAVEL", "AUSENTE" ]
+    },
+    "delegationTarget": {
+      "enum": [
+        "departamento-arquitetura-dados",
+        "departamento-desenvolvimento",
+        "departamento-seguranca"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": {
+          "oneOf": [ { "$ref": "#/$defs/digest" }, { "const": "n/a" } ]
+        },
+        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "producer": { "const": "departamento-arquitetura-software" },
+        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "delegatedDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "target", "question", "blocks", "architectural_constraint", "decision_rule" ],
+      "properties": {
+        "target": { "$ref": "#/$defs/delegationTarget" },
+        "question": { "type": "string", "minLength": 15 },
+        "blocks": { "type": "string", "minLength": 10 },
+        "architectural_constraint": { "type": "string", "minLength": 10 },
+        "decision_rule": { "type": "string", "minLength": 3 }
+      },
+      "allOf": [
+        {
+          "comment": "Regra S: spike delegado ao desenvolvimento exige a regra que decide.",
+          "if": {
+            "properties": { "target": { "const": "departamento-desenvolvimento" } },
+            "required": [ "target" ]
+          },
+          "then": {
+            "properties": { "decision_rule": { "type": "string", "minLength": 20 } }
+          }
+        }
+      ]
+    },
+    "driverItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "id", "enunciado", "como_se_mede", "prioridade", "origem" ],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "enunciado": { "type": "string", "minLength": 15 },
+        "como_se_mede": { "type": "string", "minLength": 10 },
+        "prioridade": { "type": "integer", "minimum": 1 },
+        "origem": { "type": "string", "minLength": 5 }
+      }
+    },
+    "moduleItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nome",
+        "capacidade",
+        "nao_faz",
+        "data_ownership",
+        "depende_de",
+        "acoplamento",
+        "razao"
+      ],
+      "properties": {
+        "nome": { "type": "string", "minLength": 3 },
+        "capacidade": { "type": "string", "minLength": 10 },
+        "nao_faz": { "type": "string", "minLength": 10 },
+        "data_ownership": { "type": "string", "minLength": 10 },
+        "depende_de": { "$ref": "#/$defs/optionalStrings" },
+        "acoplamento": { "enum": [ "forte", "fraco", "nenhum" ] },
+        "razao": { "type": "string", "minLength": 10 }
+      }
+    },
+    "contractItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entre",
+        "estilo",
+        "driver_que_decidiu",
+        "contrato",
+        "versionamento",
+        "idempotencia",
+        "modo_de_falha"
+      ],
+      "properties": {
+        "entre": { "type": "string", "minLength": 5 },
+        "estilo": { "enum": [ "sincrono", "assincrono" ] },
+        "driver_que_decidiu": { "$ref": "#/$defs/identifier" },
+        "contrato": { "type": "string", "minLength": 15 },
+        "versionamento": { "type": "string", "minLength": 10 },
+        "idempotencia": { "type": "string", "minLength": 5 },
+        "modo_de_falha": { "type": "string", "minLength": 20 }
+      }
+    },
+    "scenarioItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "atributo",
+        "driver_que_exige",
+        "cenario_mensuravel",
+        "meta",
+        "origem_da_meta",
+        "implicacao_operacional"
+      ],
+      "properties": {
+        "atributo": { "type": "string", "minLength": 3 },
+        "driver_que_exige": { "$ref": "#/$defs/identifier" },
+        "cenario_mensuravel": { "type": "string", "minLength": 25 },
+        "meta": { "type": "string", "minLength": 3 },
+        "origem_da_meta": { "type": "string", "minLength": 5 },
+        "implicacao_operacional": { "type": "string", "minLength": 10 }
+      }
+    },
+    "optionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nome",
+        "essencia",
+        "atende_drivers",
+        "perde",
+        "reversibilidade",
+        "custo",
+        "gatilho_de_mudanca"
+      ],
+      "properties": {
+        "nome": { "type": "string", "minLength": 3 },
+        "essencia": { "type": "string", "minLength": 15 },
+        "atende_drivers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "perde": { "$ref": "#/$defs/requiredStrings" },
+        "reversibilidade": { "enum": [ "facil", "media", "dificil" ] },
+        "custo": { "type": "string", "minLength": 3 },
+        "gatilho_de_mudanca": { "type": "string", "minLength": 10 }
+      }
+    },
+    "adrC4Item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adr_contexto",
+        "adr_decisao",
+        "adr_consequencias",
+        "alternativas_descartadas",
+        "adr_estado",
+        "c4_contexto",
+        "c4_conteiner",
+        "fontes",
+        "divergencias"
+      ],
+      "properties": {
+        "adr_contexto": { "type": "string", "minLength": 20 },
+        "adr_decisao": { "type": "string", "minLength": 15 },
+        "adr_consequencias": { "$ref": "#/$defs/requiredStrings" },
+        "alternativas_descartadas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "opcao", "motivo_do_descarte" ],
+            "properties": {
+              "opcao": { "type": "string", "minLength": 3 },
+              "motivo_do_descarte": { "type": "string", "minLength": 15 }
+            }
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "adr_estado": { "const": "proposta" },
+        "c4_contexto": { "type": "string", "minLength": 20 },
+        "c4_conteiner": { "type": "string", "minLength": 20 },
+        "fontes": { "$ref": "#/$defs/requiredStrings" },
+        "divergencias": { "$ref": "#/$defs/optionalStrings" }
+      }
+    },
+    "frontItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "front_ref", "objetivo", "dimensoes", "wave", "depende_de" ],
+      "properties": {
+        "front_ref": { "$ref": "#/$defs/identifier" },
+        "objetivo": { "type": "string", "minLength": 15 },
+        "dimensoes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dimension" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "wave": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "depende_de": { "$ref": "#/$defs/optionalStrings" }
+      }
+    },
+    "architecturePlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "architecture_plan_id",
+        "causal",
+        "department_mission_ref",
+        "drivers",
+        "restricoes",
+        "adrs_vigentes",
+        "fronts",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "ARCHITECTURE_PLAN" },
+        "architecture_plan_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "drivers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/driverItem" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "restricoes": { "$ref": "#/$defs/optionalStrings" },
+        "adrs_vigentes": { "$ref": "#/$defs/optionalStrings" },
+        "fronts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/frontItem" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "architectureTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "worker_id",
+        "kind",
+        "front_ref",
+        "wave",
+        "objective",
+        "drivers",
+        "constraints",
+        "scope_in",
+        "scope_out",
+        "inputs",
+        "forbidden_context",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "ARCHITECTURE_TASK" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "front_ref": { "$ref": "#/$defs/identifier" },
+        "wave": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "objective": { "type": "string", "minLength": 15 },
+        "drivers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "constraints": { "$ref": "#/$defs/optionalStrings" },
+        "scope_in": { "$ref": "#/$defs/requiredStrings" },
+        "scope_out": { "$ref": "#/$defs/requiredStrings" },
+        "inputs": { "$ref": "#/$defs/optionalRefs" },
+        "forbidden_context": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 4,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "conclus|preferência|favorita" },
+          "minContains": 1
+        },
+        "stop_when": { "$ref": "#/$defs/requiredStrings" },
+        "return_to": { "const": "departamento-arquitetura-software" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "DRIVERS" } }, "required": [ "kind" ] },
+          "then": { "properties": { "worker_id": { "const": "agente-drivers-e-restricoes" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "MODULARIDADE" } }, "required": [ "kind" ] },
+          "then": { "properties": { "worker_id": { "const": "agente-modularidade-e-limites" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "INTEGRACAO" } }, "required": [ "kind" ] },
+          "then": { "properties": { "worker_id": { "const": "agente-integracoes-e-contratos" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "QUALIDADE" } }, "required": [ "kind" ] },
+          "then": { "properties": { "worker_id": { "const": "agente-qualidade-e-operacao" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "ALTERNATIVAS" } }, "required": [ "kind" ] },
+          "then": { "properties": { "worker_id": { "const": "agente-alternativas-e-tradeoffs" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "ADR_C4" } }, "required": [ "kind" ] },
+          "then": {
+            "properties": {
+              "worker_id": { "const": "agente-adr-e-c4" },
+              "wave": { "const": 4 }
+            }
+          }
+        }
+      ]
+    },
+    "architectureReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "worker_id",
+        "kind",
+        "drivers",
+        "modules",
+        "contracts",
+        "scenarios",
+        "options",
+        "assumptions",
+        "delegated_dependencies",
+        "pending",
+        "status",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "ARCHITECTURE_RETURN" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "drivers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/driverItem" },
+          "uniqueItems": true
+        },
+        "modules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/moduleItem" },
+          "uniqueItems": true
+        },
+        "contracts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contractItem" },
+          "uniqueItems": true
+        },
+        "scenarios": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scenarioItem" },
+          "uniqueItems": true
+        },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/optionItem" },
+          "uniqueItems": true
+        },
+        "adr_c4": { "$ref": "#/$defs/adrC4Item" },
+        "assumptions": { "$ref": "#/$defs/optionalStrings" },
+        "delegated_dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/delegatedDependency" },
+          "uniqueItems": true
+        },
+        "blocked_reason": { "type": "string", "minLength": 10 },
+        "pending": { "$ref": "#/$defs/optionalStrings" },
+        "status": { "enum": [ "COMPLETED", "BLOCKED" ] },
+        "return_to": { "const": "departamento-arquitetura-software" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "BLOCKED" } }, "required": [ "status" ] },
+          "then": {
+            "required": [ "blocked_reason" ],
+            "properties": {
+              "drivers": { "maxItems": 0 },
+              "modules": { "maxItems": 0 },
+              "contracts": { "maxItems": 0 },
+              "scenarios": { "maxItems": 0 },
+              "options": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "DRIVERS" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "properties": { "drivers": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "MODULARIDADE" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "properties": { "modules": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "INTEGRACAO" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "properties": { "contracts": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "QUALIDADE" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "properties": { "scenarios": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "ALTERNATIVAS" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "properties": { "options": { "minItems": 2 } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "ADR_C4" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "required": [ "adr_c4" ], "properties": { "options": { "maxItems": 0 } } }
+        }
+      ]
+    },
+    "optionSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "option_set_id",
+        "causal",
+        "front_ref",
+        "options",
+        "single_option_justification",
+        "recomendacao",
+        "recomendacao_perde",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "OPTION_SET" },
+        "option_set_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "front_ref": { "$ref": "#/$defs/identifier" },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/optionItem" },
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "single_option_justification": { "type": "string", "minLength": 3 },
+        "recomendacao": { "type": "string", "minLength": 3 },
+        "recomendacao_perde": { "$ref": "#/$defs/requiredStrings" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "comment": "Opção única exige justificativa verificável; com 2 ou 3, ela some.",
+          "if": {
+            "properties": { "options": { "maxItems": 1 } },
+            "required": [ "options" ]
+          },
+          "then": {
+            "properties": { "single_option_justification": { "type": "string", "minLength": 30 } }
+          },
+          "else": {
+            "properties": { "single_option_justification": { "const": "n/a" } }
+          }
+        }
+      ]
+    },
+    "architectureCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "capability",
+        "worker_id",
+        "dimensions",
+        "expected_contract",
+        "discovery_evidence",
+        "impact",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_type": { "const": "ARCHITECTURE_CAPABILITY_GAP" },
+        "capability": { "type": "string", "minLength": 10 },
+        "worker_id": {
+          "oneOf": [ { "$ref": "#/$defs/workerId" }, { "const": "n/a" } ]
+        },
+        "dimensions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dimension" },
+          "uniqueItems": true
+        },
+        "expected_contract": { "type": "string", "minLength": 10 },
+        "discovery_evidence": { "type": "string", "minLength": 10 },
+        "impact": { "type": "string", "minLength": 10 },
+        "status": { "const": "OPEN" },
+        "owner": { "const": "diretor-de-lentes" }
+      }
+    },
+    "assignmentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "task_id", "worker_id", "kind", "wave", "issued_at", "destination" ],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "wave": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "destination": { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "panelItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "worker_id", "kind", "status" ],
+      "properties": {
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "status": { "$ref": "#/$defs/workerStatus" }
+      }
+    },
+    "dimensionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "dimension", "estado", "razao", "dono" ],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "estado": { "$ref": "#/$defs/coverage" },
+        "razao": { "type": "string", "minLength": 10 },
+        "dono": { "type": "string", "minLength": 3 }
+      },
+      "allOf": [
+        {
+          "comment": "NAO_APLICAVEL generico e AUSENTE: exige justificativa desta missao.",
+          "if": {
+            "properties": { "estado": { "const": "NAO_APLICAVEL" } },
+            "required": [ "estado" ]
+          },
+          "then": { "properties": { "razao": { "type": "string", "minLength": 30 } } }
+        }
+      ]
+    },
+    "architectureLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "architecture_ledger_id",
+        "causal",
+        "department_mission_ref",
+        "plan",
+        "assignments",
+        "panel",
+        "dimensions",
+        "option_sets",
+        "delegated_dependencies",
+        "capability_gaps",
+        "gates",
+        "evidence_refs",
+        "pending",
+        "entrega",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "ARCHITECTURE_LEDGER" },
+        "architecture_ledger_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "plan": { "$ref": "#/$defs/architecturePlan" },
+        "assignments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assignmentRecord" },
+          "uniqueItems": true
+        },
+        "panel": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/panelItem" },
+          "maxItems": 6,
+          "uniqueItems": true
+        },
+        "dimensions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dimensionState" },
+          "minItems": 8,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "DRIVERS" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "MODULARIDADE" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "INTEGRACAO" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "QUALIDADE" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "ALTERNATIVAS" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "ADR_C4" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "EVIDENCIA" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "SIMPLICIDADE" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 }
+          ]
+        },
+        "option_sets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/optionSet" },
+          "uniqueItems": true
+        },
+        "delegated_dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/delegatedDependency" },
+          "uniqueItems": true
+        },
+        "capability_gaps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/architectureCapabilityGap" }
+        },
+        "gates": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cobertura",
+            "opcoes",
+            "consistencia",
+            "decisao",
+            "fronteira",
+            "documentacao",
+            "evidencia"
+          ],
+          "properties": {
+            "cobertura": { "type": "boolean" },
+            "opcoes": { "type": "boolean" },
+            "consistencia": { "type": "boolean" },
+            "decisao": { "type": "boolean" },
+            "fronteira": { "type": "boolean" },
+            "documentacao": { "type": "boolean" },
+            "evidencia": { "type": "boolean" }
+          }
+        },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
+        "pending": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "R6" },
+          "minContains": 1
+        },
+        "entrega": { "type": "boolean" },
+        "return_to": { "const": "diretor-de-lentes" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "comment": "Entrega exige gates verdes, emissao registrada, opcoes e nenhuma lacuna aberta.",
+          "if": { "properties": { "entrega": { "const": true } }, "required": [ "entrega" ] },
+          "then": {
+            "properties": {
+              "assignments": { "minItems": 1 },
+              "option_sets": { "minItems": 1 },
+              "capability_gaps": { "maxItems": 0 },
+              "gates": {
+                "properties": {
+                  "cobertura": { "const": true },
+                  "opcoes": { "const": true },
+                  "consistencia": { "const": true },
+                  "decisao": { "const": true },
+                  "fronteira": { "const": true },
+                  "documentacao": { "const": true },
+                  "evidencia": { "const": true }
+                }
+              },
+              "dimensions": {
+                "items": { "properties": { "estado": { "not": { "const": "AUSENTE" } } } }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

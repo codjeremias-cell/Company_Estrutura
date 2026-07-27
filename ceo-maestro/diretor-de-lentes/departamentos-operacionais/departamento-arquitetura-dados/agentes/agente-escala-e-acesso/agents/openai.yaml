@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Escala e Acesso"
+  short_description: "Índice e partição por acesso real"
+  default_prompt: "Use $agente-escala-e-acesso para justificar cada índice, partição, réplica ou cache contra um padrão de acesso nomeado, com o efeito declarado como esperado — sem reescrever query."

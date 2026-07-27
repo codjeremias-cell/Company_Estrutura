@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Revisão e Refatoração"
+  short_description: "Revisa o alheio, nunca o próprio"
+  default_prompt: "Use $agente-revisao-e-refatoracao para revisar código de outro agente por clareza, complexidade e dívida — colhendo os marcadores ponytail para a fila."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auditor de Evidências e Artefatos"
+  short_description: "Audita prova fresca, artefatos e TWINS"
+  default_prompt: "Use $agente-conferir-evidencias-e-artefatos somente por AUDIT_TASK do departamento-auditoria-responsabilidades, para conferir frescor, custódia, artefatos reais, TWINS e rastreabilidade."

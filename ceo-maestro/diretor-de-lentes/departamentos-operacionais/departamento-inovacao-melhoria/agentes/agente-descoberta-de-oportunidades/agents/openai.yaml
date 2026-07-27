@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Descoberta de Oportunidades"
+  short_description: "Descobre dores, desperdícios e oportunidades"
+  default_prompt: "Use $agente-descoberta-de-oportunidades para descobrir e enquadrar oportunidades nesta missão."

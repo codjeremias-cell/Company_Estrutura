@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Inovação e Melhoria"
+  short_description: "Orquestra inovação e melhoria com prova"
+  default_prompt: "Use $departamento-inovacao-melhoria para organizar esta missão de inovação e melhoria e devolvê-la ao Diretor."

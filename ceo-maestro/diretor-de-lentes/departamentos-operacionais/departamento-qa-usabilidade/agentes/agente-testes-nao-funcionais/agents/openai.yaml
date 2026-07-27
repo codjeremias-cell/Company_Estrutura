@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Testes Não Funcionais"
+  short_description: "Mede desempenho, confiabilidade e compatibilidade"
+  default_prompt: "Use $agente-testes-nao-funcionais para medir os atributos não funcionais autorizados e devolver evidências reproduzíveis."
+

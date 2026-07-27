@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Juízes"
+  short_description: "Julga entregas e emite VALIDADO ou REPROVADO"
+  default_prompt: "Use $departamento-juizes para julgar a entrega com as três óticas, consolidar pela menor nota e devolver ao Diretor um único parecer com veredito, críticas e mudanças exigidas."

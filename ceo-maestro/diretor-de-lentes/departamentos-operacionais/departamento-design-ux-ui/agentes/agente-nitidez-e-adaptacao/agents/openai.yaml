@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Nitidez e Adaptação"
+  short_description: "Nitidez e adaptação nativa ao stack"
+  default_prompt: "Use $agente-nitidez-e-adaptacao para verificar densidades, escalas e zoom e nomear as primitivas reais do stack — sem forçar padrão web em alvo nativo."

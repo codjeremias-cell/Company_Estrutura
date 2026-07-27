@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Usabilidade e Acessibilidade"
+  short_description: "Valida tarefas, experiência e acessibilidade"
+  default_prompt: "Use $agente-usabilidade-e-acessibilidade para testar tarefas reais, experiência e acessibilidade com evidências."
+

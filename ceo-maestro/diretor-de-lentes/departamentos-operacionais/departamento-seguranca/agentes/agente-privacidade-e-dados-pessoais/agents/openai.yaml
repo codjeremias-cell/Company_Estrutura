@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analista de Privacidade e Dados Pessoais"
+  short_description: "Dado pessoal: mínimo, prazo e descarte"
+  default_prompt: "Use $agente-privacidade-e-dados-pessoais somente por SECURITY_TASK do departamento-seguranca, para classificar o dado, exigir razão técnica de cada campo e verificar retenção, descarte e redação — nomeando a pendência jurídica em vez de resolvê-la."

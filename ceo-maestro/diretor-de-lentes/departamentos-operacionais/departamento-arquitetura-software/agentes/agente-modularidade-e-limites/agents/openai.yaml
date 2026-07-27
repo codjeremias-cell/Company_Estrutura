@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modularidade e Limites"
+  short_description: "Define limites, módulos e donos de dados"
+  default_prompt: "Use $agente-modularidade-e-limites somente por ARCHITECTURE_TASK do departamento-arquitetura-software, para agrupar capacidades em contextos e módulos, declarar dependências e acoplamento, e fixar quem é dono de cada dado."

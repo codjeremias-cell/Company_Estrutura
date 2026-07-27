@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Estratégia de Produto"
+  short_description: "Analisa estratégia, escopo e validação do produto"
+  default_prompt: "Use $agente-estrategia-de-produto para executar esta missão de estratégia e devolver um relatório evidenciado ao Departamento de Negócios."

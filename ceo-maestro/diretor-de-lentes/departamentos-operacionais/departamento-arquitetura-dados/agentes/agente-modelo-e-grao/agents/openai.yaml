@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Modelo e Grão"
+  short_description: "Entidades, chaves e o grão declarado"
+  default_prompt: "Use $agente-modelo-e-grao para modelar entidades, chaves e normalização declarando o grão de cada tabela, a estratégia de histórico e a fronteira transacional — sem escolher banco nem desenhar migração."

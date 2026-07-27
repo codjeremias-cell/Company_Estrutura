@@ -1,0 +1,5 @@
+interface:
+  display_name: "Departamento de Conteúdo e Marketing"
+  short_description: "Orquestra conteúdo, campanhas e marketing"
+  default_prompt: "Use $departamento-conteudo-marketing para planejar e orquestrar uma campanha rastreável para este produto."
+

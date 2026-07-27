@@ -1,0 +1,4 @@
+interface:
+  display_name: "Registrador de Memória e Decisões"
+  short_description: "Grava decisão e ADR; memória é só leitura"
+  default_prompt: "Use $agente-memoria-e-decisoes somente por RECORD_TASK do departamento-registros, para gravar a decisão na série de ADR do escopo e entregar a memória durável como handoff ao dono."

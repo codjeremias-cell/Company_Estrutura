@@ -1,0 +1,1736 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "departamento-desenvolvimento.schema.json",
+  "title": "Artefatos internos do Departamento de Desenvolvimento",
+  "description": "Envelopes internos. Unico Departamento cujo test_summary carrega numero real (ADR-012 §1). Nao existe campo de nota (ADR-002) nem de decisao macro de arquitetura, modelo de dado ou linguagem visual.",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "uniqueItems": true
+    },
+    "capability": {
+      "enum": [
+        "JAVA_SPRING",
+        "JAVAFX_DESKTOP",
+        "WEB_FRONTEND",
+        "TAURI_DESKTOP",
+        "MOBILE_FLUTTER",
+        "PERSISTENCIA_SQL",
+        "REVISAO_REFATORACAO",
+        "TESTES_DEPURACAO"
+      ]
+    },
+    "workerId": {
+      "enum": [
+        "agente-java-e-spring",
+        "agente-javafx-desktop",
+        "agente-web-frontend",
+        "agente-tauri-desktop",
+        "agente-mobile-flutter",
+        "agente-persistencia-e-sql",
+        "agente-revisao-e-refatoracao",
+        "agente-testes-e-depuracao"
+      ]
+    },
+    "workerStatus": {
+      "enum": [
+        "COMPLETED",
+        "BLOCKED",
+        "SEM_RETORNO",
+        "FALHO"
+      ]
+    },
+    "track": {
+      "enum": [
+        "JAVA_SPRING",
+        "JAVAFX",
+        "WEB",
+        "TAURI",
+        "FLUTTER"
+      ]
+    },
+    "ladderStep": {
+      "enum": [
+        "YAGNI",
+        "STDLIB",
+        "PLATAFORMA",
+        "DEP_INSTALADA",
+        "LINHA_NO_USO",
+        "CODIGO_NOVO"
+      ]
+    },
+    "inegociavel": {
+      "enum": [
+        "VALIDACAO_FRONTEIRA",
+        "ERRO_PERDA_DADO",
+        "SEGURANCA",
+        "ACESSIBILIDADE",
+        "REQUISITO_EXPLICITO"
+      ]
+    },
+    "delegationTarget": {
+      "enum": [
+        "departamento-arquitetura-software",
+        "departamento-arquitetura-dados",
+        "departamento-design-ux-ui",
+        "departamento-seguranca",
+        "departamento-qa-usabilidade"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "front_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "message_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causation_message_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "contract_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": {
+          "const": "departamento-desenvolvimento"
+        },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "ladderDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change",
+        "step",
+        "simplificado"
+      ],
+      "properties": {
+        "change": {
+          "type": "string",
+          "minLength": 10
+        },
+        "step": {
+          "$ref": "#/$defs/ladderStep"
+        },
+        "simplificado": {
+          "type": "boolean"
+        },
+        "inegociavel": {
+          "$ref": "#/$defs/inegociavel"
+        },
+        "justificativa": {
+          "type": "string",
+          "minLength": 15
+        }
+      },
+      "allOf": [
+        {
+          "comment": "ADR-012 §8: os cinco inegociaveis nunca sao degrau. Marcar como simplificado e recusado.",
+          "if": {
+            "required": [
+              "inegociavel"
+            ]
+          },
+          "then": {
+            "properties": {
+              "simplificado": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "assumptionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locator",
+        "claim",
+        "why_unconfirmed"
+      ],
+      "properties": {
+        "locator": {
+          "type": "string",
+          "minLength": 3
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 10
+        },
+        "why_unconfirmed": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "ponytailItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locator",
+        "simplificado",
+        "teto",
+        "upgrade",
+        "falha_explicita"
+      ],
+      "properties": {
+        "locator": {
+          "type": "string",
+          "minLength": 3
+        },
+        "simplificado": {
+          "type": "string",
+          "minLength": 10
+        },
+        "teto": {
+          "type": "string",
+          "minLength": 10
+        },
+        "upgrade": {
+          "type": "string",
+          "minLength": 10
+        },
+        "falha_explicita": {
+          "const": true
+        }
+      }
+    },
+    "edgeCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unit",
+        "vazio",
+        "limite",
+        "erro"
+      ],
+      "properties": {
+        "unit": {
+          "type": "string",
+          "minLength": 3
+        },
+        "vazio": {
+          "type": "boolean"
+        },
+        "limite": {
+          "type": "boolean"
+        },
+        "erro": {
+          "type": "boolean"
+        },
+        "justificativa_ausencia": {
+          "type": "string",
+          "minLength": 20
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Borda ausente exige justificativa declarada; silencio nao passa.",
+          "if": {
+            "properties": {
+              "vazio": {
+                "const": false
+              }
+            },
+            "required": [
+              "vazio"
+            ]
+          },
+          "then": {
+            "required": [
+              "justificativa_ausencia"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "limite": {
+                "const": false
+              }
+            },
+            "required": [
+              "limite"
+            ]
+          },
+          "then": {
+            "required": [
+              "justificativa_ausencia"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "erro": {
+                "const": false
+              }
+            },
+            "required": [
+              "erro"
+            ]
+          },
+          "then": {
+            "required": [
+              "justificativa_ausencia"
+            ]
+          }
+        }
+      ]
+    },
+    "testEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pass",
+        "fail",
+        "skip",
+        "skip_reasons",
+        "against_digest",
+        "executed_by",
+        "executed_at"
+      ],
+      "properties": {
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip_reasons": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "against_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "executed_by": {
+          "const": "agente-testes-e-depuracao"
+        },
+        "executed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "command": {
+          "type": "string",
+          "minLength": 3
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Todo SKIP tem motivo. SKIP mudo e FAIL escondido.",
+          "if": {
+            "properties": {
+              "skip": {
+                "minimum": 1
+              }
+            },
+            "required": [
+              "skip"
+            ]
+          },
+          "then": {
+            "properties": {
+              "skip_reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "delegatedDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "need",
+        "blocks",
+        "attached_context"
+      ],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/delegationTarget"
+        },
+        "need": {
+          "type": "string",
+          "minLength": 15
+        },
+        "blocks": {
+          "type": "string",
+          "minLength": 10
+        },
+        "attached_context": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    },
+    "assignmentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "worker_id",
+        "capability",
+        "wave",
+        "package",
+        "issued_at"
+      ],
+      "properties": {
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "wave": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "package": {
+          "type": "string",
+          "minLength": 3
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "devPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "dev_plan_id",
+        "causal",
+        "department_mission_ref",
+        "track",
+        "upstream_present",
+        "packages",
+        "assignments",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DEV_PLAN"
+        },
+        "dev_plan_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "track": {
+          "$ref": "#/$defs/track"
+        },
+        "upstream_present": {
+          "type": "boolean"
+        },
+        "upstream_missing": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "packages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "package",
+              "lead_worker",
+              "files",
+              "done"
+            ],
+            "properties": {
+              "package": {
+                "type": "string",
+                "minLength": 3
+              },
+              "lead_worker": {
+                "$ref": "#/$defs/workerId"
+              },
+              "files": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              },
+              "done": {
+                "type": "string",
+                "minLength": 10
+              }
+            }
+          }
+        },
+        "assignments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
+          "uniqueItems": true
+        },
+        "return_to": {
+          "const": "departamento-desenvolvimento"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "G3: sem decisao upstream o pacote nao abre; a ausencia e nomeada.",
+          "if": {
+            "properties": {
+              "upstream_present": {
+                "const": false
+              }
+            },
+            "required": [
+              "upstream_present"
+            ]
+          },
+          "then": {
+            "required": [
+              "upstream_missing"
+            ],
+            "properties": {
+              "upstream_missing": {
+                "minItems": 1
+              },
+              "assignments": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "devTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "capability",
+        "worker_id",
+        "wave",
+        "package",
+        "objective",
+        "return_to",
+        "forbidden_context",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DEV_TASK"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "wave": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "package": {
+          "type": "string",
+          "minLength": 3
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 15
+        },
+        "upstream_decision": {
+          "type": "string",
+          "minLength": 10
+        },
+        "return_to": {
+          "const": "departamento-desenvolvimento"
+        },
+        "forbidden_context": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 5
+          },
+          "contains": {
+            "type": "string",
+            "pattern": "nao (decide|inventa)"
+          },
+          "minContains": 1
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "JAVA_SPRING"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-java-e-spring"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "JAVAFX_DESKTOP"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-javafx-desktop"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "WEB_FRONTEND"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-web-frontend"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "TAURI_DESKTOP"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-tauri-desktop"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "MOBILE_FLUTTER"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-mobile-flutter"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "PERSISTENCIA_SQL"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-persistencia-e-sql"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "REVISAO_REFATORACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-revisao-e-refatoracao"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "TESTES_DEPURACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-testes-e-depuracao"
+              }
+            }
+          }
+        },
+        {
+          "comment": "ADR-012 §5: verificacao independente roda na onda 3.",
+          "if": {
+            "properties": {
+              "capability": {
+                "enum": [
+                  "REVISAO_REFATORACAO",
+                  "TESTES_DEPURACAO"
+                ]
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "wave": {
+                "const": 3
+              }
+            }
+          }
+        }
+      ]
+    },
+    "devReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "capability",
+        "worker_id",
+        "status",
+        "assumptions",
+        "ponytails",
+        "delegated_dependencies",
+        "pending",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DEV_RETURN"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "status": {
+          "$ref": "#/$defs/workerStatus"
+        },
+        "blocked_reason": {
+          "type": "string",
+          "minLength": 15
+        },
+        "generator_used": {
+          "type": "string",
+          "minLength": 2
+        },
+        "generator_absent_reason": {
+          "type": "string",
+          "minLength": 20
+        },
+        "artifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ladderDecision"
+          },
+          "uniqueItems": true
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/edgeCoverage"
+          },
+          "uniqueItems": true
+        },
+        "test_evidence": {
+          "$ref": "#/$defs/testEvidence"
+        },
+        "review_of_worker": {
+          "$ref": "#/$defs/workerId"
+        },
+        "fix_attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "root_cause": {
+          "type": "string",
+          "minLength": 15
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assumptionItem"
+          },
+          "uniqueItems": true
+        },
+        "ponytails": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ponytailItem"
+          },
+          "uniqueItems": true
+        },
+        "delegated_dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delegatedDependency"
+          },
+          "uniqueItems": true
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "return_to": {
+          "const": "departamento-desenvolvimento"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "JAVA_SPRING"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-java-e-spring"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "JAVAFX_DESKTOP"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-javafx-desktop"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "WEB_FRONTEND"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-web-frontend"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "TAURI_DESKTOP"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-tauri-desktop"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "MOBILE_FLUTTER"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-mobile-flutter"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "PERSISTENCIA_SQL"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-persistencia-e-sql"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "REVISAO_REFATORACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-revisao-e-refatoracao"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "TESTES_DEPURACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-testes-e-depuracao"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "BLOCKED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "blocked_reason"
+            ]
+          }
+        },
+        {
+          "comment": "G5: JAVA_SPRING declara o gerador que conduziu, ou por que nenhum se aplicava.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "JAVA_SPRING"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "artifacts",
+              "ladder"
+            ],
+            "properties": {
+              "ladder": {
+                "minItems": 1
+              },
+              "artifacts": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "G5: JAVAFX_DESKTOP declara o gerador que conduziu, ou por que nenhum se aplicava.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "JAVAFX_DESKTOP"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "artifacts",
+              "ladder"
+            ],
+            "properties": {
+              "ladder": {
+                "minItems": 1
+              },
+              "artifacts": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "G5: WEB_FRONTEND declara o gerador que conduziu, ou por que nenhum se aplicava.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "WEB_FRONTEND"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "artifacts",
+              "ladder"
+            ],
+            "properties": {
+              "ladder": {
+                "minItems": 1
+              },
+              "artifacts": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "G5: TAURI_DESKTOP declara o gerador que conduziu, ou por que nenhum se aplicava.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "TAURI_DESKTOP"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "artifacts",
+              "ladder"
+            ],
+            "properties": {
+              "ladder": {
+                "minItems": 1
+              },
+              "artifacts": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "G5: MOBILE_FLUTTER declara o gerador que conduziu, ou por que nenhum se aplicava.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "MOBILE_FLUTTER"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "artifacts",
+              "ladder"
+            ],
+            "properties": {
+              "ladder": {
+                "minItems": 1
+              },
+              "artifacts": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "G5: PERSISTENCIA_SQL declara o gerador que conduziu, ou por que nenhum se aplicava.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "PERSISTENCIA_SQL"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "artifacts",
+              "ladder"
+            ],
+            "properties": {
+              "ladder": {
+                "minItems": 1
+              },
+              "artifacts": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "Quem executa a bateria e o agente de testes, e a evidencia e dele.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "TESTES_DEPURACAO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "test_evidence",
+              "edges"
+            ],
+            "properties": {
+              "edges": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "Quem revisa declara de quem foi a saida revisada, e nunca a propria.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "REVISAO_REFATORACAO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "review_of_worker"
+            ],
+            "properties": {
+              "review_of_worker": {
+                "not": {
+                  "const": "agente-revisao-e-refatoracao"
+                }
+              }
+            }
+          }
+        },
+        {
+          "comment": "ADR-012 §5: quem implementa nao produz a propria evidencia de execucao.",
+          "if": {
+            "properties": {
+              "capability": {
+                "enum": [
+                  "JAVA_SPRING",
+                  "JAVAFX_DESKTOP",
+                  "WEB_FRONTEND",
+                  "TAURI_DESKTOP",
+                  "MOBILE_FLUTTER",
+                  "PERSISTENCIA_SQL"
+                ]
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "test_evidence"
+              ]
+            }
+          }
+        },
+        {
+          "comment": "Regra dos Tres: a terceira falha exige causa-raiz declarada.",
+          "if": {
+            "properties": {
+              "fix_attempts": {
+                "minimum": 3
+              }
+            },
+            "required": [
+              "fix_attempts"
+            ]
+          },
+          "then": {
+            "required": [
+              "root_cause",
+              "pending"
+            ],
+            "properties": {
+              "pending": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "devCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "reason",
+        "capability",
+        "worker_id",
+        "expected_contract",
+        "discovery_evidence",
+        "impact",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DEV_CAPABILITY_GAP"
+        },
+        "reason": {
+          "enum": [
+            "TRACK_SEM_AGENTE",
+            "DECISAO_UPSTREAM_AUSENTE",
+            "DEPENDENCIA_NOVA",
+            "CONFLITO_COM_DECISAO_ACEITA",
+            "FORA_DE_ESCOPO"
+          ]
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 10
+        },
+        "worker_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/workerId"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "expected_contract": {
+          "type": "string",
+          "minLength": 10
+        },
+        "discovery_evidence": {
+          "type": "string",
+          "minLength": 10
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "status": {
+          "const": "OPEN"
+        },
+        "owner": {
+          "const": "diretor-de-lentes"
+        }
+      }
+    },
+    "devLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "dev_ledger_id",
+        "causal",
+        "department_mission_ref",
+        "track",
+        "plan",
+        "assignments",
+        "returns_seen",
+        "edges",
+        "test_evidence",
+        "candidate_digest",
+        "assumptions",
+        "ponytails",
+        "delegated_dependencies",
+        "capability_gaps",
+        "evidence_refs",
+        "pending",
+        "entrega",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DEV_LEDGER"
+        },
+        "dev_ledger_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "track": {
+          "$ref": "#/$defs/track"
+        },
+        "plan": {
+          "$ref": "#/$defs/devPlan"
+        },
+        "assignments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
+          "uniqueItems": true
+        },
+        "returns_seen": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/edgeCoverage"
+          },
+          "uniqueItems": true
+        },
+        "test_evidence": {
+          "$ref": "#/$defs/testEvidence"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "reviewed": {
+          "type": "boolean"
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assumptionItem"
+          },
+          "uniqueItems": true
+        },
+        "ponytails": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ponytailItem"
+          },
+          "uniqueItems": true
+        },
+        "delegated_dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delegatedDependency"
+          },
+          "uniqueItems": true
+        },
+        "capability_gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/devCapabilityGap"
+          },
+          "uniqueItems": true
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "entrega": {
+          "enum": [
+            "ENTREGUE",
+            "INCOMPLETA",
+            "BLOQUEADA"
+          ]
+        },
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "recorded_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "G6 e G7: bordas cobertas, bateria sem FAIL, revisao feita e emissao registrada.",
+          "if": {
+            "properties": {
+              "entrega": {
+                "const": "ENTREGUE"
+              }
+            },
+            "required": [
+              "entrega"
+            ]
+          },
+          "then": {
+            "required": [
+              "reviewed"
+            ],
+            "properties": {
+              "edges": {
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "vazio": {
+                      "const": true
+                    },
+                    "limite": {
+                      "const": true
+                    },
+                    "erro": {
+                      "const": true
+                    }
+                  }
+                }
+              },
+              "test_evidence": {
+                "properties": {
+                  "fail": {
+                    "const": 0
+                  }
+                }
+              },
+              "reviewed": {
+                "const": true
+              },
+              "assignments": {
+                "minItems": 1
+              },
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "pending": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "comment": "Lacuna aberta fecha o ramo.",
+          "if": {
+            "properties": {
+              "capability_gaps": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "capability_gaps"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entrega": {
+                "const": "BLOQUEADA"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/devPlan"
+    },
+    {
+      "$ref": "#/$defs/devTask"
+    },
+    {
+      "$ref": "#/$defs/devReturn"
+    },
+    {
+      "$ref": "#/$defs/devCapabilityGap"
+    },
+    {
+      "$ref": "#/$defs/devLedger"
+    }
+  ]
+}

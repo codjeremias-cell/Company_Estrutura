@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Escolha de Persistência"
+  short_description: "Escolha de banco por evidência real"
+  default_prompt: "Use $agente-escolha-de-persistencia para decidir o motor de banco por evidência do padrão de acesso, declarar engine único dev=prod e, se poliglota, a fronteira e quem reconcilia — sem modelar entidades."

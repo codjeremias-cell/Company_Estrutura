@@ -1,0 +1,4 @@
+interface:
+  display_name: "Registrador de Documentação e Materiais"
+  short_description: "Grava documento, guia e ideia de backlog"
+  default_prompt: "Use $agente-documentacao-e-materiais somente por RECORD_TASK do departamento-registros, para gravar documento de produto pelo comportamento real, guia repetível e ideia ainda imatura."

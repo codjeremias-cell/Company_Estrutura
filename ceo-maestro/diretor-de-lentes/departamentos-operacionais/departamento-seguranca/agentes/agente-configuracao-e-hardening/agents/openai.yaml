@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analista de Configuração e Hardening"
+  short_description: "Baseline, ambiente e falha que não abre"
+  default_prompt: "Use $agente-configuracao-e-hardening somente por SECURITY_TASK do departamento-seguranca, para comparar a plataforma com o baseline citado — cloud, host, container, rede, IaC e CI/CD como ambiente — e provar que erro, timeout e fallback não ampliam acesso."

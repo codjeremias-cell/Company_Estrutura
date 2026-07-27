@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analista de Segurança de Aplicação"
+  short_description: "Código, API, cripto e segredo exposto"
+  default_prompt: "Use $agente-seguranca-de-aplicacao somente por SECURITY_TASK do departamento-seguranca, para verificar rota a rota a entrada não confiável, a codificação de saída e o material criptográfico, e descobrir segredo exposto — redigindo o valor e deixando o incidente com o irmão dono."

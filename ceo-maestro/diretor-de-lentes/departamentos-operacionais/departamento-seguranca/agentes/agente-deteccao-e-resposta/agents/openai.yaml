@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analista de Detecção e Resposta"
+  short_description: "Detecção, contenção e incidente de segredo"
+  default_prompt: "Use $agente-deteccao-e-resposta somente por SECURITY_TASK do departamento-seguranca, para ligar ameaça a evento, alerta e runbook e conduzir o incidente do segredo que outro descobriu — exigindo revogação, rotação e prova antes de qualquer fechamento."

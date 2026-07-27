@@ -1,0 +1,1639 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-inovacao-melhoria.schema.json",
+  "title": "Artefatos internos do Departamento de Inovação e Melhoria",
+  "oneOf": [
+    { "$ref": "#/$defs/innovationPlan" },
+    { "$ref": "#/$defs/innovationAssignment" },
+    { "$ref": "#/$defs/innovationAgentReturn" },
+    { "$ref": "#/$defs/innovationConsolidatedReport" },
+    { "$ref": "#/$defs/innovationRouteRejection" },
+    { "$ref": "#/$defs/innovationCapabilityGap" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 2000
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^(sha256:[a-f0-9]{64}|n/a)$"
+    },
+    "digestRequired": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "authenticatedRef": {
+      "type": "string",
+      "minLength": 75,
+      "maxLength": 240,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*@sha256:[a-f0-9]{64}$"
+    },
+    "stringList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/text" },
+      "uniqueItems": true
+    },
+    "refList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "agent": {
+      "type": "string",
+      "enum": [
+        "agente-descoberta-de-oportunidades",
+        "agente-experimentos-e-spikes",
+        "agente-melhoria-continua"
+      ]
+    },
+    "capability": {
+      "type": "string",
+      "enum": [
+        "OPPORTUNITY_DISCOVERY",
+        "EXPERIMENT_DESIGN",
+        "CONTINUOUS_IMPROVEMENT"
+      ]
+    },
+    "mode": { "type": "string", "enum": ["ATUA", "CONSULTA"] },
+    "toolIdentifier": {
+      "allOf": [
+        { "$ref": "#/$defs/identifier" },
+        {
+          "not": {
+            "pattern": "(?i)(deploy|release|publish|merge|commit|push|write|delete|drop|truncate|exec|shell|sudo|admin|migrat|rollout|install|mutat|provision|restart|scale|grant|revoke|produc|\\bprod\\b)"
+          }
+        }
+      ]
+    },
+    "causal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_digest": { "$ref": "#/$defs/digestRequired" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "round": { "type": "integer", "minimum": 1 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "producer": {
+          "type": "string",
+          "enum": [
+            "departamento-inovacao-melhoria",
+            "agente-descoberta-de-oportunidades",
+            "agente-experimentos-e-spikes",
+            "agente-melhoria-continua"
+          ]
+        },
+        "producer_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "producer_digest": { "$ref": "#/$defs/digestRequired" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_policy",
+        "environment",
+        "production_access",
+        "allowed_tools",
+        "allowed_resources",
+        "expires_at"
+      ],
+      "properties": {
+        "default_policy": { "const": "deny" },
+        "environment": {
+          "type": "string",
+          "enum": ["READ_ONLY", "ISOLATED_SANDBOX"]
+        },
+        "production_access": { "type": "boolean", "const": false },
+        "allowed_tools": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/toolIdentifier" },
+          "uniqueItems": true
+        },
+        "allowed_resources": { "$ref": "#/$defs/refList" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "authenticatedEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_ref",
+        "producer_ref",
+        "producer_digest",
+        "authorized_by",
+        "observed_at"
+      ],
+      "properties": {
+        "evidence_ref": { "$ref": "#/$defs/identifier" },
+        "producer_ref": {
+          "type": "string",
+          "enum": [
+            "departamento-desenvolvimento",
+            "departamento-qa-usabilidade",
+            "departamento-arquitetura-software",
+            "departamento-arquitetura-dados",
+            "departamento-seguranca",
+            "departamento-auditoria-responsabilidades",
+            "departamento-negocios"
+          ]
+        },
+        "producer_digest": { "$ref": "#/$defs/digestRequired" },
+        "authorized_by": { "const": "diretor-de-lentes" },
+        "observed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "pending": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pending_id",
+        "description",
+        "impact",
+        "owner",
+        "resume_when",
+        "blocking"
+      ],
+      "properties": {
+        "pending_id": { "$ref": "#/$defs/identifier" },
+        "description": { "$ref": "#/$defs/text" },
+        "impact": { "$ref": "#/$defs/text" },
+        "owner": { "$ref": "#/$defs/identifier" },
+        "resume_when": { "$ref": "#/$defs/text" },
+        "blocking": { "type": "boolean" }
+      }
+    },
+    "matrixAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorization_ref",
+        "authorization_digest",
+        "granted_by",
+        "scope",
+        "expires_at"
+      ],
+      "properties": {
+        "authorization_ref": { "$ref": "#/$defs/identifier" },
+        "authorization_digest": { "$ref": "#/$defs/digestRequired" },
+        "granted_by": { "const": "ceo-maestro" },
+        "scope": { "$ref": "#/$defs/text" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "executionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "need",
+        "recommended_recipient",
+        "route",
+        "reason",
+        "evidence_refs",
+        "status"
+      ],
+      "properties": {
+        "request_id": { "$ref": "#/$defs/identifier" },
+        "need": {
+          "type": "string",
+          "enum": [
+            "IMPLEMENTATION",
+            "QA_EVIDENCE",
+            "ARCHITECTURE",
+            "SECURITY",
+            "COMPLIANCE",
+            "BUSINESS",
+            "JUDGMENT"
+          ]
+        },
+        "recommended_recipient": {
+          "type": "string",
+          "enum": [
+            "departamento-desenvolvimento",
+            "departamento-qa-usabilidade",
+            "departamento-arquitetura-software",
+            "departamento-arquitetura-dados",
+            "departamento-seguranca",
+            "departamento-auditoria-responsabilidades",
+            "departamento-negocios",
+            "departamento-juizes"
+          ]
+        },
+        "route": {
+          "$comment": "Ordem é travada em request_route_errors por igualdade exata: o motor compartilhado não implementa prefixItems. uniqueItems fecha a rota repetida já aqui.",
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["departamento-inovacao-melhoria", "diretor-de-lentes"]
+          }
+        },
+        "reason": { "$ref": "#/$defs/text" },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "matrix_authorization": { "$ref": "#/$defs/matrixAuthorization" },
+        "status": { "const": "RECOMMENDED_NOT_SENT" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "recommended_recipient": { "const": "departamento-negocios" }
+            },
+            "required": ["recommended_recipient"]
+          },
+          "then": { "required": ["matrix_authorization"] }
+        },
+        {
+          "if": {
+            "properties": { "need": { "const": "BUSINESS" } },
+            "required": ["need"]
+          },
+          "then": {
+            "properties": {
+              "recommended_recipient": { "const": "departamento-negocios" }
+            },
+            "required": ["matrix_authorization"]
+          }
+        }
+      ]
+    },
+    "rosterItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent", "capability", "selected", "reason"],
+      "properties": {
+        "agent": { "$ref": "#/$defs/agent" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "selected": { "type": "boolean" },
+        "reason": { "$ref": "#/$defs/text" }
+      }
+    },
+    "innovationPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "plan_id",
+        "causal",
+        "department_mission_ref",
+        "department_mission_digest",
+        "mode",
+        "objective",
+        "target_ref",
+        "candidate_digest",
+        "scope_in",
+        "scope_out",
+        "binding_decisions",
+        "agent_roster",
+        "dependencies",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "INNOVATION_PLAN" },
+        "plan_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causal" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "department_mission_digest": { "$ref": "#/$defs/digestRequired" },
+        "mode": { "$ref": "#/$defs/mode" },
+        "objective": { "$ref": "#/$defs/text" },
+        "target_ref": { "$ref": "#/$defs/identifier" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "scope_in": { "$ref": "#/$defs/stringList" },
+        "scope_out": { "$ref": "#/$defs/stringList" },
+        "binding_decisions": { "$ref": "#/$defs/stringList" },
+        "agent_roster": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/rosterItem" },
+          "contains": {
+            "type": "object",
+            "properties": { "selected": { "const": true } },
+            "required": ["selected"]
+          },
+          "minContains": 1
+        },
+        "dependencies": { "$ref": "#/$defs/refList" },
+        "stop_when": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "return_to": { "const": "diretor-de-lentes" },
+        "issued_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "innovationAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "assignment_id",
+        "causal",
+        "department_mission_ref",
+        "department_mission_digest",
+        "plan_ref",
+        "plan_digest",
+        "mode",
+        "assigned_agent",
+        "capability",
+        "objective",
+        "target_ref",
+        "candidate_digest",
+        "scope_in",
+        "scope_out",
+        "inputs",
+        "deliverables",
+        "done",
+        "required_evidence",
+        "depends_on",
+        "decision_authority",
+        "permissions",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "INNOVATION_ASSIGNMENT" },
+        "assignment_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causal" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "department_mission_digest": { "$ref": "#/$defs/digestRequired" },
+        "plan_ref": { "$ref": "#/$defs/identifier" },
+        "plan_digest": { "$ref": "#/$defs/digestRequired" },
+        "mode": { "$ref": "#/$defs/mode" },
+        "assigned_agent": { "$ref": "#/$defs/agent" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "objective": { "$ref": "#/$defs/text" },
+        "target_ref": { "$ref": "#/$defs/identifier" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "scope_in": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "scope_out": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "inputs": { "$ref": "#/$defs/refList" },
+        "deliverables": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "done": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "required_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "depends_on": { "$ref": "#/$defs/refList" },
+        "decision_authority": { "$ref": "#/$defs/stringList" },
+        "permissions": { "$ref": "#/$defs/permissions" },
+        "stop_when": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "return_to": { "const": "departamento-inovacao-melhoria" },
+        "issued_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "mode": { "const": "CONSULTA" } },
+            "required": ["mode"]
+          },
+          "then": {
+            "properties": {
+              "permissions": {
+                "properties": {
+                  "environment": { "const": "READ_ONLY" }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "metric", "value", "method", "source_ref", "recorded_at", "limitations"],
+      "properties": {
+        "status": { "type": "string", "enum": ["MEASURED", "MEASUREMENT_REQUIRED"] },
+        "metric": { "$ref": "#/$defs/text" },
+        "value": { "$ref": "#/$defs/text" },
+        "method": { "$ref": "#/$defs/text" },
+        "source_ref": { "$ref": "#/$defs/identifier" },
+        "recorded_at": { "type": "string", "format": "date-time" },
+        "limitations": { "$ref": "#/$defs/stringList" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "MEASURED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "source_ref": {
+                "not": { "const": "n/a" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "opportunity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opportunity_id",
+        "job_when",
+        "job_want",
+        "job_so_that",
+        "pain_or_waste",
+        "location",
+        "affected_users",
+        "observable_outcome",
+        "facts",
+        "evidence_refs",
+        "inferences",
+        "assumptions",
+        "pending",
+        "baseline",
+        "classification",
+        "base_opportunity_ref",
+        "risk_of_inaction"
+      ],
+      "properties": {
+        "opportunity_id": { "$ref": "#/$defs/identifier" },
+        "job_when": { "$ref": "#/$defs/text" },
+        "job_want": { "$ref": "#/$defs/text" },
+        "job_so_that": { "$ref": "#/$defs/text" },
+        "pain_or_waste": { "$ref": "#/$defs/text" },
+        "location": { "$ref": "#/$defs/text" },
+        "affected_users": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "observable_outcome": { "$ref": "#/$defs/text" },
+        "facts": { "$ref": "#/$defs/stringList" },
+        "evidence_refs": { "$ref": "#/$defs/refList" },
+        "inferences": { "$ref": "#/$defs/stringList" },
+        "assumptions": { "$ref": "#/$defs/stringList" },
+        "pending": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pending" }
+        },
+        "baseline": { "$ref": "#/$defs/baseline" },
+        "classification": {
+          "type": "string",
+          "enum": ["NEW", "EXTENSION", "DUPLICATE"]
+        },
+        "base_opportunity_ref": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "risk_of_inaction": { "$ref": "#/$defs/text" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "classification": { "const": "NEW" } },
+            "required": ["classification"]
+          },
+          "then": {
+            "properties": {
+              "base_opportunity_ref": { "const": "n/a" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "baseline": {
+                "properties": { "status": { "const": "MEASURED" } },
+                "required": ["status"]
+              }
+            },
+            "required": ["baseline"]
+          },
+          "then": {
+            "properties": {
+              "facts": { "minItems": 1 },
+              "evidence_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "saturationRound": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "round",
+        "candidate_count",
+        "net_new_count",
+        "opportunity_refs",
+        "search_scope",
+        "sources_checked",
+        "queries_or_methods",
+        "dedupe_method"
+      ],
+      "properties": {
+        "round": { "type": "integer", "minimum": 1 },
+        "candidate_count": { "type": "integer", "minimum": 0 },
+        "net_new_count": { "type": "integer", "minimum": 0 },
+        "opportunity_refs": { "$ref": "#/$defs/refList" },
+        "search_scope": { "$ref": "#/$defs/text" },
+        "sources_checked": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "queries_or_methods": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "dedupe_method": { "$ref": "#/$defs/text" }
+      }
+    },
+    "discoveryPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deliverable_type", "opportunities", "saturation"],
+      "properties": {
+        "deliverable_type": { "const": "OPPORTUNITY_BRIEF" },
+        "opportunities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opportunity" }
+        },
+        "saturation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rounds", "declared"],
+          "properties": {
+            "rounds": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/saturationRound" }
+            },
+            "declared": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "alternative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alternative_id",
+        "description",
+        "impact",
+        "effort",
+        "risk",
+        "basis_or_assumption",
+        "reversible",
+        "trade_offs"
+      ],
+      "properties": {
+        "alternative_id": { "$ref": "#/$defs/identifier" },
+        "description": { "$ref": "#/$defs/text" },
+        "impact": { "$ref": "#/$defs/text" },
+        "effort": { "$ref": "#/$defs/text" },
+        "risk": { "$ref": "#/$defs/text" },
+        "basis_or_assumption": { "$ref": "#/$defs/text" },
+        "reversible": { "type": "boolean" },
+        "trade_offs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "baseline", "target", "window", "method", "source_ref"],
+      "properties": {
+        "name": { "$ref": "#/$defs/text" },
+        "baseline": { "$ref": "#/$defs/text" },
+        "target": { "$ref": "#/$defs/text" },
+        "window": { "$ref": "#/$defs/text" },
+        "method": { "$ref": "#/$defs/text" },
+        "source_ref": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "experiment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "experiment_id",
+        "opportunity_ref",
+        "subject_kind",
+        "alternatives",
+        "hypothesis",
+        "metric",
+        "protocol",
+        "thresholds",
+        "vetoes",
+        "decision_rule",
+        "smallest_test",
+        "expected_raw_evidence",
+        "environment",
+        "data_policy",
+        "cleanup",
+        "rollback",
+        "pdca_check",
+        "owner",
+        "spike_questions",
+        "technology_evaluation"
+      ],
+      "properties": {
+        "experiment_id": { "$ref": "#/$defs/identifier" },
+        "opportunity_ref": { "$ref": "#/$defs/identifier" },
+        "subject_kind": {
+          "type": "string",
+          "enum": ["GENERAL", "TECHNOLOGY", "SPIKE"]
+        },
+        "alternatives": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/alternative" }
+        },
+        "hypothesis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["statement", "change", "expected_effect", "timebox"],
+          "properties": {
+            "statement": { "$ref": "#/$defs/text" },
+            "change": { "$ref": "#/$defs/text" },
+            "expected_effect": { "$ref": "#/$defs/text" },
+            "timebox": { "$ref": "#/$defs/text" }
+          }
+        },
+        "metric": { "$ref": "#/$defs/metric" },
+        "protocol": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["given", "when", "then"],
+          "properties": {
+            "given": { "$ref": "#/$defs/text" },
+            "when": { "$ref": "#/$defs/text" },
+            "then": { "$ref": "#/$defs/text" }
+          }
+        },
+        "thresholds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "vetoes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "decision_rule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["supported_when", "refuted_when", "inconclusive_when"],
+          "properties": {
+            "supported_when": { "$ref": "#/$defs/text" },
+            "refuted_when": { "$ref": "#/$defs/text" },
+            "inconclusive_when": { "$ref": "#/$defs/text" }
+          }
+        },
+        "smallest_test": { "$ref": "#/$defs/text" },
+        "expected_raw_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "environment": { "$ref": "#/$defs/text" },
+        "data_policy": { "$ref": "#/$defs/text" },
+        "cleanup": { "$ref": "#/$defs/text" },
+        "rollback": { "$ref": "#/$defs/text" },
+        "pdca_check": { "$ref": "#/$defs/text" },
+        "owner": { "$ref": "#/$defs/identifier" },
+        "spike_questions": {
+          "type": "array",
+          "maxItems": 5,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "technology_evaluation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applicable",
+            "maturity_stability",
+            "community_support",
+            "maintenance_cost",
+            "lock_in_exit",
+            "current_baseline_comparison",
+            "poc",
+            "source_refs",
+            "disposition"
+          ],
+          "properties": {
+            "applicable": { "type": "boolean" },
+            "maturity_stability": { "$ref": "#/$defs/text" },
+            "community_support": { "$ref": "#/$defs/text" },
+            "maintenance_cost": { "$ref": "#/$defs/text" },
+            "lock_in_exit": { "$ref": "#/$defs/text" },
+            "current_baseline_comparison": { "$ref": "#/$defs/text" },
+            "poc": { "$ref": "#/$defs/text" },
+            "source_refs": { "$ref": "#/$defs/refList" },
+            "disposition": {
+              "type": "string",
+              "enum": ["ADOPT", "REJECT", "DEFER_FOR_EVIDENCE", "NOT_APPLICABLE"]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "disposition": { "const": "ADOPT" } },
+                "required": ["disposition"]
+              },
+              "then": {
+                "properties": {
+                  "applicable": { "const": true },
+                  "source_refs": { "minItems": 1 }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "applicable": { "const": false } },
+                "required": ["applicable"]
+              },
+              "then": {
+                "properties": {
+                  "disposition": { "const": "NOT_APPLICABLE" },
+                  "source_refs": { "maxItems": 0 }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "subject_kind": { "const": "SPIKE" } },
+            "required": ["subject_kind"]
+          },
+          "then": {
+            "properties": { "spike_questions": { "minItems": 2 } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "subject_kind": { "const": "TECHNOLOGY" } },
+            "required": ["subject_kind"]
+          },
+          "then": {
+            "properties": {
+              "spike_questions": { "maxItems": 0 },
+              "technology_evaluation": {
+                "properties": {
+                  "applicable": { "const": true },
+                  "source_refs": { "minItems": 1 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "subject_kind": { "const": "GENERAL" } },
+            "required": ["subject_kind"]
+          },
+          "then": {
+            "properties": {
+              "spike_questions": { "maxItems": 0 },
+              "technology_evaluation": {
+                "properties": { "applicable": { "const": false } }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "experimentPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deliverable_type", "experiments", "evidence_reconciliation"],
+      "properties": {
+        "deliverable_type": { "const": "EXPERIMENT_DOSSIER" },
+        "experiments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/experiment" }
+        },
+        "evidence_reconciliation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "performed",
+            "external_producer_ref",
+            "external_evidence",
+            "conclusion",
+            "limitations"
+          ],
+          "properties": {
+            "performed": { "type": "boolean" },
+            "external_producer_ref": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 160
+            },
+            "external_evidence": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/authenticatedEvidence" }
+            },
+            "conclusion": {
+              "type": "string",
+              "enum": [
+                "HYPOTHESIS_SUPPORTED",
+                "HYPOTHESIS_REFUTED",
+                "INCONCLUSIVE",
+                "NOT_PERFORMED"
+              ]
+            },
+            "limitations": { "$ref": "#/$defs/stringList" }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "performed": { "const": false } },
+                "required": ["performed"]
+              },
+              "then": {
+                "properties": {
+                  "conclusion": { "const": "NOT_PERFORMED" },
+                  "external_evidence": { "maxItems": 0 },
+                  "external_producer_ref": { "const": "n/a" }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "performed": { "const": true } },
+                "required": ["performed"]
+              },
+              "then": {
+                "properties": {
+                  "conclusion": { "not": { "const": "NOT_PERFORMED" } },
+                  "external_evidence": { "minItems": 1 },
+                  "external_producer_ref": { "not": { "const": "n/a" } }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "improvementReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "improvement_id",
+        "opportunity_ref",
+        "intake_basis",
+        "operational_evidence",
+        "waste_or_debt",
+        "source_ref",
+        "current_flow",
+        "proposed_future_flow",
+        "priority",
+        "metric",
+        "pdca",
+        "kaizen_action",
+        "rollback",
+        "scaffolds_to_review"
+      ],
+      "properties": {
+        "improvement_id": { "$ref": "#/$defs/identifier" },
+        "opportunity_ref": { "$ref": "#/$defs/identifier" },
+        "intake_basis": {
+          "type": "string",
+          "enum": ["FRAMED_OPPORTUNITY", "OPERATIONAL_EVIDENCE"]
+        },
+        "operational_evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/authenticatedEvidence" }
+        },
+        "waste_or_debt": { "$ref": "#/$defs/text" },
+        "source_ref": { "$ref": "#/$defs/identifier" },
+        "current_flow": { "$ref": "#/$defs/text" },
+        "proposed_future_flow": { "$ref": "#/$defs/text" },
+        "priority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["impact", "effort", "risk", "basis_or_assumption"],
+          "properties": {
+            "impact": { "$ref": "#/$defs/text" },
+            "effort": { "$ref": "#/$defs/text" },
+            "risk": { "$ref": "#/$defs/text" },
+            "basis_or_assumption": { "$ref": "#/$defs/text" }
+          }
+        },
+        "metric": { "$ref": "#/$defs/metric" },
+        "pdca": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "plan",
+            "do_external_evidence",
+            "check_event",
+            "check_observed",
+            "check_limitations",
+            "act"
+          ],
+          "properties": {
+            "plan": { "$ref": "#/$defs/text" },
+            "do_external_evidence": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/authenticatedEvidence" }
+            },
+            "check_event": { "$ref": "#/$defs/text" },
+            "check_observed": { "$ref": "#/$defs/text" },
+            "check_limitations": { "$ref": "#/$defs/stringList" },
+            "act": {
+              "type": "string",
+              "enum": [
+                "STANDARDIZE",
+                "ADJUST",
+                "ROLLBACK",
+                "NEXT_CYCLE",
+                "INSUFFICIENT_EVIDENCE"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "act": { "const": "INSUFFICIENT_EVIDENCE" }
+                },
+                "required": ["act"]
+              },
+              "then": {
+                "properties": {
+                  "check_observed": { "const": "NAO_OBSERVADO" }
+                }
+              },
+              "else": {
+                "properties": {
+                  "do_external_evidence": { "minItems": 1 },
+                  "check_observed": { "not": { "const": "NAO_OBSERVADO" } }
+                }
+              }
+            }
+          ]
+        },
+        "kaizen_action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["action", "owner", "due_or_event", "acceptance", "reversible"],
+          "properties": {
+            "action": { "$ref": "#/$defs/text" },
+            "owner": { "$ref": "#/$defs/identifier" },
+            "due_or_event": { "$ref": "#/$defs/text" },
+            "acceptance": { "$ref": "#/$defs/text" },
+            "reversible": { "type": "boolean", "const": true }
+          }
+        },
+        "rollback": { "$ref": "#/$defs/text" },
+        "scaffolds_to_review": { "$ref": "#/$defs/stringList" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "intake_basis": { "const": "OPERATIONAL_EVIDENCE" }
+            },
+            "required": ["intake_basis"]
+          },
+          "then": {
+            "properties": { "operational_evidence": { "minItems": 1 } }
+          },
+          "else": {
+            "properties": { "operational_evidence": { "maxItems": 0 } }
+          }
+        }
+      ]
+    },
+    "improvementPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deliverable_type", "reports"],
+      "properties": {
+        "deliverable_type": { "const": "CONTINUOUS_IMPROVEMENT_REPORT" },
+        "reports": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/improvementReport" }
+        }
+      }
+    },
+    "innovationAgentReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "agent_return_id",
+        "causal",
+        "department_mission_ref",
+        "department_mission_digest",
+        "assignment_ref",
+        "assignment_digest",
+        "target_ref",
+        "mode",
+        "producer_agent",
+        "capability",
+        "status",
+        "deliverables",
+        "evidence_refs",
+        "claims_unverified",
+        "assumptions",
+        "risks",
+        "pending",
+        "execution_requests",
+        "payload",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "INNOVATION_AGENT_RETURN" },
+        "agent_return_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causal" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "department_mission_digest": { "$ref": "#/$defs/digestRequired" },
+        "assignment_ref": { "$ref": "#/$defs/identifier" },
+        "assignment_digest": { "$ref": "#/$defs/digestRequired" },
+        "target_ref": { "$ref": "#/$defs/identifier" },
+        "mode": { "$ref": "#/$defs/mode" },
+        "producer_agent": { "$ref": "#/$defs/agent" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "status": {
+          "type": "string",
+          "enum": ["COMPLETED", "PARTIAL", "BLOCKED", "FAILED", "NONCOMPLIANT"]
+        },
+        "deliverables": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "evidence_refs": { "$ref": "#/$defs/refList" },
+        "claims_unverified": { "$ref": "#/$defs/stringList" },
+        "assumptions": { "$ref": "#/$defs/stringList" },
+        "risks": { "$ref": "#/$defs/stringList" },
+        "pending": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pending" }
+        },
+        "execution_requests": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/executionRequest" }
+        },
+        "payload": {
+          "oneOf": [
+            { "$ref": "#/$defs/discoveryPayload" },
+            { "$ref": "#/$defs/experimentPayload" },
+            { "$ref": "#/$defs/improvementPayload" }
+          ]
+        },
+        "returned_to": { "const": "departamento-inovacao-melhoria" },
+        "returned_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "capability": { "const": "OPPORTUNITY_DISCOVERY" }
+            },
+            "required": ["capability"]
+          },
+          "then": {
+            "properties": {
+              "producer_agent": { "const": "agente-descoberta-de-oportunidades" },
+              "payload": { "$ref": "#/$defs/discoveryPayload" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": { "const": "EXPERIMENT_DESIGN" }
+            },
+            "required": ["capability"]
+          },
+          "then": {
+            "properties": {
+              "producer_agent": { "const": "agente-experimentos-e-spikes" },
+              "payload": { "$ref": "#/$defs/experimentPayload" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": { "const": "CONTINUOUS_IMPROVEMENT" }
+            },
+            "required": ["capability"]
+          },
+          "then": {
+            "properties": {
+              "producer_agent": { "const": "agente-melhoria-continua" },
+              "payload": { "$ref": "#/$defs/improvementPayload" }
+            }
+          }
+        }
+      ]
+    },
+    "gateChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "job",
+        "pain_location",
+        "baseline",
+        "hypothesis",
+        "metric_target_window",
+        "two_alternatives",
+        "smallest_test",
+        "owner",
+        "rollback",
+        "pdca_check",
+        "evidence_dependencies_vetoes"
+      ],
+      "properties": {
+        "job": { "type": "boolean" },
+        "pain_location": { "type": "boolean" },
+        "baseline": { "type": "boolean" },
+        "hypothesis": { "type": "boolean" },
+        "metric_target_window": { "type": "boolean" },
+        "two_alternatives": { "type": "boolean" },
+        "smallest_test": { "type": "boolean" },
+        "owner": { "type": "boolean" },
+        "rollback": { "type": "boolean" },
+        "pdca_check": { "type": "boolean" },
+        "evidence_dependencies_vetoes": { "type": "boolean" }
+      }
+    },
+    "portfolioItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "initiative_id",
+        "opportunity_ref",
+        "state",
+        "priority_band",
+        "gate_checks",
+        "gate_source_refs",
+        "blocking_pending_refs",
+        "priority_basis",
+        "artifact_refs",
+        "evidence_refs",
+        "next_event"
+      ],
+      "properties": {
+        "initiative_id": { "$ref": "#/$defs/identifier" },
+        "opportunity_ref": { "$ref": "#/$defs/identifier" },
+        "state": {
+          "type": "string",
+          "enum": [
+            "CAPTURED",
+            "FRAMED",
+            "EVIDENCE_PENDING",
+            "READY_FOR_EXPERIMENT",
+            "IN_EXPERIMENT",
+            "IN_MEASUREMENT",
+            "LEARNED",
+            "DISCARDED",
+            "BLOCKED"
+          ]
+        },
+        "priority_band": {
+          "type": "string",
+          "enum": ["NOW", "NEXT", "LATER", "BLOCKED"]
+        },
+        "gate_checks": { "$ref": "#/$defs/gateChecks" },
+        "gate_source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "blocking_pending_refs": { "$ref": "#/$defs/refList" },
+        "priority_basis": { "$ref": "#/$defs/text" },
+        "artifact_refs": { "$ref": "#/$defs/refList" },
+        "evidence_refs": { "$ref": "#/$defs/refList" },
+        "next_event": { "$ref": "#/$defs/text" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "state": { "const": "BLOCKED" } },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "priority_band": { "const": "BLOCKED" },
+              "blocking_pending_refs": { "minItems": 1 }
+            }
+          },
+          "else": {
+            "properties": {
+              "priority_band": { "not": { "const": "BLOCKED" } }
+            }
+          }
+        }
+      ]
+    },
+    "zeroTestSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pass", "fail", "skip", "skip_reasons", "critical_fail"],
+      "properties": {
+        "pass": { "type": "integer", "const": 0 },
+        "fail": { "type": "integer", "const": 0 },
+        "skip": { "type": "integer", "const": 0 },
+        "skip_reasons": {
+          "type": "array",
+          "maxItems": 0,
+          "items": { "$ref": "#/$defs/text" }
+        },
+        "critical_fail": { "type": "boolean", "const": false }
+      }
+    },
+    "innovationConsolidatedReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "report_id",
+        "causal",
+        "department_mission_ref",
+        "department_mission_digest",
+        "plan_ref",
+        "plan_digest",
+        "mode",
+        "target_ref",
+        "candidate_digest",
+        "accepted_assignment_refs",
+        "accepted_return_refs",
+        "portfolio",
+        "artifact_refs",
+        "evidence_refs",
+        "claims_unverified",
+        "assumptions",
+        "risks",
+        "pending",
+        "dissent_refs",
+        "execution_requests",
+        "skill_evolution_recommendations",
+        "test_summary",
+        "technical_recommendation",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "INNOVATION_CONSOLIDATED_REPORT" },
+        "report_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causal" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "department_mission_digest": { "$ref": "#/$defs/digestRequired" },
+        "plan_ref": { "$ref": "#/$defs/identifier" },
+        "plan_digest": { "$ref": "#/$defs/digestRequired" },
+        "mode": { "$ref": "#/$defs/mode" },
+        "target_ref": { "$ref": "#/$defs/identifier" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "accepted_assignment_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/authenticatedRef" },
+          "uniqueItems": true
+        },
+        "accepted_return_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/authenticatedRef" },
+          "uniqueItems": true
+        },
+        "portfolio": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/portfolioItem" }
+        },
+        "artifact_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "evidence_refs": { "$ref": "#/$defs/refList" },
+        "claims_unverified": { "$ref": "#/$defs/stringList" },
+        "assumptions": { "$ref": "#/$defs/stringList" },
+        "risks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "pending": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pending" }
+        },
+        "dissent_refs": { "$ref": "#/$defs/refList" },
+        "execution_requests": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/executionRequest" }
+        },
+        "skill_evolution_recommendations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "recommendation_id",
+              "skill_ref",
+              "observed_gap",
+              "evidence_refs",
+              "route",
+              "status"
+            ],
+            "properties": {
+              "recommendation_id": { "$ref": "#/$defs/identifier" },
+              "skill_ref": { "$ref": "#/$defs/identifier" },
+              "observed_gap": { "$ref": "#/$defs/text" },
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "$ref": "#/$defs/identifier" },
+                "uniqueItems": true
+              },
+              "route": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "departamento-inovacao-melhoria",
+                    "diretor-de-lentes",
+                    "ceo-maestro"
+                  ]
+                }
+              },
+              "status": { "const": "RECOMMENDED_TO_CEO_NOT_SENT" }
+            }
+          }
+        },
+        "test_summary": { "$ref": "#/$defs/zeroTestSummary" },
+        "technical_recommendation": { "$ref": "#/$defs/text" },
+        "returned_to": { "const": "diretor-de-lentes" },
+        "returned_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "innovationRouteRejection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "rejection_id",
+        "causal",
+        "code",
+        "observed_sender",
+        "expected_route",
+        "violations",
+        "prevented_effect",
+        "resume_when",
+        "returned_to",
+        "detected_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "INNOVATION_ROUTE_REJECTION" },
+        "rejection_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causal" },
+        "code": {
+          "type": "string",
+          "enum": [
+            "BLOCKED_BYPASS_ATTEMPT",
+            "INVALID_ROUTE",
+            "RECIPIENT_MISMATCH",
+            "CONTRACT_MISMATCH",
+            "DIGEST_MISMATCH",
+            "INSUFFICIENT_AUTHORITY",
+            "UNTRUSTED_EMBEDDED_INSTRUCTION"
+          ]
+        },
+        "observed_sender": { "$ref": "#/$defs/identifier" },
+        "expected_route": { "$ref": "#/$defs/text" },
+        "violations": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "prevented_effect": { "$ref": "#/$defs/text" },
+        "resume_when": { "$ref": "#/$defs/text" },
+        "returned_to": { "const": "diretor-de-lentes" },
+        "detected_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "innovationCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "gap_id",
+        "causal",
+        "required_capability",
+        "expected_agent",
+        "search_sources",
+        "queries_or_ids_checked",
+        "negative_evidence",
+        "blocked_scope",
+        "impact",
+        "reversible_planning_allowed",
+        "owner",
+        "resume_when",
+        "status",
+        "returned_to",
+        "detected_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "INNOVATION_CAPABILITY_GAP" },
+        "gap_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causal" },
+        "required_capability": { "$ref": "#/$defs/capability" },
+        "expected_agent": { "$ref": "#/$defs/agent" },
+        "search_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "queries_or_ids_checked": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "negative_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "blocked_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/text" },
+          "uniqueItems": true
+        },
+        "impact": { "$ref": "#/$defs/text" },
+        "reversible_planning_allowed": { "type": "boolean" },
+        "owner": { "const": "diretor-de-lentes" },
+        "resume_when": { "$ref": "#/$defs/text" },
+        "status": { "const": "OPEN" },
+        "returned_to": { "const": "diretor-de-lentes" },
+        "detected_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "required_capability": { "const": "OPPORTUNITY_DISCOVERY" }
+            },
+            "required": ["required_capability"]
+          },
+          "then": {
+            "properties": {
+              "expected_agent": { "const": "agente-descoberta-de-oportunidades" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "required_capability": { "const": "EXPERIMENT_DESIGN" }
+            },
+            "required": ["required_capability"]
+          },
+          "then": {
+            "properties": {
+              "expected_agent": { "const": "agente-experimentos-e-spikes" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "required_capability": { "const": "CONTINUOUS_IMPROVEMENT" }
+            },
+            "required": ["required_capability"]
+          },
+          "then": {
+            "properties": {
+              "expected_agent": { "const": "agente-melhoria-continua" }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

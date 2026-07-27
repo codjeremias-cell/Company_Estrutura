@@ -1,0 +1,5 @@
+interface:
+  display_name: "Departamento de QA e Usabilidade"
+  short_description: "Orquestra qualidade, usabilidade e evidências"
+  default_prompt: "Use $departamento-qa-usabilidade para planejar, delegar e consolidar a validação de qualidade desta entrega."
+

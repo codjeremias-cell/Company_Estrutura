@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Auditoria e Responsabilidades"
+  short_description: "Prova conformidade; a nota é dos Juízes"
+  default_prompt: "Use $departamento-auditoria-responsabilidades para auditar a entrega nas dez dimensões com as três capacidades, consolidar pelo estado mais grave e devolver ao Diretor a prova de conformidade com violações, ressalvas e donos."

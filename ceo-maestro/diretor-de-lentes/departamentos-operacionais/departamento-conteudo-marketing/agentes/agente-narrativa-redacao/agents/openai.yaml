@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Narrativa e Redação"
+  short_description: "Cria narrativas e conteúdo editorial"
+  default_prompt: "Use $agente-narrativa-redacao para redigir os ativos editoriais desta atribuição."
+

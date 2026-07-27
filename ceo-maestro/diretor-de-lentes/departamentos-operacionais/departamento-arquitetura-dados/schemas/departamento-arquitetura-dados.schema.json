@@ -1,0 +1,1715 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "departamento-arquitetura-dados.schema.json",
+  "title": "Artefatos internos do Departamento de Arquitetura de Dados",
+  "description": "Envelopes internos. O DEPARTMENT_RETURN entregue ao Diretor pertence ao schema do diretor-de-lentes e e validado la. Aqui nao existe campo de nota (ADR-002), de codigo (ADR-008 §6) nem de arquitetura macro (ADR-008 §5).",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "uniqueItems": true
+    },
+    "capability": {
+      "enum": [
+        "PERGUNTAS_VOLUMETRIA",
+        "ESCOLHA_PERSISTENCIA",
+        "MODELO_GRAO",
+        "EVOLUCAO_MIGRACAO",
+        "ESCALA_ACESSO",
+        "CONTRATOS_INTEGRIDADE"
+      ]
+    },
+    "workerId": {
+      "enum": [
+        "agente-perguntas-e-volumetria",
+        "agente-escolha-de-persistencia",
+        "agente-modelo-e-grao",
+        "agente-evolucao-e-migracao",
+        "agente-escala-e-acesso",
+        "agente-contratos-e-integridade"
+      ]
+    },
+    "workerStatus": {
+      "enum": [
+        "COMPLETED",
+        "BLOCKED",
+        "SEM_RETORNO",
+        "FALHO"
+      ]
+    },
+    "delegationTarget": {
+      "enum": [
+        "departamento-desenvolvimento",
+        "departamento-seguranca",
+        "departamento-arquitetura-software",
+        "departamento-qa-usabilidade"
+      ]
+    },
+    "closureItem": {
+      "enum": [
+        "GRAO",
+        "EVOLUCAO_ROLLBACK",
+        "ACESSO_JUSTIFICADO"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "front_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "message_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causation_message_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "contract_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": {
+          "const": "departamento-arquitetura-dados"
+        },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "delegatedDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "need",
+        "attached_constraint",
+        "origin_rule"
+      ],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/delegationTarget"
+        },
+        "need": {
+          "type": "string",
+          "minLength": 15
+        },
+        "attached_constraint": {
+          "type": "string",
+          "minLength": 10
+        },
+        "origin_rule": {
+          "type": "string",
+          "minLength": 2
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Dependencia ao desenvolvimento nunca sai em branco: o que ja esta decidido vai anexado.",
+          "if": {
+            "properties": {
+              "target": {
+                "const": "departamento-desenvolvimento"
+              }
+            },
+            "required": [
+              "target"
+            ]
+          },
+          "then": {
+            "properties": {
+              "attached_constraint": {
+                "type": "string",
+                "minLength": 20
+              }
+            }
+          }
+        }
+      ]
+    },
+    "businessQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question",
+        "frequency",
+        "latency_budget",
+        "workload"
+      ],
+      "properties": {
+        "question": {
+          "type": "string",
+          "minLength": 15
+        },
+        "frequency": {
+          "type": "string",
+          "minLength": 3
+        },
+        "latency_budget": {
+          "type": "string",
+          "minLength": 2
+        },
+        "workload": {
+          "enum": [
+            "OLTP",
+            "OLAP",
+            "AMBOS"
+          ]
+        }
+      }
+    },
+    "grainDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity",
+        "one_row_means",
+        "history_strategy"
+      ],
+      "properties": {
+        "entity": {
+          "type": "string",
+          "minLength": 2
+        },
+        "one_row_means": {
+          "type": "string",
+          "minLength": 15
+        },
+        "history_strategy": {
+          "enum": [
+            "NENHUMA",
+            "SOFT_DELETE",
+            "TEMPORAL",
+            "SCD1",
+            "SCD2",
+            "SCD3"
+          ]
+        },
+        "transactional_boundary": {
+          "type": "string",
+          "minLength": 5
+        },
+        "normalization_note": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "migrationPhase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "action",
+        "rollback",
+        "destructive"
+      ],
+      "properties": {
+        "phase": {
+          "enum": [
+            "EXPAND",
+            "DUAL_WRITE",
+            "BACKFILL",
+            "SWITCH_READ",
+            "CONTRACT"
+          ]
+        },
+        "action": {
+          "type": "string",
+          "minLength": 10
+        },
+        "rollback": {
+          "type": "string",
+          "minLength": 10
+        },
+        "destructive": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "ADR-008 §7: fase destrutiva so existe no CONTRACT, depois da leitura ja ter trocado.",
+          "if": {
+            "properties": {
+              "destructive": {
+                "const": true
+              }
+            },
+            "required": [
+              "destructive"
+            ]
+          },
+          "then": {
+            "properties": {
+              "phase": {
+                "const": "CONTRACT"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "migrationPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phases",
+        "next_free_version",
+        "immutability_ack",
+        "engine",
+        "same_engine_dev_prod"
+      ],
+      "properties": {
+        "phases": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/migrationPhase"
+          }
+        },
+        "next_free_version": {
+          "type": "string",
+          "minLength": 2
+        },
+        "immutability_ack": {
+          "const": true
+        },
+        "engine": {
+          "type": "string",
+          "minLength": 2
+        },
+        "same_engine_dev_prod": {
+          "type": "boolean"
+        },
+        "rollback_is_manual": {
+          "type": "boolean"
+        },
+        "backfill_note": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "accessJustification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "structure",
+        "kind",
+        "driven_by_question",
+        "expected_effect",
+        "write_cost",
+        "measured"
+      ],
+      "properties": {
+        "structure": {
+          "type": "string",
+          "minLength": 2
+        },
+        "kind": {
+          "enum": [
+            "INDICE",
+            "PARTICAO",
+            "REPLICA",
+            "CACHE",
+            "SHARD"
+          ]
+        },
+        "driven_by_question": {
+          "type": "string",
+          "minLength": 15
+        },
+        "expected_effect": {
+          "type": "string",
+          "minLength": 5
+        },
+        "write_cost": {
+          "type": "string",
+          "minLength": 5
+        },
+        "measured": {
+          "const": false
+        },
+        "invalidation": {
+          "type": "string",
+          "minLength": 5
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Cache sem invalidacao declarada e dado velho com validade desconhecida.",
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "CACHE"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "invalidation"
+            ]
+          }
+        }
+      ]
+    },
+    "dataContractItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject",
+        "meaning",
+        "pii"
+      ],
+      "properties": {
+        "subject": {
+          "type": "string",
+          "minLength": 2
+        },
+        "meaning": {
+          "type": "string",
+          "minLength": 15
+        },
+        "constraint_error_flow": {
+          "type": "string",
+          "minLength": 10
+        },
+        "commit_relative_trigger": {
+          "enum": [
+            "AFTER_COMMIT",
+            "IN_TRANSACTION",
+            "NAO_SE_APLICA"
+          ]
+        },
+        "anti_dual_write": {
+          "enum": [
+            "CDC",
+            "OUTBOX",
+            "NAO_SE_APLICA"
+          ]
+        },
+        "pii": {
+          "type": "boolean"
+        },
+        "retention": {
+          "type": "string",
+          "minLength": 2
+        },
+        "rls_required": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "L7: campo PII sem retencao declarada e furo por omissao.",
+          "if": {
+            "properties": {
+              "pii": {
+                "const": true
+              }
+            },
+            "required": [
+              "pii"
+            ]
+          },
+          "then": {
+            "required": [
+              "retention",
+              "rls_required"
+            ]
+          }
+        },
+        {
+          "comment": "L5: efeito colateral dentro da transacao vaza estado que pode nao existir.",
+          "if": {
+            "properties": {
+              "commit_relative_trigger": {
+                "const": "IN_TRANSACTION"
+              }
+            },
+            "required": [
+              "commit_relative_trigger"
+            ]
+          },
+          "then": {
+            "required": [
+              "constraint_error_flow"
+            ]
+          }
+        },
+        {
+          "comment": "L5 mecanizada: o unico efeito legitimo dentro da transacao e a escrita no outbox. Efeito externo (e-mail, HTTP) exige AFTER_COMMIT.",
+          "if": {
+            "properties": {
+              "commit_relative_trigger": {
+                "const": "IN_TRANSACTION"
+              }
+            },
+            "required": [
+              "commit_relative_trigger"
+            ]
+          },
+          "then": {
+            "required": [
+              "anti_dual_write"
+            ],
+            "properties": {
+              "anti_dual_write": {
+                "const": "OUTBOX"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "assignmentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "worker_id",
+        "capability",
+        "wave",
+        "issued_at",
+        "destination"
+      ],
+      "properties": {
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "wave": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "destination": {
+          "$ref": "#/$defs/artifactRef"
+        }
+      }
+    },
+    "closureState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item",
+        "state",
+        "evidence"
+      ],
+      "properties": {
+        "item": {
+          "$ref": "#/$defs/closureItem"
+        },
+        "state": {
+          "enum": [
+            "ATENDIDO",
+            "AUSENTE"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "dataPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "data_plan_id",
+        "causal",
+        "department_mission_ref",
+        "floor_met",
+        "questions",
+        "volumetry_order",
+        "waves",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DATA_PLAN"
+        },
+        "data_plan_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "floor_met": {
+          "type": "boolean"
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/businessQuestion"
+          },
+          "uniqueItems": true
+        },
+        "volumetry_order": {
+          "type": "string"
+        },
+        "architectural_constraint": {
+          "type": "string",
+          "minLength": 10
+        },
+        "waves": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
+          "uniqueItems": true
+        },
+        "return_to": {
+          "const": "departamento-arquitetura-dados"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Gate de entrada: tres perguntas escritas e volumetria em ordem de grandeza.",
+          "if": {
+            "properties": {
+              "floor_met": {
+                "const": true
+              }
+            },
+            "required": [
+              "floor_met"
+            ]
+          },
+          "then": {
+            "properties": {
+              "questions": {
+                "minItems": 3
+              },
+              "volumetry_order": {
+                "type": "string",
+                "minLength": 10
+              },
+              "waves": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "Piso nao atendido nao abre frente: nenhuma onda emitida.",
+          "if": {
+            "properties": {
+              "floor_met": {
+                "const": false
+              }
+            },
+            "required": [
+              "floor_met"
+            ]
+          },
+          "then": {
+            "properties": {
+              "waves": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "dataTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "capability",
+        "worker_id",
+        "wave",
+        "question",
+        "return_to",
+        "forbidden_context",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DATA_TASK"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "wave": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "question": {
+          "type": "string",
+          "minLength": 15
+        },
+        "inherited_constraint": {
+          "type": "string",
+          "minLength": 10
+        },
+        "return_to": {
+          "const": "departamento-arquitetura-dados"
+        },
+        "forbidden_context": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 5
+          },
+          "uniqueItems": true,
+          "contains": {
+            "type": "string",
+            "pattern": "nao produz codigo"
+          },
+          "minContains": 1
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "PERGUNTAS_VOLUMETRIA"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-perguntas-e-volumetria"
+              },
+              "wave": {
+                "const": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ESCOLHA_PERSISTENCIA"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-escolha-de-persistencia"
+              },
+              "wave": {
+                "const": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "MODELO_GRAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-modelo-e-grao"
+              },
+              "wave": {
+                "const": 3
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "EVOLUCAO_MIGRACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-evolucao-e-migracao"
+              },
+              "wave": {
+                "const": 4
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ESCALA_ACESSO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-escala-e-acesso"
+              },
+              "wave": {
+                "const": 4
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "CONTRATOS_INTEGRIDADE"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-contratos-e-integridade"
+              },
+              "wave": {
+                "const": 4
+              }
+            }
+          }
+        }
+      ]
+    },
+    "dataReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "capability",
+        "worker_id",
+        "status",
+        "assumptions",
+        "delegated_dependencies",
+        "pending",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DATA_RETURN"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "status": {
+          "$ref": "#/$defs/workerStatus"
+        },
+        "blocked_reason": {
+          "type": "string",
+          "minLength": 15
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/businessQuestion"
+          },
+          "uniqueItems": true
+        },
+        "volumetry_order": {
+          "type": "string",
+          "minLength": 10
+        },
+        "engine_choice": {
+          "type": "string",
+          "minLength": 2
+        },
+        "engine_rationale": {
+          "type": "string",
+          "minLength": 20
+        },
+        "same_engine_dev_prod": {
+          "type": "boolean"
+        },
+        "grains": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grainDeclaration"
+          },
+          "uniqueItems": true
+        },
+        "migration_plan": {
+          "$ref": "#/$defs/migrationPlan"
+        },
+        "access_justifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/accessJustification"
+          },
+          "uniqueItems": true
+        },
+        "data_contracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataContractItem"
+          },
+          "uniqueItems": true
+        },
+        "assumptions": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "delegated_dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delegatedDependency"
+          },
+          "uniqueItems": true
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "return_to": {
+          "const": "departamento-arquitetura-dados"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "BLOCKED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "blocked_reason"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "PERGUNTAS_VOLUMETRIA"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-perguntas-e-volumetria"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ESCOLHA_PERSISTENCIA"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-escolha-de-persistencia"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "MODELO_GRAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-modelo-e-grao"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "EVOLUCAO_MIGRACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-evolucao-e-migracao"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ESCALA_ACESSO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-escala-e-acesso"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "CONTRATOS_INTEGRIDADE"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-contratos-e-integridade"
+              }
+            }
+          }
+        },
+        {
+          "comment": "Quem modela entrega grao. Sempre.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "MODELO_GRAO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "grains"
+            ],
+            "properties": {
+              "grains": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "Quem evolui entrega plano com rollback por fase.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "EVOLUCAO_MIGRACAO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "migration_plan"
+            ]
+          }
+        },
+        {
+          "comment": "Quem dimensiona amarra cada estrutura a um acesso nomeado.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ESCALA_ACESSO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "access_justifications"
+            ],
+            "properties": {
+              "access_justifications": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "RO-SB2: engine escolhido declara o unico dev=prod e a evidencia.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ESCOLHA_PERSISTENCIA"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "engine_choice",
+              "engine_rationale",
+              "same_engine_dev_prod"
+            ]
+          }
+        },
+        {
+          "comment": "Piso: tres perguntas e volumetria, ou o retorno nao e COMPLETED.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "PERGUNTAS_VOLUMETRIA"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "questions",
+              "volumetry_order"
+            ],
+            "properties": {
+              "questions": {
+                "minItems": 3
+              }
+            }
+          }
+        },
+        {
+          "comment": "Quem contrata declara o contrato do dado.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "CONTRATOS_INTEGRIDADE"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "data_contracts"
+            ],
+            "properties": {
+              "data_contracts": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "dataCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "reason",
+        "capability",
+        "worker_id",
+        "expected_contract",
+        "discovery_evidence",
+        "impact",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DATA_CAPABILITY_GAP"
+        },
+        "reason": {
+          "enum": [
+            "PISO_NAO_ATENDIDO",
+            "FORA_DE_ESCOPO",
+            "CONFLITO_ARQUITETURAL"
+          ]
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 10
+        },
+        "worker_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/workerId"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "expected_contract": {
+          "type": "string",
+          "minLength": 10
+        },
+        "discovery_evidence": {
+          "type": "string",
+          "minLength": 10
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "status": {
+          "const": "OPEN"
+        },
+        "owner": {
+          "const": "diretor-de-lentes"
+        }
+      }
+    },
+    "dataLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "data_ledger_id",
+        "causal",
+        "department_mission_ref",
+        "plan",
+        "assignments",
+        "returns_seen",
+        "closure",
+        "grain_declarations",
+        "access_justifications",
+        "delegated_dependencies",
+        "capability_gaps",
+        "constraint_conflict",
+        "test_summary",
+        "evidence_refs",
+        "pending",
+        "entrega",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DATA_LEDGER"
+        },
+        "data_ledger_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "plan": {
+          "$ref": "#/$defs/dataPlan"
+        },
+        "assignments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
+          "uniqueItems": true
+        },
+        "returns_seen": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "closure": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/closureState"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "item": {
+                    "const": "GRAO"
+                  }
+                },
+                "required": [
+                  "item"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "item": {
+                    "const": "EVOLUCAO_ROLLBACK"
+                  }
+                },
+                "required": [
+                  "item"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "item": {
+                    "const": "ACESSO_JUSTIFICADO"
+                  }
+                },
+                "required": [
+                  "item"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        },
+        "grain_declarations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/grainDeclaration"
+          },
+          "uniqueItems": true
+        },
+        "migration_plan": {
+          "$ref": "#/$defs/migrationPlan"
+        },
+        "access_justifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/accessJustification"
+          },
+          "uniqueItems": true
+        },
+        "data_contracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataContractItem"
+          },
+          "uniqueItems": true
+        },
+        "delegated_dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delegatedDependency"
+          },
+          "uniqueItems": true
+        },
+        "capability_gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataCapabilityGap"
+          },
+          "uniqueItems": true
+        },
+        "constraint_conflict": {
+          "type": "boolean"
+        },
+        "escalation": {
+          "type": "string",
+          "minLength": 15
+        },
+        "test_summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pass",
+            "fail",
+            "skip",
+            "skip_reasons",
+            "critical_fail"
+          ],
+          "properties": {
+            "pass": {
+              "const": 0
+            },
+            "fail": {
+              "const": 0
+            },
+            "skip": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "skip_reasons": {
+              "$ref": "#/$defs/optionalStrings"
+            },
+            "critical_fail": {
+              "const": false
+            }
+          }
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "entrega": {
+          "enum": [
+            "ENTREGUE",
+            "INCOMPLETA",
+            "BLOQUEADA"
+          ]
+        },
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "recorded_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Gate de saida RI-04: os tres itens ATENDIDOS, sem compensacao entre eles.",
+          "if": {
+            "properties": {
+              "entrega": {
+                "const": "ENTREGUE"
+              }
+            },
+            "required": [
+              "entrega"
+            ]
+          },
+          "then": {
+            "required": [
+              "migration_plan"
+            ],
+            "properties": {
+              "closure": {
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "const": "ATENDIDO"
+                    }
+                  }
+                }
+              },
+              "grain_declarations": {
+                "minItems": 1
+              },
+              "access_justifications": {
+                "minItems": 1
+              },
+              "assignments": {
+                "minItems": 1
+              },
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "constraint_conflict": {
+                "const": false
+              },
+              "pending": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "comment": "ADR-008 §5: conflito com restricao arquitetural escala, nao se contorna.",
+          "if": {
+            "properties": {
+              "constraint_conflict": {
+                "const": true
+              }
+            },
+            "required": [
+              "constraint_conflict"
+            ]
+          },
+          "then": {
+            "required": [
+              "escalation"
+            ],
+            "properties": {
+              "entrega": {
+                "const": "BLOQUEADA"
+              }
+            }
+          }
+        },
+        {
+          "comment": "Piso nao atendido no plano fecha a entrega como bloqueada.",
+          "if": {
+            "properties": {
+              "plan": {
+                "type": "object",
+                "properties": {
+                  "floor_met": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "floor_met"
+                ]
+              }
+            },
+            "required": [
+              "plan"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entrega": {
+                "const": "BLOQUEADA"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/dataPlan"
+    },
+    {
+      "$ref": "#/$defs/dataTask"
+    },
+    {
+      "$ref": "#/$defs/dataReturn"
+    },
+    {
+      "$ref": "#/$defs/dataCapabilityGap"
+    },
+    {
+      "$ref": "#/$defs/dataLedger"
+    }
+  ]
+}

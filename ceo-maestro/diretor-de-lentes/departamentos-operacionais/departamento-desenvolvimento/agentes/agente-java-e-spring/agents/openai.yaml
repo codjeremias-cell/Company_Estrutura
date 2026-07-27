@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente Java e Spring Boot"
+  short_description: "Java puro e Spring Boot idiomáticos"
+  default_prompt: "Use $agente-java-e-spring para implementar em Java ou Spring Boot conduzido pelo gerador do track, com acesso parametrizado e transação declarada — sem inventar API."

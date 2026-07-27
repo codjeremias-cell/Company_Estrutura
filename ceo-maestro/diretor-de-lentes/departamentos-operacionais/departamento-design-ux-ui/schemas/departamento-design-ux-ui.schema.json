@@ -1,0 +1,1853 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "departamento-design-ux-ui.schema.json",
+  "title": "Artefatos internos do Departamento de Design UX/UI",
+  "description": "Envelopes internos. O DEPARTMENT_RETURN pertence ao schema do diretor-de-lentes. Aqui nao existe campo de nota nem de painel comparativo (ADR-009 §3 e §4) nem de codigo (ADR-009 §2).",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "uniqueItems": true
+    },
+    "capability": {
+      "enum": [
+        "DIRECAO_ANTI_SLOP",
+        "FLUXO_ESTADOS",
+        "LINGUAGEM_VISUAL",
+        "DESIGN_SYSTEM_TOKENS",
+        "NITIDEZ_ADAPTACAO",
+        "DATAVIZ",
+        "ACESSIBILIDADE_MEDIDA"
+      ]
+    },
+    "workerId": {
+      "enum": [
+        "agente-direcao-e-anti-slop",
+        "agente-fluxo-estados-e-transicoes",
+        "agente-linguagem-visual",
+        "agente-design-system-e-tokens",
+        "agente-nitidez-e-adaptacao",
+        "agente-dataviz",
+        "agente-acessibilidade-medida"
+      ]
+    },
+    "workerStatus": {
+      "enum": [
+        "COMPLETED",
+        "BLOCKED",
+        "SEM_RETORNO",
+        "FALHO"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "PROJETO",
+        "POLISH"
+      ]
+    },
+    "dimension": {
+      "enum": [
+        "DIRECAO",
+        "FLUXO_ESTADOS",
+        "ACESSIBILIDADE",
+        "LINGUAGEM_VISUAL",
+        "NITIDEZ",
+        "DATAVIZ",
+        "ADAPTACAO_STACK",
+        "POLISH",
+        "EVIDENCIA"
+      ]
+    },
+    "coverage": {
+      "enum": [
+        "COBERTA",
+        "PARCIAL",
+        "NAO_APLICAVEL",
+        "AUSENTE"
+      ]
+    },
+    "evidenceType": {
+      "enum": [
+        "OBSERVED",
+        "PRODUCED",
+        "MEASURED",
+        "REPORTED",
+        "UNAVAILABLE"
+      ]
+    },
+    "signalLabel": {
+      "enum": [
+        "OBSERVADO",
+        "INFORMADO",
+        "HIPOTESE",
+        "AUSENTE"
+      ]
+    },
+    "delegationTarget": {
+      "enum": [
+        "departamento-desenvolvimento",
+        "departamento-seguranca",
+        "departamento-qa-usabilidade",
+        "departamento-arquitetura-software"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "front_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "message_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causation_message_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "contract_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": {
+          "const": "departamento-design-ux-ui"
+        },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "readSignal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject",
+        "label"
+      ],
+      "properties": {
+        "subject": {
+          "type": "string",
+          "minLength": 5
+        },
+        "label": {
+          "$ref": "#/$defs/signalLabel"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 3
+        },
+        "risk": {
+          "type": "string",
+          "minLength": 10
+        }
+      },
+      "allOf": [
+        {
+          "comment": "OBSERVADO exige onde foi visto.",
+          "if": {
+            "properties": {
+              "label": {
+                "const": "OBSERVADO"
+              }
+            },
+            "required": [
+              "label"
+            ]
+          },
+          "then": {
+            "required": [
+              "locator"
+            ]
+          }
+        },
+        {
+          "comment": "HIPOTESE exige o risco assumido, senao vira fato por descuido.",
+          "if": {
+            "properties": {
+              "label": {
+                "const": "HIPOTESE"
+              }
+            },
+            "required": [
+              "label"
+            ]
+          },
+          "then": {
+            "required": [
+              "risk"
+            ]
+          }
+        }
+      ]
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim",
+        "type"
+      ],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "minLength": 10
+        },
+        "type": {
+          "$ref": "#/$defs/evidenceType"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 3
+        },
+        "measured_value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "measured_method": {
+          "type": "string",
+          "minLength": 10
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10
+        }
+      },
+      "allOf": [
+        {
+          "comment": "MEASURED sem valor e metodo e alegacao, nao medicao.",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "MEASURED"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "measured_value",
+              "measured_method"
+            ]
+          }
+        },
+        {
+          "comment": "UNAVAILABLE exige o motivo de a prova nao ter sido obtida.",
+          "if": {
+            "properties": {
+              "type": {
+                "const": "UNAVAILABLE"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      ]
+    },
+    "criterionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion",
+        "state",
+        "evidence"
+      ],
+      "properties": {
+        "criterion": {
+          "type": "string",
+          "minLength": 10
+        },
+        "state": {
+          "enum": [
+            "ATENDIDO",
+            "NAO_ATENDIDO",
+            "UNVERIFIED"
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceItem"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "ADR-009 §8: relatado e indisponivel nunca sustentam atendido.",
+          "if": {
+            "properties": {
+              "state": {
+                "const": "ATENDIDO"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "type": {
+                    "not": {
+                      "enum": [
+                        "REPORTED",
+                        "UNAVAILABLE"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "dimensionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dimension",
+        "coverage",
+        "owner"
+      ],
+      "properties": {
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "owner": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/workerId"
+            },
+            {
+              "const": "departamento-design-ux-ui"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 20
+        },
+        "missing": {
+          "$ref": "#/$defs/optionalStrings"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "NAO_APLICAVEL generico e AUSENTE disfarcado: exige motivo especifico.",
+          "if": {
+            "properties": {
+              "coverage": {
+                "const": "NAO_APLICAVEL"
+              }
+            },
+            "required": [
+              "coverage"
+            ]
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        },
+        {
+          "comment": "PARCIAL exige nomear o que falta.",
+          "if": {
+            "properties": {
+              "coverage": {
+                "const": "PARCIAL"
+              }
+            },
+            "required": [
+              "coverage"
+            ]
+          },
+          "then": {
+            "required": [
+              "missing"
+            ],
+            "properties": {
+              "missing": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "designGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "approved_by": {
+          "type": "string",
+          "minLength": 3
+        },
+        "approved_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "reviewable_surface": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "rejection_reason": {
+          "type": "string",
+          "minLength": 10
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Aprovacao exige ator nomeado, momento e a superficie revisavel.",
+          "if": {
+            "properties": {
+              "state": {
+                "const": "APPROVED"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "approved_by",
+              "approved_at",
+              "reviewable_surface"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "REJECTED"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "rejection_reason"
+            ]
+          }
+        }
+      ]
+    },
+    "delegatedDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "kind",
+        "need",
+        "attached_decision"
+      ],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/delegationTarget"
+        },
+        "kind": {
+          "enum": [
+            "IMPLEMENTACAO",
+            "PROVA",
+            "SEGURANCA",
+            "VIABILIDADE"
+          ]
+        },
+        "need": {
+          "type": "string",
+          "minLength": 15
+        },
+        "attached_decision": {
+          "type": "string",
+          "minLength": 20
+        },
+        "origin_rule": {
+          "type": "string",
+          "minLength": 2
+        }
+      }
+    },
+    "assignmentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "worker_id",
+        "capability",
+        "wave",
+        "issued_at",
+        "destination"
+      ],
+      "properties": {
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "wave": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "destination": {
+          "$ref": "#/$defs/artifactRef"
+        }
+      }
+    },
+    "designPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "design_plan_id",
+        "causal",
+        "department_mission_ref",
+        "mode",
+        "design_read",
+        "signals",
+        "waves",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DESIGN_PLAN"
+        },
+        "design_plan_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mode": {
+          "$ref": "#/$defs/mode"
+        },
+        "design_read": {
+          "type": "string",
+          "minLength": 40
+        },
+        "signals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/readSignal"
+          },
+          "uniqueItems": true
+        },
+        "observable_surface": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "waves": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
+          "uniqueItems": true
+        },
+        "return_to": {
+          "const": "departamento-design-ux-ui"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Modo POLISH sem superficie observavel nao abre (G2).",
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "POLISH"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "required": [
+              "observable_surface"
+            ],
+            "properties": {
+              "signals": {
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "const": "OBSERVADO"
+                    }
+                  },
+                  "required": [
+                    "label"
+                  ]
+                },
+                "minContains": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "designTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "capability",
+        "worker_id",
+        "wave",
+        "question",
+        "return_to",
+        "forbidden_context",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DESIGN_TASK"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "wave": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "question": {
+          "type": "string",
+          "minLength": 15
+        },
+        "inherited_decision": {
+          "type": "string",
+          "minLength": 10
+        },
+        "return_to": {
+          "const": "departamento-design-ux-ui"
+        },
+        "forbidden_context": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 5
+          },
+          "contains": {
+            "type": "string",
+            "pattern": "nao produz codigo"
+          },
+          "minContains": 1
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DIRECAO_ANTI_SLOP"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-direcao-e-anti-slop"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "FLUXO_ESTADOS"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-fluxo-estados-e-transicoes"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "LINGUAGEM_VISUAL"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-linguagem-visual"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DESIGN_SYSTEM_TOKENS"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-design-system-e-tokens"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "NITIDEZ_ADAPTACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-nitidez-e-adaptacao"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DATAVIZ"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-dataviz"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ACESSIBILIDADE_MEDIDA"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-acessibilidade-medida"
+              }
+            }
+          }
+        },
+        {
+          "comment": "ADR-009 §6: a11y e anti-slop verificam na onda 4, sobre saida alheia.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ACESSIBILIDADE_MEDIDA"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "wave": {
+                "const": 4
+              }
+            }
+          }
+        }
+      ]
+    },
+    "designReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "capability",
+        "worker_id",
+        "status",
+        "criteria",
+        "dimensions",
+        "delegated_dependencies",
+        "pending",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DESIGN_RETURN"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "status": {
+          "$ref": "#/$defs/workerStatus"
+        },
+        "blocked_reason": {
+          "type": "string",
+          "minLength": 15
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/criterionItem"
+          },
+          "uniqueItems": true
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dimensionState"
+          },
+          "uniqueItems": true
+        },
+        "states_covered": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "VAZIO",
+              "CARREGANDO",
+              "ERRO",
+              "SUCESSO",
+              "PARCIAL_OFFLINE"
+            ]
+          }
+        },
+        "tokens": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "category"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 3
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "category": {
+                "enum": [
+                  "COR",
+                  "TIPOGRAFIA",
+                  "ESPACO",
+                  "RAIO",
+                  "SOMBRA",
+                  "MOTION"
+                ]
+              }
+            }
+          }
+        },
+        "stack_primitives": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "anti_slop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "first_order_pass",
+            "second_order_pass",
+            "subject_worker"
+          ],
+          "properties": {
+            "first_order_pass": {
+              "type": "boolean"
+            },
+            "second_order_pass": {
+              "type": "boolean"
+            },
+            "subject_worker": {
+              "$ref": "#/$defs/workerId"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 10
+            }
+          }
+        },
+        "delegated_dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delegatedDependency"
+          },
+          "uniqueItems": true
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "return_to": {
+          "const": "departamento-design-ux-ui"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DIRECAO_ANTI_SLOP"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-direcao-e-anti-slop"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "FLUXO_ESTADOS"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-fluxo-estados-e-transicoes"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "LINGUAGEM_VISUAL"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-linguagem-visual"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DESIGN_SYSTEM_TOKENS"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-design-system-e-tokens"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "NITIDEZ_ADAPTACAO"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-nitidez-e-adaptacao"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DATAVIZ"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-dataviz"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ACESSIBILIDADE_MEDIDA"
+              }
+            },
+            "required": [
+              "capability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-acessibilidade-medida"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "BLOCKED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "blocked_reason"
+            ]
+          }
+        },
+        {
+          "comment": "Quem desenha fluxo entrega os tres estados minimos: nunca se adiam.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "FLUXO_ESTADOS"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "states_covered"
+            ],
+            "properties": {
+              "states_covered": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "VAZIO"
+                    },
+                    "minContains": 1
+                  },
+                  {
+                    "contains": {
+                      "const": "CARREGANDO"
+                    },
+                    "minContains": 1
+                  },
+                  {
+                    "contains": {
+                      "const": "ERRO"
+                    },
+                    "minContains": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "comment": "A11y so fecha com criterio medido: contraste presumido e a falha n1.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "ACESSIBILIDADE_MEDIDA"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "criteria"
+            ],
+            "properties": {
+              "criteria": {
+                "minItems": 1,
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "evidence": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "const": "MEASURED"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "evidence"
+                  ]
+                },
+                "minContains": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "ADR-009 §6: anti-slop nunca e rodado sobre a propria saida.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DIRECAO_ANTI_SLOP"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "anti_slop": {
+                "properties": {
+                  "subject_worker": {
+                    "not": {
+                      "const": "agente-direcao-e-anti-slop"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "comment": "Quem decide token entrega token, nao valor solto.",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "DESIGN_SYSTEM_TOKENS"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "tokens"
+            ],
+            "properties": {
+              "tokens": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "comment": "Adaptacao nativa exige nomear as primitivas reais do stack (G9).",
+          "if": {
+            "properties": {
+              "capability": {
+                "const": "NITIDEZ_ADAPTACAO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "capability",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "stack_primitives"
+            ],
+            "properties": {
+              "stack_primitives": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "designCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "reason",
+        "capability",
+        "worker_id",
+        "expected_contract",
+        "discovery_evidence",
+        "impact",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DESIGN_CAPABILITY_GAP"
+        },
+        "reason": {
+          "enum": [
+            "SUPERFICIE_AUSENTE",
+            "FORA_DE_ESCOPO",
+            "EXECUTOR_INEXISTENTE",
+            "DECISAO_AUSENTE"
+          ]
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 10
+        },
+        "worker_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/workerId"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "expected_contract": {
+          "type": "string",
+          "minLength": 10
+        },
+        "discovery_evidence": {
+          "type": "string",
+          "minLength": 10
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "status": {
+          "const": "OPEN"
+        },
+        "owner": {
+          "const": "diretor-de-lentes"
+        }
+      }
+    },
+    "designLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "design_ledger_id",
+        "causal",
+        "department_mission_ref",
+        "mode",
+        "plan",
+        "assignments",
+        "returns_seen",
+        "dimensions",
+        "design_gate",
+        "implementation_dependencies",
+        "capability_gaps",
+        "test_summary",
+        "evidence_refs",
+        "pending",
+        "entrega",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DESIGN_LEDGER"
+        },
+        "design_ledger_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mode": {
+          "$ref": "#/$defs/mode"
+        },
+        "plan": {
+          "$ref": "#/$defs/designPlan"
+        },
+        "assignments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
+          "uniqueItems": true
+        },
+        "returns_seen": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dimensions": {
+          "type": "array",
+          "minItems": 9,
+          "maxItems": 9,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/dimensionState"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "DIRECAO"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "FLUXO_ESTADOS"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "ACESSIBILIDADE"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "LINGUAGEM_VISUAL"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "NITIDEZ"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "DATAVIZ"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "ADAPTACAO_STACK"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "POLISH"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "EVIDENCIA"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        },
+        "design_gate": {
+          "$ref": "#/$defs/designGate"
+        },
+        "implementation_dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/delegatedDependency"
+          },
+          "uniqueItems": true
+        },
+        "capability_gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/designCapabilityGap"
+          },
+          "uniqueItems": true
+        },
+        "test_summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pass",
+            "fail",
+            "skip",
+            "skip_reasons",
+            "critical_fail"
+          ],
+          "properties": {
+            "pass": {
+              "const": 0
+            },
+            "fail": {
+              "const": 0
+            },
+            "skip": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "skip_reasons": {
+              "$ref": "#/$defs/optionalStrings"
+            },
+            "critical_fail": {
+              "const": false
+            }
+          }
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "entrega": {
+          "enum": [
+            "ENTREGUE",
+            "INCOMPLETA",
+            "BLOQUEADA"
+          ]
+        },
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "recorded_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "comment": "Mockup-first mecanico: gate aberto nao deixa sair dependencia de implementacao.",
+          "if": {
+            "properties": {
+              "design_gate": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "const": "APPROVED"
+                  }
+                },
+                "required": [
+                  "state"
+                ]
+              }
+            },
+            "required": [
+              "design_gate"
+            ]
+          },
+          "then": {},
+          "else": {
+            "properties": {
+              "implementation_dependencies": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "comment": "Entrega fecha com gate aprovado, nenhuma dimensao ausente e emissao registrada.",
+          "if": {
+            "properties": {
+              "entrega": {
+                "const": "ENTREGUE"
+              }
+            },
+            "required": [
+              "entrega"
+            ]
+          },
+          "then": {
+            "properties": {
+              "design_gate": {
+                "properties": {
+                  "state": {
+                    "const": "APPROVED"
+                  }
+                }
+              },
+              "dimensions": {
+                "items": {
+                  "properties": {
+                    "coverage": {
+                      "not": {
+                        "const": "AUSENTE"
+                      }
+                    }
+                  }
+                }
+              },
+              "assignments": {
+                "minItems": 1
+              },
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "pending": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "comment": "Lacuna aberta fecha o ramo, nao o deixa entregue pela metade.",
+          "if": {
+            "properties": {
+              "capability_gaps": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "capability_gaps"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entrega": {
+                "const": "BLOQUEADA"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/designPlan"
+    },
+    {
+      "$ref": "#/$defs/designTask"
+    },
+    {
+      "$ref": "#/$defs/designReturn"
+    },
+    {
+      "$ref": "#/$defs/designCapabilityGap"
+    },
+    {
+      "$ref": "#/$defs/designLedger"
+    }
+  ]
+}

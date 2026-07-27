@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Segurança"
+  short_description: "Acha o risco e diz se ele bloqueia"
+  default_prompt: "Use $departamento-seguranca somente por DEPARTMENT_MISSION do diretor-de-lentes, para modelar a ameaça, cobrir as dez áreas com agente dona única mais ai_llm consolidada pela gerente, delegar aos oito agentes por SECURITY_TASK, exigir evidência admissível e fechar o ledger com a recomendação de risco do alvo — sem nota, sem gate geral e sem tocar produção ou dado real."

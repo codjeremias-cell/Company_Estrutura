@@ -1,0 +1,1444 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-qa-usabilidade.schema.json",
+  "title": "Artefatos internos do Departamento de QA e Usabilidade",
+  "oneOf": [
+    { "$ref": "#/$defs/qaTestPlan" },
+    { "$ref": "#/$defs/qaAssignment" },
+    { "$ref": "#/$defs/qaAgentReturn" },
+    { "$ref": "#/$defs/qaRouteRejection" },
+    { "$ref": "#/$defs/qaCapabilityGap" },
+    { "$ref": "#/$defs/qaConsolidatedReport" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nonNAText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!\\s*[Nn]/[Aa]\\s*$)\\S(?:.*\\S)?$"
+    },
+    "stringList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    },
+    "requiredStringList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmptyString" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "requiredOperationalList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonNAText" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "idList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "requiredIdList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/identifier" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "edgeDimension": {
+      "enum": [
+        "happy-path",
+        "validation",
+        "permissions",
+        "state",
+        "scale",
+        "failure",
+        "data",
+        "ux",
+        "recovery",
+        "concurrency",
+        "security",
+        "integration"
+      ]
+    },
+    "coveredEdgeDimensionList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edgeDimension" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "notApplicableEdgeDimensionList": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(?:happy-path|validation|permissions|state|scale|failure|data|ux|recovery|concurrency|security|integration):.{3,}$"
+      },
+      "uniqueItems": true
+    },
+    "operationalOwner": {
+      "enum": [
+        "departamento-qa-usabilidade",
+        "agente-testes-funcionais",
+        "agente-testes-nao-funcionais",
+        "agente-usabilidade-e-acessibilidade",
+        "diretor-de-lentes",
+        "environment-owner",
+        "artifact-owner"
+      ]
+    },
+    "operationalNextStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "owner", "reason_refs"],
+      "properties": {
+        "action": {
+          "enum": [
+            "CONSOLIDATE",
+            "RETEST",
+            "REQUEST_MISSING_EVIDENCE",
+            "RESTORE_CAPABILITY",
+            "RETURN_FOR_REWORK",
+            "ESCALATE_TO_MANAGER"
+          ]
+        },
+        "owner": { "$ref": "#/$defs/operationalOwner" },
+        "reason_refs": { "$ref": "#/$defs/requiredIdList" }
+      }
+    },
+    "agentId": {
+      "enum": [
+        "agente-testes-funcionais",
+        "agente-testes-nao-funcionais",
+        "agente-usabilidade-e-acessibilidade"
+      ]
+    },
+    "producerId": {
+      "enum": [
+        "departamento-qa-usabilidade",
+        "agente-testes-funcionais",
+        "agente-testes-nao-funcionais",
+        "agente-usabilidade-e-acessibilidade"
+      ]
+    },
+    "capability": {
+      "enum": [
+        "FUNCTIONAL",
+        "NON_FUNCTIONAL",
+        "USABILITY_A11Y"
+      ]
+    },
+    "profile": {
+      "enum": [
+        "DESKTOP",
+        "WEB_MOBILE",
+        "API_CLI",
+        "DATA_DATABASE",
+        "DASHBOARD_VISUALIZATION",
+        "REPORT_DOCUMENT_PDF",
+        "GAME"
+      ]
+    },
+    "profileList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/profile" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "department_mission_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "department_mission_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": { "$ref": "#/$defs/requiredIdList" },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": { "$ref": "#/$defs/producerId" },
+        "producer_version": { "$ref": "#/$defs/nonEmptyString" },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_policy",
+        "allowed_tools",
+        "allowed_resources",
+        "expires_at"
+      ],
+      "properties": {
+        "default_policy": { "const": "deny" },
+        "allowed_tools": { "$ref": "#/$defs/stringList" },
+        "allowed_resources": { "$ref": "#/$defs/stringList" },
+        "expires_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "executionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "active_testing_allowed",
+        "authorization_ref",
+        "authorized_by",
+        "issued_at",
+        "expires_at",
+        "status",
+        "targets",
+        "environments",
+        "window",
+        "allowed_tools",
+        "allowed_actions",
+        "prohibited_actions",
+        "rate_volume_concurrency_limits",
+        "data_classes_allowed",
+        "test_accounts",
+        "evidence_handling",
+        "cleanup_plan_ref",
+        "recovery_plan_ref",
+        "stop_conditions",
+        "emergency_contact",
+        "recheck_interval"
+      ],
+      "properties": {
+        "active_testing_allowed": { "type": "boolean" },
+        "authorization_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "authorized_by": { "$ref": "#/$defs/nonEmptyString" },
+        "issued_at": { "$ref": "#/$defs/nonEmptyString" },
+        "expires_at": { "$ref": "#/$defs/nonEmptyString" },
+        "status": {
+          "enum": [
+            "active",
+            "revoked",
+            "expired",
+            "not_required"
+          ]
+        },
+        "targets": { "$ref": "#/$defs/stringList" },
+        "environments": { "$ref": "#/$defs/stringList" },
+        "window": { "$ref": "#/$defs/nonEmptyString" },
+        "allowed_tools": { "$ref": "#/$defs/stringList" },
+        "allowed_actions": { "$ref": "#/$defs/stringList" },
+        "prohibited_actions": { "$ref": "#/$defs/stringList" },
+        "rate_volume_concurrency_limits": { "$ref": "#/$defs/stringList" },
+        "data_classes_allowed": { "$ref": "#/$defs/stringList" },
+        "test_accounts": { "$ref": "#/$defs/stringList" },
+        "evidence_handling": { "$ref": "#/$defs/stringList" },
+        "cleanup_plan_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "recovery_plan_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "stop_conditions": { "$ref": "#/$defs/stringList" },
+        "emergency_contact": { "$ref": "#/$defs/nonEmptyString" },
+        "recheck_interval": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "active_testing_allowed": { "const": true }
+            },
+            "required": ["active_testing_allowed"]
+          },
+          "then": {
+            "properties": {
+              "status": { "const": "active" },
+              "authorization_ref": { "$ref": "#/$defs/nonNAText" },
+              "authorized_by": { "$ref": "#/$defs/nonNAText" },
+              "issued_at": { "$ref": "#/$defs/timestamp" },
+              "expires_at": { "$ref": "#/$defs/timestamp" },
+              "targets": { "$ref": "#/$defs/requiredOperationalList" },
+              "environments": { "$ref": "#/$defs/requiredOperationalList" },
+              "window": { "$ref": "#/$defs/nonNAText" },
+              "allowed_tools": { "$ref": "#/$defs/requiredOperationalList" },
+              "allowed_actions": { "$ref": "#/$defs/requiredOperationalList" },
+              "prohibited_actions": {
+                "$ref": "#/$defs/requiredOperationalList"
+              },
+              "rate_volume_concurrency_limits": {
+                "$ref": "#/$defs/requiredOperationalList"
+              },
+              "data_classes_allowed": {
+                "$ref": "#/$defs/requiredOperationalList"
+              },
+              "test_accounts": { "$ref": "#/$defs/requiredOperationalList" },
+              "evidence_handling": {
+                "$ref": "#/$defs/requiredOperationalList"
+              },
+              "cleanup_plan_ref": { "$ref": "#/$defs/nonNAText" },
+              "recovery_plan_ref": { "$ref": "#/$defs/nonNAText" },
+              "stop_conditions": { "$ref": "#/$defs/requiredOperationalList" },
+              "emergency_contact": { "$ref": "#/$defs/nonNAText" },
+              "recheck_interval": { "$ref": "#/$defs/nonNAText" }
+            }
+          }
+        }
+      ]
+    },
+    "pendingItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pending_id",
+        "obligation",
+        "owner",
+        "impact",
+        "resume_when",
+        "causal_ref",
+        "blocking"
+      ],
+      "properties": {
+        "pending_id": { "$ref": "#/$defs/identifier" },
+        "obligation": { "$ref": "#/$defs/nonEmptyString" },
+        "owner": { "$ref": "#/$defs/nonEmptyString" },
+        "impact": { "$ref": "#/$defs/nonEmptyString" },
+        "resume_when": { "$ref": "#/$defs/nonEmptyString" },
+        "causal_ref": { "$ref": "#/$defs/identifier" },
+        "blocking": { "type": "boolean" }
+      }
+    },
+    "pendingList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pendingItem" },
+      "uniqueItems": true
+    },
+    "riskItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk_id",
+        "failure",
+        "impact",
+        "severity",
+        "criterion_ids"
+      ],
+      "properties": {
+        "risk_id": { "$ref": "#/$defs/identifier" },
+        "failure": { "$ref": "#/$defs/nonEmptyString" },
+        "impact": { "$ref": "#/$defs/nonEmptyString" },
+        "severity": {
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "criterion_ids": { "$ref": "#/$defs/requiredIdList" }
+      }
+    },
+    "criterionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "observable",
+        "priority",
+        "profiles",
+        "risk_ids",
+        "applicable",
+        "owner_agent",
+        "method",
+        "evidence_required",
+        "not_applicable_reason"
+      ],
+      "properties": {
+        "criterion_id": { "$ref": "#/$defs/identifier" },
+        "observable": { "$ref": "#/$defs/nonEmptyString" },
+        "priority": {
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "profiles": { "$ref": "#/$defs/profileList" },
+        "risk_ids": { "$ref": "#/$defs/requiredIdList" },
+        "applicable": { "type": "boolean" },
+        "owner_agent": {
+          "oneOf": [
+            { "$ref": "#/$defs/agentId" },
+            { "type": "null" }
+          ]
+        },
+        "method": { "$ref": "#/$defs/nonEmptyString" },
+        "evidence_required": { "$ref": "#/$defs/requiredStringList" },
+        "not_applicable_reason": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "applicable": { "const": true }
+            },
+            "required": ["applicable"]
+          },
+          "then": {
+            "properties": {
+              "owner_agent": { "$ref": "#/$defs/agentId" },
+              "not_applicable_reason": { "const": "n/a" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "applicable": { "const": false }
+            },
+            "required": ["applicable"]
+          },
+          "then": {
+            "properties": {
+              "owner_agent": { "type": "null" },
+              "not_applicable_reason": {
+                "$ref": "#/$defs/nonNAText"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "skipDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "impact",
+        "owner",
+        "resume_when"
+      ],
+      "properties": {
+        "reason": { "$ref": "#/$defs/nonEmptyString" },
+        "impact": { "$ref": "#/$defs/nonEmptyString" },
+        "owner": { "$ref": "#/$defs/nonEmptyString" },
+        "resume_when": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "testResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "criterion_id",
+        "profile",
+        "status",
+        "severity",
+        "expected",
+        "observed",
+        "method",
+        "environment",
+        "executed_at",
+        "evidence_refs",
+        "skip_detail"
+      ],
+      "properties": {
+        "case_id": { "$ref": "#/$defs/identifier" },
+        "criterion_id": { "$ref": "#/$defs/identifier" },
+        "profile": { "$ref": "#/$defs/profile" },
+        "status": {
+          "enum": ["PASS", "FAIL", "SKIP", "UNVERIFIED"]
+        },
+        "severity": {
+          "enum": ["critical", "high", "medium", "low", "none"]
+        },
+        "expected": { "$ref": "#/$defs/nonEmptyString" },
+        "observed": { "$ref": "#/$defs/nonEmptyString" },
+        "method": { "$ref": "#/$defs/nonEmptyString" },
+        "environment": { "$ref": "#/$defs/nonEmptyString" },
+        "executed_at": {
+          "oneOf": [
+            { "$ref": "#/$defs/timestamp" },
+            { "type": "null" }
+          ]
+        },
+        "evidence_refs": { "$ref": "#/$defs/idList" },
+        "skip_detail": {
+          "oneOf": [
+            { "$ref": "#/$defs/skipDetail" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": { "enum": ["PASS", "FAIL"] }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "executed_at": { "$ref": "#/$defs/timestamp" },
+              "evidence_refs": { "$ref": "#/$defs/requiredIdList" },
+              "skip_detail": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "FAIL" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "severity": {
+                "enum": ["critical", "high", "medium", "low"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "SKIP" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "executed_at": { "type": "null" },
+              "skip_detail": { "$ref": "#/$defs/skipDetail" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "UNVERIFIED" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "skip_detail": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "case_id",
+        "criterion_id",
+        "type",
+        "origin",
+        "tool_and_version",
+        "target_ref",
+        "candidate_digest",
+        "environment",
+        "collected_at",
+        "collected_by",
+        "raw_output_ref",
+        "integrity_check",
+        "redaction",
+        "limits"
+      ],
+      "properties": {
+        "evidence_id": { "$ref": "#/$defs/identifier" },
+        "case_id": { "$ref": "#/$defs/identifier" },
+        "criterion_id": { "$ref": "#/$defs/identifier" },
+        "type": {
+          "enum": [
+            "source",
+            "test_output",
+            "log",
+            "measurement",
+            "query_result",
+            "accessibility_report",
+            "usability_session",
+            "screenshot",
+            "video",
+            "document",
+            "attestation"
+          ]
+        },
+        "origin": { "$ref": "#/$defs/nonEmptyString" },
+        "tool_and_version": { "$ref": "#/$defs/nonEmptyString" },
+        "target_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "environment": { "$ref": "#/$defs/nonEmptyString" },
+        "collected_at": { "$ref": "#/$defs/timestamp" },
+        "collected_by": { "$ref": "#/$defs/agentId" },
+        "raw_output_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "integrity_check": { "$ref": "#/$defs/nonEmptyString" },
+        "redaction": { "$ref": "#/$defs/nonEmptyString" },
+        "limits": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "defectItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "defect_id",
+        "risk_ids",
+        "case_id",
+        "evidence_refs",
+        "candidate_digest",
+        "environment",
+        "severity",
+        "title",
+        "preconditions",
+        "reproduction_steps",
+        "expected",
+        "observed",
+        "impact",
+        "reproducibility",
+        "status",
+        "owner",
+        "retest_evidence_ref"
+      ],
+      "properties": {
+        "defect_id": { "$ref": "#/$defs/identifier" },
+        "risk_ids": { "$ref": "#/$defs/requiredIdList" },
+        "case_id": { "$ref": "#/$defs/identifier" },
+        "evidence_refs": { "$ref": "#/$defs/requiredIdList" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "environment": { "$ref": "#/$defs/nonEmptyString" },
+        "severity": {
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "preconditions": { "$ref": "#/$defs/requiredStringList" },
+        "reproduction_steps": { "$ref": "#/$defs/requiredStringList" },
+        "expected": { "$ref": "#/$defs/nonEmptyString" },
+        "observed": { "$ref": "#/$defs/nonEmptyString" },
+        "impact": { "$ref": "#/$defs/nonEmptyString" },
+        "reproducibility": {
+          "enum": ["always", "intermittent", "once", "unknown"]
+        },
+        "status": {
+          "enum": [
+            "open",
+            "fixed_unverified",
+            "retest_passed"
+          ]
+        },
+        "owner": { "$ref": "#/$defs/nonEmptyString" },
+        "retest_evidence_ref": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "authorizationCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checked_at",
+        "status_seen",
+        "decision",
+        "policy_digest",
+        "evidence_ref",
+        "revocation_ref"
+      ],
+      "properties": {
+        "checked_at": { "$ref": "#/$defs/timestamp" },
+        "status_seen": {
+          "enum": ["active", "revoked", "expired", "not_required"]
+        },
+        "decision": {
+          "enum": ["allowed", "denied", "interrupted", "not_required"]
+        },
+        "policy_digest": { "$ref": "#/$defs/digest" },
+        "evidence_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "revocation_ref": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "cleaned_by",
+        "cleaned_at",
+        "scope_cleaned",
+        "residuals",
+        "evidence_refs",
+        "recovery_status",
+        "recovery_evidence_refs",
+        "pending_ref"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PROVED",
+            "PARTIAL",
+            "FAILED",
+            "NOT_APPLICABLE",
+            "UNVERIFIED"
+          ]
+        },
+        "cleaned_by": { "$ref": "#/$defs/nonEmptyString" },
+        "cleaned_at": {
+          "oneOf": [
+            { "$ref": "#/$defs/timestamp" },
+            { "const": "n/a" }
+          ]
+        },
+        "scope_cleaned": { "$ref": "#/$defs/stringList" },
+        "residuals": { "$ref": "#/$defs/stringList" },
+        "evidence_refs": { "$ref": "#/$defs/idList" },
+        "recovery_status": {
+          "enum": [
+            "PROVED",
+            "PARTIAL",
+            "FAILED",
+            "NOT_APPLICABLE",
+            "UNVERIFIED"
+          ]
+        },
+        "recovery_evidence_refs": { "$ref": "#/$defs/idList" },
+        "pending_ref": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "PROVED" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "cleaned_at": { "$ref": "#/$defs/timestamp" },
+              "scope_cleaned": { "$ref": "#/$defs/requiredStringList" },
+              "evidence_refs": { "$ref": "#/$defs/requiredIdList" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "PARTIAL",
+                  "FAILED",
+                  "NOT_APPLICABLE",
+                  "UNVERIFIED"
+                ]
+              }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "pending_ref": {
+                "$ref": "#/$defs/nonNAText"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "coverageSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicable",
+        "evaluated",
+        "passed",
+        "failed",
+        "skipped",
+        "unverified",
+        "missing"
+      ],
+      "properties": {
+        "applicable": { "type": "integer", "minimum": 0 },
+        "evaluated": { "type": "integer", "minimum": 0 },
+        "passed": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "skipped": { "type": "integer", "minimum": 0 },
+        "unverified": { "type": "integer", "minimum": 0 },
+        "missing": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "testSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pass",
+        "fail",
+        "skip",
+        "skip_reasons",
+        "critical_fail"
+      ],
+      "properties": {
+        "pass": { "type": "integer", "minimum": 0 },
+        "fail": { "type": "integer", "minimum": 0 },
+        "skip": { "type": "integer", "minimum": 0 },
+        "skip_reasons": { "$ref": "#/$defs/stringList" },
+        "critical_fail": { "type": "boolean" }
+      }
+    },
+    "qaTestPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "plan_id",
+        "causal",
+        "department_mission_ref",
+        "mode",
+        "target_ref",
+        "objective",
+        "risks",
+        "criteria",
+        "edge_dimensions",
+        "profiles",
+        "waves",
+        "execution_policy",
+        "saturation_ref",
+        "capability_gap_refs",
+        "pending",
+        "state",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "QA_TEST_PLAN" },
+        "plan_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "mode": { "enum": ["ATUA", "CONSULTA"] },
+        "target_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "objective": { "$ref": "#/$defs/nonEmptyString" },
+        "risks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/riskItem" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "criteria": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterionItem" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "edge_dimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "covered",
+            "not_applicable",
+            "total"
+          ],
+          "properties": {
+            "covered": { "$ref": "#/$defs/coveredEdgeDimensionList" },
+            "not_applicable": {
+              "$ref": "#/$defs/notApplicableEdgeDimensionList"
+            },
+            "total": { "const": 12 }
+          }
+        },
+        "profiles": { "$ref": "#/$defs/profileList" },
+        "waves": { "$ref": "#/$defs/requiredStringList" },
+        "execution_policy": { "$ref": "#/$defs/executionPolicy" },
+        "saturation_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "capability_gap_refs": { "$ref": "#/$defs/idList" },
+        "pending": { "$ref": "#/$defs/pendingList" },
+        "state": { "const": "PLANNED" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-qa-usabilidade" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "qaAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "assignment_id",
+        "causal",
+        "department_mission_ref",
+        "plan_ref",
+        "recipient",
+        "capability",
+        "objective",
+        "profiles",
+        "criterion_ids",
+        "scope_in",
+        "scope_out",
+        "target_ref",
+        "candidate_digest",
+        "inputs",
+        "deliverables",
+        "done",
+        "required_evidence",
+        "depends_on",
+        "permissions",
+        "execution_policy",
+        "test_data",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "QA_ASSIGNMENT" },
+        "assignment_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "plan_ref": { "$ref": "#/$defs/identifier" },
+        "recipient": { "$ref": "#/$defs/agentId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "objective": { "$ref": "#/$defs/nonEmptyString" },
+        "profiles": { "$ref": "#/$defs/profileList" },
+        "criterion_ids": { "$ref": "#/$defs/requiredIdList" },
+        "scope_in": { "$ref": "#/$defs/requiredStringList" },
+        "scope_out": { "$ref": "#/$defs/stringList" },
+        "target_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "inputs": { "$ref": "#/$defs/requiredStringList" },
+        "deliverables": { "$ref": "#/$defs/requiredStringList" },
+        "done": { "$ref": "#/$defs/requiredStringList" },
+        "required_evidence": { "$ref": "#/$defs/requiredStringList" },
+        "depends_on": { "$ref": "#/$defs/idList" },
+        "permissions": { "$ref": "#/$defs/permissions" },
+        "execution_policy": { "$ref": "#/$defs/executionPolicy" },
+        "test_data": { "$ref": "#/$defs/stringList" },
+        "stop_when": { "$ref": "#/$defs/requiredStringList" },
+        "return_to": { "const": "departamento-qa-usabilidade" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-qa-usabilidade" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recipient": { "const": "agente-testes-funcionais" }
+            },
+            "required": ["recipient"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "FUNCTIONAL" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recipient": { "const": "agente-testes-nao-funcionais" }
+            },
+            "required": ["recipient"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "NON_FUNCTIONAL" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recipient": { "const": "agente-usabilidade-e-acessibilidade" }
+            },
+            "required": ["recipient"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "USABILITY_A11Y" }
+            }
+          }
+        }
+      ]
+    },
+    "qaAgentReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "agent_return_id",
+        "causal",
+        "department_mission_ref",
+        "plan_ref",
+        "assignment_ref",
+        "assignment_digest",
+        "execution_policy_digest",
+        "agent_id",
+        "capability",
+        "status",
+        "candidate_digest",
+        "profiles",
+        "results",
+        "evidence",
+        "defects",
+        "pending",
+        "dissent_refs",
+        "authorization_check",
+        "cleanup",
+        "recommended_next_step",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "QA_AGENT_RETURN" },
+        "agent_return_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "plan_ref": { "$ref": "#/$defs/identifier" },
+        "assignment_ref": { "$ref": "#/$defs/identifier" },
+        "assignment_digest": { "$ref": "#/$defs/digest" },
+        "execution_policy_digest": { "$ref": "#/$defs/digest" },
+        "agent_id": { "$ref": "#/$defs/agentId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "status": {
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "blocked"
+          ]
+        },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "profiles": { "$ref": "#/$defs/profileList" },
+        "results": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/testResult" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidenceItem" },
+          "uniqueItems": true
+        },
+        "defects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/defectItem" },
+          "uniqueItems": true
+        },
+        "pending": { "$ref": "#/$defs/pendingList" },
+        "dissent_refs": { "$ref": "#/$defs/idList" },
+        "authorization_check": { "$ref": "#/$defs/authorizationCheck" },
+        "cleanup": { "$ref": "#/$defs/cleanup" },
+        "recommended_next_step": {
+          "$ref": "#/$defs/operationalNextStep"
+        },
+        "returned_to": { "const": "departamento-qa-usabilidade" },
+        "returned_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "agent_id": { "const": "agente-testes-funcionais" }
+            },
+            "required": ["agent_id"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "FUNCTIONAL" },
+              "causal": {
+                "properties": {
+                  "producer": { "const": "agente-testes-funcionais" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "agent_id": { "const": "agente-testes-nao-funcionais" }
+            },
+            "required": ["agent_id"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "NON_FUNCTIONAL" },
+              "causal": {
+                "properties": {
+                  "producer": { "const": "agente-testes-nao-funcionais" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "agent_id": { "const": "agente-usabilidade-e-acessibilidade" }
+            },
+            "required": ["agent_id"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "USABILITY_A11Y" },
+              "causal": {
+                "properties": {
+                  "producer": { "const": "agente-usabilidade-e-acessibilidade" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "results": {
+                "contains": {
+                  "properties": {
+                    "status": { "const": "FAIL" }
+                  },
+                  "required": ["status"]
+                }
+              }
+            },
+            "required": ["results"]
+          },
+          "then": {
+            "properties": {
+              "defects": { "minItems": 1 },
+              "pending": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "results": {
+                "contains": {
+                  "properties": {
+                    "status": {
+                      "enum": ["SKIP", "UNVERIFIED"]
+                    }
+                  },
+                  "required": ["status"]
+                }
+              }
+            },
+            "required": ["results"]
+          },
+          "then": {
+            "properties": {
+              "status": { "enum": ["partial", "blocked"] }
+            }
+          }
+        }
+      ]
+    },
+    "qaRouteRejection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "rejection_id",
+        "causal",
+        "result_code",
+        "failed_checks",
+        "evidence_refs",
+        "impact",
+        "resume_when",
+        "action_started",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "QA_ROUTE_REJECTION" },
+        "rejection_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "result_code": {
+          "enum": [
+            "INVALID_DEPARTMENT_ROUTE",
+            "BLOCKED_BYPASS_ATTEMPT",
+            "CONTRACT_GAP",
+            "AUTHORIZATION_GAP",
+            "INSTRUCTION_IN_DATA"
+          ]
+        },
+        "failed_checks": { "$ref": "#/$defs/requiredStringList" },
+        "evidence_refs": { "$ref": "#/$defs/idList" },
+        "impact": { "$ref": "#/$defs/nonEmptyString" },
+        "resume_when": { "$ref": "#/$defs/nonEmptyString" },
+        "action_started": { "const": false },
+        "returned_to": {
+          "enum": [
+            "diretor-de-lentes",
+            "departamento-qa-usabilidade"
+          ]
+        },
+        "returned_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "qaCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "gap_id",
+        "causal",
+        "required_capability",
+        "required_profiles",
+        "discovery_method",
+        "discovery_evidence",
+        "result",
+        "blocked_criterion_ids",
+        "impact",
+        "reversible_planning_allowed",
+        "safe_state",
+        "owner",
+        "recovery_condition",
+        "status",
+        "returned_to",
+        "detected_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "QA_CAPABILITY_GAP" },
+        "gap_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "required_capability": { "$ref": "#/$defs/capability" },
+        "required_profiles": { "$ref": "#/$defs/profileList" },
+        "discovery_method": { "$ref": "#/$defs/nonEmptyString" },
+        "discovery_evidence": { "$ref": "#/$defs/requiredStringList" },
+        "result": { "$ref": "#/$defs/nonEmptyString" },
+        "blocked_criterion_ids": { "$ref": "#/$defs/requiredIdList" },
+        "impact": { "$ref": "#/$defs/nonEmptyString" },
+        "reversible_planning_allowed": { "type": "boolean" },
+        "safe_state": { "const": "Q_BLOCKED" },
+        "owner": { "const": "diretor-de-lentes" },
+        "recovery_condition": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["open", "mitigated", "closed"] },
+        "returned_to": { "const": "diretor-de-lentes" },
+        "detected_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-qa-usabilidade" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "qaConsolidatedReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "report_id",
+        "causal",
+        "department_mission_ref",
+        "plan_ref",
+        "candidate_digest",
+        "mode",
+        "assignment_refs",
+        "agent_return_refs",
+        "coverage_summary",
+        "test_summary",
+        "evidence_refs",
+        "defect_refs",
+        "pending",
+        "dissent_refs",
+        "confidence",
+        "quality_state",
+        "recommendation",
+        "judge_required",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "QA_CONSOLIDATED_REPORT" },
+        "report_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "plan_ref": { "$ref": "#/$defs/identifier" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "mode": { "enum": ["ATUA", "CONSULTA"] },
+        "assignment_refs": { "$ref": "#/$defs/idList" },
+        "agent_return_refs": { "$ref": "#/$defs/idList" },
+        "coverage_summary": { "$ref": "#/$defs/coverageSummary" },
+        "test_summary": { "$ref": "#/$defs/testSummary" },
+        "evidence_refs": { "$ref": "#/$defs/idList" },
+        "defect_refs": { "$ref": "#/$defs/idList" },
+        "pending": { "$ref": "#/$defs/pendingList" },
+        "dissent_refs": { "$ref": "#/$defs/idList" },
+        "confidence": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+        "quality_state": {
+          "enum": ["PROVED", "FAILED", "PARTIAL", "BLOCKED"]
+        },
+        "recommendation": {
+          "enum": [
+            "READY_FOR_JUDGMENT",
+            "REWORK_REQUIRED",
+            "NOT_PROVEN",
+            "BLOCKED"
+          ]
+        },
+        "judge_required": { "const": true },
+        "returned_to": { "const": "diretor-de-lentes" },
+        "returned_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-qa-usabilidade" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recommendation": { "const": "READY_FOR_JUDGMENT" }
+            },
+            "required": ["recommendation"]
+          },
+          "then": {
+            "properties": {
+              "mode": { "const": "ATUA" },
+              "quality_state": { "const": "PROVED" },
+              "assignment_refs": { "$ref": "#/$defs/requiredIdList" },
+              "agent_return_refs": { "$ref": "#/$defs/requiredIdList" },
+              "evidence_refs": { "$ref": "#/$defs/requiredIdList" },
+              "defect_refs": { "maxItems": 0 },
+              "pending": { "maxItems": 0 },
+              "confidence": { "const": "HIGH" },
+              "test_summary": {
+                "properties": {
+                  "pass": { "type": "integer", "minimum": 1 },
+                  "fail": { "const": 0 },
+                  "skip": { "const": 0 },
+                  "skip_reasons": { "maxItems": 0 },
+                  "critical_fail": { "const": false }
+                }
+              },
+              "coverage_summary": {
+                "properties": {
+                  "applicable": { "type": "integer", "minimum": 1 },
+                  "evaluated": { "type": "integer", "minimum": 1 },
+                  "passed": { "type": "integer", "minimum": 1 },
+                  "failed": { "const": 0 },
+                  "skipped": { "const": 0 },
+                  "unverified": { "const": 0 },
+                  "missing": { "const": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recommendation": { "const": "REWORK_REQUIRED" }
+            },
+            "required": ["recommendation"]
+          },
+          "then": {
+            "properties": {
+              "quality_state": { "const": "FAILED" },
+              "assignment_refs": { "$ref": "#/$defs/requiredIdList" },
+              "agent_return_refs": { "$ref": "#/$defs/requiredIdList" },
+              "evidence_refs": { "$ref": "#/$defs/requiredIdList" },
+              "pending": { "minItems": 1 },
+              "test_summary": {
+                "properties": {
+                  "fail": { "type": "integer", "minimum": 1 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recommendation": { "const": "NOT_PROVEN" }
+            },
+            "required": ["recommendation"]
+          },
+          "then": {
+            "properties": {
+              "quality_state": { "const": "PARTIAL" },
+              "assignment_refs": { "$ref": "#/$defs/requiredIdList" },
+              "agent_return_refs": { "$ref": "#/$defs/requiredIdList" },
+              "pending": { "minItems": 1 },
+              "test_summary": {
+                "properties": {
+                  "fail": { "const": 0 },
+                  "critical_fail": { "const": false }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recommendation": { "const": "BLOCKED" }
+            },
+            "required": ["recommendation"]
+          },
+          "then": {
+            "properties": {
+              "quality_state": { "const": "BLOCKED" },
+              "pending": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

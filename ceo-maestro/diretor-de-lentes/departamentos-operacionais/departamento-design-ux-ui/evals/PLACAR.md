@@ -1,0 +1,138 @@
+# Placar de migração — Departamento de Design UX/UI
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **109/109 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
+>
+> Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
+
+Data: 2026-07-26
+Versão avaliada: 1.0.0
+Escopo: migração de `SKILL - Nova formula/maestro/comite-de-lentes/lente-designer` (249 arquivos)
+para `Estrutura Final de Skills/…/departamentos-operacionais/departamento-design-ux-ui`, com
+fundamentação adicional na lente canônica `designer-ux-ui` e no catálogo Impeccable
+
+## Resultado
+
+| Verificação | Resultado | Executado? |
+|---|---:|---|
+| Validador determinístico do Departamento | 109/109 PASS | **sim** |
+| Regressão do `departamento-arquitetura-dados` | 110/110 PASS | **sim** |
+| Regressão do `departamento-arquitetura-software` | 70/70 PASS | **sim** |
+| Regressão do `departamento-auditoria-responsabilidades` | 64/64 PASS | **sim** |
+| Regressão do `departamento-juizes` | 61/61 PASS | **sim** |
+| Regressão do `diretor-de-lentes` | 49/49 PASS | **sim** |
+| Regressão do `ceo-maestro` | 32/32 PASS | **sim** |
+| Motor compartilhado de schema | 55/55 PASS | **sim** |
+| Cadeia integrada da estrutura | **1097/1097 PASS** | **sim** |
+| Forward comportamental (16 prompts de `evals.json`) | **15/16 casos · 45/45 asserções · 0 contorno** | **sim** — [FORWARD-TEST.md](FORWARD-TEST.md) |
+| Acionamento por roteamento cego (2 instâncias) | **16/16 idênticos · 12/16 para este Departamento** | **sim** — idem |
+| Baseline do pacote legado | — | **NÃO — existe no legado, não foi reproduzido aqui** |
+| Auditoria independente | — | **NÃO — pendente** |
+| Parecer dos Juízes | — | **NÃO — pendente** |
+
+```bash
+python evals/validate_workflow.py
+```
+
+## O que o validador prova
+
+**Pacote e vínculos (10 casos).** Arquivos obrigatórios e as cinco referências; `agentes/` com
+exatamente os **sete** nomes canônicos; frontmatter com `description` entre aspas e ≤ 1024;
+`SKILL.md` ≤ 500 linhas; `short_description` de 25–64; **posição na hierarquia conferida em
+runtime**; fonte normativa no caminho relativo de cada nível; todos os links internos resolvendo;
+`workerId` batendo com as pastas reais; e o `enum` das **nove dimensões** idêntico ao da referência.
+
+**Travas do ADR-009 (5 casos).** O validador percorre o schema inteiro e falha se encontrar nome de
+propriedade de **nota** (`score`, `minimum_score`, `verdict`, `rubrica`, `ranking`…), de **painel
+comparativo** (`painel`, `blind`, `winner`, `provenance_seal`, `opaque_id`, `pairwise`…) ou de
+**código** (`html`, `css`, `fxml`, `jsx`, `patch`…). Mais `producer` travado por `const` e
+`test_summary.pass` travado em `0`.
+
+**Artefatos aceitos (16).** `DESIGN_PLAN` em `PROJETO` e em `POLISH`, as sete `DESIGN_TASK` e os
+sete `DESIGN_RETURN`, `DESIGN_CAPABILITY_GAP` e `DESIGN_LEDGER` com gate aprovado.
+
+**Casos negativos — plano e Design Read (6).** `POLISH` sem superfície observável; `POLISH` com
+superfície mas **sem nenhum sinal `OBSERVADO`**; sinal `OBSERVADO` sem localizador; sinal `HIPOTESE`
+sem o risco; plano sem nenhum sinal; produtor forjado.
+
+**Casos negativos — tarefa (5).** Capacidade trocada para o agente; acessibilidade emitida fora da
+onda de verificação independente; `forbidden_context` sem a proibição de produzir código; tarefa
+endereçada a agente de outro Departamento; retorno endereçado ao Diretor.
+
+**Casos negativos — retorno (16).** **`ATENDIDO` sustentado por `REPORTED`** e por `UNAVAILABLE` —
+as duas travas centrais do ADR-009 §8 —; `UNVERIFIED` com `UNAVAILABLE` (aceito, é legítimo);
+`MEASURED` sem valor e método; `UNAVAILABLE` sem motivo; fluxo sem `VAZIO`, sem `ERRO` e sem nenhum
+estado; a11y concluída sem nenhum critério medido; **anti-slop rodado sobre a própria saída**;
+tokens sem token; adaptação sem primitiva nomeada; `BLOCKED` sem e com motivo; `NAO_APLICAVEL` sem
+motivo específico; `PARCIAL` sem nomear o que falta.
+
+**Casos negativos — livro-razão e gate visual (16).** **Dependência de implementação com o gate
+`PENDING`** e com `REJECTED` — o mockup-first virado trava —; gate `PENDING` sem dependência
+(aceito); aprovação sem ator nomeado e sem superfície revisável; `ENTREGUE` com a dimensão de fluxo
+e estados `AUSENTE` e com a de a11y `AUSENTE`; oito dimensões; dimensão duplicada; sem registro de
+emissão; com pendência pendurada; lacuna aberta sem bloquear e com bloqueio (aceito); teste
+declarado como executado; retorno fora do Diretor; `INCOMPLETA` legítima.
+
+**Fronteira com os consumidores (6).** O `DESIGN_LEDGER` é convertido em `DEPARTMENT_RETURN` e
+validado **contra o schema do `diretor-de-lentes`** — não contra o próprio. O Diretor aceita o
+envelope e rejeita autor divergente do produtor e retorno endereçado ao CEO. Mais três confirmações
+do outro lado: o Diretor reconhece este Departamento em `operationalDepartment` e em
+`knownCapability`, e **o modo `DISPUTA` continua existindo no schema dos Juízes** — a prova de que o
+painel comparativo tem dono, e não é este.
+
+**Regras recalculadas em código (24).** Sem consultar o campo declarado: a entrega fecha com as nove
+dimensões cobertas e o gate aprovado, e **não fecha** com qualquer dimensão ausente; oito cobertas
+não compensam a nona; não fecha com gate `PENDING`, sem registro de emissão ou com lacuna aberta;
+`PARCIAL` não impede. Mais a mecânica do gate — aberto trava a dependência, aprovado libera, aberto
+sem dependência não é violação — e a da evidência: `REPORTED` e `UNAVAILABLE` não sustentam
+`ATENDIDO`, `MEASURED` sustenta, e `REPORTED` em `UNVERIFIED` é legítimo. E os três estados mínimos.
+
+**Coerência do catálogo (5).** 16 casos, todos com `acionou`/`aderiu`, ao menos um de recusa por
+fronteira; digests verificáveis.
+
+## Defeito encontrado e corrigido
+
+**A armadilha de profundidade, pela quarta vez.** Os links do ADR-009 para o ADR-006 e o ADR-008
+saíram com `../` em vez de `../../`. Mesmo erro do ADR-003, do ADR-006 e do ADR-008 — agora com o
+aviso escrito como **armadilha nº 1** do `GUIA-DE-EXPANSAO-E-MIGRACAO.md` desde a primeira
+ocorrência.
+
+Quatro repetições com o aviso presente é evidência suficiente para uma conclusão de processo: **o
+aviso em prosa não previne esse erro. O `validate_links` o pega, todas as vezes.** A defesa que
+funciona é mecânica, e a lição vale além deste caso — foi exatamente o mesmo raciocínio que levou o
+ADR-009 a converter a taxonomia de evidência de orientação em prosa para condição de schema.
+
+## O que ainda não foi provado
+
+`SKIP` declarado com motivo — prova executada > checklist, e sucesso simulado é violação (RI-04):
+
+1. **Forward comportamental — EXECUTADO em 2026-07-26.** 18 instâncias independentes,
+   [FORWARD-TEST.md](FORWARD-TEST.md): **15/16 casos, 45/45 asserções, zero contorno**, acionamento
+   **16/16 idêntico** entre dois roteadores cegos. A Lei de Ferro segurou sob o pedido direto de
+   "faz o código da tela". **Não medido:** disparo orgânico — o pacote não está instalado como skill
+   de runtime. **Defeito de catálogo encontrado:** o caso 3 é inválido por especificação (afirma um
+   anexo que não existe), então o catálogo tem 15 casos válidos, não 16.
+2. **Baseline — este é o caso especial deste pacote.** A `lente-designer` **tem** baseline
+   registrado (`evals/placar-baseline.md`, três rodadas de evals em `.mjs`). Ele **não foi
+   reproduzido aqui**, e os dois instrumentos não são comparáveis: o legado media a orquestração com
+   descoberta de executores, que este pacote deliberadamente não tem. Portanto **a afirmação "a
+   migração melhora o comportamento" não só não foi medida — ela não é medível pelos instrumentos
+   existentes** sem um catálogo comum novo. É a dívida mais concreta deste Departamento.
+3. **Auditoria independente e parecer dos Juízes.** Pendentes.
+4. **R2 — `MEASURED` depende de quem mede.** O schema exige valor e método; **não recomputa o
+   valor**. Contraste declarado `5.2:1` com método plausível passa. Encarece a fabricação; não a
+   impede.
+5. **R3 — anti-slop é juízo, não métrica.** Os testes de 1ª e 2ª ordem são qualitativos. A separação
+   de agentes reduz a autocomplacência; não a elimina.
+6. **R5 — existência das ondas.** Um `DESIGN_LEDGER` coerente é reproduzível sem nenhuma
+   `DESIGN_TASK` emitida.
+7. **R6 — Impeccable é referência externa** (`pbakaus/impeccable`, Apache-2.0). Se ela mudar, este
+   pacote não é notificado.
+
+## Efeito sobre a estrutura
+
+Com Design migrado, o `departamento-juizes` passa a ter um **segundo cliente para o modo `DISPUTA`**
+— alternativas visuais chegando pelo Diretor. E o `departamento-desenvolvimento`, ainda ausente,
+acumula agora dependências de três Departamentos: Arquitetura, Dados e Design.
+
+O legado permanece **intacto**, com os 249 arquivos, o `placar-baseline.md` e as três rodadas de
+evals — rollback manual, nunca fallback automático.

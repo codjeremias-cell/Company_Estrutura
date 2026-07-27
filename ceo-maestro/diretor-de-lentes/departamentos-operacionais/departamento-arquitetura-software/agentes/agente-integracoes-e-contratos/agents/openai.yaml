@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integrações e Contratos"
+  short_description: "Define contratos, falhas e versionamento"
+  default_prompt: "Use $agente-integracoes-e-contratos somente por ARCHITECTURE_TASK do departamento-arquitetura-software, para definir estilo síncrono ou assíncrono, contrato, versionamento, idempotência, garantias e modo de falha de cada integração."

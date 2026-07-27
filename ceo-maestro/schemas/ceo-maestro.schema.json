@@ -1,0 +1,1560 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/ceo-maestro.schema.json",
+  "title": "Contratos do CEO Maestro",
+  "description": "Artefatos executivos, gate mínimo 9,5 e exceção autorizada exclusivamente por Jeremias.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/executiveMission"
+    },
+    {
+      "$ref": "#/$defs/judgeReport"
+    },
+    {
+      "$ref": "#/$defs/limitationReport"
+    },
+    {
+      "$ref": "#/$defs/exceptionRequest"
+    },
+    {
+      "$ref": "#/$defs/exceptionAuthorization"
+    },
+    {
+      "$ref": "#/$defs/executiveSubmission"
+    },
+    {
+      "$ref": "#/$defs/executiveDecision"
+    },
+    {
+      "$ref": "#/$defs/capabilityGap"
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
+    "artifactRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
+      "uniqueItems": true
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "directExecutive": {
+      "enum": [
+        "diretor-de-lentes",
+        "departamento-negocios",
+        "departamento-evolucao-skills"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "front_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "message_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causation_message_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "contract_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": {
+          "enum": [
+            "ceo-maestro",
+            "diretor-de-lentes",
+            "departamento-negocios",
+            "departamento-juizes",
+            "departamento-evolucao-skills"
+          ]
+        },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "scoreItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "applicable",
+        "score",
+        "evidence_refs"
+      ],
+      "properties": {
+        "criterion_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "applicable": {
+          "type": "boolean"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        }
+      }
+    },
+    "testSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pass",
+        "fail",
+        "skip",
+        "skip_reasons",
+        "critical_fail"
+      ],
+      "properties": {
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "critical_fail": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "skip": {
+                "minimum": 1
+              }
+            },
+            "required": [
+              "skip"
+            ]
+          },
+          "then": {
+            "properties": {
+              "skip_reasons": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "skip_reasons": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "governanceReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "report_id",
+        "auditor_ref",
+        "auditor_digest",
+        "candidate_digest",
+        "contract_digest",
+        "rules_digest",
+        "verdict",
+        "violations",
+        "evidence_refs",
+        "issued_at"
+      ],
+      "properties": {
+        "report_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "auditor_ref": {
+          "const": "departamento-auditoria-responsabilidades"
+        },
+        "auditor_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "rules_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "verdict": {
+          "enum": [
+            "COMPLIANT",
+            "NONCOMPLIANT"
+          ]
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "COMPLIANT"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "violations": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "violations": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nonWaivableGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "critical_fail_absent",
+        "rules_compliant",
+        "done_proved",
+        "blocking_pending_absent",
+        "integrity_valid",
+        "authority_reconciled"
+      ],
+      "properties": {
+        "critical_fail_absent": {
+          "type": "boolean"
+        },
+        "rules_compliant": {
+          "type": "boolean"
+        },
+        "done_proved": {
+          "type": "boolean"
+        },
+        "blocking_pending_absent": {
+          "type": "boolean"
+        },
+        "integrity_valid": {
+          "type": "boolean"
+        },
+        "authority_reconciled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "nonWaivablePassed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "critical_fail_absent",
+        "rules_compliant",
+        "done_proved",
+        "blocking_pending_absent",
+        "integrity_valid",
+        "authority_reconciled"
+      ],
+      "properties": {
+        "critical_fail_absent": {
+          "const": true
+        },
+        "rules_compliant": {
+          "const": true
+        },
+        "done_proved": {
+          "const": true
+        },
+        "blocking_pending_absent": {
+          "const": true
+        },
+        "integrity_valid": {
+          "const": true
+        },
+        "authority_reconciled": {
+          "const": true
+        }
+      }
+    },
+    "executiveMission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "mission_id",
+        "causal",
+        "recipients",
+        "objective",
+        "deliverable_type",
+        "scope_in",
+        "scope_out",
+        "constraints",
+        "decisions_binding",
+        "dependencies",
+        "acceptance_criteria",
+        "required_evidence",
+        "matrix_exchange",
+        "permissions",
+        "stop_when",
+        "judge_gate_required",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "EXECUTIVE_MISSION"
+        },
+        "mission_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/directExecutive"
+          },
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 10
+        },
+        "deliverable_type": {
+          "enum": [
+            "analysis",
+            "product",
+            "proposal"
+          ]
+        },
+        "scope_in": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "scope_out": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "decisions_binding": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "acceptance_criteria": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "required_evidence": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "matrix_exchange": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "allowed",
+            "topics",
+            "read_scope",
+            "write_scope",
+            "consolidation_owner"
+          ],
+          "properties": {
+            "allowed": {
+              "type": "boolean"
+            },
+            "topics": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 3
+              },
+              "uniqueItems": true
+            },
+            "read_scope": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 3
+              },
+              "uniqueItems": true
+            },
+            "write_scope": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 3
+              },
+              "uniqueItems": true
+            },
+            "consolidation_owner": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/directExecutive"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "default_policy",
+            "allowed_tools",
+            "allowed_resources",
+            "expires_at"
+          ],
+          "properties": {
+            "default_policy": {
+              "const": "deny"
+            },
+            "allowed_tools": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "allowed_resources": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "expires_at": {
+              "$ref": "#/$defs/timestamp"
+            }
+          }
+        },
+        "stop_when": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "judge_gate_required": {
+          "type": "boolean"
+        },
+        "return_to": {
+          "const": "ceo-maestro"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "deliverable_type": {
+                "enum": [
+                  "product",
+                  "proposal"
+                ]
+              }
+            },
+            "required": [
+              "deliverable_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "judge_gate_required": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recipients": {
+                "minItems": 2
+              }
+            },
+            "required": [
+              "recipients"
+            ]
+          },
+          "then": {
+            "properties": {
+              "matrix_exchange": {
+                "properties": {
+                  "allowed": {
+                    "const": true
+                  },
+                  "topics": {
+                    "minItems": 1
+                  },
+                  "read_scope": {
+                    "minItems": 1
+                  },
+                  "write_scope": {
+                    "minItems": 1
+                  },
+                  "consolidation_owner": {
+                    "$ref": "#/$defs/directExecutive"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "matrix_exchange": {
+                "properties": {
+                  "allowed": {
+                    "const": false
+                  },
+                  "topics": {
+                    "maxItems": 0
+                  },
+                  "read_scope": {
+                    "maxItems": 0
+                  },
+                  "write_scope": {
+                    "maxItems": 0
+                  },
+                  "consolidation_owner": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "const": "ceo-maestro"
+                },
+                "candidate_digest": {
+                  "const": "n/a"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "judgeReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "report_id",
+        "causal",
+        "candidate_digest",
+        "judge_capability_ref",
+        "judge_capability_digest",
+        "scorecard",
+        "minimum_score",
+        "verdict",
+        "critical_fail",
+        "blocking_pending_refs",
+        "evidence_refs",
+        "issued_at",
+        "expires_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "JUDGE_REPORT"
+        },
+        "report_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "judge_capability_ref": {
+          "const": "departamento-juizes"
+        },
+        "judge_capability_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "scorecard": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/scoreItem"
+          },
+          "minItems": 1
+        },
+        "minimum_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "verdict": {
+          "enum": [
+            "VALIDATED",
+            "REPROVED"
+          ]
+        },
+        "critical_fail": {
+          "type": "boolean"
+        },
+        "blocking_pending_refs": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "const": "departamento-juizes"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "VALIDATED"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "minimum": 9.5
+              },
+              "critical_fail": {
+                "const": false
+              },
+              "blocking_pending_refs": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "independentVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer",
+        "reviewer_digest",
+        "verdict",
+        "independence_confirmed",
+        "all_below_cutoff_criteria_covered",
+        "evidence_refs",
+        "dissent_refs"
+      ],
+      "properties": {
+        "reviewer": {
+          "const": "departamento-juizes"
+        },
+        "reviewer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "verdict": {
+          "const": "VERIFIED_IMPOSSIBILITY"
+        },
+        "independence_confirmed": {
+          "const": true
+        },
+        "all_below_cutoff_criteria_covered": {
+          "const": true
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "dissent_refs": {
+          "$ref": "#/$defs/optionalRefs"
+        }
+      }
+    },
+    "limitationReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "report_id",
+        "causal",
+        "submitted_by",
+        "candidate_digest",
+        "score_snapshot_digest",
+        "current_minimum_score",
+        "best_attainable_score",
+        "below_cutoff_evaluations",
+        "objective_factors",
+        "attempted_remediations",
+        "alternatives_assessed",
+        "why_gap_cannot_close",
+        "residual_risks",
+        "mitigations",
+        "requested_scope",
+        "independent_verification",
+        "evidence_refs",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "LIMITATION_REPORT"
+        },
+        "report_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "submitted_by": {
+          "$ref": "#/$defs/directExecutive"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "score_snapshot_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "current_minimum_score": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 9.5
+        },
+        "best_attainable_score": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 9.5
+        },
+        "below_cutoff_evaluations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/scoreItem"
+          },
+          "minItems": 1
+        },
+        "objective_factors": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "attempted_remediations": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "alternatives_assessed": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "why_gap_cannot_close": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "residual_risks": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "mitigations": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "requested_scope": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "independent_verification": {
+          "$ref": "#/$defs/independentVerification"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "$ref": "#/$defs/directExecutive"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "exceptionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "request_id",
+        "causal",
+        "candidate_digest",
+        "score_snapshot_digest",
+        "judge_report_ref",
+        "limitation_report_ref",
+        "actual_minimum_score",
+        "cutoff_score",
+        "requested_scope",
+        "residual_risks",
+        "mitigations",
+        "nonwaivable_gates",
+        "requested_authority",
+        "issued_at",
+        "expires_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "EXCEPTION_REQUEST"
+        },
+        "request_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "score_snapshot_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "judge_report_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "limitation_report_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "actual_minimum_score": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 9.5
+        },
+        "cutoff_score": {
+          "const": 9.5
+        },
+        "requested_scope": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "residual_risks": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "mitigations": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "nonwaivable_gates": {
+          "$ref": "#/$defs/nonWaivablePassed"
+        },
+        "requested_authority": {
+          "const": "jeremias"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "const": "ceo-maestro"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "exceptionAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "authorization_id",
+        "exception_request_id",
+        "decision",
+        "authorized_by",
+        "identity_evidence_ref",
+        "citation_exact",
+        "candidate_digest",
+        "score_snapshot_digest",
+        "actual_minimum_score",
+        "scope",
+        "conditions",
+        "issued_at",
+        "expires_at",
+        "usage_policy",
+        "status"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "EXCEPTION_AUTHORIZATION"
+        },
+        "authorization_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "exception_request_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "decision": {
+          "enum": [
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "authorized_by": {
+          "const": "jeremias"
+        },
+        "identity_evidence_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "citation_exact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "score_snapshot_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "actual_minimum_score": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 9.5
+        },
+        "scope": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "usage_policy": {
+          "const": "single_use"
+        },
+        "status": {
+          "enum": [
+            "AUTHORIZED",
+            "CONSUMED",
+            "REVOKED",
+            "EXPIRED"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "APPROVED"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "AUTHORIZED",
+                  "CONSUMED"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "REVOKED",
+                  "EXPIRED"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "executiveSubmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "submission_id",
+        "causal",
+        "submitted_by",
+        "deliverable_type",
+        "executive_mission",
+        "scope_touched",
+        "artifact_refs",
+        "evidence_refs",
+        "candidate_digest",
+        "test_summary",
+        "audit_refs",
+        "governance_report",
+        "judge_report",
+        "limitation_report",
+        "exception_authorization",
+        "blocking_pending_refs",
+        "round",
+        "returned_to",
+        "submitted_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "EXECUTIVE_SUBMISSION"
+        },
+        "submission_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "submitted_by": {
+          "$ref": "#/$defs/directExecutive"
+        },
+        "deliverable_type": {
+          "enum": [
+            "product",
+            "proposal",
+            "analysis"
+          ]
+        },
+        "executive_mission": {
+          "$ref": "#/$defs/executiveMission"
+        },
+        "scope_touched": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "artifact_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "test_summary": {
+          "$ref": "#/$defs/testSummary"
+        },
+        "audit_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "governance_report": {
+          "$ref": "#/$defs/governanceReport"
+        },
+        "judge_report": {
+          "$ref": "#/$defs/judgeReport"
+        },
+        "limitation_report": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/limitationReport"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_authorization": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/exceptionAuthorization"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocking_pending_refs": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "returned_to": {
+          "const": "ceo-maestro"
+        },
+        "submitted_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "$ref": "#/$defs/directExecutive"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "executiveDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "decision_id",
+        "causal",
+        "submission_ref",
+        "candidate_digest",
+        "minimum_score",
+        "judge_report_ref",
+        "limitation_report_ref",
+        "exception_authorization_ref",
+        "decision",
+        "acceptance_basis",
+        "nonwaivable_gates",
+        "evidence_refs",
+        "decided_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "EXECUTIVE_DECISION"
+        },
+        "decision_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "submission_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "minimum_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "judge_report_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "limitation_report_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/artifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_authorization_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/artifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decision": {
+          "enum": [
+            "VALIDATED",
+            "REWORK",
+            "AWAITING_HUMAN_EXCEPTION",
+            "VALIDATED_BY_EXCEPTION",
+            "BLOCKED",
+            "CANCELLED",
+            "LIMIT_REACHED"
+          ]
+        },
+        "acceptance_basis": {
+          "enum": [
+            "quality_gate",
+            "jeremias_exception",
+            "none"
+          ]
+        },
+        "nonwaivable_gates": {
+          "$ref": "#/$defs/nonWaivableGates"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "decided_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "const": "ceo-maestro"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "VALIDATED"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "minimum": 9.5
+              },
+              "limitation_report_ref": {
+                "type": "null"
+              },
+              "exception_authorization_ref": {
+                "type": "null"
+              },
+              "acceptance_basis": {
+                "const": "quality_gate"
+              },
+              "nonwaivable_gates": {
+                "$ref": "#/$defs/nonWaivablePassed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "AWAITING_HUMAN_EXCEPTION"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "exclusiveMaximum": 9.5
+              },
+              "limitation_report_ref": {
+                "$ref": "#/$defs/artifactRef"
+              },
+              "exception_authorization_ref": {
+                "type": "null"
+              },
+              "acceptance_basis": {
+                "const": "none"
+              },
+              "nonwaivable_gates": {
+                "$ref": "#/$defs/nonWaivablePassed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "VALIDATED_BY_EXCEPTION"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "exclusiveMaximum": 9.5
+              },
+              "limitation_report_ref": {
+                "$ref": "#/$defs/artifactRef"
+              },
+              "exception_authorization_ref": {
+                "$ref": "#/$defs/artifactRef"
+              },
+              "acceptance_basis": {
+                "const": "jeremias_exception"
+              },
+              "nonwaivable_gates": {
+                "$ref": "#/$defs/nonWaivablePassed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "enum": [
+                  "REWORK",
+                  "BLOCKED",
+                  "CANCELLED",
+                  "LIMIT_REACHED"
+                ]
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "acceptance_basis": {
+                "const": "none"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "capabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "gap_id",
+        "causal",
+        "required_capability",
+        "expected_path",
+        "impact",
+        "safe_state",
+        "detected_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "CAPABILITY_GAP"
+        },
+        "gap_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "required_capability": {
+          "enum": [
+            "diretor-de-lentes",
+            "departamento-negocios",
+            "departamento-juizes",
+            "departamento-evolucao-skills"
+          ]
+        },
+        "expected_path": {
+          "type": "string",
+          "minLength": 5
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "safe_state": {
+          "const": "BLOCKED"
+        },
+        "detected_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "const": "ceo-maestro"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,732 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-auditoria-responsabilidades.schema.json",
+  "title": "Contratos internos do Departamento de Auditoria e Responsabilidades",
+  "description": "Tarefa de auditoria, recibo por capacidade, matriz das dez dimensões, lacuna de cobertura e livro-razão da rodada. Sem nota: a pontuação do candidato pertence ao departamento-juizes (ADR-003). Os envelopes de fronteira (DEPARTMENT_MISSION, DEPARTMENT_RETURN, GOVERNANCE_REPORT) pertencem aos schemas do diretor-de-lentes e do ceo-maestro e não são redefinidos aqui.",
+  "oneOf": [
+    { "$ref": "#/$defs/auditTask" },
+    { "$ref": "#/$defs/auditReceipt" },
+    { "$ref": "#/$defs/conformityMatrix" },
+    { "$ref": "#/$defs/auditCapabilityGap" },
+    { "$ref": "#/$defs/auditLedger" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "digestOrNa": {
+      "oneOf": [
+        { "$ref": "#/$defs/digest" },
+        { "type": "string", "pattern": "^n/a:.{5,}$" }
+      ]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "artifactRef": { "type": "string", "minLength": 3, "maxLength": 512 },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "uniqueItems": true
+    },
+    "dimension": {
+      "enum": [
+        "INTENT",
+        "AUTH",
+        "ESCOPO",
+        "PENDING",
+        "RACI",
+        "RI_RO",
+        "SURPRESAS_BYPASS",
+        "EVIDENCIA",
+        "ARTEFATOS_TWINS",
+        "RASTREABILIDADE"
+      ]
+    },
+    "dimensionState": {
+      "enum": [
+        "CONFORME",
+        "RESSALVA",
+        "NAO_CONFORME",
+        "NAO_APLICAVEL",
+        "NAO_PROVADO"
+      ]
+    },
+    "capability": {
+      "enum": [
+        "contrato-e-autoridade",
+        "governanca-e-responsabilidades",
+        "evidencias-e-artefatos"
+      ]
+    },
+    "auditorId": {
+      "enum": [
+        "agente-reconciliar-contrato-e-autoridade",
+        "agente-verificar-governanca-e-responsabilidades",
+        "agente-conferir-evidencias-e-artefatos"
+      ]
+    },
+    "auditorStatus": {
+      "enum": [ "COMPLETED", "BLOCKED", "SEM_RETORNO", "FALHO" ]
+    },
+    "internalVerdict": {
+      "enum": [ "APROVADO", "APROVADO_COM_RESSALVAS", "REPROVADO" ]
+    },
+    "governanceVerdict": {
+      "enum": [ "COMPLIANT", "NONCOMPLIANT" ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "producer": { "const": "departamento-auditoria-responsabilidades" },
+        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "custodyEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_ref",
+        "artifact_ref",
+        "source_version",
+        "artifact_digest",
+        "collected_by",
+        "collected_at",
+        "handed_from",
+        "handed_to",
+        "handed_at",
+        "access_mode"
+      ],
+      "properties": {
+        "evidence_ref": { "$ref": "#/$defs/identifier" },
+        "artifact_ref": { "$ref": "#/$defs/artifactRef" },
+        "source_version": { "type": "string", "minLength": 1 },
+        "artifact_digest": { "$ref": "#/$defs/digestOrNa" },
+        "collected_by": { "type": "string", "minLength": 3 },
+        "collected_at": { "$ref": "#/$defs/timestamp" },
+        "handed_from": { "type": "string", "minLength": 3 },
+        "handed_to": { "$ref": "#/$defs/auditorId" },
+        "handed_at": { "$ref": "#/$defs/timestamp" },
+        "access_mode": { "const": "read-only" }
+      }
+    },
+    "reviewChainTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflict_checked_by",
+        "solution_participant_conflict",
+        "expected_conclusion_withheld",
+        "prior_votes_withheld"
+      ],
+      "properties": {
+        "conflict_checked_by": {
+          "const": "departamento-auditoria-responsabilidades"
+        },
+        "solution_participant_conflict": { "const": false },
+        "expected_conclusion_withheld": { "const": true },
+        "prior_votes_withheld": { "const": true }
+      }
+    },
+    "taskDimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "dimension", "role" ],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "role": { "enum": [ "owner", "secondary" ] }
+      }
+    },
+    "auditTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "auditor_id",
+        "capability",
+        "candidate_digest",
+        "dimensions",
+        "scope_in",
+        "scope_out",
+        "inputs",
+        "checks",
+        "evidence_required",
+        "custody_chain",
+        "review_chain",
+        "forbidden_context",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "AUDIT_TASK" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "auditor_id": { "$ref": "#/$defs/auditorId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "dimensions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/taskDimension" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "scope_in": { "$ref": "#/$defs/requiredStrings" },
+        "scope_out": { "$ref": "#/$defs/optionalStrings" },
+        "inputs": { "$ref": "#/$defs/requiredRefs" },
+        "checks": { "$ref": "#/$defs/requiredStrings" },
+        "evidence_required": { "$ref": "#/$defs/requiredStrings" },
+        "custody_chain": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/custodyEntry" },
+          "uniqueItems": true
+        },
+        "review_chain": { "$ref": "#/$defs/reviewChainTask" },
+        "forbidden_context": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 4,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "conclus" },
+          "minContains": 1
+        },
+        "stop_when": { "$ref": "#/$defs/requiredStrings" },
+        "return_to": { "const": "departamento-auditoria-responsabilidades" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "auditor_id": { "const": "agente-reconciliar-contrato-e-autoridade" }
+            },
+            "required": [ "auditor_id" ]
+          },
+          "then": {
+            "properties": { "capability": { "const": "contrato-e-autoridade" } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "auditor_id": {
+                "const": "agente-verificar-governanca-e-responsabilidades"
+              }
+            },
+            "required": [ "auditor_id" ]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "governanca-e-responsabilidades" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "auditor_id": { "const": "agente-conferir-evidencias-e-artefatos" }
+            },
+            "required": [ "auditor_id" ]
+          },
+          "then": {
+            "properties": { "capability": { "const": "evidencias-e-artefatos" } }
+          }
+        }
+      ]
+    },
+    "receiptDimensionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dimension",
+        "state",
+        "reason",
+        "evidence_refs",
+        "not_applicable_reason"
+      ],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "state": { "$ref": "#/$defs/dimensionState" },
+        "reason": { "type": "string", "minLength": 10 },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "not_applicable_reason": { "type": "string", "minLength": 3 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "state": { "const": "NAO_APLICAVEL" } },
+            "required": [ "state" ]
+          },
+          "then": {
+            "properties": {
+              "not_applicable_reason": { "type": "string", "minLength": 20 }
+            }
+          },
+          "else": {
+            "properties": { "not_applicable_reason": { "const": "n/a" } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": { "enum": [ "CONFORME", "RESSALVA", "NAO_CONFORME" ] }
+            },
+            "required": [ "state" ]
+          },
+          "then": {
+            "properties": { "evidence_refs": { "minItems": 1 } }
+          }
+        }
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "dimension",
+        "criterion_ref",
+        "evidence_refs",
+        "artifact_refs",
+        "severity",
+        "blocking",
+        "owner_role",
+        "corrective_condition"
+      ],
+      "properties": {
+        "finding_id": { "$ref": "#/$defs/identifier" },
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "criterion_ref": { "type": "string", "minLength": 3 },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "artifact_refs": { "$ref": "#/$defs/requiredRefs" },
+        "severity": { "enum": [ "BLOCKER", "HIGH", "MEDIUM", "LOW" ] },
+        "blocking": { "type": "boolean" },
+        "owner_role": { "type": "string", "minLength": 3 },
+        "corrective_condition": { "type": "string", "minLength": 10 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "severity": { "const": "BLOCKER" } },
+            "required": [ "severity" ]
+          },
+          "then": {
+            "properties": { "blocking": { "const": true } }
+          }
+        }
+      ]
+    },
+    "auditReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "auditor_id",
+        "capability",
+        "contract_digest",
+        "candidate_digest",
+        "review_chain",
+        "dimension_states",
+        "findings",
+        "scope_observed",
+        "pending",
+        "status",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "AUDIT_RECEIPT" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "auditor_id": { "$ref": "#/$defs/auditorId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "review_chain": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context_clean",
+            "independent",
+            "reviewed_at",
+            "reviewed_input_refs"
+          ],
+          "properties": {
+            "context_clean": { "const": true },
+            "independent": { "const": true },
+            "reviewed_at": { "$ref": "#/$defs/timestamp" },
+            "reviewed_input_refs": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/identifier" },
+              "uniqueItems": true
+            }
+          }
+        },
+        "dimension_states": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/receiptDimensionState" },
+          "uniqueItems": true
+        },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/finding" },
+          "uniqueItems": true
+        },
+        "scope_observed": { "$ref": "#/$defs/optionalStrings" },
+        "pending": { "$ref": "#/$defs/optionalStrings" },
+        "blocked_reason": { "type": "string", "minLength": 10 },
+        "status": { "enum": [ "COMPLETED", "BLOCKED" ] },
+        "return_to": { "const": "departamento-auditoria-responsabilidades" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "COMPLETED" } },
+            "required": [ "status" ]
+          },
+          "then": {
+            "properties": { "dimension_states": { "minItems": 1 } }
+          },
+          "else": {
+            "required": [ "blocked_reason" ],
+            "properties": {
+              "dimension_states": { "maxItems": 0 },
+              "findings": { "maxItems": 0 }
+            }
+          }
+        }
+      ]
+    },
+    "matrixDimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dimension",
+        "state",
+        "owner_capability",
+        "secondary_capability",
+        "receipt_refs",
+        "reason",
+        "evidence_refs"
+      ],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "state": { "$ref": "#/$defs/dimensionState" },
+        "owner_capability": { "$ref": "#/$defs/capability" },
+        "secondary_capability": {
+          "oneOf": [
+            { "$ref": "#/$defs/capability" },
+            { "const": "n/a" }
+          ]
+        },
+        "receipt_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "reason": { "type": "string", "minLength": 10 },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "conformityMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "conformity_matrix_id",
+        "causal",
+        "department_mission_ref",
+        "dimensions",
+        "divergences",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "CONFORMITY_MATRIX" },
+        "conformity_matrix_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "dimensions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/matrixDimension" },
+          "minItems": 10,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "INTENT" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "AUTH" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "ESCOPO" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "PENDING" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "RACI" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "RI_RO" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "SURPRESAS_BYPASS" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "EVIDENCIA" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "ARTEFATOS_TWINS" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "dimension": { "const": "RASTREABILIDADE" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 }
+          ]
+        },
+        "divergences": { "$ref": "#/$defs/optionalStrings" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "auditCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "capability",
+        "auditor_id",
+        "dimensions",
+        "expected_contract",
+        "discovery_evidence",
+        "impact",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_type": { "const": "AUDIT_CAPABILITY_GAP" },
+        "capability": { "type": "string", "minLength": 10 },
+        "auditor_id": {
+          "oneOf": [
+            { "$ref": "#/$defs/auditorId" },
+            { "const": "n/a" }
+          ]
+        },
+        "dimensions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dimension" },
+          "uniqueItems": true
+        },
+        "expected_contract": { "type": "string", "minLength": 10 },
+        "discovery_evidence": { "type": "string", "minLength": 10 },
+        "impact": { "type": "string", "minLength": 10 },
+        "status": { "const": "OPEN" },
+        "owner": { "const": "diretor-de-lentes" }
+      }
+    },
+    "assignmentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "task_id", "auditor_id", "capability", "issued_at", "destination" ],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "auditor_id": { "$ref": "#/$defs/auditorId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "destination": { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "panelItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "auditor_id", "capability", "status", "substrate", "tier" ],
+      "properties": {
+        "auditor_id": { "$ref": "#/$defs/auditorId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "status": { "$ref": "#/$defs/auditorStatus" },
+        "substrate": { "type": "string", "minLength": 3 },
+        "tier": { "type": "string", "minLength": 3 }
+      }
+    },
+    "ressalva": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "dimension", "owner_role", "impact", "closing_condition" ],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "owner_role": { "type": "string", "minLength": 3 },
+        "impact": { "type": "string", "minLength": 10 },
+        "closing_condition": { "type": "string", "minLength": 10 }
+      }
+    },
+    "auditLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "audit_ledger_id",
+        "causal",
+        "department_mission_ref",
+        "dossier_missing",
+        "assignments",
+        "panel",
+        "conformity_matrix",
+        "findings",
+        "internal_verdict",
+        "governance_verdict",
+        "violations",
+        "ressalvas",
+        "capability_gaps",
+        "evidence_refs",
+        "executive_decisions_required",
+        "pending",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "AUDIT_LEDGER" },
+        "audit_ledger_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "dossier_missing": { "$ref": "#/$defs/optionalStrings" },
+        "assignments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assignmentRecord" },
+          "uniqueItems": true
+        },
+        "panel": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/panelItem" },
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "conformity_matrix": { "$ref": "#/$defs/conformityMatrix" },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/finding" },
+          "uniqueItems": true
+        },
+        "internal_verdict": { "$ref": "#/$defs/internalVerdict" },
+        "governance_verdict": { "$ref": "#/$defs/governanceVerdict" },
+        "violations": { "$ref": "#/$defs/optionalStrings" },
+        "ressalvas": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ressalva" },
+          "uniqueItems": true
+        },
+        "capability_gaps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/auditCapabilityGap" }
+        },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "executive_decisions_required": { "$ref": "#/$defs/optionalStrings" },
+        "pending": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "R6" },
+          "minContains": 1
+        },
+        "return_to": { "const": "diretor-de-lentes" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "internal_verdict": { "const": "REPROVADO" } },
+            "required": [ "internal_verdict" ]
+          },
+          "then": {
+            "properties": {
+              "governance_verdict": { "const": "NONCOMPLIANT" },
+              "violations": { "minItems": 1 }
+            }
+          },
+          "else": {
+            "properties": {
+              "governance_verdict": { "const": "COMPLIANT" },
+              "violations": { "maxItems": 0 },
+              "capability_gaps": { "maxItems": 0 },
+              "dossier_missing": { "maxItems": 0 },
+              "assignments": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "internal_verdict": { "const": "APROVADO_COM_RESSALVAS" }
+            },
+            "required": [ "internal_verdict" ]
+          },
+          "then": {
+            "properties": { "ressalvas": { "minItems": 1 } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "internal_verdict": { "const": "APROVADO" } },
+            "required": [ "internal_verdict" ]
+          },
+          "then": {
+            "properties": { "ressalvas": { "maxItems": 0 } }
+          }
+        }
+      ]
+    }
+  }
+}

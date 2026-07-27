@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Contratos e Integridade"
+  short_description: "Contrato de dados e integridade"
+  default_prompt: "Use $agente-contratos-e-integridade para definir o contrato do dado com o consumidor, as constraints com o fluxo de erro correspondente, CDC/outbox contra dual-write e a classificação de PII — sem endurecer segurança."

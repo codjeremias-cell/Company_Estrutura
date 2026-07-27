@@ -1,0 +1,4 @@
+interface:
+  display_name: "Registrador de Aprendizados e Relatórios"
+  short_description: "Destila lição e monta relatório de aprendizagem"
+  default_prompt: "Use $agente-aprendizados-e-relatorios somente por RECORD_TASK do departamento-registros, para destilar a lição com fonte que resolve e gravar o relatório de aprendizagem que a Evolução minera."

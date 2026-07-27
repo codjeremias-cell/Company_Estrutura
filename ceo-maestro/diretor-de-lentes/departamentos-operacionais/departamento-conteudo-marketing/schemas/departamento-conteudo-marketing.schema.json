@@ -1,0 +1,858 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "departamento-conteudo-marketing.schema.json",
+  "title": "Envelopes internos de Conteúdo e Marketing",
+  "oneOf": [
+    { "$ref": "#/$defs/contentMarketingBrief" },
+    { "$ref": "#/$defs/marketingAssignment" },
+    { "$ref": "#/$defs/marketingDeliverable" },
+    { "$ref": "#/$defs/campaignAssetManifest" },
+    { "$ref": "#/$defs/campaignReadinessRecord" },
+    { "$ref": "#/$defs/marketingCapabilityGap" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{2,127}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "uniqueItems": true
+    },
+    "executionMode": {
+      "enum": [
+        "PRODUCTION_ONLY",
+        "AUTHORIZED_ACTIVATION"
+      ]
+    },
+    "capability": {
+      "enum": [
+        "STRATEGY",
+        "NARRATIVE",
+        "VISUAL",
+        "VIDEO",
+        "ADVERTISING",
+        "EMAIL",
+        "INTELLIGENCE",
+        "COMPLIANCE"
+      ]
+    },
+    "agentId": {
+      "enum": [
+        "agente-estrategia-conteudo-campanhas",
+        "agente-narrativa-redacao",
+        "agente-direcao-arte-imagem",
+        "agente-roteiro-producao-video",
+        "agente-publicidade-conversao",
+        "agente-email-ciclo-de-vida",
+        "agente-inteligencia-relatoria-marketing",
+        "agente-governanca-marca-conformidade"
+      ]
+    },
+    "localProducer": {
+      "oneOf": [
+        { "const": "departamento-conteudo-marketing" },
+        { "$ref": "#/$defs/agentId" }
+      ]
+    },
+    "localCausal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "department_mission_ref",
+        "round",
+        "producer",
+        "created_at"
+      ],
+      "properties": {
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "producer": { "$ref": "#/$defs/localProducer" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "contentMarketingBrief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "brief_id",
+        "causal",
+        "business_context_refs",
+        "objective",
+        "audiences",
+        "value_propositions",
+        "offers",
+        "journey_stages",
+        "channels",
+        "required_assets",
+        "facts",
+        "hypotheses",
+        "claims_requiring_evidence",
+        "constraints",
+        "measurement_objectives",
+        "execution_mode",
+        "authorization_refs",
+        "status"
+      ],
+      "properties": {
+        "artifact_type": { "const": "CONTENT_MARKETING_BRIEF" },
+        "brief_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/localCausal" },
+        "business_context_refs": { "$ref": "#/$defs/requiredRefs" },
+        "objective": {
+          "type": "string",
+          "minLength": 3
+        },
+        "audiences": { "$ref": "#/$defs/requiredStrings" },
+        "value_propositions": { "$ref": "#/$defs/requiredStrings" },
+        "offers": { "$ref": "#/$defs/requiredStrings" },
+        "journey_stages": { "$ref": "#/$defs/requiredStrings" },
+        "channels": { "$ref": "#/$defs/requiredStrings" },
+        "required_assets": { "$ref": "#/$defs/requiredStrings" },
+        "facts": { "$ref": "#/$defs/requiredStrings" },
+        "hypotheses": { "$ref": "#/$defs/optionalStrings" },
+        "claims_requiring_evidence": { "$ref": "#/$defs/optionalStrings" },
+        "constraints": { "$ref": "#/$defs/requiredStrings" },
+        "measurement_objectives": { "$ref": "#/$defs/requiredStrings" },
+        "execution_mode": { "$ref": "#/$defs/executionMode" },
+        "authorization_refs": { "$ref": "#/$defs/optionalRefs" },
+        "status": {
+          "enum": [
+            "READY",
+            "BLOCKED"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-conteudo-marketing" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "execution_mode": { "const": "AUTHORIZED_ACTIVATION" }
+            },
+            "required": ["execution_mode"]
+          },
+          "then": {
+            "properties": {
+              "authorization_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "marketingAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "assignment_id",
+        "causal",
+        "brief_ref",
+        "agent_id",
+        "capability",
+        "objective",
+        "input_refs",
+        "required_output",
+        "required_evidence",
+        "execution_mode",
+        "authorization_refs",
+        "forbidden_actions",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "MARKETING_ASSIGNMENT" },
+        "assignment_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/localCausal" },
+        "brief_ref": { "$ref": "#/$defs/identifier" },
+        "agent_id": { "$ref": "#/$defs/agentId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "objective": {
+          "type": "string",
+          "minLength": 3
+        },
+        "input_refs": { "$ref": "#/$defs/requiredRefs" },
+        "required_output": { "$ref": "#/$defs/requiredStrings" },
+        "required_evidence": { "$ref": "#/$defs/requiredStrings" },
+        "execution_mode": { "$ref": "#/$defs/executionMode" },
+        "authorization_refs": { "$ref": "#/$defs/optionalRefs" },
+        "forbidden_actions": { "$ref": "#/$defs/requiredStrings" },
+        "return_to": { "const": "departamento-conteudo-marketing" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-conteudo-marketing" }
+              }
+            }
+          }
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "agent_id": { "const": "agente-estrategia-conteudo-campanhas" },
+                "capability": { "const": "STRATEGY" }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-narrativa-redacao" },
+                "capability": { "const": "NARRATIVE" }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-direcao-arte-imagem" },
+                "capability": { "const": "VISUAL" }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-roteiro-producao-video" },
+                "capability": { "const": "VIDEO" }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-publicidade-conversao" },
+                "capability": { "const": "ADVERTISING" }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-email-ciclo-de-vida" },
+                "capability": { "const": "EMAIL" }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-inteligencia-relatoria-marketing" },
+                "capability": { "const": "INTELLIGENCE" }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-governanca-marca-conformidade" },
+                "capability": { "const": "COMPLIANCE" }
+              }
+            }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "execution_mode": { "const": "AUTHORIZED_ACTIVATION" }
+            },
+            "required": ["execution_mode"]
+          },
+          "then": {
+            "properties": {
+              "authorization_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "marketingDeliverable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "deliverable_id",
+        "causal",
+        "assignment_ref",
+        "brief_ref",
+        "agent_id",
+        "capability",
+        "artifact_refs",
+        "evidence_refs",
+        "source_refs",
+        "assumptions",
+        "risks",
+        "rights_provenance_refs",
+        "external_action",
+        "authorization_refs",
+        "action_receipt_refs",
+        "status",
+        "blocked_reason",
+        "return_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "MARKETING_DELIVERABLE" },
+        "deliverable_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/localCausal" },
+        "assignment_ref": { "$ref": "#/$defs/identifier" },
+        "brief_ref": { "$ref": "#/$defs/identifier" },
+        "agent_id": { "$ref": "#/$defs/agentId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "artifact_refs": { "$ref": "#/$defs/optionalRefs" },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
+        "source_refs": { "$ref": "#/$defs/optionalRefs" },
+        "assumptions": { "$ref": "#/$defs/optionalStrings" },
+        "risks": { "$ref": "#/$defs/optionalStrings" },
+        "rights_provenance_refs": { "$ref": "#/$defs/optionalRefs" },
+        "external_action": {
+          "enum": [
+            "NONE",
+            "EXECUTED"
+          ]
+        },
+        "authorization_refs": { "$ref": "#/$defs/optionalRefs" },
+        "action_receipt_refs": { "$ref": "#/$defs/optionalRefs" },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "BLOCKED"
+          ]
+        },
+        "blocked_reason": {
+          "type": "string"
+        },
+        "return_to": { "const": "departamento-conteudo-marketing" },
+        "returned_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "agent_id": { "const": "agente-estrategia-conteudo-campanhas" },
+                "capability": { "const": "STRATEGY" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-estrategia-conteudo-campanhas" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-narrativa-redacao" },
+                "capability": { "const": "NARRATIVE" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-narrativa-redacao" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-direcao-arte-imagem" },
+                "capability": { "const": "VISUAL" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-direcao-arte-imagem" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-roteiro-producao-video" },
+                "capability": { "const": "VIDEO" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-roteiro-producao-video" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-publicidade-conversao" },
+                "capability": { "const": "ADVERTISING" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-publicidade-conversao" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-email-ciclo-de-vida" },
+                "capability": { "const": "EMAIL" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-email-ciclo-de-vida" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-inteligencia-relatoria-marketing" },
+                "capability": { "const": "INTELLIGENCE" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-inteligencia-relatoria-marketing" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent_id": { "const": "agente-governanca-marca-conformidade" },
+                "capability": { "const": "COMPLIANCE" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "agente-governanca-marca-conformidade" }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "COMPLETED" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "artifact_refs": { "minItems": 1 },
+              "evidence_refs": { "minItems": 1 },
+              "blocked_reason": { "maxLength": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "BLOCKED" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "blocked_reason": { "minLength": 3 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "external_action": { "const": "EXECUTED" }
+            },
+            "required": ["external_action"]
+          },
+          "then": {
+            "properties": {
+              "authorization_refs": { "minItems": 1 },
+              "action_receipt_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "accessibilityRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alt_text",
+        "captions_ref",
+        "transcript_ref",
+        "not_applicable_reason"
+      ],
+      "properties": {
+        "alt_text": { "type": "string" },
+        "captions_ref": { "type": "string" },
+        "transcript_ref": { "type": "string" },
+        "not_applicable_reason": { "type": "string" }
+      }
+    },
+    "rightsRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "license_ref",
+        "territory",
+        "expires_at",
+        "allowed_channels"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 2
+        },
+        "license_ref": { "$ref": "#/$defs/artifactRef" },
+        "territory": {
+          "type": "string",
+          "minLength": 2
+        },
+        "expires_at": {
+          "oneOf": [
+            { "$ref": "#/$defs/timestamp" },
+            { "const": "n/a" }
+          ]
+        },
+        "allowed_channels": { "$ref": "#/$defs/requiredStrings" }
+      }
+    },
+    "assetItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "asset_type",
+        "channel",
+        "variant",
+        "artifact_ref",
+        "digest",
+        "specification_ref",
+        "specification_checked_at",
+        "accessibility",
+        "rights",
+        "ingredient_refs",
+        "ai_use",
+        "content_credentials_ref",
+        "claim_refs",
+        "measurement_tags"
+      ],
+      "properties": {
+        "asset_id": { "$ref": "#/$defs/identifier" },
+        "asset_type": {
+          "enum": [
+            "STRATEGY",
+            "TEXT",
+            "IMAGE",
+            "VIDEO",
+            "AD",
+            "EMAIL",
+            "REPORT",
+            "REVIEW"
+          ]
+        },
+        "channel": {
+          "type": "string",
+          "minLength": 2
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 2
+        },
+        "artifact_ref": { "$ref": "#/$defs/artifactRef" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "specification_ref": { "$ref": "#/$defs/artifactRef" },
+        "specification_checked_at": { "$ref": "#/$defs/timestamp" },
+        "accessibility": { "$ref": "#/$defs/accessibilityRecord" },
+        "rights": { "$ref": "#/$defs/rightsRecord" },
+        "ingredient_refs": { "$ref": "#/$defs/optionalRefs" },
+        "ai_use": {
+          "enum": [
+            "NONE",
+            "ASSISTED",
+            "GENERATED",
+            "UNKNOWN"
+          ]
+        },
+        "content_credentials_ref": {
+          "type": "string"
+        },
+        "claim_refs": { "$ref": "#/$defs/optionalRefs" },
+        "measurement_tags": { "$ref": "#/$defs/optionalStrings" }
+      }
+    },
+    "campaignAssetManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "manifest_id",
+        "causal",
+        "brief_ref",
+        "deliverable_refs",
+        "assets",
+        "candidate_digest",
+        "status",
+        "pending_refs",
+        "assembled_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "CAMPAIGN_ASSET_MANIFEST" },
+        "manifest_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/localCausal" },
+        "brief_ref": { "$ref": "#/$defs/identifier" },
+        "deliverable_refs": { "$ref": "#/$defs/requiredRefs" },
+        "assets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assetItem" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "status": {
+          "enum": [
+            "READY",
+            "BLOCKED"
+          ]
+        },
+        "pending_refs": { "$ref": "#/$defs/optionalRefs" },
+        "assembled_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-conteudo-marketing" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "READY" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "pending_refs": { "maxItems": 0 }
+            }
+          }
+        }
+      ]
+    },
+    "readinessDimension": {
+      "enum": [
+        "BUSINESS_ALIGNMENT",
+        "CLAIMS_EVIDENCE",
+        "BRAND",
+        "ACCESSIBILITY",
+        "RIGHTS_PROVENANCE",
+        "PRIVACY_CONSENT",
+        "CHANNEL_POLICY",
+        "MEASUREMENT"
+      ]
+    },
+    "readinessItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dimension",
+        "status",
+        "reason",
+        "evidence_refs",
+        "owner"
+      ],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/readinessDimension" },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "NOT_APPLICABLE",
+            "NOT_PROVEN"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 3
+        },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
+        "owner": { "$ref": "#/$defs/agentId" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "PASS" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "evidence_refs": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "campaignReadinessRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "readiness_id",
+        "causal",
+        "manifest_ref",
+        "candidate_digest",
+        "dimensions",
+        "open_gap_refs",
+        "blocking_pending_refs",
+        "ready",
+        "generated_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "CAMPAIGN_READINESS_RECORD" },
+        "readiness_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/localCausal" },
+        "manifest_ref": { "$ref": "#/$defs/identifier" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "dimensions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/readinessItem" },
+          "minItems": 8,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "open_gap_refs": { "$ref": "#/$defs/optionalRefs" },
+        "blocking_pending_refs": { "$ref": "#/$defs/optionalRefs" },
+        "ready": { "type": "boolean" },
+        "generated_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-conteudo-marketing" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "ready": { "const": true }
+            },
+            "required": ["ready"]
+          },
+          "then": {
+            "properties": {
+              "open_gap_refs": { "maxItems": 0 },
+              "blocking_pending_refs": { "maxItems": 0 }
+            }
+          }
+        }
+      ]
+    },
+    "marketingCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "gap_id",
+        "causal",
+        "capability",
+        "expected_agent",
+        "discovery_evidence",
+        "impact",
+        "status",
+        "recovery_owner",
+        "recovery_condition",
+        "detected_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "MARKETING_CAPABILITY_GAP" },
+        "gap_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/localCausal" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "expected_agent": {
+          "oneOf": [
+            { "$ref": "#/$defs/agentId" },
+            { "const": "n/a" }
+          ]
+        },
+        "discovery_evidence": {
+          "type": "string",
+          "minLength": 3
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 3
+        },
+        "status": { "const": "OPEN" },
+        "recovery_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "recovery_condition": {
+          "type": "string",
+          "minLength": 3
+        },
+        "detected_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-conteudo-marketing" }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

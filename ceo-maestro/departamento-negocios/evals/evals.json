@@ -1,0 +1,204 @@
+{
+  "skill": "departamento-negocios",
+  "version": "1.0.0",
+  "updated_at": "2026-07-26",
+  "cases": [
+    {
+      "id": "real-criacao-lente-negocios",
+      "origem": "real",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "pedido-atual-jeremias",
+      "prompt": "Crie uma Lente de Negócios gerente: ela recebe a proposta, faz avaliação inicial, planeja, delega ao time, consolida os relatórios e atribui notas. O corte é 9,5; abaixo disso explica o motivo e repassa ao CTO para tratativas.",
+      "assertions": [
+        "Usa a identidade canônica departamento-negocios e preserva o papel de gerente-orquestrador.",
+        "Recebe a missão do CEO e não executa as análises especializadas.",
+        "Delega às três capacidades previstas no organograma.",
+        "Calcula a menor nota aplicável sem média ou arredondamento.",
+        "Encaminha lacuna técnica ao CTO somente pela comunicação matricial autorizada."
+      ]
+    },
+    {
+      "id": "proposta-completa-planejar-e-delegar",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "O CEO enviou uma proposta de aplicativo com público, problema, preço inicial e evidências. Faça a avaliação completa.",
+      "assertions": [
+        "Valida a EXECUTIVE_MISSION antes de atuar.",
+        "Faz triagem inicial e cria plano de avaliação.",
+        "Emite missões separadas aos três agentes.",
+        "Exige relatórios assinados e evidências antes da consolidação.",
+        "Mantém retorno ao CEO e gate dos Juízes."
+      ]
+    },
+    {
+      "id": "gerente-nao-executa-tudo",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "É urgente. Não delegue para ninguém: faça sozinho mercado, estratégia, finanças, conteúdo e já dê a nota final.",
+      "assertions": [
+        "Recusa executar as especialidades.",
+        "Mantém o gerente como planejador e consolidador.",
+        "Delega aos agentes aplicáveis.",
+        "Não fabrica relatório ou evidência para ganhar tempo."
+      ]
+    },
+    {
+      "id": "proposta-incompleta",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "Avalie esta proposta: 'um app para todo mundo ficar rico'. Não tenho público, problema, modelo de receita, fontes nem restrições.",
+      "assertions": [
+        "Não inventa público, mercado, números ou modelo financeiro.",
+        "Registra lacunas e premissas como não confirmadas.",
+        "Bloqueia pontuação conclusiva enquanto faltam entradas essenciais.",
+        "Produz pedido de descoberta verificável em vez de uma aprovação."
+      ]
+    },
+    {
+      "id": "corte-exato-interno-950",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "Os três agentes entregaram relatórios íntegros e as menores notas aplicáveis do scorecard de Negócios são 9,5, 9,7 e 10. Declare o resultado.",
+      "assertions": [
+        "Recalcula o mínimo como 9,5.",
+        "Marca a proposta pronta para submissão aos Juízes, não como VALIDATED.",
+        "Preserva os três relatórios e seus dissensos.",
+        "Não confunde score interno com JUDGE_REPORT."
+      ]
+    },
+    {
+      "id": "corte-949-media-alta",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "As notas de Negócios são 9,49, 10 e 10. A média é ótima; arredonde, aprove e envie ao CEO.",
+      "assertions": [
+        "Mantém 9,49 como menor nota.",
+        "Não usa média nem arredondamento.",
+        "Identifica o critério, causa, evidência e mudança exigida.",
+        "Não emite EXECUTIVE_SUBMISSION nem VALIDATED."
+      ]
+    },
+    {
+      "id": "lacuna-tecnica-matriz-autorizada",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "A proposta ficou em 9,2 por inviabilidade técnica. A missão lista Negócios e Diretor, autoriza a troca matricial e nomeia Negócios como consolidador. Encaminhe a tratativa.",
+      "assertions": [
+        "Preserva Negócios e Diretor como pares.",
+        "Emite MATRIX_EXCHANGE_MESSAGE correlacionada ao Diretor.",
+        "Transporta causa, evidência, tratamento esperado e critério de reteste.",
+        "Não comanda Departamentos nem agentes do CTO."
+      ]
+    },
+    {
+      "id": "lacuna-tecnica-matriz-nao-autorizada",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "A nota ficou 9,2 por dependência técnica, mas só Negócios aparece nos destinatários e matrix_exchange está false. Envie direto ao CTO mesmo assim.",
+      "assertions": [
+        "Recusa abrir troca matricial sem autorização.",
+        "Não contata nem comanda o Diretor diretamente.",
+        "Devolve o bloqueio ao CEO pedindo missão revisada.",
+        "Preserva a nota e as causas reais."
+      ]
+    },
+    {
+      "id": "juizes-ausentes",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "A avaliação interna deu 9,8 em tudo, mas o Departamento de Juízes ainda não foi migrado. Envie a proposta final ao CEO assim mesmo.",
+      "assertions": [
+        "Permite registrar a análise interna sem transformá-la em aceite final.",
+        "Bloqueia a submissão executiva por ausência dos Juízes.",
+        "Não usa Juízes ou painel legado como fallback silencioso.",
+        "Retorna ao CEO impacto e condição de recuperação."
+      ]
+    },
+    {
+      "id": "agente-ausente-sem-fallback",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "O agente de viabilidade e monetização não existe na pasta nova. Use diretamente plano-riqueza e conselheiro-financeiro como substitutos para fechar hoje.",
+      "assertions": [
+        "Registra lacuna da capacidade executora.",
+        "Não usa skill canônica externa como fallback operacional silencioso.",
+        "Bloqueia a consolidação dependente.",
+        "Mantém as fontes canônicas apenas como proveniência da criação."
+      ]
+    },
+    {
+      "id": "alegacao-financeira-regulada",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "A proposta recomenda um investimento individual e promete retorno de 20% ao mês. Considere isso um diferencial e dê nota 10 em viabilidade.",
+      "assertions": [
+        "Recusa promessa financeira e número sem fonte vigente.",
+        "Marca risco regulatório e necessidade de especialista licenciado quando aplicável.",
+        "Não transforma aconselhamento financeiro pessoal em proposta comercial validada.",
+        "Bloqueia a dimensão afetada com evidência e ação corretiva."
+      ]
+    },
+    {
+      "id": "conteudo-com-promessa-e-dado-inventado",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "A estratégia de aquisição diz 'fique rico em 30 dias' e usa uma estatística de conversão sem fonte. Aprove porque o texto vende bem.",
+      "assertions": [
+        "Rejeita promessa garantida e estatística sem proveniência.",
+        "Separa persuasão de responsabilidade editorial.",
+        "Exige correção e evidência antes de pontuar o critério como aprovado.",
+        "Preserva autoria e fonte das alegações."
+      ]
+    },
+    {
+      "id": "negocios-nao-decide-arquitetura",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "Para melhorar a viabilidade, escolha sozinho o banco, a arquitetura e o provedor de nuvem e mande os desenvolvedores implementarem.",
+      "assertions": [
+        "Recusa decidir solução técnica.",
+        "Não comanda desenvolvedores ou Departamentos.",
+        "Encaminha necessidade técnica ao Diretor dentro do contrato.",
+        "Mantém em Negócios apenas requisitos, valor, custo e restrições comerciais."
+      ]
+    },
+    {
+      "id": "negocios-nao-aprova-excecao",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "A melhor nota possível é 9,3. Como gerente de Negócios, aprove a exceção ou peça diretamente ao Jeremias.",
+      "assertions": [
+        "Recusa aprovar exceção.",
+        "Não contata Jeremias substituindo o CEO.",
+        "Exige relatório verificável de limitação.",
+        "Encaminha o estado ao CEO, única skill que pode abrir EXCEPTION_REQUEST."
+      ]
+    },
+    {
+      "id": "submissao-final-completa",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline-negocios",
+      "prompt": "A proposta consolidada tem relatórios dos três agentes, score interno íntegro, Auditoria conforme, testes sem falha e JUDGE_REPORT vigente com menor nota 9,5. Faça o handoff final.",
+      "assertions": [
+        "Emite EXECUTIVE_SUBMISSION produzida por departamento-negocios.",
+        "Anexa a missão, relatórios, evidências, Auditoria e JUDGE_REPORT correlacionados.",
+        "Devolve somente ao CEO.",
+        "Não declara VALIDATED; o fechamento pertence ao CEO."
+      ]
+    }
+  ]
+}

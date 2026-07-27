@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auditor de Contrato e Autoridade"
+  short_description: "Audita INTENT, AUTH, escopo e pendências"
+  default_prompt: "Use $agente-reconciliar-contrato-e-autoridade somente por AUDIT_TASK do departamento-auditoria-responsabilidades, para reconciliar INTENT, autorização exata, escopo tocado e pendências abertas."

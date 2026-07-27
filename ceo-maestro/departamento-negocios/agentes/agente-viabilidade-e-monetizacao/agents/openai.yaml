@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Viabilidade e Monetização"
+  short_description: "Analisa preço, monetização e viabilidade econômica"
+  default_prompt: "Use $agente-viabilidade-e-monetizacao para executar esta missão econômica e devolver cálculos reproduzíveis ao Departamento de Negócios."

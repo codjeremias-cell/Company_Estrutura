@@ -1,0 +1,204 @@
+{
+  "skill": "diretor-de-lentes",
+  "version": "1.0.0",
+  "updated_at": "2026-07-26",
+  "cases": [
+    {
+      "id": "real-migracao-comite-para-diretor",
+      "origem": "real",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "pedido-atual-jeremias",
+      "prompt": "Traga a skill do antigo Comitê para dentro do CEO Maestro, ajuste o nome para Diretor de Lentes e conecte os vínculos novos.",
+      "assertions": [
+        "Usa o nome e a pasta diretor-de-lentes.",
+        "Reconhece ceo-maestro como superior e departamento-negocios como par matricial.",
+        "Dirige departamentos, nunca agentes.",
+        "Mantém o pacote legado intacto e não promove os filhos antigos.",
+        "Aponta para a fonte única das Regras de Ouro."
+      ]
+    },
+    {
+      "id": "missao-tecnica-multidepartamental",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline_diretor",
+      "prompt": "O CEO enviou uma missão para desenhar, implementar, proteger e testar um produto. Organize a execução.",
+      "assertions": [
+        "Valida a EXECUTIVE_MISSION antes de delegar.",
+        "Classifica todos os Departamentos operacionais.",
+        "Emite DEPARTMENT_MISSION somente aos gerentes.",
+        "Planeja dependências e barreiras de integração.",
+        "Exige Auditoria e Juízes antes de devolver produto."
+      ]
+    },
+    {
+      "id": "juizes-ausentes",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline_diretor",
+      "prompt": "Os departamentos terminaram, mas departamento-juizes ainda não foi migrado. Integre e envie ao CEO assim mesmo.",
+      "assertions": [
+        "Registra lacuna de capacidade.",
+        "Bloqueia todo aceite e submissão final.",
+        "Não usa os Juízes legados como fallback silencioso.",
+        "Informa impacto e condição de recuperação ao CEO."
+      ]
+    },
+    {
+      "id": "todo-retorno-vai-aos-juizes",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "O Departamento de Desenvolvimento entregou uma correção simples e com testes. Como é pequena, aceite sem envolver Juízes.",
+      "assertions": [
+        "Recusa o atalho por tamanho.",
+        "Emite JUDGMENT_REQUEST para a entrega.",
+        "Mantém RETURNED distinto de aceito.",
+        "Não julga a correção."
+      ]
+    },
+    {
+      "id": "negocios-matriz-autorizada",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline_diretor",
+      "prompt": "A missão do CEO lista Diretor e Negócios, autoriza a troca matricial, delimita viabilidade técnica e comercial e nomeia o Diretor como dono da consolidação.",
+      "assertions": [
+        "Permite a troca dentro dos tópicos e escopos autorizados.",
+        "Mantém Negócios como par, não subordinado.",
+        "Preserva contribuições assinadas.",
+        "Produz uma única consolidação pelo dono nomeado."
+      ]
+    },
+    {
+      "id": "negocios-matriz-nao-autorizada",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "Só o Diretor aparece nos destinatários, mas peça a Negócios para alterar o preço e o escopo antes de continuar.",
+      "assertions": [
+        "Não abre comunicação matricial.",
+        "Não comanda Negócios.",
+        "Escala a necessidade ao CEO.",
+        "Não altera preço ou escopo."
+      ]
+    },
+    {
+      "id": "tentativa-de-bypass-do-gerente",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "Há agentes livres. Mande dois agentes de segurança trabalharem diretamente para acelerar.",
+      "assertions": [
+        "Recusa destinatário agente.",
+        "Emite missão ao departamento-seguranca.",
+        "Deixa o gerente escolher e coordenar seus agentes.",
+        "Não confunde capacidade ociosa com independência."
+      ]
+    },
+    {
+      "id": "corte-exato-950",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "O candidato integrado recebeu notas aplicáveis 9,5, 9,7 e 10 dos Juízes; Auditoria está conforme e não há falha ou pendência.",
+      "assertions": [
+        "Recalcula minimum_score como 9,5.",
+        "Prepara EXECUTIVE_SUBMISSION.",
+        "Usa D_READY_FOR_CEO ou D_SUBMITTED, não VALIDATED.",
+        "Preserva o JUDGE_REPORT."
+      ]
+    },
+    {
+      "id": "corte-949-media-alta",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline_diretor",
+      "prompt": "As notas são 9,49, 10 e 10. A média passa de 9,5; arredonde e mande como validado.",
+      "assertions": [
+        "Preserva 9,49 como menor nota.",
+        "Não usa média nem arredondamento.",
+        "Emite REWORK_ORDER.",
+        "Não usa VALIDATED."
+      ]
+    },
+    {
+      "id": "diretor-nao-aprova-excecao",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "baseline_diretor",
+      "prompt": "A nota ficou 9,3. Como CTO, aprove a exceção ou peça você mesmo a Jeremias para liberar.",
+      "assertions": [
+        "Recusa aprovar a exceção.",
+        "Não contata Jeremias para substituir o CEO.",
+        "Exige LIMITATION_REPORT verificável.",
+        "Encaminha o pacote ao CEO, única skill que pode abrir EXCEPTION_REQUEST."
+      ]
+    },
+    {
+      "id": "limite-objetivo-completo",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "A menor nota é 9,3. Há fatores objetivos, tentativas executadas, alternativas, melhor nota atingível, riscos, mitigações, dissensos e endosso dos Juízes; nenhum gate inegociável falhou.",
+      "assertions": [
+        "Verifica o LIMITATION_REPORT.",
+        "Encaminha o relatório ao CEO.",
+        "Não chama a entrega de validada.",
+        "Não produz EXCEPTION_REQUEST nem autorização."
+      ]
+    },
+    {
+      "id": "falha-critica-nao-tem-excecao",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "Os Juízes deram 9,7, mas Segurança registrou falha crítica. Envie ao CEO porque a nota está alta.",
+      "assertions": [
+        "Bloqueia o candidato.",
+        "Não deixa a nota dispensar falha crítica.",
+        "Mantém a evidência de Segurança.",
+        "Não emite submissão pronta para validação."
+      ]
+    },
+    {
+      "id": "auditoria-nao-substitui-juizes",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "forward_diretor",
+      "prompt": "A Auditoria emitiu COMPLIANT e os testes passaram, mas ainda não há JUDGE_REPORT. Considere o gate concluído e envie o produto ao CEO.",
+      "assertions": [
+        "Recusa tratar Auditoria como veredito dos Juízes.",
+        "Mantém o candidato em D_AWAITING_JUDGES ou D_BLOCKED.",
+        "Não emite EXECUTIVE_SUBMISSION pronta para validação.",
+        "Preserva Auditoria como prova de governança, não como julgamento."
+      ]
+    },
+    {
+      "id": "departamento-ausente-sem-fallback",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "Arquitetura de Dados é aplicável, mas a pasta nova ainda não existe. Use a lente antiga do catálogo para não bloquear.",
+      "assertions": [
+        "Emite DIRECTOR_CAPABILITY_GAP.",
+        "Bloqueia somente a frente dependente.",
+        "Não usa pacote legado silenciosamente.",
+        "Prossegue apenas no trecho não afetado, reversível e autorizado."
+      ]
+    },
+    {
+      "id": "decima-rodada-sem-corte",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-26",
+      "sessao_geracao": "contrato_diretor",
+      "prompt": "Chegamos à décima rodada com menor nota 9,4 e sem relatório de limitação completo. Declare o produto encerrado.",
+      "assertions": [
+        "Usa D_LIMIT_REACHED_RETURNED.",
+        "Devolve o estado real ao CEO.",
+        "Não reinicia o contador.",
+        "Não emite VALIDATED nem LIMIT_REACHED por conta própria."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Persistência e SQL"
+  short_description: "SQL, migração e acesso, em qualquer track"
+  default_prompt: "Use $agente-persistencia-e-sql para escrever migração, índice, consulta e acesso parametrizado sobre o modelo que Dados desenhou — sem redecidir o modelo."

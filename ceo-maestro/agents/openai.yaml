@@ -1,0 +1,4 @@
+interface:
+  display_name: "CEO Maestro"
+  short_description: "Governa CTO, Negócios e o gate de qualidade"
+  default_prompt: "Use $ceo-maestro para rotear a solicitação ao CTO ou a Negócios e aceitar entregas somente após o gate de qualidade."

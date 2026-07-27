@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diretor de Lentes"
+  short_description: "Coordena Departamentos e o gate dos Juízes"
+  default_prompt: "Use $diretor-de-lentes para organizar os Departamentos, coordenar os handoffs e levar cada entrega ao gate dos Juízes."

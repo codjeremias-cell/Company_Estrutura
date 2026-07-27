@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Roteiro e Produção de Vídeo"
+  short_description: "Cria roteiros e pacotes audiovisuais"
+  default_prompt: "Use $agente-roteiro-producao-video para executar o vídeo previsto nesta atribuição."
+

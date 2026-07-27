@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Registros"
+  short_description: "Decide onde o registro nasce e prova a chegada"
+  default_prompt: "Use $departamento-registros somente por DEPARTMENT_MISSION do diretor-de-lentes, para decompor o material, rotear cada registro por natureza, delegar a gravação às quatro capacidades, provar a chegada e fechar o ledger com recontagem independente."

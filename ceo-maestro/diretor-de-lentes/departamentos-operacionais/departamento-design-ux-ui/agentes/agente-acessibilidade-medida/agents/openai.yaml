@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Acessibilidade Medida"
+  short_description: "Acessibilidade com valor medido"
+  default_prompt: "Use $agente-acessibilidade-medida para anotar os valores reais de contraste, foco, tabulação e alvo de toque contra a WCAG 2.2 AA — medindo, nunca presumindo."

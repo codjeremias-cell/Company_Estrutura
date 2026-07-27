@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Direção de Arte e Imagem"
+  short_description: "Cria imagens, banners e variantes visuais"
+  default_prompt: "Use $agente-direcao-arte-imagem para produzir os ativos visuais desta atribuição."
+

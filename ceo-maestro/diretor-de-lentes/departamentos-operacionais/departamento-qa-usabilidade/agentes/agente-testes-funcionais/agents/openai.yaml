@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Testes Funcionais"
+  short_description: "Executa fluxos e valida objetivos funcionais"
+  default_prompt: "Use $agente-testes-funcionais para executar os fluxos funcionais autorizados e devolver evidências reproduzíveis."
+

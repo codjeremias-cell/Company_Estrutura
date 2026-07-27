@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Linguagem Visual"
+  short_description: "Tipografia, cor, espaço e motion"
+  default_prompt: "Use $agente-linguagem-visual para decidir cor, tipografia, espaço e motion pelas leis Impeccable, entregando tokens semânticos — sem medir a própria a11y nem auditar o próprio slop."

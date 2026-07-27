@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mineração Externa"
+  short_description: "Garimpa material externo com proveniência"
+  default_prompt: "Use $agente-mineracao-externa somente por EVOLUTION_TASK do departamento-evolucao-skills, para garimpar material externo para um gap nomeado e devolver gems com fonte, versão, licença, limite e degrau."

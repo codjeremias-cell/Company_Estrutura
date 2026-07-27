@@ -1,0 +1,1140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-negocios.schema.json",
+  "title": "Contratos do Departamento de Negócios",
+  "description": "Planejamento, delegação, execução dos três agentes, consolidação, score interno e handoffs de Negócios.",
+  "oneOf": [
+    { "$ref": "#/$defs/businessIntake" },
+    { "$ref": "#/$defs/businessEvaluationPlan" },
+    { "$ref": "#/$defs/businessAgentMission" },
+    { "$ref": "#/$defs/businessAgentReport" },
+    { "$ref": "#/$defs/businessConsolidation" },
+    { "$ref": "#/$defs/businessScorecard" },
+    { "$ref": "#/$defs/businessGapReport" },
+    { "$ref": "#/$defs/businessReworkOrder" },
+    { "$ref": "#/$defs/businessCapabilityGap" },
+    { "$ref": "#/$defs/businessJudgmentPackage" },
+    { "$ref": "#/$defs/matrixExchangeMessage" },
+    { "$ref": "#/$defs/businessReturn" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "uniqueItems": true
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_policy",
+        "allowed_tools",
+        "allowed_resources",
+        "expires_at"
+      ],
+      "properties": {
+        "default_policy": { "const": "deny" },
+        "allowed_tools": { "$ref": "#/$defs/optionalStrings" },
+        "allowed_resources": { "$ref": "#/$defs/optionalStrings" },
+        "expires_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "businessAgent": {
+      "enum": [
+        "agente-estrategia-de-produto",
+        "agente-mercado-e-cliente",
+        "agente-viabilidade-e-monetizacao"
+      ]
+    },
+    "knownProducer": {
+      "enum": [
+        "ceo-maestro",
+        "departamento-negocios",
+        "diretor-de-lentes",
+        "agente-estrategia-de-produto",
+        "agente-mercado-e-cliente",
+        "agente-viabilidade-e-monetizacao"
+      ]
+    },
+    "businessState": {
+      "enum": [
+        "B_RECEIVED",
+        "B_CONTRACT_VERIFIED",
+        "B_TRIAGED",
+        "B_PLANNED",
+        "B_DELEGATED",
+        "B_CONSOLIDATING",
+        "B_INTERNAL_REWORK",
+        "B_NEEDS_CTO",
+        "B_LIMITATION_REVIEW",
+        "B_AWAITING_LIMITATION_VERIFICATION",
+        "B_LIMITATION_VERIFIED",
+        "B_READY_FOR_JUDGMENT",
+        "B_AWAITING_JUDGMENT",
+        "B_READY_FOR_EXECUTIVE_DECISION",
+        "B_BLOCKED",
+        "B_SUBMITTED",
+        "B_CANCELLED"
+      ]
+    },
+    "criterionId": {
+      "enum": [
+        "BIZ-01",
+        "BIZ-02",
+        "BIZ-03",
+        "BIZ-04",
+        "BIZ-05",
+        "BIZ-06",
+        "BIZ-07",
+        "BIZ-08"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "const": "n/a" }
+          ]
+        },
+        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "producer": { "$ref": "#/$defs/knownProducer" },
+        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "managerCausal": {
+      "allOf": [
+        { "$ref": "#/$defs/causalHeader" },
+        {
+          "properties": {
+            "producer": { "const": "departamento-negocios" }
+          }
+        }
+      ]
+    },
+    "exactTeam": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/businessAgent" },
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "allOf": [
+        { "contains": { "const": "agente-estrategia-de-produto" } },
+        { "contains": { "const": "agente-mercado-e-cliente" } },
+        { "contains": { "const": "agente-viabilidade-e-monetizacao" } }
+      ]
+    },
+    "criterionAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent", "mission_ref", "criterion_ids", "purpose"],
+      "properties": {
+        "agent": { "$ref": "#/$defs/businessAgent" },
+        "mission_ref": { "$ref": "#/$defs/artifactRef" },
+        "criterion_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterionId" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "purpose": { "type": "string", "minLength": 3 }
+      }
+    },
+    "exactAssignments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/criterionAssignment" },
+      "minItems": 3,
+      "maxItems": 3,
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "agent": { "const": "agente-estrategia-de-produto" },
+              "criterion_ids": {
+                "type": "array",
+                "items": { "enum": ["BIZ-02", "BIZ-03"] },
+                "minItems": 2,
+                "maxItems": 2,
+                "uniqueItems": true,
+                "allOf": [
+                  { "contains": { "const": "BIZ-02" } },
+                  { "contains": { "const": "BIZ-03" } }
+                ]
+              }
+            },
+            "required": ["agent", "criterion_ids"]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "agent": { "const": "agente-mercado-e-cliente" },
+              "criterion_ids": {
+                "type": "array",
+                "items": { "enum": ["BIZ-01", "BIZ-04", "BIZ-05"] },
+                "minItems": 3,
+                "maxItems": 3,
+                "uniqueItems": true,
+                "allOf": [
+                  { "contains": { "const": "BIZ-01" } },
+                  { "contains": { "const": "BIZ-04" } },
+                  { "contains": { "const": "BIZ-05" } }
+                ]
+              }
+            },
+            "required": ["agent", "criterion_ids"]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "agent": { "const": "agente-viabilidade-e-monetizacao" },
+              "criterion_ids": {
+                "type": "array",
+                "items": { "enum": ["BIZ-06", "BIZ-07", "BIZ-08"] },
+                "minItems": 3,
+                "maxItems": 3,
+                "uniqueItems": true,
+                "allOf": [
+                  { "contains": { "const": "BIZ-06" } },
+                  { "contains": { "const": "BIZ-07" } },
+                  { "contains": { "const": "BIZ-08" } }
+                ]
+              }
+            },
+            "required": ["agent", "criterion_ids"]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    },
+    "fieldClassification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "status", "statement", "evidence_refs"],
+      "properties": {
+        "field": { "type": "string", "minLength": 2 },
+        "status": { "enum": ["confirmed", "assumption", "missing", "not_applicable"] },
+        "statement": { "type": "string", "minLength": 2 },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
+        "owner": { "type": "string", "minLength": 3 }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "classification",
+        "conclusion",
+        "evidence_refs"
+      ],
+      "properties": {
+        "criterion_id": { "$ref": "#/$defs/criterionId" },
+        "classification": { "enum": ["fact", "assumption", "opinion", "recommendation", "gap"] },
+        "conclusion": { "type": "string", "minLength": 3 },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" }
+      }
+    },
+    "recommendedScore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criterion_id", "score", "justification", "evidence_refs"],
+      "properties": {
+        "criterion_id": { "$ref": "#/$defs/criterionId" },
+        "score": { "type": "number", "minimum": 0, "maximum": 10 },
+        "justification": { "type": "string", "minLength": 3 },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" }
+      }
+    },
+    "scoreEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "applicable",
+        "justification",
+        "evidence_refs",
+        "source_report_refs"
+      ],
+      "properties": {
+        "criterion_id": { "$ref": "#/$defs/criterionId" },
+        "applicable": { "type": "boolean" },
+        "score": { "type": "number", "minimum": 0, "maximum": 10 },
+        "justification": { "type": "string", "minLength": 3 },
+        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
+        "source_report_refs": { "$ref": "#/$defs/requiredRefs" },
+        "not_applicable_reason": { "type": "string", "minLength": 3 },
+        "cause": { "type": "string", "minLength": 3 },
+        "impact": { "type": "string", "minLength": 3 },
+        "required_change": { "type": "string", "minLength": 3 },
+        "treatment_owner": { "type": "string", "minLength": 3 },
+        "retest_criterion": { "type": "string", "minLength": 3 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "applicable": { "const": true } },
+            "required": ["applicable"]
+          },
+          "then": {
+            "required": ["score"],
+            "properties": {
+              "evidence_refs": { "$ref": "#/$defs/requiredRefs" }
+            },
+            "not": { "required": ["not_applicable_reason"] }
+          },
+          "else": {
+            "required": ["not_applicable_reason"],
+            "not": { "required": ["score"] }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "applicable": { "const": true },
+              "score": { "exclusiveMaximum": 9.5 }
+            },
+            "required": ["applicable", "score"]
+          },
+          "then": {
+            "required": [
+              "cause",
+              "impact",
+              "required_change",
+              "treatment_owner",
+              "retest_criterion"
+            ]
+          }
+        }
+      ]
+    },
+    "businessIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "intake_id",
+        "causal",
+        "executive_mission_ref",
+        "proposal_ref",
+        "classifications",
+        "decision",
+        "state"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_INTAKE" },
+        "intake_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "executive_mission_ref": { "$ref": "#/$defs/artifactRef" },
+        "proposal_ref": { "$ref": "#/$defs/artifactRef" },
+        "classifications": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fieldClassification" },
+          "minItems": 1
+        },
+        "decision": { "enum": ["PLAN", "ASK_DISCOVERY", "BLOCK"] },
+        "state": { "enum": ["B_TRIAGED", "B_BLOCKED"] }
+      }
+    },
+    "businessEvaluationPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "plan_id",
+        "causal",
+        "executive_mission_ref",
+        "intake_ref",
+        "team",
+        "assignments",
+        "decision_questions",
+        "required_evidence",
+        "dependencies",
+        "risks",
+        "completion_criteria",
+        "state"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_EVALUATION_PLAN" },
+        "plan_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "executive_mission_ref": { "$ref": "#/$defs/artifactRef" },
+        "intake_ref": { "$ref": "#/$defs/artifactRef" },
+        "team": { "$ref": "#/$defs/exactTeam" },
+        "assignments": { "$ref": "#/$defs/exactAssignments" },
+        "decision_questions": { "$ref": "#/$defs/requiredStrings" },
+        "required_evidence": { "$ref": "#/$defs/requiredStrings" },
+        "dependencies": { "$ref": "#/$defs/optionalStrings" },
+        "risks": { "$ref": "#/$defs/optionalStrings" },
+        "completion_criteria": { "$ref": "#/$defs/requiredStrings" },
+        "state": { "const": "B_PLANNED" }
+      }
+    },
+    "businessAgentMission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "agent_mission_id",
+        "causal",
+        "plan_ref",
+        "assigned_agent",
+        "objective",
+        "in_scope",
+        "out_of_scope",
+        "questions",
+        "criterion_ids",
+        "input_refs",
+        "required_evidence",
+        "constraints",
+        "permissions",
+        "return_to"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_AGENT_MISSION" },
+        "agent_mission_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "plan_ref": { "$ref": "#/$defs/artifactRef" },
+        "assigned_agent": { "$ref": "#/$defs/businessAgent" },
+        "objective": { "type": "string", "minLength": 3 },
+        "in_scope": { "$ref": "#/$defs/requiredStrings" },
+        "out_of_scope": { "$ref": "#/$defs/requiredStrings" },
+        "questions": { "$ref": "#/$defs/requiredStrings" },
+        "criterion_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterionId" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "input_refs": { "$ref": "#/$defs/requiredRefs" },
+        "required_evidence": { "$ref": "#/$defs/requiredStrings" },
+        "constraints": { "$ref": "#/$defs/requiredStrings" },
+        "permissions": { "$ref": "#/$defs/permissions" },
+        "return_to": { "const": "departamento-negocios" }
+      }
+    },
+    "businessAgentReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "agent_report_id",
+        "causal",
+        "assignment_ref",
+        "agent",
+        "status",
+        "findings",
+        "recommended_scores",
+        "assumptions",
+        "gaps",
+        "limitations",
+        "risks",
+        "dissents",
+        "confidence",
+        "return_to"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_AGENT_REPORT" },
+        "agent_report_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "assignment_ref": { "$ref": "#/$defs/artifactRef" },
+        "agent": { "$ref": "#/$defs/businessAgent" },
+        "status": { "enum": ["COMPLETE", "BLOCKED"] },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/finding" },
+          "minItems": 1
+        },
+        "recommended_scores": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/recommendedScore" },
+          "minItems": 1
+        },
+        "assumptions": { "$ref": "#/$defs/optionalStrings" },
+        "gaps": { "$ref": "#/$defs/optionalStrings" },
+        "limitations": { "$ref": "#/$defs/optionalStrings" },
+        "risks": { "$ref": "#/$defs/optionalStrings" },
+        "dissents": { "$ref": "#/$defs/optionalStrings" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "return_to": { "const": "departamento-negocios" }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "agent": { "const": "agente-estrategia-de-produto" },
+                "causal": { "properties": { "producer": { "const": "agente-estrategia-de-produto" } } },
+                "findings": {
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-02" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-03" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    }
+                  ]
+                },
+                "recommended_scores": {
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-02" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-03" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent": { "const": "agente-mercado-e-cliente" },
+                "causal": { "properties": { "producer": { "const": "agente-mercado-e-cliente" } } },
+                "findings": {
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-01" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-04" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-05" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    }
+                  ]
+                },
+                "recommended_scores": {
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-01" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-04" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-05" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "agent": { "const": "agente-viabilidade-e-monetizacao" },
+                "causal": { "properties": { "producer": { "const": "agente-viabilidade-e-monetizacao" } } },
+                "findings": {
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-06" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-07" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-08" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    }
+                  ]
+                },
+                "recommended_scores": {
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-06" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-07" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    },
+                    {
+                      "contains": {
+                        "properties": { "criterion_id": { "const": "BIZ-08" } },
+                        "required": ["criterion_id"]
+                      },
+                      "minContains": 1,
+                      "maxContains": 1
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "businessConsolidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "consolidation_id",
+        "causal",
+        "plan_ref",
+        "team",
+        "report_refs",
+        "integrated_findings",
+        "dependencies",
+        "dissents",
+        "evidence_refs",
+        "state"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_CONSOLIDATION" },
+        "consolidation_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "plan_ref": { "$ref": "#/$defs/artifactRef" },
+        "team": { "$ref": "#/$defs/exactTeam" },
+        "report_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/artifactRef" },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "integrated_findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/finding" },
+          "minItems": 1
+        },
+        "dependencies": { "$ref": "#/$defs/optionalStrings" },
+        "dissents": { "$ref": "#/$defs/optionalStrings" },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "state": { "const": "B_CONSOLIDATING" }
+      }
+    },
+    "businessScorecard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "scorecard_id",
+        "causal",
+        "consolidation_ref",
+        "criteria",
+        "calculation_method",
+        "business_internal_minimum_score",
+        "limiting_criterion_ids",
+        "state"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_SCORECARD" },
+        "scorecard_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "consolidation_ref": { "$ref": "#/$defs/artifactRef" },
+        "criteria": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scoreEntry" },
+          "minItems": 8,
+          "maxItems": 8,
+          "allOf": [
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-01" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-02" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-03" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-04" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-05" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-06" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-07" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": { "criterion_id": { "const": "BIZ-08" } },
+                "required": ["criterion_id"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        },
+        "calculation_method": { "const": "MIN_APPLICABLE_NO_ROUNDING" },
+        "business_internal_minimum_score": { "type": "number", "minimum": 0, "maximum": 10 },
+        "limiting_criterion_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterionId" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "state": { "enum": ["B_INTERNAL_REWORK", "B_NEEDS_CTO", "B_READY_FOR_JUDGMENT", "B_BLOCKED"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "business_internal_minimum_score": { "minimum": 9.5 }
+            },
+            "required": ["business_internal_minimum_score"]
+          },
+          "then": {
+            "properties": { "state": { "const": "B_READY_FOR_JUDGMENT" } }
+          },
+          "else": {
+            "not": {
+              "properties": { "state": { "const": "B_READY_FOR_JUDGMENT" } },
+              "required": ["state"]
+            }
+          }
+        }
+      ]
+    },
+    "businessGapReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "gap_report_id",
+        "causal",
+        "scorecard_ref",
+        "category",
+        "criterion_ids",
+        "cause",
+        "impact",
+        "evidence_refs",
+        "required_change",
+        "treatment_owner",
+        "retest_criterion",
+        "route"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_GAP_REPORT" },
+        "gap_report_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "scorecard_ref": { "$ref": "#/$defs/artifactRef" },
+        "category": { "enum": ["INTERNAL", "TECHNICAL", "EXECUTIVE", "OBJECTIVE_LIMITATION"] },
+        "criterion_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterionId" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "cause": { "type": "string", "minLength": 3 },
+        "impact": { "type": "string", "minLength": 3 },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "required_change": { "type": "string", "minLength": 3 },
+        "treatment_owner": {
+          "oneOf": [
+            { "$ref": "#/$defs/businessAgent" },
+            { "enum": ["departamento-negocios", "diretor-de-lentes", "ceo-maestro"] }
+          ]
+        },
+        "retest_criterion": { "type": "string", "minLength": 3 },
+        "route": { "enum": ["INTERNAL_REWORK", "AUTHORIZED_MATRIX", "RETURN_TO_CEO"] }
+      }
+    },
+    "businessReworkOrder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "rework_order_id",
+        "causal",
+        "gap_report_ref",
+        "target_agent",
+        "criterion_ids",
+        "required_changes",
+        "retest_criteria",
+        "attempt",
+        "return_to"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_REWORK_ORDER" },
+        "rework_order_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "gap_report_ref": { "$ref": "#/$defs/artifactRef" },
+        "target_agent": { "$ref": "#/$defs/businessAgent" },
+        "criterion_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterionId" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "required_changes": { "$ref": "#/$defs/requiredStrings" },
+        "retest_criteria": { "$ref": "#/$defs/requiredStrings" },
+        "attempt": { "type": "integer", "minimum": 2 },
+        "return_to": { "const": "departamento-negocios" }
+      }
+    },
+    "businessCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "capability_gap_id",
+        "causal",
+        "missing_capability",
+        "evidence_refs",
+        "impact",
+        "fallback_used",
+        "recovery_condition",
+        "return_to"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_CAPABILITY_GAP" },
+        "capability_gap_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "missing_capability": { "type": "string", "minLength": 3 },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "impact": { "type": "string", "minLength": 3 },
+        "fallback_used": { "const": false },
+        "recovery_condition": { "type": "string", "minLength": 3 },
+        "return_to": { "const": "ceo-maestro" }
+      }
+    },
+    "businessJudgmentPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "judgment_package_id",
+        "causal",
+        "executive_mission_ref",
+        "candidate_ref",
+        "plan_ref",
+        "report_refs",
+        "consolidation_ref",
+        "scorecard_ref",
+        "purpose",
+        "business_internal_minimum_score",
+        "evidence_refs",
+        "dissents",
+        "risks",
+        "return_to",
+        "state"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_JUDGMENT_PACKAGE" },
+        "judgment_package_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "executive_mission_ref": { "$ref": "#/$defs/artifactRef" },
+        "candidate_ref": { "$ref": "#/$defs/artifactRef" },
+        "plan_ref": { "$ref": "#/$defs/artifactRef" },
+        "report_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/artifactRef" },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "consolidation_ref": { "$ref": "#/$defs/artifactRef" },
+        "scorecard_ref": { "$ref": "#/$defs/artifactRef" },
+        "purpose": { "enum": ["STANDARD_JUDGMENT", "LIMITATION_VERIFICATION"] },
+        "business_internal_minimum_score": { "type": "number", "minimum": 0, "maximum": 10 },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "dissents": { "$ref": "#/$defs/optionalStrings" },
+        "risks": { "$ref": "#/$defs/optionalStrings" },
+        "limitation_basis_refs": { "$ref": "#/$defs/requiredRefs" },
+        "attempted_remediation_refs": { "$ref": "#/$defs/requiredRefs" },
+        "return_to": { "const": "diretor-de-lentes" },
+        "state": { "enum": ["B_READY_FOR_JUDGMENT", "B_LIMITATION_REVIEW"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "purpose": { "const": "STANDARD_JUDGMENT" } },
+            "required": ["purpose"]
+          },
+          "then": {
+            "properties": {
+              "business_internal_minimum_score": { "minimum": 9.5 },
+              "state": { "const": "B_READY_FOR_JUDGMENT" }
+            }
+          },
+          "else": {
+            "required": ["limitation_basis_refs", "attempted_remediation_refs"],
+            "properties": {
+              "business_internal_minimum_score": { "exclusiveMaximum": 9.5 },
+              "state": { "const": "B_LIMITATION_REVIEW" }
+            }
+          }
+        }
+      ]
+    },
+    "matrixExchangeMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "matrix_message_id",
+        "causal",
+        "executive_mission_ref",
+        "sender",
+        "recipient",
+        "topic",
+        "read_scope",
+        "write_scope",
+        "consolidation_owner",
+        "decision_requested",
+        "evidence_refs",
+        "sent_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "MATRIX_EXCHANGE_MESSAGE" },
+        "matrix_message_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "sender": { "enum": ["diretor-de-lentes", "departamento-negocios"] },
+        "recipient": { "enum": ["diretor-de-lentes", "departamento-negocios"] },
+        "topic": { "type": "string", "minLength": 3 },
+        "read_scope": { "$ref": "#/$defs/requiredStrings" },
+        "write_scope": { "$ref": "#/$defs/requiredStrings" },
+        "consolidation_owner": { "enum": ["diretor-de-lentes", "departamento-negocios"] },
+        "decision_requested": { "type": "string", "minLength": 3 },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "sent_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "sender": { "const": "diretor-de-lentes" },
+                "recipient": { "const": "departamento-negocios" },
+                "causal": { "properties": { "producer": { "const": "diretor-de-lentes" } } }
+              }
+            },
+            {
+              "properties": {
+                "sender": { "const": "departamento-negocios" },
+                "recipient": { "const": "diretor-de-lentes" },
+                "causal": { "properties": { "producer": { "const": "departamento-negocios" } } }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "businessReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "business_return_id",
+        "causal",
+        "state",
+        "reason",
+        "evidence_refs",
+        "next_action",
+        "recovery_condition",
+        "return_to"
+      ],
+      "properties": {
+        "artifact_type": { "const": "BUSINESS_RETURN" },
+        "business_return_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/managerCausal" },
+        "state": { "$ref": "#/$defs/businessState" },
+        "reason": { "type": "string", "minLength": 3 },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "next_action": { "type": "string", "minLength": 3 },
+        "recovery_condition": { "type": "string", "minLength": 3 },
+        "return_to": { "const": "ceo-maestro" }
+      }
+    }
+  }
+}

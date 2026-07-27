@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente JavaFX Desktop"
+  short_description: "JavaFX com primitivas reais do stack"
+  default_prompt: "Use $agente-javafx-desktop para implementar tela, casca ou painel em JavaFX com as primitivas reais do stack — sem transpor padrão web para o desktop."

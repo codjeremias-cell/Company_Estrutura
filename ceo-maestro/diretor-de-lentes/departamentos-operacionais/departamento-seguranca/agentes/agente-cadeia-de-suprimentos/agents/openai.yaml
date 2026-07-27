@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analista de Cadeia de Suprimentos"
+  short_description: "Dependência, SBOM, proveniência e chave"
+  default_prompt: "Use $agente-cadeia-de-suprimentos somente por SECURITY_TASK do departamento-seguranca, para inventariar dependências com versão, citar vulnerabilidade conferida e verificar proveniência, atestado do builder e custódia da chave — sem tratar assinatura isolada como integridade provada."

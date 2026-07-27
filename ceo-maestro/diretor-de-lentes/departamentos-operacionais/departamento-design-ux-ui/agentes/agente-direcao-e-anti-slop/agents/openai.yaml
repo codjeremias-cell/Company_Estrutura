@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Direção e Anti-Slop"
+  short_description: "Direção deliberada e anti-AI-slop"
+  default_prompt: "Use $agente-direcao-e-anti-slop para fixar a direção com âncora em heurística ou dado e depois testar a saída visual alheia contra o slop de 1ª e 2ª ordem — sem desenhar a tela."

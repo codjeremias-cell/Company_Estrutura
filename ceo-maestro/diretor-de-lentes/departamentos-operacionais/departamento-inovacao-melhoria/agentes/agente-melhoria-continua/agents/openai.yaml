@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Melhoria Contínua"
+  short_description: "Conduz PDCA, Kaizen e aprendizado medido"
+  default_prompt: "Use $agente-melhoria-continua para analisar o Check e recomendar o próximo ciclo de melhoria."

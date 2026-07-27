@@ -1,0 +1,694 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-evolucao-skills.schema.json",
+  "title": "Contratos internos do Departamento de Evolução de Skills",
+  "description": "Plano de frentes, tarefa por capacidade, retorno por kind, fronteira de Pareto, lacuna e livro-razão da rodada. Sem promoção, sem nota e sem vencedor: selecionar é do departamento-juizes e promover é do ceo-maestro com Jeremias (ADR-004). Os envelopes de fronteira (EXECUTIVE_MISSION, EXECUTIVE_SUBMISSION) pertencem ao schema do ceo-maestro e não são redefinidos aqui.",
+  "oneOf": [
+    { "$ref": "#/$defs/evolutionPlan" },
+    { "$ref": "#/$defs/evolutionTask" },
+    { "$ref": "#/$defs/evolutionReturn" },
+    { "$ref": "#/$defs/candidateSet" },
+    { "$ref": "#/$defs/evolutionCapabilityGap" },
+    { "$ref": "#/$defs/evolutionLedger" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "artifactRef": { "type": "string", "minLength": 3, "maxLength": 512 },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "uniqueItems": true
+    },
+    "mode": { "enum": [ "AVALIACAO", "EVOLUCAO", "MINERACAO" ] },
+    "kind": { "enum": [ "DIAGNOSTICO", "GEM", "CANDIDATO", "PROVA" ] },
+    "workerId": {
+      "enum": [
+        "agente-colheita-e-diagnostico",
+        "agente-mineracao-externa",
+        "agente-curador-de-candidatos",
+        "agente-prova-de-evolucao"
+      ]
+    },
+    "workerStatus": {
+      "enum": [ "COMPLETED", "BLOCKED", "SEM_RETORNO", "FALHO" ]
+    },
+    "candidateLabel": { "type": "string", "pattern": "^cand-[A-Z]$" },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": {
+          "oneOf": [ { "$ref": "#/$defs/digest" }, { "const": "n/a" } ]
+        },
+        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "producer": { "const": "departamento-evolucao-skills" },
+        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "front": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "front_ref", "gap", "evidence_excerpt", "targets", "reach", "denominator", "material" ],
+      "properties": {
+        "front_ref": { "$ref": "#/$defs/identifier" },
+        "gap": { "type": "string", "minLength": 20 },
+        "evidence_excerpt": { "type": "string", "minLength": 20 },
+        "targets": { "$ref": "#/$defs/requiredRefs" },
+        "reach": { "type": "integer", "minimum": 1 },
+        "denominator": { "type": "integer", "minimum": 1 },
+        "material": {
+          "enum": [ "colheita", "mineracao", "ambos", "nenhum" ]
+        }
+      }
+    },
+    "evolutionPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "evolution_plan_id",
+        "causal",
+        "executive_mission_ref",
+        "mode",
+        "fronts",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "EVOLUTION_PLAN" },
+        "evolution_plan_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "mode": { "$ref": "#/$defs/mode" },
+        "fronts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/front" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "evolutionTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "worker_id",
+        "kind",
+        "front_ref",
+        "gap",
+        "targets",
+        "inputs",
+        "forbidden_context",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "EVOLUTION_TASK" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "front_ref": { "$ref": "#/$defs/identifier" },
+        "gap": {
+          "oneOf": [ { "type": "string", "minLength": 20 }, { "const": "n/a" } ]
+        },
+        "targets": { "$ref": "#/$defs/requiredRefs" },
+        "inputs": { "$ref": "#/$defs/optionalRefs" },
+        "candidate_labels": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/candidateLabel" },
+          "uniqueItems": true
+        },
+        "forbidden_context": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 4,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "identidade" },
+          "minContains": 1
+        },
+        "stop_when": { "$ref": "#/$defs/requiredStrings" },
+        "return_to": { "const": "departamento-evolucao-skills" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "DIAGNOSTICO" } }, "required": [ "kind" ] },
+          "then": { "properties": { "worker_id": { "const": "agente-colheita-e-diagnostico" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "GEM" } }, "required": [ "kind" ] },
+          "then": { "properties": { "worker_id": { "const": "agente-mineracao-externa" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "CANDIDATO" } }, "required": [ "kind" ] },
+          "then": {
+            "properties": {
+              "worker_id": { "const": "agente-curador-de-candidatos" },
+              "gap": { "type": "string", "minLength": 20 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "PROVA" } }, "required": [ "kind" ] },
+          "then": {
+            "required": [ "candidate_labels" ],
+            "properties": {
+              "worker_id": { "const": "agente-prova-de-evolucao" },
+              "candidate_labels": { "minItems": 2 }
+            }
+          }
+        }
+      ]
+    },
+    "gapItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gap",
+        "evidence_excerpt",
+        "signals",
+        "targets_affected",
+        "reach",
+        "denominator"
+      ],
+      "properties": {
+        "gap": { "type": "string", "minLength": 20 },
+        "evidence_excerpt": { "type": "string", "minLength": 20 },
+        "signals": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [ "acionou", "aderiu", "contorno" ],
+          "properties": {
+            "acionou": { "enum": [ "S", "N" ] },
+            "aderiu": { "enum": [ "S", "parcial", "N", "—" ] },
+            "contorno": { "type": "string", "minLength": 3 }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "acionou": { "const": "N" } }, "required": [ "acionou" ] },
+              "then": { "properties": { "aderiu": { "const": "—" } } }
+            }
+          ]
+        },
+        "targets_affected": { "$ref": "#/$defs/requiredRefs" },
+        "reach": { "type": "integer", "minimum": 1 },
+        "denominator": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "gemItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gem_id",
+        "gap_alvo",
+        "fonte_url",
+        "fonte_titulo",
+        "fonte_versao",
+        "acessado_em",
+        "licenca",
+        "o_que_e",
+        "limite_declarado",
+        "degrau_proposto",
+        "adaptacao"
+      ],
+      "properties": {
+        "gem_id": { "$ref": "#/$defs/identifier" },
+        "gap_alvo": { "type": "string", "minLength": 10 },
+        "fonte_url": { "type": "string", "minLength": 10 },
+        "fonte_titulo": { "type": "string", "minLength": 3 },
+        "fonte_versao": { "type": "string", "minLength": 1 },
+        "acessado_em": { "$ref": "#/$defs/timestamp" },
+        "licenca": { "type": "string", "minLength": 3 },
+        "o_que_e": { "type": "string", "minLength": 20 },
+        "limite_declarado": { "type": "string", "minLength": 3 },
+        "degrau_proposto": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "adaptacao": { "type": "string", "minLength": 10 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "licenca": { "const": "desconhecida" } },
+            "required": [ "licenca" ]
+          },
+          "then": { "properties": { "degrau_proposto": { "maximum": 1 } } }
+        }
+      ]
+    },
+    "candidateItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "gap_ref",
+        "abordagem",
+        "change_summary",
+        "removed_text",
+        "delta_lines"
+      ],
+      "properties": {
+        "candidate_id": { "$ref": "#/$defs/identifier" },
+        "gap_ref": { "type": "string", "minLength": 20 },
+        "abordagem": { "type": "string", "minLength": 10 },
+        "change_summary": { "type": "string", "minLength": 20 },
+        "removed_text": { "type": "string", "minLength": 3 },
+        "delta_lines": { "type": "integer" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "delta_lines": { "minimum": 1 } },
+            "required": [ "delta_lines" ]
+          },
+          "then": { "properties": { "removed_text": { "minLength": 20 } } }
+        }
+      ]
+    },
+    "scoreboardLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_label",
+        "case_id",
+        "origem",
+        "baseline",
+        "pos",
+        "acionou",
+        "aderiu",
+        "excerpt"
+      ],
+      "properties": {
+        "candidate_label": { "$ref": "#/$defs/candidateLabel" },
+        "case_id": { "$ref": "#/$defs/identifier" },
+        "origem": { "enum": [ "real", "sintetico" ] },
+        "baseline": { "enum": [ "falhou", "passou" ] },
+        "pos": {
+          "oneOf": [
+            { "enum": [ "falhou", "passou" ] },
+            { "type": "string", "pattern": "^skip:.{5,}$" }
+          ]
+        },
+        "acionou": { "enum": [ "S", "N", "—" ] },
+        "aderiu": { "enum": [ "S", "parcial", "N", "—" ] },
+        "excerpt": { "type": "string", "minLength": 10 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "acionou": { "const": "N" } }, "required": [ "acionou" ] },
+          "then": { "properties": { "aderiu": { "const": "—" } } }
+        }
+      ]
+    },
+    "evolutionReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "worker_id",
+        "kind",
+        "gaps",
+        "gems",
+        "candidates",
+        "scoreboard",
+        "pending",
+        "status",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "EVOLUTION_RETURN" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "gaps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/gapItem" },
+          "uniqueItems": true
+        },
+        "gems": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/gemItem" },
+          "uniqueItems": true
+        },
+        "candidates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/candidateItem" },
+          "uniqueItems": true
+        },
+        "scoreboard": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scoreboardLine" },
+          "uniqueItems": true
+        },
+        "saturation": { "type": "string", "minLength": 10 },
+        "blocked_reason": { "type": "string", "minLength": 10 },
+        "pending": { "$ref": "#/$defs/optionalStrings" },
+        "status": { "enum": [ "COMPLETED", "BLOCKED" ] },
+        "return_to": { "const": "departamento-evolucao-skills" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "BLOCKED" } }, "required": [ "status" ] },
+          "then": {
+            "required": [ "blocked_reason" ],
+            "properties": {
+              "gaps": { "maxItems": 0 },
+              "gems": { "maxItems": 0 },
+              "candidates": { "maxItems": 0 },
+              "scoreboard": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": { "const": "DIAGNOSTICO" },
+              "status": { "const": "COMPLETED" }
+            },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "properties": { "gaps": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "GEM" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "required": [ "saturation" ] }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": { "const": "CANDIDATO" },
+              "status": { "const": "COMPLETED" }
+            },
+            "required": [ "kind", "status" ]
+          },
+          "then": { "properties": { "candidates": { "minItems": 2 } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "PROVA" }, "status": { "const": "COMPLETED" } },
+            "required": [ "kind", "status" ]
+          },
+          "then": {
+            "properties": {
+              "scoreboard": { "minItems": 1 },
+              "candidates": { "maxItems": 0 }
+            }
+          }
+        }
+      ]
+    },
+    "frontierItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "candidate_id", "candidate_label", "status", "dominated_by", "diversidade" ],
+      "properties": {
+        "candidate_id": { "$ref": "#/$defs/identifier" },
+        "candidate_label": { "$ref": "#/$defs/candidateLabel" },
+        "status": { "enum": [ "FRONTEIRA", "DOMINADO", "NAO_PROVADO" ] },
+        "dominated_by": {
+          "oneOf": [ { "$ref": "#/$defs/identifier" }, { "const": "n/a" } ]
+        },
+        "diversidade": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "DOMINADO" } }, "required": [ "status" ] },
+          "then": {
+            "properties": {
+              "dominated_by": { "not": { "const": "n/a" } },
+              "diversidade": { "const": false }
+            }
+          },
+          "else": { "properties": { "dominated_by": { "const": "n/a" } } }
+        }
+      ]
+    },
+    "candidateSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "candidate_set_id",
+        "causal",
+        "front_ref",
+        "items",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "CANDIDATE_SET" },
+        "candidate_set_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "front_ref": { "$ref": "#/$defs/identifier" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/frontierItem" },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "evolutionCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "capability",
+        "worker_id",
+        "fronts",
+        "expected_contract",
+        "discovery_evidence",
+        "impact",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_type": { "const": "EVOLUTION_CAPABILITY_GAP" },
+        "capability": { "type": "string", "minLength": 10 },
+        "worker_id": {
+          "oneOf": [ { "$ref": "#/$defs/workerId" }, { "const": "n/a" } ]
+        },
+        "fronts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "expected_contract": { "type": "string", "minLength": 10 },
+        "discovery_evidence": { "type": "string", "minLength": 10 },
+        "impact": { "type": "string", "minLength": 10 },
+        "status": { "const": "OPEN" },
+        "owner": { "const": "ceo-maestro" }
+      }
+    },
+    "assignmentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "task_id", "worker_id", "kind", "issued_at", "destination" ],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "destination": { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "panelItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "worker_id", "kind", "status", "substrate", "tier" ],
+      "properties": {
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "kind": { "$ref": "#/$defs/kind" },
+        "status": { "$ref": "#/$defs/workerStatus" },
+        "substrate": { "type": "string", "minLength": 3 },
+        "tier": { "type": "string", "minLength": 3 }
+      }
+    },
+    "gainMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alcance_total",
+        "denominador",
+        "material_admitido",
+        "casos_novos",
+        "vermelho_verde"
+      ],
+      "properties": {
+        "alcance_total": { "type": "integer", "minimum": 0 },
+        "denominador": { "type": "integer", "minimum": 1 },
+        "material_admitido": { "type": "integer", "minimum": 0 },
+        "casos_novos": { "type": "integer", "minimum": 0 },
+        "vermelho_verde": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "evolutionLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "evolution_ledger_id",
+        "causal",
+        "executive_mission_ref",
+        "mode",
+        "deliverable_type",
+        "plan",
+        "assignments",
+        "panel",
+        "scoreboard",
+        "candidate_sets",
+        "gems",
+        "metrics",
+        "capability_gaps",
+        "frentes_encerradas",
+        "pending",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "EVOLUTION_LEDGER" },
+        "evolution_ledger_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "mode": { "$ref": "#/$defs/mode" },
+        "deliverable_type": { "enum": [ "analysis", "proposal" ] },
+        "plan": { "$ref": "#/$defs/evolutionPlan" },
+        "assignments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assignmentRecord" },
+          "uniqueItems": true
+        },
+        "panel": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/panelItem" },
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "scoreboard": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scoreboardLine" },
+          "uniqueItems": true
+        },
+        "candidate_sets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/candidateSet" },
+          "uniqueItems": true
+        },
+        "gems": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/gemItem" },
+          "uniqueItems": true
+        },
+        "metrics": { "$ref": "#/$defs/gainMetrics" },
+        "capability_gaps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evolutionCapabilityGap" }
+        },
+        "frentes_encerradas": { "$ref": "#/$defs/optionalStrings" },
+        "pending": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "R6" },
+          "minContains": 1
+        },
+        "return_to": { "const": "ceo-maestro" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "deliverable_type": { "const": "proposal" } },
+            "required": [ "deliverable_type" ]
+          },
+          "then": {
+            "properties": {
+              "mode": { "const": "EVOLUCAO" },
+              "assignments": { "minItems": 1 },
+              "scoreboard": { "minItems": 1 },
+              "candidate_sets": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "mode": { "const": "AVALIACAO" } },
+            "required": [ "mode" ]
+          },
+          "then": {
+            "properties": {
+              "deliverable_type": { "const": "analysis" },
+              "candidate_sets": { "maxItems": 0 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

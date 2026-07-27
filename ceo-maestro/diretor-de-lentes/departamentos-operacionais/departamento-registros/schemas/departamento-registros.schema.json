@@ -1,0 +1,1628 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/departamento-registros.schema.json",
+  "title": "Contratos internos do Departamento de Registros",
+  "description": "Decisao de roteamento por registro atomico, tarefa e recibo por capacidade, ledger de conservacao, lacuna de cobertura, relatorio de aprendizagem e livro-razao da rodada. Os envelopes de fronteira (DEPARTMENT_MISSION e DEPARTMENT_RETURN) pertencem ao schema do diretor-de-lentes e nao sao redefinidos aqui; o gem, com gap_alvo, licenca, degrau_proposto e adaptacao, pertence ao departamento-evolucao-skills e nao e preenchido aqui. Regra em references/protocolo-registros.md; dominio em references/naturezas-e-roteamento.md.",
+  "oneOf": [
+    { "$ref": "#/$defs/routingDecision" },
+    { "$ref": "#/$defs/recordTask" },
+    { "$ref": "#/$defs/recordReceipt" },
+    { "$ref": "#/$defs/conservationLedger" },
+    { "$ref": "#/$defs/registryCapabilityGap" },
+    { "$ref": "#/$defs/learningReport" },
+    { "$ref": "#/$defs/registryLedger" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "digestOrNa": {
+      "oneOf": [
+        { "$ref": "#/$defs/digest" },
+        { "type": "string", "pattern": "^n/a:.{5,}$" }
+      ]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "artifactRef": { "type": "string", "minLength": 3, "maxLength": 512 },
+    "artifactRefOrNa": {
+      "oneOf": [
+        {
+          "allOf": [
+            { "$ref": "#/$defs/artifactRef" },
+            { "not": { "const": "n/a" } }
+          ]
+        },
+        { "const": "n/a" }
+      ]
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 3 },
+      "uniqueItems": true
+    },
+    "identifierList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "counter": { "type": "integer", "minimum": 0 },
+    "nature": {
+      "enum": [
+        "memoria-duravel",
+        "decisao-adr",
+        "estado",
+        "documento-produto",
+        "guia-playbook",
+        "ideia-backlog",
+        "aprendizagem",
+        "nao-registro"
+      ]
+    },
+    "routingRule": {
+      "enum": [ "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "n/a" ]
+    },
+    "recordState": {
+      "enum": [
+        "CAPTURADO",
+        "ROTEADO",
+        "GRAVADO",
+        "INDEXADO",
+        "VERIFICADO",
+        "VIGENTE",
+        "SUPERADO",
+        "ARQUIVADO",
+        "HANDOFF_DECLARADO",
+        "PENDING_DESTINO",
+        "PENDING_AUTORIZACAO",
+        "RECUSADO_FRONTEIRA",
+        "LACUNA_CAPACIDADE",
+        "ORFAO",
+        "INDICE_ADIANTADO",
+        "BLOQUEADO",
+        "DESCARTADO"
+      ]
+    },
+    "landedState": {
+      "enum": [ "VERIFICADO", "VIGENTE", "SUPERADO", "ARQUIVADO" ]
+    },
+    "derivedRole": {
+      "enum": [
+        "fonte",
+        "view_regeneravel",
+        "view_manual",
+        "destilacao",
+        "runtime_gerado",
+        "snapshot",
+        "index"
+      ]
+    },
+    "capability": {
+      "enum": [
+        "memoria-e-decisoes",
+        "estado-e-handoffs",
+        "documentacao-e-materiais",
+        "aprendizados-e-relatorios"
+      ]
+    },
+    "workerId": {
+      "enum": [
+        "agente-memoria-e-decisoes",
+        "agente-estado-e-handoffs",
+        "agente-documentacao-e-materiais",
+        "agente-aprendizados-e-relatorios"
+      ]
+    },
+    "workerStatus": {
+      "enum": [ "COMPLETED", "BLOCKED", "SEM_RETORNO", "FALHO" ]
+    },
+    "taskKind": {
+      "enum": [ "GRAVAR", "INDEXAR", "VERIFICAR", "RECONTAR", "COLHER" ]
+    },
+    "integrityGate": {
+      "enum": [
+        "REGISTRO_ORFAO",
+        "INDICE_ADIANTADO",
+        "VIEW_DIVERGENTE",
+        "SEGREDO_EM_REGISTRO",
+        "SNAPSHOT_COMO_ATUAL",
+        "HISTORICO_SEM_DATA",
+        "MEMORIA_CONTAMINADA",
+        "REGISTRO_PERDIDO",
+        "CONVENCAO_IMPROVISADA",
+        "FATO_DUPLICADO",
+        "FONTE_PERDIDA",
+        "CAMINHO_FORA_DA_RAIZ",
+        "INSTRUCAO_EMBUTIDA",
+        "FONTE_ALTERADA_POR_TERCEIRO"
+      ]
+    },
+    "gateResult": {
+      "enum": [ "PASS", "FAIL", "NAO_VERIFICADO", "NAO_APLICAVEL" ]
+    },
+    "correctionOwner": {
+      "enum": [
+        "departamento",
+        "departamento_fora_de_alcance",
+        "diretor",
+        "jeremias",
+        "n/a"
+      ]
+    },
+    "partialReason": {
+      "enum": [
+        "conservation_blocked",
+        "integrity_fail",
+        "pending_authorization",
+        "capability_missing",
+        "single_count_unverified",
+        "unverified_gate",
+        "alcance_de_escrita_insuficiente",
+        "decisao_reservada_a_jeremias"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "source_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": { "$ref": "#/$defs/identifierList" },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "source_digest": { "$ref": "#/$defs/digestOrNa" },
+        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "producer": { "const": "departamento-registros" },
+        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "conventionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "convention", "source", "channel_level", "search_method", "competing_values_found" ],
+      "properties": {
+        "convention": { "type": "string", "minLength": 3 },
+        "source": { "type": "string", "minLength": 3 },
+        "channel_level": { "type": "integer", "minimum": 1, "maximum": 2 },
+        "search_method": { "type": "string", "minLength": 10 },
+        "competing_values_found": { "$ref": "#/$defs/optionalStrings" }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path_or_container",
+        "resolved_path",
+        "is_reparse_point",
+        "within_trusted_root",
+        "existence",
+        "existence_evidence",
+        "derived_role",
+        "source_of_truth_ref",
+        "write_scope",
+        "secret_scan",
+        "index_obligations"
+      ],
+      "properties": {
+        "path_or_container": { "type": "string", "minLength": 1 },
+        "resolved_path": { "type": "string", "minLength": 1 },
+        "is_reparse_point": { "enum": [ true, false, "unknown" ] },
+        "reparse_target": { "type": "string", "minLength": 1 },
+        "within_trusted_root": { "enum": [ true, false, "unknown" ] },
+        "existence": { "enum": [ "confirmed", "absent", "unverified" ] },
+        "existence_evidence": { "type": "string", "minLength": 10 },
+        "derived_role": { "$ref": "#/$defs/derivedRole" },
+        "source_of_truth_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "write_scope": { "enum": [ "departamento", "somente_leitura" ] },
+        "secret_scan": { "enum": [ "mecanica", "manual", "ausente" ] },
+        "index_obligations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "index_ref", "kind", "evidence" ],
+            "properties": {
+              "index_ref": { "$ref": "#/$defs/artifactRef" },
+              "kind": { "enum": [ "mecanica", "convencao" ] },
+              "evidence": { "type": "string", "minLength": 3 }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "derived_role": { "not": { "const": "fonte" } } },
+            "required": [ "derived_role" ]
+          },
+          "then": {
+            "properties": { "source_of_truth_ref": { "not": { "const": "n/a" } } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "is_reparse_point": { "const": true } },
+            "required": [ "is_reparse_point" ]
+          },
+          "then": { "required": [ "reparse_target" ] }
+        }
+      ]
+    },
+    "destinationOrNa": {
+      "oneOf": [
+        { "$ref": "#/$defs/destination" },
+        { "const": "n/a" }
+      ]
+    },
+    "gateEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "gate", "method", "evidence", "verified_by" ],
+      "properties": {
+        "gate": {
+          "enum": [
+            "GATE_DECOMPOSICAO",
+            "GATE_DESTINO_UNICO",
+            "GATE_CUSTODIA",
+            "GATE_FONTE_UNICA",
+            "GATE_INDICE",
+            "GATE_INTEGRIDADE"
+          ]
+        },
+        "method": { "type": "string", "minLength": 10 },
+        "evidence": { "type": "string", "minLength": 10 },
+        "verified_by": { "type": "string", "minLength": 3 }
+      }
+    },
+    "routingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "record_id",
+        "durable_key",
+        "department_mission_ref",
+        "source_fragment",
+        "channel_level",
+        "nature",
+        "record_scope",
+        "matched_rules",
+        "deciding_rule",
+        "tiebreak_ref",
+        "atomicity",
+        "split_into",
+        "destination",
+        "convention_ref",
+        "owner_capability_id",
+        "data_classification",
+        "paired_with",
+        "state",
+        "gate_evidence",
+        "artifact_ref",
+        "blocked_reason",
+        "rationale"
+      ],
+      "properties": {
+        "artifact_type": { "const": "ROUTING_DECISION" },
+        "record_id": { "$ref": "#/$defs/identifier" },
+        "durable_key": { "type": "string", "minLength": 3 },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "source_fragment": { "type": "string", "minLength": 1 },
+        "channel_level": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "nature": { "$ref": "#/$defs/nature" },
+        "record_scope": { "enum": [ "projeto", "cross_projeto", "metodo", "desconhecido" ] },
+        "matched_rules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/routingRule" },
+          "uniqueItems": true
+        },
+        "deciding_rule": { "$ref": "#/$defs/routingRule" },
+        "tiebreak_ref": { "type": "string", "minLength": 3 },
+        "atomicity": { "enum": [ "atomic", "split_required", "unmatched" ] },
+        "split_into": { "$ref": "#/$defs/identifierList" },
+        "destination": { "$ref": "#/$defs/destinationOrNa" },
+        "convention_ref": {
+          "oneOf": [
+            { "$ref": "#/$defs/conventionRef" },
+            { "const": "n/a" }
+          ]
+        },
+        "owner_capability_id": { "type": "string", "minLength": 3 },
+        "data_classification": {
+          "enum": [ "public", "internal", "confidential", "restricted" ]
+        },
+        "paired_with": { "$ref": "#/$defs/identifierList" },
+        "state": { "$ref": "#/$defs/recordState" },
+        "gate_evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/gateEvidence" },
+          "uniqueItems": true
+        },
+        "artifact_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "blocked_reason": { "type": "string", "minLength": 3 },
+        "rationale": { "type": "string", "minLength": 10 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R1" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "nao-registro" } } }
+        },
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R2" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "documento-produto" } } }
+        },
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R3" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "decisao-adr" } } }
+        },
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R4" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "estado" } } }
+        },
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R5" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "memoria-duravel" } } }
+        },
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R6" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "aprendizagem" } } }
+        },
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R7" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "guia-playbook" } } }
+        },
+        {
+          "if": { "properties": { "deciding_rule": { "const": "R8" } }, "required": [ "deciding_rule" ] },
+          "then": { "properties": { "nature": { "const": "ideia-backlog" } } }
+        },
+        {
+          "if": { "properties": { "atomicity": { "const": "atomic" } }, "required": [ "atomicity" ] },
+          "then": {
+            "properties": {
+              "deciding_rule": { "not": { "const": "n/a" } },
+              "matched_rules": { "minItems": 1, "maxItems": 2 }
+            }
+          }
+        },
+        {
+          "if": {
+            "allOf": [
+              { "properties": { "atomicity": { "const": "atomic" } }, "required": [ "atomicity" ] },
+              { "properties": { "matched_rules": { "minItems": 2 } }, "required": [ "matched_rules" ] }
+            ]
+          },
+          "then": {
+            "properties": { "tiebreak_ref": { "minLength": 10 } }
+          }
+        },
+        {
+          "if": { "properties": { "atomicity": { "const": "split_required" } }, "required": [ "atomicity" ] },
+          "then": {
+            "properties": {
+              "deciding_rule": { "const": "n/a" },
+              "matched_rules": { "minItems": 2 },
+              "split_into": { "minItems": 2 },
+              "destination": { "const": "n/a" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "atomicity": { "const": "unmatched" } }, "required": [ "atomicity" ] },
+          "then": {
+            "properties": {
+              "deciding_rule": { "const": "n/a" },
+              "state": { "const": "PENDING_DESTINO" },
+              "destination": { "const": "n/a" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "state": { "$ref": "#/$defs/landedState" } },
+            "required": [ "state" ]
+          },
+          "then": {
+            "properties": {
+              "destination": {
+                "type": "object",
+                "required": [ "within_trusted_root", "existence" ],
+                "properties": {
+                  "within_trusted_root": { "const": true },
+                  "existence": { "const": "confirmed" }
+                }
+              },
+              "artifact_ref": { "not": { "const": "n/a" } },
+              "deciding_rule": { "not": { "const": "n/a" } },
+              "gate_evidence": { "minItems": 5 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "state": { "enum": [ "GRAVADO", "INDEXADO" ] } },
+            "required": [ "state" ]
+          },
+          "then": {
+            "properties": {
+              "destination": {
+                "type": "object",
+                "required": [ "within_trusted_root", "existence" ],
+                "properties": {
+                  "within_trusted_root": { "const": true },
+                  "existence": { "const": "confirmed" }
+                }
+              },
+              "artifact_ref": { "not": { "const": "n/a" } }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "nature": { "const": "memoria-duravel" } },
+            "required": [ "nature" ]
+          },
+          "then": {
+            "properties": {
+              "destination": {
+                "type": "object",
+                "required": [ "write_scope" ],
+                "properties": { "write_scope": { "const": "somente_leitura" } }
+              },
+              "state": {
+                "not": { "enum": [ "GRAVADO", "INDEXADO", "VERIFICADO", "VIGENTE", "SUPERADO", "ARQUIVADO" ] }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "state": { "const": "HANDOFF_DECLARADO" } },
+            "required": [ "state" ]
+          },
+          "then": {
+            "properties": { "owner_capability_id": { "not": { "const": "n/a" } } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": { "enum": [ "BLOQUEADO", "PENDING_AUTORIZACAO", "DESCARTADO" ] }
+            },
+            "required": [ "state" ]
+          },
+          "then": {
+            "properties": { "blocked_reason": { "minLength": 10 } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "channel_level": { "minimum": 3 } },
+            "required": [ "channel_level" ]
+          },
+          "then": {
+            "properties": {
+              "convention_ref": {
+                "type": "object",
+                "required": [ "channel_level" ],
+                "properties": { "channel_level": { "maximum": 2 } }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "writeTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_of_truth",
+        "resolved_path",
+        "within_trusted_root",
+        "baseline_sha256",
+        "forbidden_writes"
+      ],
+      "properties": {
+        "source_of_truth": { "$ref": "#/$defs/artifactRef" },
+        "resolved_path": { "type": "string", "minLength": 1 },
+        "within_trusted_root": { "const": true },
+        "baseline_sha256": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            { "const": "ausente" }
+          ]
+        },
+        "forbidden_writes": { "$ref": "#/$defs/optionalRefs" }
+      }
+    },
+    "preWriteSecretScan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "result", "kind", "scanned_object", "method", "evidence" ],
+      "properties": {
+        "result": {
+          "enum": [ "PASS", "FAIL", "NAO_VERIFICADO", "deferred_to_author" ]
+        },
+        "kind": { "enum": [ "mecanica", "manual" ] },
+        "scanned_object": { "enum": [ "insumo_do_gerente", "conteudo_final" ] },
+        "method": { "type": "string", "minLength": 10 },
+        "evidence": { "type": "string", "minLength": 3 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "result": { "const": "deferred_to_author" } },
+            "required": [ "result" ]
+          },
+          "then": {
+            "properties": { "scanned_object": { "const": "insumo_do_gerente" } }
+          }
+        }
+      ]
+    },
+    "authoredContentSecretScan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "result", "kind", "method", "evidence" ],
+      "properties": {
+        "result": { "enum": [ "PASS", "FAIL", "NAO_VERIFICADO", "NAO_APLICAVEL" ] },
+        "kind": { "enum": [ "mecanica", "manual" ] },
+        "method": { "type": "string", "minLength": 10 },
+        "evidence": { "type": "string", "minLength": 3 }
+      }
+    },
+    "recordTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "causal",
+        "worker_id",
+        "capability",
+        "kind",
+        "record_ids",
+        "write_target",
+        "pre_write_secret_scan",
+        "index_targets",
+        "checks",
+        "evidence_required",
+        "forbidden_context",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "RECORD_TASK" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "kind": { "$ref": "#/$defs/taskKind" },
+        "record_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "write_target": {
+          "oneOf": [
+            { "$ref": "#/$defs/writeTarget" },
+            { "const": "n/a" }
+          ]
+        },
+        "pre_write_secret_scan": {
+          "oneOf": [
+            { "$ref": "#/$defs/preWriteSecretScan" },
+            { "const": "n/a" }
+          ]
+        },
+        "index_targets": { "$ref": "#/$defs/optionalRefs" },
+        "checks": { "$ref": "#/$defs/requiredStrings" },
+        "evidence_required": { "$ref": "#/$defs/requiredStrings" },
+        "forbidden_context": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 4,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "recibos" },
+          "minContains": 1
+        },
+        "stop_when": { "$ref": "#/$defs/requiredStrings" },
+        "return_to": { "const": "departamento-registros" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "worker_id": { "const": "agente-memoria-e-decisoes" } },
+            "required": [ "worker_id" ]
+          },
+          "then": { "properties": { "capability": { "const": "memoria-e-decisoes" } } }
+        },
+        {
+          "if": {
+            "properties": { "worker_id": { "const": "agente-estado-e-handoffs" } },
+            "required": [ "worker_id" ]
+          },
+          "then": { "properties": { "capability": { "const": "estado-e-handoffs" } } }
+        },
+        {
+          "if": {
+            "properties": { "worker_id": { "const": "agente-documentacao-e-materiais" } },
+            "required": [ "worker_id" ]
+          },
+          "then": { "properties": { "capability": { "const": "documentacao-e-materiais" } } }
+        },
+        {
+          "if": {
+            "properties": { "worker_id": { "const": "agente-aprendizados-e-relatorios" } },
+            "required": [ "worker_id" ]
+          },
+          "then": { "properties": { "capability": { "const": "aprendizados-e-relatorios" } } }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "enum": [ "GRAVAR", "INDEXAR" ] } },
+            "required": [ "kind" ]
+          },
+          "then": {
+            "properties": {
+              "write_target": { "type": "object" },
+              "pre_write_secret_scan": {
+                "type": "object",
+                "required": [ "result" ],
+                "properties": {
+                  "result": { "enum": [ "PASS", "deferred_to_author" ] }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "enum": [ "VERIFICAR", "RECONTAR" ] } },
+            "required": [ "kind" ]
+          },
+          "then": {
+            "properties": {
+              "write_target": { "const": "n/a" },
+              "index_targets": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "COLHER" } },
+            "required": [ "kind" ]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "aprendizados-e-relatorios" }
+            }
+          }
+        }
+      ]
+    },
+    "writePerformed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "resolved_path",
+        "derived_role",
+        "action",
+        "baseline_sha256",
+        "post_write_sha256",
+        "evidence"
+      ],
+      "properties": {
+        "path": { "$ref": "#/$defs/artifactRef" },
+        "resolved_path": { "type": "string", "minLength": 1 },
+        "derived_role": { "$ref": "#/$defs/derivedRole" },
+        "action": { "enum": [ "created", "updated", "regenerated", "none" ] },
+        "baseline_sha256": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            { "const": "ausente" }
+          ]
+        },
+        "post_write_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "evidence": { "type": "string", "minLength": 10 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "action": { "const": "created" } },
+            "required": [ "action" ]
+          },
+          "then": { "properties": { "baseline_sha256": { "const": "ausente" } } }
+        },
+        {
+          "if": {
+            "properties": { "derived_role": { "enum": [ "runtime_gerado", "snapshot" ] } },
+            "required": [ "derived_role" ]
+          },
+          "then": { "properties": { "action": { "const": "none" } } }
+        }
+      ]
+    },
+    "integrityCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate",
+        "result",
+        "method",
+        "reproduction",
+        "evidence",
+        "finding",
+        "correction_condition",
+        "correction_owner",
+        "verified_by",
+        "verification_mode"
+      ],
+      "properties": {
+        "gate": { "$ref": "#/$defs/integrityGate" },
+        "result": { "$ref": "#/$defs/gateResult" },
+        "method": { "type": "string", "minLength": 10 },
+        "reproduction": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [ "kind", "value" ],
+          "properties": {
+            "kind": { "enum": [ "command", "artifact_locator", "none" ] },
+            "value": { "type": "string", "minLength": 1 }
+          }
+        },
+        "evidence": { "type": "string", "minLength": 3 },
+        "finding": { "type": "string", "minLength": 3 },
+        "correction_condition": { "type": "string", "minLength": 3 },
+        "correction_owner": { "$ref": "#/$defs/correctionOwner" },
+        "verified_by": { "type": "string", "minLength": 3 },
+        "verification_mode": {
+          "enum": [ "distinct_capability", "sealed_independent_method" ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "result": { "const": "PASS" } },
+            "required": [ "result" ]
+          },
+          "then": {
+            "properties": {
+              "evidence": { "minLength": 10 },
+              "reproduction": {
+                "type": "object",
+                "required": [ "kind" ],
+                "properties": {
+                  "kind": { "enum": [ "command", "artifact_locator" ] }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "result": { "const": "FAIL" } },
+            "required": [ "result" ]
+          },
+          "then": {
+            "properties": {
+              "finding": { "minLength": 10 },
+              "correction_condition": { "minLength": 10 },
+              "correction_owner": { "not": { "const": "n/a" } }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "result": { "const": "NAO_APLICAVEL" } },
+            "required": [ "result" ]
+          },
+          "then": { "properties": { "method": { "minLength": 20 } } }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification_mode": { "const": "sealed_independent_method" }
+            },
+            "required": [ "verification_mode" ]
+          },
+          "then": {
+            "properties": {
+              "reproduction": {
+                "type": "object",
+                "required": [ "kind" ],
+                "properties": { "kind": { "const": "command" } }
+              },
+              "gate": {
+                "not": {
+                  "enum": [
+                    "MEMORIA_CONTAMINADA",
+                    "CONVENCAO_IMPROVISADA",
+                    "INSTRUCAO_EMBUTIDA",
+                    "FONTE_PERDIDA"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "recordReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "task_id",
+        "worker_id",
+        "capability",
+        "contract_digest",
+        "source_digest",
+        "authored_content_secret_scan",
+        "writes_performed",
+        "index_updates",
+        "integrity_checks",
+        "records_touched",
+        "embedded_instruction_findings",
+        "pending",
+        "status",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "RECORD_RECEIPT" },
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "source_digest": { "$ref": "#/$defs/digestOrNa" },
+        "authored_content_secret_scan": {
+          "$ref": "#/$defs/authoredContentSecretScan"
+        },
+        "writes_performed": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/writePerformed" },
+          "uniqueItems": true
+        },
+        "index_updates": { "$ref": "#/$defs/optionalStrings" },
+        "integrity_checks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/integrityCheck" },
+          "uniqueItems": true
+        },
+        "records_touched": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "record_id", "state_reached" ],
+            "properties": {
+              "record_id": { "$ref": "#/$defs/identifier" },
+              "state_reached": { "$ref": "#/$defs/recordState" }
+            }
+          }
+        },
+        "embedded_instruction_findings": { "$ref": "#/$defs/optionalStrings" },
+        "pending": { "$ref": "#/$defs/optionalStrings" },
+        "blocked_reason": { "type": "string", "minLength": 10 },
+        "status": { "enum": [ "COMPLETED", "BLOCKED" ] },
+        "return_to": { "const": "departamento-registros" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "COMPLETED" } },
+            "required": [ "status" ]
+          },
+          "then": {
+            "properties": { "records_touched": { "minItems": 1 } }
+          },
+          "else": {
+            "required": [ "blocked_reason" ],
+            "properties": {
+              "writes_performed": { "maxItems": 0 },
+              "records_touched": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "authored_content_secret_scan": {
+                "type": "object",
+                "required": [ "result" ],
+                "properties": {
+                  "result": { "enum": [ "FAIL", "NAO_VERIFICADO" ] }
+                }
+              }
+            },
+            "required": [ "authored_content_secret_scan" ]
+          },
+          "then": { "properties": { "status": { "const": "BLOCKED" } } }
+        },
+        {
+          "if": {
+            "properties": { "writes_performed": { "minItems": 1 } },
+            "required": [ "writes_performed" ]
+          },
+          "then": {
+            "properties": {
+              "authored_content_secret_scan": {
+                "type": "object",
+                "required": [ "result" ],
+                "properties": {
+                  "result": { "enum": [ "PASS", "NAO_APLICAVEL" ] }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "registryCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "capability",
+        "worker_id",
+        "record_ids",
+        "expected_contract",
+        "discovery_evidence",
+        "preserved_inputs",
+        "impact",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "artifact_type": { "const": "REGISTRY_CAPABILITY_GAP" },
+        "capability": { "type": "string", "minLength": 10 },
+        "worker_id": {
+          "oneOf": [
+            { "$ref": "#/$defs/workerId" },
+            { "const": "n/a" }
+          ]
+        },
+        "record_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "expected_contract": { "type": "string", "minLength": 10 },
+        "discovery_evidence": { "type": "string", "minLength": 10 },
+        "preserved_inputs": { "$ref": "#/$defs/requiredStrings" },
+        "impact": { "type": "string", "minLength": 10 },
+        "status": { "const": "OPEN" },
+        "owner": { "const": "diretor-de-lentes" }
+      }
+    },
+    "recountBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "performed_by",
+        "recount_proof",
+        "artifact_ref",
+        "recorded_at",
+        "decomposition_started_at",
+        "records_recounted",
+        "slices",
+        "delta_inicial",
+        "delta_final",
+        "resolution_kind",
+        "method"
+      ],
+      "properties": {
+        "performed_by": { "type": "string", "minLength": 3 },
+        "recount_proof": {
+          "enum": [ "independent_capability", "sealed_prior_count", "not_verifiable" ]
+        },
+        "artifact_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" },
+        "decomposition_started_at": { "$ref": "#/$defs/timestamp" },
+        "records_recounted": { "$ref": "#/$defs/counter" },
+        "slices": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "index", "fragment_ref", "rule_named" ],
+            "properties": {
+              "index": { "$ref": "#/$defs/counter" },
+              "fragment_ref": { "type": "string", "minLength": 1 },
+              "rule_named": {
+                "oneOf": [
+                  { "$ref": "#/$defs/routingRule" },
+                  { "const": "nenhuma" }
+                ]
+              }
+            }
+          }
+        },
+        "delta_inicial": { "type": "integer" },
+        "delta_final": { "type": "integer" },
+        "resolution_kind": {
+          "enum": [
+            "nenhuma",
+            "fatiamento",
+            "regra",
+            "adocao_pelo_decompositor",
+            "recorte_corrigido",
+            "recorte_contestado",
+            "material_bloqueado"
+          ]
+        },
+        "method": { "type": "string", "minLength": 10 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "recount_proof": { "not": { "const": "not_verifiable" } }
+            },
+            "required": [ "recount_proof" ]
+          },
+          "then": {
+            "properties": { "artifact_ref": { "not": { "const": "n/a" } } }
+          }
+        }
+      ]
+    },
+    "conservationLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "conservation_ledger_id",
+        "causal",
+        "department_mission_ref",
+        "artifact_ref",
+        "recorded_at",
+        "scope_of_decomposition",
+        "records_identified",
+        "records_routed",
+        "records_landed",
+        "records_handed_off",
+        "records_pending_destino",
+        "records_refused_boundary",
+        "records_capability_gap",
+        "records_blocked",
+        "records_discarded",
+        "recount",
+        "divergences",
+        "entries",
+        "unaccounted",
+        "invariant_identified_equals_routed",
+        "invariant_routed_equals_sum",
+        "ledger_status"
+      ],
+      "properties": {
+        "artifact_type": { "const": "CONSERVATION_LEDGER" },
+        "conservation_ledger_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "artifact_ref": { "$ref": "#/$defs/artifactRef" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" },
+        "scope_of_decomposition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "included_span",
+            "included_span_digest",
+            "excluded_spans",
+            "method",
+            "method_declared_at",
+            "shared_with_recount"
+          ],
+          "properties": {
+            "kind": { "enum": [ "delivered_delimited", "scoped_by_manager" ] },
+            "included_span": { "type": "string", "minLength": 3 },
+            "included_span_digest": { "$ref": "#/$defs/digestOrNa" },
+            "excluded_spans": { "$ref": "#/$defs/optionalStrings" },
+            "method": { "type": "string", "minLength": 10 },
+            "method_declared_at": { "$ref": "#/$defs/timestamp" },
+            "shared_with_recount": { "type": "boolean" }
+          }
+        },
+        "records_identified": { "$ref": "#/$defs/counter" },
+        "records_routed": { "$ref": "#/$defs/counter" },
+        "records_landed": { "$ref": "#/$defs/counter" },
+        "records_handed_off": { "$ref": "#/$defs/counter" },
+        "records_pending_destino": { "$ref": "#/$defs/counter" },
+        "records_refused_boundary": { "$ref": "#/$defs/counter" },
+        "records_capability_gap": { "$ref": "#/$defs/counter" },
+        "records_blocked": { "$ref": "#/$defs/counter" },
+        "records_discarded": { "$ref": "#/$defs/counter" },
+        "recount": { "$ref": "#/$defs/recountBlock" },
+        "divergences": { "$ref": "#/$defs/optionalStrings" },
+        "entries": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/routingDecision" },
+          "uniqueItems": true
+        },
+        "unaccounted": { "$ref": "#/$defs/optionalStrings" },
+        "invariant_identified_equals_routed": { "type": "boolean" },
+        "invariant_routed_equals_sum": { "type": "boolean" },
+        "ledger_status": {
+          "enum": [ "closed", "single_count_unverified", "bloqueado_conservacao" ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "ledger_status": { "const": "closed" } },
+            "required": [ "ledger_status" ]
+          },
+          "then": {
+            "properties": {
+              "unaccounted": { "maxItems": 0 },
+              "invariant_identified_equals_routed": { "const": true },
+              "invariant_routed_equals_sum": { "const": true },
+              "entries": { "minItems": 1 },
+              "recount": {
+                "type": "object",
+                "required": [ "recount_proof", "delta_final" ],
+                "properties": {
+                  "recount_proof": { "not": { "const": "not_verifiable" } },
+                  "delta_final": { "const": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "recount": {
+                "type": "object",
+                "required": [ "recount_proof" ],
+                "properties": { "recount_proof": { "const": "not_verifiable" } }
+              }
+            },
+            "required": [ "recount" ]
+          },
+          "then": {
+            "properties": {
+              "ledger_status": {
+                "enum": [ "single_count_unverified", "bloqueado_conservacao" ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "learningLesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "licao_id",
+        "projeto",
+        "categoria_falha",
+        "ocorrido_em",
+        "o_que_e",
+        "evidence_excerpt",
+        "fonte_ref",
+        "fonte_titulo",
+        "fonte_versao",
+        "fonte_digest",
+        "acessado_em",
+        "limite_declarado",
+        "alvos_afetados",
+        "sinais"
+      ],
+      "properties": {
+        "licao_id": { "$ref": "#/$defs/identifier" },
+        "projeto": { "type": "string", "minLength": 2 },
+        "categoria_falha": { "type": "string", "minLength": 3 },
+        "ocorrido_em": { "$ref": "#/$defs/timestamp" },
+        "o_que_e": { "type": "string", "minLength": 10 },
+        "evidence_excerpt": { "type": "string", "minLength": 10 },
+        "fonte_ref": { "$ref": "#/$defs/artifactRef" },
+        "fonte_titulo": { "type": "string", "minLength": 3 },
+        "fonte_versao": { "type": "string", "minLength": 1 },
+        "fonte_digest": { "$ref": "#/$defs/digestOrNa" },
+        "acessado_em": { "$ref": "#/$defs/timestamp" },
+        "limite_declarado": { "type": "string", "minLength": 3 },
+        "alvos_afetados": { "$ref": "#/$defs/requiredStrings" },
+        "sinais": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [ "acionou", "aderiu", "contorno" ],
+          "properties": {
+            "acionou": { "enum": [ true, false, "desconhecido" ] },
+            "aderiu": { "enum": [ true, false, "desconhecido" ] },
+            "contorno": { "type": "string", "minLength": 3 }
+          }
+        }
+      }
+    },
+    "learningReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "report_id",
+        "causal",
+        "department_mission_ref",
+        "produced_for",
+        "requested_via",
+        "window",
+        "saturation_declared",
+        "licoes",
+        "gaps_de_colheita",
+        "artifact_ref",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "LEARNING_REPORT" },
+        "report_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "produced_for": { "const": "departamento-evolucao-skills" },
+        "requested_via": { "const": "ceo-maestro" },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [ "from", "to" ],
+          "properties": {
+            "from": { "$ref": "#/$defs/timestamp" },
+            "to": { "$ref": "#/$defs/timestamp" }
+          }
+        },
+        "saturation_declared": { "type": "boolean" },
+        "licoes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/learningLesson" },
+          "uniqueItems": true
+        },
+        "gaps_de_colheita": { "$ref": "#/$defs/optionalStrings" },
+        "artifact_ref": { "$ref": "#/$defs/artifactRef" },
+        "return_to": { "const": "diretor-de-lentes" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "licoes": { "maxItems": 0 } },
+            "required": [ "licoes" ]
+          },
+          "then": { "properties": { "gaps_de_colheita": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "saturation_declared": { "const": false } },
+            "required": [ "saturation_declared" ]
+          },
+          "then": { "properties": { "gaps_de_colheita": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "assignmentRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "task_id", "worker_id", "capability", "kind", "issued_at", "destination" ],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "kind": { "$ref": "#/$defs/taskKind" },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "destination": { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "panelItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "worker_id", "capability", "status", "path", "discovery_evidence" ],
+      "properties": {
+        "worker_id": { "$ref": "#/$defs/workerId" },
+        "capability": { "$ref": "#/$defs/capability" },
+        "status": { "$ref": "#/$defs/workerStatus" },
+        "path": { "$ref": "#/$defs/artifactRef" },
+        "discovery_evidence": { "type": "string", "minLength": 10 }
+      }
+    },
+    "missionTier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "tier", "decided_at", "qualified_by", "disqualified_by", "narrowed" ],
+      "properties": {
+        "tier": { "enum": [ "padrao", "minima" ] },
+        "decided_at": { "$ref": "#/$defs/timestamp" },
+        "qualified_by": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": [ "S1", "S2", "S3", "S4", "S5", "S6" ] }
+        },
+        "disqualified_by": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": [ "S1", "S2", "S3", "S4", "S5", "S6" ] }
+        },
+        "narrowed": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "tier": { "const": "minima" } },
+            "required": [ "tier" ]
+          },
+          "then": {
+            "properties": {
+              "disqualified_by": { "maxItems": 0 },
+              "qualified_by": { "minItems": 6 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "disqualified_by": { "minItems": 1 } },
+            "required": [ "disqualified_by" ]
+          },
+          "then": { "properties": { "tier": { "const": "padrao" } } }
+        }
+      ]
+    },
+    "registryLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "registry_ledger_id",
+        "causal",
+        "department_mission_ref",
+        "mission_tier",
+        "dossier_missing",
+        "assignments",
+        "panel",
+        "conservation_ledger",
+        "integrity_report",
+        "learning_report_ref",
+        "capability_gaps",
+        "boundary_refusals",
+        "status",
+        "partial_reasons",
+        "evidence_refs",
+        "escalations_required",
+        "pending",
+        "return_to",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "REGISTRY_LEDGER" },
+        "registry_ledger_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "mission_tier": { "$ref": "#/$defs/missionTier" },
+        "dossier_missing": { "$ref": "#/$defs/optionalStrings" },
+        "assignments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assignmentRecord" },
+          "uniqueItems": true
+        },
+        "panel": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/panelItem" },
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "conservation_ledger": { "$ref": "#/$defs/conservationLedger" },
+        "integrity_report": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/integrityCheck" },
+          "minItems": 14,
+          "maxItems": 14,
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "type": "object", "properties": { "gate": { "const": "REGISTRO_ORFAO" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "INDICE_ADIANTADO" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "VIEW_DIVERGENTE" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "SEGREDO_EM_REGISTRO" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "SNAPSHOT_COMO_ATUAL" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "HISTORICO_SEM_DATA" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "MEMORIA_CONTAMINADA" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "REGISTRO_PERDIDO" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "CONVENCAO_IMPROVISADA" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "FATO_DUPLICADO" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "FONTE_PERDIDA" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "CAMINHO_FORA_DA_RAIZ" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "INSTRUCAO_EMBUTIDA" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "type": "object", "properties": { "gate": { "const": "FONTE_ALTERADA_POR_TERCEIRO" } }, "required": [ "gate" ] }, "minContains": 1, "maxContains": 1 }
+          ]
+        },
+        "learning_report_ref": { "$ref": "#/$defs/artifactRefOrNa" },
+        "capability_gaps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/registryCapabilityGap" }
+        },
+        "boundary_refusals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "record_id",
+              "request_fragment",
+              "why_not_a_record",
+              "suggested_capability",
+              "side_effects_proof"
+            ],
+            "properties": {
+              "record_id": { "$ref": "#/$defs/identifier" },
+              "request_fragment": { "type": "string", "minLength": 3 },
+              "why_not_a_record": { "type": "string", "minLength": 10 },
+              "suggested_capability": { "type": "string", "minLength": 3 },
+              "side_effects_proof": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [ "method", "before", "after", "result" ],
+                "properties": {
+                  "method": { "type": "string", "minLength": 10 },
+                  "before": { "type": "string", "minLength": 1 },
+                  "after": { "type": "string", "minLength": 1 },
+                  "result": { "enum": [ "identical", "divergent", "not_verifiable" ] }
+                }
+              }
+            },
+            "allOf": [
+              {
+                "properties": {
+                  "side_effects_proof": {
+                    "properties": {
+                      "result": { "not": { "const": "divergent" } }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "status": { "enum": [ "COMPLETED", "PARTIAL", "BLOCKED" ] },
+        "partial_reasons": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partialReason" },
+          "uniqueItems": true
+        },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "escalations_required": { "$ref": "#/$defs/optionalStrings" },
+        "pending": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": { "type": "string", "pattern": "R6" },
+          "minContains": 1
+        },
+        "return_to": { "const": "diretor-de-lentes" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "COMPLETED" } },
+            "required": [ "status" ]
+          },
+          "then": {
+            "properties": {
+              "partial_reasons": { "maxItems": 0 },
+              "capability_gaps": { "maxItems": 0 },
+              "dossier_missing": { "maxItems": 0 },
+              "assignments": { "minItems": 1 },
+              "conservation_ledger": {
+                "type": "object",
+                "required": [ "ledger_status" ],
+                "properties": { "ledger_status": { "const": "closed" } }
+              },
+              "integrity_report": {
+                "items": {
+                  "properties": {
+                    "result": { "enum": [ "PASS", "NAO_APLICAVEL" ] }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "PARTIAL" } },
+            "required": [ "status" ]
+          },
+          "then": { "properties": { "partial_reasons": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "capability_gaps": { "minItems": 1 } },
+            "required": [ "capability_gaps" ]
+          },
+          "then": {
+            "properties": {
+              "status": { "enum": [ "PARTIAL", "BLOCKED" ] },
+              "partial_reasons": {
+                "contains": { "const": "capability_missing" },
+                "minContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "learning_report_ref": { "not": { "const": "n/a" } } },
+            "required": [ "learning_report_ref" ]
+          },
+          "then": {
+            "properties": {
+              "assignments": {
+                "contains": {
+                  "type": "object",
+                  "required": [ "kind" ],
+                  "properties": { "kind": { "const": "COLHER" } }
+                },
+                "minContains": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

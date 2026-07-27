@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prova de Evolução"
+  short_description: "Prova candidato por baseline vermelho-verde"
+  default_prompt: "Use $agente-prova-de-evolucao somente por EVOLUTION_TASK do departamento-evolucao-skills, para rodar o caso sem e com a mudança e devolver o placar por candidato e por caso, com SKIP declarado."

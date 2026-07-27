@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auditor de Governança e Responsabilidades"
+  short_description: "Audita RACI, RI/RO, ADRs e bypass"
+  default_prompt: "Use $agente-verificar-governanca-e-responsabilidades somente por AUDIT_TASK do departamento-auditoria-responsabilidades, para verificar RACI, aplicabilidade de RI/RO, ADRs, cobertura e bypass."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Colheita e Diagnóstico"
+  short_description: "Nomeia o gap pela execução e mede alcance"
+  default_prompt: "Use $agente-colheita-e-diagnostico somente por EVOLUTION_TASK do departamento-evolucao-skills, para ler o transcript do eval, nomear o gap com trecho literal e medir em quantas skills ele foi observado."

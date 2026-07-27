@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente Tauri Desktop"
+  short_description: "Tauri: Rust, web e banco local"
+  default_prompt: "Use $agente-tauri-desktop para implementar feature, banco local ou empacotamento em Tauri, com migração versionada e gravação segura — sem testar contra dado real."

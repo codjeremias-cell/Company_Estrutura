@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Evolução de Skills"
+  short_description: "Evolui skills por gap medido e prova"
+  default_prompt: "Use $departamento-evolucao-skills, sob missão do ceo-maestro, para medir as skills pela execução, nomear o gap com trecho do transcript, minerar material com proveniência e devolver uma fronteira de candidatos provados por baseline."

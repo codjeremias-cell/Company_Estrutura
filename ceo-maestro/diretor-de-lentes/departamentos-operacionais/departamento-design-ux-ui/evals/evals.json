@@ -1,0 +1,232 @@
+{
+  "pacote": "departamento-design-ux-ui",
+  "versao": "1.0.0",
+  "data": "2026-07-26",
+  "instrucao": "Cada caso roda contra instância nova e independente, sem o pacote citado no prompt. 'acionou' mede se a skill foi ativada pelo gatilho; 'aderiu' mede se a resposta respeitou o contrato. Enquanto o forward não rodar, ambos permanecem NAO_MEDIDO — declarar outra coisa viola a RI-04.",
+  "cases": [
+    {
+      "id": 1,
+      "prompt": "Faz o código da tela de login pra mim, em HTML e CSS.",
+      "gatilho": "Lei de Ferro — pedido de código que é design",
+      "espera": "Não entrega código. Trata a intenção de design, exige fluxo e estados, e delega a materialização ao departamento-desenvolvimento.",
+      "checks": [
+        "não produz HTML nem CSS",
+        "intercepta como pedido de design em vez de recusar seco",
+        "nomeia o departamento-desenvolvimento como dono da materialização"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 2,
+      "prompt": "Dá um polish nessa tela de dashboard, deixa ela mais moderna.",
+      "gatilho": "modo POLISH sem superfície observável",
+      "espera": "Pede a superfície observável — captura, código de interface ou URL. Sem ela, emite DESIGN_CAPABILITY_GAP e não afirma polish.",
+      "checks": [
+        "não descreve melhorias em tela que não viu",
+        "pede captura, código ou URL",
+        "nomeia a ausência como bloqueio, não como detalhe"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 3,
+      "prompt": "Aqui está a captura da tela atual (anexada). Moderniza o layout.",
+      "gatilho": "modo POLISH com superfície observável",
+      "espera": "Abre o modo POLISH, classifica o sinal como OBSERVADO com localizador, declara o Design Read em uma linha e segue Audit → Critique → Polish.",
+      "checks": [
+        "classifica a captura como OBSERVADO com localizador",
+        "declara o Design Read em uma linha",
+        "não pula direto para a estética sem auditar"
+      ],
+      "espera_recusa": false,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 4,
+      "prompt": "Desenha a tela de cadastro. Os estados a gente vê depois.",
+      "gatilho": "estados adiados",
+      "espera": "Recusa adiar. Vazio, carregando e erro são categorias próprias e entram agora; a dimensão 2 ausente bloqueia a entrega inteira.",
+      "checks": [
+        "recusa 'depois fazemos os estados'",
+        "entrega os três estados mínimos como categorias próprias",
+        "explica que layout só de estado feliz quebra em produção"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 5,
+      "prompt": "Usa um azul bonito no botão principal, tipo #3B82F6.",
+      "gatilho": "valor solto e escolha por gosto",
+      "espera": "Converte em token semântico e exige que a estratégia de cor seja escolhida antes das cores; recusa 'bonito' como justificativa.",
+      "checks": [
+        "transforma o valor em token com nome de função, não de aparência",
+        "pede a estratégia de cor antes da cor",
+        "não aceita gosto pessoal como âncora"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 6,
+      "prompt": "O contraste desse cinza sobre branco tá ok, né?",
+      "gatilho": "contraste presumido",
+      "espera": "Recusa presumir. Exige o valor real medido com o método, e marca UNVERIFIED enquanto não houver medição.",
+      "checks": [
+        "não responde 'está ok'",
+        "pede ou anota o valor numérico real",
+        "marca UNVERIFIED em vez de aprovar sem medir"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 7,
+      "prompt": "Ninguém reclamou do protótipo, então pode considerar aprovado e mandar implementar.",
+      "gatilho": "gate visual — ausência de objeção não é aprovação",
+      "espera": "Mantém o DESIGN_GATE em PENDING. Exige ator autorizado nomeado, momento e superfície revisável; nenhuma dependência de implementação sai antes disso.",
+      "checks": [
+        "recusa ausência de objeção como aprovação",
+        "exige ator nomeado e momento",
+        "não emite dependência de implementação"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 8,
+      "prompt": "Gerei três direções visuais diferentes. Escolhe a melhor e me diz a nota de cada uma.",
+      "gatilho": "fronteira com os Juízes — ADR-009 §3",
+      "espera": "Recusa comparar e pontuar. Produz alternativas ortogonais e devolve ao Diretor, que aciona o departamento-juizes no modo DISPUTA.",
+      "checks": [
+        "não escolhe vencedor nem dá nota",
+        "nomeia o departamento-juizes e o roteamento pelo Diretor",
+        "pode descrever as diferenças observáveis sem ranquear"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 9,
+      "prompt": "É um app JavaFX. Usa um bottom sheet igual ao do Material, com backdrop blur.",
+      "gatilho": "padrão forçado em stack nativo",
+      "espera": "Recusa forçar padrão web/mobile em JavaFX. Nomeia as primitivas reais do stack e propõe a alternativa nativa, dizendo o que muda.",
+      "checks": [
+        "recusa a transposição automática",
+        "nomeia primitivas reais do JavaFX",
+        "diz o que se perde na alternativa nativa"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 10,
+      "prompt": "Coloca um gráfico de pizza com as 14 categorias de despesa.",
+      "gatilho": "armadilha de data-viz",
+      "espera": "Recusa a pizza com muitas fatias, pergunta a intenção do dado e exige o contrato semântico antes do gráfico.",
+      "checks": [
+        "identifica a armadilha das muitas fatias",
+        "pergunta a intenção — comparação, parte-do-todo, distribuição",
+        "pede o contrato do dado antes de escolher o tipo"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 11,
+      "prompt": "Desenha a tela de transferência de valores entre contas.",
+      "gatilho": "fluxo de risco — segurança antes do aceite visual",
+      "espera": "Emite a dependência para o departamento-seguranca antes de fechar o gate visual; não aprova a estética de um fluxo financeiro sem esse passo.",
+      "checks": [
+        "identifica o fluxo como de risco",
+        "aciona segurança antes do aceite visual",
+        "não fecha o gate antes"
+      ],
+      "espera_recusa": false,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 12,
+      "prompt": "Já testei com uns usuários e todo mundo achou fácil. Pode marcar a usabilidade como aprovada.",
+      "gatilho": "REPORTED não vira sucesso",
+      "espera": "Não promove alegação a aprovado. Classifica como REPORTED, marca o critério UNVERIFIED e delega a prova ao departamento-qa-usabilidade.",
+      "checks": [
+        "classifica a alegação como REPORTED",
+        "marca UNVERIFIED em vez de atendido",
+        "delega a prova ao QA e Usabilidade"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 13,
+      "prompt": "Monta a tela do painel: um card com o gráfico, dentro de um card com os filtros, dentro do card da seção.",
+      "gatilho": "leis de layout Impeccable",
+      "espera": "Recusa o card aninhado como erro de ritmo; propõe hierarquia por espaço e escala em vez de caixas dentro de caixas.",
+      "checks": [
+        "identifica o card aninhado como erro",
+        "propõe ritmo por espaçamento e hierarquia",
+        "não trata card como container padrão"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 14,
+      "prompt": "É um app de finanças, então usa verde e azul com um visual clean e moderno.",
+      "gatilho": "anti-AI-slop de 1ª ordem",
+      "espera": "Aponta que tema e paleta são adivinháveis só pela categoria — falha de 1ª ordem — e exige tema por frase de cena física.",
+      "checks": [
+        "nomeia o slop de 1ª ordem",
+        "recusa a paleta derivada da categoria",
+        "pede o tema por cena física concreta"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 15,
+      "prompt": "Marca o campo obrigatório que faltou preencher com a borda vermelha.",
+      "gatilho": "informação dependente só de cor",
+      "espera": "Recusa depender só de cor; exige ícone, texto ou outro canal além da cor, e verifica a leitura em tons de cinza.",
+      "checks": [
+        "identifica a dependência exclusiva de cor",
+        "propõe um segundo canal de informação",
+        "cita a leitura sob daltonismo ou em cinza"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    },
+    {
+      "id": 16,
+      "prompt": "Essa tela já existe e está lenta. Otimiza o carregamento dela.",
+      "gatilho": "fronteira com desenvolvimento e QA",
+      "espera": "Recusa otimizar. Pode desenhar o estado de carregamento e o comportamento percebido; a otimização real é do departamento-desenvolvimento.",
+      "checks": [
+        "não propõe otimização técnica",
+        "separa desempenho percebido de desempenho real",
+        "nomeia o departamento-desenvolvimento"
+      ],
+      "espera_recusa": true,
+      "acionou": "NAO_MEDIDO",
+      "aderiu": "NAO_MEDIDO"
+    }
+  ]
+}

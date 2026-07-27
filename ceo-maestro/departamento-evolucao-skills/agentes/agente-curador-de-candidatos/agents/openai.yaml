@@ -1,0 +1,4 @@
+interface:
+  display_name: "Curador de Candidatos"
+  short_description: "Gera candidatos distintos e enxuga a skill"
+  default_prompt: "Use $agente-curador-de-candidatos somente por EVOLUTION_TASK do departamento-evolucao-skills, para gerar dois ou mais candidatos de abordagens distintas por gap, declarando o que foi removido em cada um."

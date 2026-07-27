@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Estratégia de Conteúdo"
+  short_description: "Planeja campanhas, jornadas e canais"
+  default_prompt: "Use $agente-estrategia-conteudo-campanhas para executar a estratégia definida nesta atribuição."
+

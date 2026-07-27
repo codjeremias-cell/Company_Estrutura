@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente Web Frontend"
+  short_description: "HTML, CSS, JS/TS, componente e PWA"
+  default_prompt: "Use $agente-web-frontend para implementar HTML, CSS, JS/TS, componente ou PWA com estados de carregando, erro e vazio — materializando os tokens que o Design decidiu."

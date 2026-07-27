@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente Mobile Flutter"
+  short_description: "Flutter e Dart, com estado e offline"
+  default_prompt: "Use $agente-mobile-flutter para implementar feature, esqueleto ou integração Firebase em Flutter, tratando ciclo de vida, offline e permissão como caminho normal."

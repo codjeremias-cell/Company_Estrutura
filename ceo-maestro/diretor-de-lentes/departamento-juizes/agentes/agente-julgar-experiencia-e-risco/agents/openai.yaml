@@ -1,0 +1,4 @@
+interface:
+  display_name: "Juiz de Experiência e Risco"
+  short_description: "Juiz de experiência, risco e custo de operar"
+  default_prompt: "Use $agente-julgar-experiencia-e-risco somente por JUDGE_ASSIGNMENT do departamento-juizes, para pontuar clareza, manutenção, risco residual, reversibilidade e modo de falha."

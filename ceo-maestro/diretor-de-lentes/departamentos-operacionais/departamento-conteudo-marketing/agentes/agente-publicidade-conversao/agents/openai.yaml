@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Publicidade e Conversão"
+  short_description: "Cria anúncios e planos de conversão"
+  default_prompt: "Use $agente-publicidade-conversao para criar a publicidade prevista nesta atribuição."
+

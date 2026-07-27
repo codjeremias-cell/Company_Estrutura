@@ -1,0 +1,4 @@
+interface:
+  display_name: "Qualidade e Operação"
+  short_description: "Converte NFR em cenário medível e SLO"
+  default_prompt: "Use $agente-qualidade-e-operacao somente por ARCHITECTURE_TASK do departamento-arquitetura-software, para converter atributos de qualidade em cenários mensuráveis com estímulo, ambiente, resposta e medida, e propor SLO, RTO e RPO."

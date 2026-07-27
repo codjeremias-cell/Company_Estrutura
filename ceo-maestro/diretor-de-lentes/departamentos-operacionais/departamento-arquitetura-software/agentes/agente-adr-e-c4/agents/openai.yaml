@@ -1,0 +1,4 @@
+interface:
+  display_name: "ADR e C4"
+  short_description: "Registra decisão em ADR e C4 com autoria"
+  default_prompt: "Use $agente-adr-e-c4 somente por ARCHITECTURE_TASK do departamento-arquitetura-software, para registrar a decisão já fechada em ADR proposto e C4 textual, preservando autoria, versões e divergência."

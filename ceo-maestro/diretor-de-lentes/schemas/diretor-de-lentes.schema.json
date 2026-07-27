@@ -1,0 +1,1219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-crowd.local/schemas/diretor-de-lentes.schema.json",
+  "title": "Contratos internos do Diretor de Lentes",
+  "description": "Planejamento, delegação, retorno, julgamento, retrabalho e lacunas sob a autoridade do Diretor.",
+  "oneOf": [
+    { "$ref": "#/$defs/directorPlan" },
+    { "$ref": "#/$defs/departmentMission" },
+    { "$ref": "#/$defs/departmentReturn" },
+    { "$ref": "#/$defs/judgmentRequest" },
+    { "$ref": "#/$defs/departmentJudgeReport" },
+    { "$ref": "#/$defs/departmentGateRecord" },
+    { "$ref": "#/$defs/reworkOrder" },
+    { "$ref": "#/$defs/matrixExchangeMessage" },
+    { "$ref": "#/$defs/directorCapabilityGap" },
+    { "$ref": "#/$defs/directorReturn" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
+    "requiredRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" },
+      "uniqueItems": true
+    },
+    "requiredStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalStrings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "uniqueItems": true
+    },
+    "operationalDepartment": {
+      "enum": [
+        "departamento-arquitetura-software",
+        "departamento-arquitetura-dados",
+        "departamento-desenvolvimento",
+        "departamento-design-ux-ui",
+        "departamento-seguranca",
+        "departamento-qa-usabilidade",
+        "departamento-inovacao-melhoria",
+        "departamento-auditoria-responsabilidades",
+        "departamento-conteudo-marketing",
+        "departamento-registros"
+      ]
+    },
+    "directedCapability": {
+      "oneOf": [
+        { "$ref": "#/$defs/operationalDepartment" },
+        { "const": "departamento-juizes" }
+      ]
+    },
+    "knownCapability": {
+      "enum": [
+        "ceo-maestro",
+        "diretor-de-lentes",
+        "departamento-negocios",
+        "departamento-juizes",
+        "departamento-arquitetura-software",
+        "departamento-arquitetura-dados",
+        "departamento-desenvolvimento",
+        "departamento-design-ux-ui",
+        "departamento-seguranca",
+        "departamento-qa-usabilidade",
+        "departamento-inovacao-melhoria",
+        "departamento-auditoria-responsabilidades",
+        "departamento-conteudo-marketing",
+        "departamento-registros"
+      ]
+    },
+    "directorState": {
+      "enum": [
+        "D_RECEIVED",
+        "D_CONTRACT_VERIFIED",
+        "D_CAPABILITIES_VERIFIED",
+        "D_PLANNED",
+        "D_DELEGATED",
+        "D_INTEGRATING",
+        "D_AWAITING_JUDGES",
+        "D_JUDGES_APPROVED",
+        "D_JUDGES_REPROVED",
+        "D_REWORK",
+        "D_LIMITATION_ASSEMBLY",
+        "D_LIMITATION_VERIFIED",
+        "D_READY_FOR_CEO",
+        "D_SUBMITTED",
+        "D_BLOCKED",
+        "D_CANCELLED",
+        "D_LIMIT_REACHED_RETURNED"
+      ]
+    },
+    "causalHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "front_id",
+        "handoff_id",
+        "message_id",
+        "causation_message_ids",
+        "contract_id",
+        "contract_version",
+        "contract_digest",
+        "candidate_digest",
+        "round",
+        "attempt",
+        "producer",
+        "producer_version",
+        "producer_digest",
+        "created_at"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/identifier" },
+        "front_id": { "$ref": "#/$defs/identifier" },
+        "handoff_id": { "$ref": "#/$defs/identifier" },
+        "message_id": { "$ref": "#/$defs/identifier" },
+        "causation_message_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "contract_id": { "$ref": "#/$defs/identifier" },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": {
+          "oneOf": [
+            { "$ref": "#/$defs/digest" },
+            { "const": "n/a" }
+          ]
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": { "$ref": "#/$defs/knownCapability" },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": { "$ref": "#/$defs/digest" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_policy",
+        "allowed_tools",
+        "allowed_resources",
+        "expires_at"
+      ],
+      "properties": {
+        "default_policy": { "const": "deny" },
+        "allowed_tools": { "$ref": "#/$defs/optionalStrings" },
+        "allowed_resources": { "$ref": "#/$defs/optionalStrings" },
+        "expires_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "testSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pass",
+        "fail",
+        "skip",
+        "skip_reasons",
+        "critical_fail"
+      ],
+      "properties": {
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip_reasons": { "$ref": "#/$defs/optionalStrings" },
+        "critical_fail": { "type": "boolean" }
+      }
+    },
+    "scoreItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "score",
+        "evidence_refs"
+      ],
+      "properties": {
+        "criterion_id": { "$ref": "#/$defs/identifier" },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" }
+      }
+    },
+    "departmentClassification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "department",
+        "mode",
+        "reason",
+        "department_mission_ref"
+      ],
+      "properties": {
+        "department": { "$ref": "#/$defs/operationalDepartment" },
+        "mode": {
+          "enum": [
+            "ATUA",
+            "CONSULTA",
+            "NAO_SE_APLICA",
+            "BLOQUEADO"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 3
+        },
+        "department_mission_ref": {
+          "oneOf": [
+            { "$ref": "#/$defs/identifier" },
+            { "const": "n/a" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "ATUA",
+                  "CONSULTA"
+                ]
+              }
+            },
+            "required": ["mode"]
+          },
+          "then": {
+            "properties": {
+              "department_mission_ref": {
+                "not": { "const": "n/a" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "NAO_SE_APLICA",
+                  "BLOQUEADO"
+                ]
+              }
+            },
+            "required": ["mode"]
+          },
+          "then": {
+            "properties": {
+              "department_mission_ref": { "const": "n/a" }
+            }
+          }
+        }
+      ]
+    },
+    "directorPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "director_plan_id",
+        "causal",
+        "executive_mission_ref",
+        "state",
+        "department_matrix",
+        "dependencies",
+        "integration_barriers",
+        "judge_gate_required",
+        "blocking_pending_refs",
+        "created_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "DIRECTOR_PLAN" },
+        "director_plan_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "state": { "const": "D_PLANNED" },
+        "department_matrix": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/departmentClassification" },
+          "minItems": 10,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-arquitetura-software" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-arquitetura-dados" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-desenvolvimento" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-design-ux-ui" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-seguranca" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-qa-usabilidade" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-inovacao-melhoria" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": {
+                    "const": "departamento-auditoria-responsabilidades"
+                  }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-conteudo-marketing" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "department": { "const": "departamento-registros" }
+                },
+                "required": ["department"]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        },
+        "dependencies": { "$ref": "#/$defs/optionalStrings" },
+        "integration_barriers": { "$ref": "#/$defs/requiredStrings" },
+        "judge_gate_required": { "const": true },
+        "blocking_pending_refs": { "$ref": "#/$defs/optionalRefs" },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "departmentMission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "department_mission_id",
+        "causal",
+        "recipient",
+        "mode",
+        "objective",
+        "scope_in",
+        "scope_out",
+        "inputs",
+        "deliverables",
+        "done",
+        "required_evidence",
+        "depends_on",
+        "handoff_to",
+        "decision_authority",
+        "permissions",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "DEPARTMENT_MISSION" },
+        "department_mission_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "recipient": { "$ref": "#/$defs/operationalDepartment" },
+        "mode": {
+          "enum": [
+            "ATUA",
+            "CONSULTA"
+          ]
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 3
+        },
+        "scope_in": { "$ref": "#/$defs/requiredStrings" },
+        "scope_out": { "$ref": "#/$defs/optionalStrings" },
+        "inputs": { "$ref": "#/$defs/requiredStrings" },
+        "deliverables": { "$ref": "#/$defs/requiredStrings" },
+        "done": { "$ref": "#/$defs/requiredStrings" },
+        "required_evidence": { "$ref": "#/$defs/requiredStrings" },
+        "depends_on": { "$ref": "#/$defs/optionalStrings" },
+        "handoff_to": { "$ref": "#/$defs/requiredStrings" },
+        "decision_authority": { "$ref": "#/$defs/requiredStrings" },
+        "permissions": { "$ref": "#/$defs/permissions" },
+        "stop_when": { "$ref": "#/$defs/requiredStrings" },
+        "return_to": { "const": "diretor-de-lentes" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "departmentReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "department_return_id",
+        "causal",
+        "department_mission_ref",
+        "returned_by",
+        "state",
+        "scope_touched",
+        "artifact_refs",
+        "evidence_refs",
+        "candidate_digest",
+        "test_summary",
+        "pending_refs",
+        "dissent_refs",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "DEPARTMENT_RETURN" },
+        "department_return_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "returned_by": { "$ref": "#/$defs/operationalDepartment" },
+        "state": { "const": "RETURNED" },
+        "scope_touched": { "$ref": "#/$defs/requiredStrings" },
+        "artifact_refs": { "$ref": "#/$defs/requiredRefs" },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "test_summary": { "$ref": "#/$defs/testSummary" },
+        "pending_refs": { "$ref": "#/$defs/optionalRefs" },
+        "dissent_refs": { "$ref": "#/$defs/optionalRefs" },
+        "returned_to": { "const": "diretor-de-lentes" },
+        "returned_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-arquitetura-software"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-arquitetura-software"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-arquitetura-dados"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-arquitetura-dados"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-desenvolvimento"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-desenvolvimento"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-design-ux-ui"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-design-ux-ui"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-seguranca"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-seguranca"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-qa-usabilidade"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-qa-usabilidade"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-inovacao-melhoria"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-inovacao-melhoria"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-auditoria-responsabilidades"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-auditoria-responsabilidades"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-conteudo-marketing"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-conteudo-marketing"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "returned_by": {
+                  "const": "departamento-registros"
+                },
+                "causal": {
+                  "properties": {
+                    "producer": {
+                      "const": "departamento-registros"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "judgmentRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "judgment_request_id",
+        "causal",
+        "department_return_ref",
+        "candidate_digest",
+        "contract_digest",
+        "applicable_criteria",
+        "artifact_refs",
+        "evidence_refs",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "JUDGMENT_REQUEST" },
+        "judgment_request_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_return_ref": {
+          "oneOf": [
+            { "$ref": "#/$defs/identifier" },
+            { "const": "n/a" }
+          ]
+        },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "applicable_criteria": { "$ref": "#/$defs/requiredStrings" },
+        "artifact_refs": { "$ref": "#/$defs/requiredRefs" },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "return_to": { "const": "diretor-de-lentes" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "departmentJudgeReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "report_id",
+        "causal",
+        "judgment_request_ref",
+        "candidate_digest",
+        "contract_digest",
+        "round",
+        "scorecard",
+        "minimum_score",
+        "verdict",
+        "critical_fail",
+        "blocking_pending_refs",
+        "evidence_refs",
+        "criticisms",
+        "required_changes",
+        "issued_at",
+        "expires_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "DEPARTMENT_JUDGE_REPORT" },
+        "report_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "judgment_request_ref": { "$ref": "#/$defs/identifier" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "contract_digest": { "$ref": "#/$defs/digest" },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "scorecard": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scoreItem" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minimum_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "verdict": {
+          "enum": [
+            "VALIDATED",
+            "REPROVED"
+          ]
+        },
+        "critical_fail": { "type": "boolean" },
+        "blocking_pending_refs": { "$ref": "#/$defs/optionalRefs" },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "criticisms": { "$ref": "#/$defs/optionalStrings" },
+        "required_changes": { "$ref": "#/$defs/optionalStrings" },
+        "issued_at": { "$ref": "#/$defs/timestamp" },
+        "expires_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "departamento-juizes" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verdict": { "const": "VALIDATED" }
+            },
+            "required": ["verdict"]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": { "minimum": 9.5 },
+              "critical_fail": { "const": false },
+              "blocking_pending_refs": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verdict": { "const": "REPROVED" }
+            },
+            "required": ["verdict"]
+          },
+          "then": {
+            "properties": {
+              "criticisms": { "minItems": 1 },
+              "required_changes": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "departmentGateRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "gate_record_id",
+        "causal",
+        "department_mission",
+        "department_return",
+        "judgment_request",
+        "judge_report",
+        "decision",
+        "recorded_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "DEPARTMENT_GATE_RECORD" },
+        "gate_record_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission": { "$ref": "#/$defs/departmentMission" },
+        "department_return": { "$ref": "#/$defs/departmentReturn" },
+        "judgment_request": { "$ref": "#/$defs/judgmentRequest" },
+        "judge_report": { "$ref": "#/$defs/departmentJudgeReport" },
+        "decision": {
+          "enum": [
+            "ACCEPTED_FOR_INTEGRATION",
+            "REWORK",
+            "BLOCKED"
+          ]
+        },
+        "recorded_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": { "const": "ACCEPTED_FOR_INTEGRATION" }
+            },
+            "required": ["decision"]
+          },
+          "then": {
+            "properties": {
+              "judge_report": {
+                "properties": {
+                  "verdict": { "const": "VALIDATED" },
+                  "minimum_score": { "minimum": 9.5 },
+                  "critical_fail": { "const": false },
+                  "blocking_pending_refs": { "maxItems": 0 }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "matrixExchangeMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "matrix_message_id",
+        "causal",
+        "executive_mission_ref",
+        "sender",
+        "recipient",
+        "topic",
+        "read_scope",
+        "write_scope",
+        "consolidation_owner",
+        "decision_requested",
+        "evidence_refs",
+        "sent_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "MATRIX_EXCHANGE_MESSAGE" },
+        "matrix_message_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "sender": {
+          "enum": [
+            "diretor-de-lentes",
+            "departamento-negocios"
+          ]
+        },
+        "recipient": {
+          "enum": [
+            "diretor-de-lentes",
+            "departamento-negocios"
+          ]
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 3
+        },
+        "read_scope": { "$ref": "#/$defs/requiredStrings" },
+        "write_scope": { "$ref": "#/$defs/requiredStrings" },
+        "consolidation_owner": {
+          "enum": [
+            "diretor-de-lentes",
+            "departamento-negocios"
+          ]
+        },
+        "decision_requested": {
+          "type": "string",
+          "minLength": 3
+        },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "sent_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "sender": { "const": "diretor-de-lentes" },
+                "recipient": { "const": "departamento-negocios" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "diretor-de-lentes" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "sender": { "const": "departamento-negocios" },
+                "recipient": { "const": "diretor-de-lentes" },
+                "causal": {
+                  "properties": {
+                    "producer": { "const": "departamento-negocios" }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "reworkOrder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "rework_order_id",
+        "causal",
+        "department_mission_ref",
+        "judge_report_ref",
+        "target_department",
+        "below_cutoff_criteria",
+        "required_changes",
+        "retest_criteria",
+        "round",
+        "max_rounds",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "REWORK_ORDER" },
+        "rework_order_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "judge_report_ref": { "$ref": "#/$defs/artifactRef" },
+        "target_department": { "$ref": "#/$defs/operationalDepartment" },
+        "below_cutoff_criteria": { "$ref": "#/$defs/requiredStrings" },
+        "required_changes": { "$ref": "#/$defs/requiredStrings" },
+        "retest_criteria": { "$ref": "#/$defs/requiredStrings" },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "max_rounds": { "const": 10 },
+        "return_to": { "const": "diretor-de-lentes" },
+        "issued_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "directorCapabilityGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "director_gap_id",
+        "causal",
+        "required_capability",
+        "expected_path",
+        "reason",
+        "impact",
+        "owner",
+        "safe_state",
+        "recovery_condition",
+        "detected_at"
+      ],
+      "properties": {
+        "artifact_type": { "const": "DIRECTOR_CAPABILITY_GAP" },
+        "director_gap_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "required_capability": { "$ref": "#/$defs/directedCapability" },
+        "expected_path": { "$ref": "#/$defs/artifactRef" },
+        "reason": {
+          "type": "string",
+          "minLength": 3
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 3
+        },
+        "owner": { "const": "diretor-de-lentes" },
+        "safe_state": { "const": "D_BLOCKED" },
+        "recovery_condition": {
+          "type": "string",
+          "minLength": 3
+        },
+        "detected_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "directorReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "director_return_id",
+        "causal",
+        "executive_mission_ref",
+        "state",
+        "summary",
+        "artifact_refs",
+        "evidence_refs",
+        "director_gap_refs",
+        "blocking_pending_refs",
+        "next_event",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "enum": [
+            "BLOCKED_RETURN",
+            "PROGRESS"
+          ]
+        },
+        "director_return_id": { "$ref": "#/$defs/identifier" },
+        "causal": { "$ref": "#/$defs/causalHeader" },
+        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "state": { "$ref": "#/$defs/directorState" },
+        "summary": {
+          "type": "string",
+          "minLength": 3
+        },
+        "artifact_refs": { "$ref": "#/$defs/optionalRefs" },
+        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
+        "director_gap_refs": { "$ref": "#/$defs/optionalRefs" },
+        "blocking_pending_refs": { "$ref": "#/$defs/optionalRefs" },
+        "next_event": {
+          "type": "string",
+          "minLength": 3
+        },
+        "returned_to": { "const": "ceo-maestro" },
+        "returned_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "artifact_type": { "const": "BLOCKED_RETURN" }
+            },
+            "required": ["artifact_type"]
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "D_BLOCKED",
+                  "D_LIMIT_REACHED_RETURNED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "artifact_type": { "const": "PROGRESS" }
+            },
+            "required": ["artifact_type"]
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "D_CONTRACT_VERIFIED",
+                  "D_CAPABILITIES_VERIFIED",
+                  "D_PLANNED",
+                  "D_DELEGATED",
+                  "D_INTEGRATING",
+                  "D_AWAITING_JUDGES",
+                  "D_REWORK",
+                  "D_LIMITATION_ASSEMBLY",
+                  "D_LIMITATION_VERIFIED"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

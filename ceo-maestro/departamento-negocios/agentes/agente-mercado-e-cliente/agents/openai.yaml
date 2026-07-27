@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Mercado e Cliente"
+  short_description: "Pesquisa mercado, clientes, concorrência e canais"
+  default_prompt: "Use $agente-mercado-e-cliente para executar esta missão de pesquisa e devolver evidências rastreáveis ao Departamento de Negócios."

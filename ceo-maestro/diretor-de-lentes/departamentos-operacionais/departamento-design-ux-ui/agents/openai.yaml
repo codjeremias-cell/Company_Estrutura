@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Design UX/UI"
+  short_description: "Experiência decidida, nunca implementada"
+  default_prompt: "Use $departamento-design-ux-ui para decidir a experiência: Design Read com sinais rotulados, fluxo antes da tela, estados vazio/carregando/erro, linguagem visual anti-slop, tokens semânticos e a11y medida — com gate visual antes de qualquer implementação."

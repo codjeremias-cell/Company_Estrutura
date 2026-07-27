@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Evolução e Migração"
+  short_description: "Evolução de schema com rollback"
+  default_prompt: "Use $agente-evolucao-e-migracao para desenhar a evolução do schema em fases expand/contract, cada uma com rollback, declarando a próxima versão livre — sem escrever o arquivo de migração."

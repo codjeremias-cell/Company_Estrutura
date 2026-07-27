@@ -1,0 +1,4 @@
+interface:
+  display_name: "Alternativas e Trade-offs"
+  short_description: "Produz opções distintas e o que se perde"
+  default_prompt: "Use $agente-alternativas-e-tradeoffs somente por ARCHITECTURE_TASK do departamento-arquitetura-software, para produzir 2–3 caminhos realmente distintos, com o que cada um perde, o custo de reverter e o gatilho que mudaria a escolha."

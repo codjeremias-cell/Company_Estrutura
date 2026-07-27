@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Arquitetura de Dados"
+  short_description: "Modelo, grão, evolução e contrato do dado"
+  default_prompt: "Use $departamento-arquitetura-dados para transformar as perguntas do negócio em modelo: escolha de banco por evidência, grão declarado, chaves e histórico, plano expand/contract com rollback, índice justificado por acesso real e contrato de dados — sem escrever código nem decidir arquitetura."

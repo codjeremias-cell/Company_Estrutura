@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Desenvolvimento"
+  short_description: "Implementa, testa e prova que roda"
+  default_prompt: "Use $departamento-desenvolvimento para escrever, revisar, refatorar ou depurar código em Java, Spring, JavaFX, web, Tauri, Flutter ou SQL — com escada de decisão, piso de bordas e bateria executada por quem não implementou."

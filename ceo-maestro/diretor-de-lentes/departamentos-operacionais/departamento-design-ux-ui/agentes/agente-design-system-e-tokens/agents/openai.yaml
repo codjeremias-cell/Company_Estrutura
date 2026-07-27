@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Design System e Tokens"
+  short_description: "Tokens como contrato design-código"
+  default_prompt: "Use $agente-design-system-e-tokens para converter as decisões visuais em tokens semânticos e composição Atomic Design — decidindo nome e valor, sem gerar arquivo."

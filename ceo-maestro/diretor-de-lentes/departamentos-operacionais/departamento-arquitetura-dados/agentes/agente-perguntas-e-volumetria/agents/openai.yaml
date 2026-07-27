@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Perguntas e Volumetria"
+  short_description: "Perguntas, volume e carga do dado"
+  default_prompt: "Use $agente-perguntas-e-volumetria para transformar o pedido em perguntas de negócio com frequência, latência e volume em ordem de grandeza, e decidir OLTP ou OLAP — sem escolher banco nem modelar."

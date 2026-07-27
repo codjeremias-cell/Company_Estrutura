@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Data-viz"
+  short_description: "Gráfico pela intenção do dado"
+  default_prompt: "Use $agente-dataviz para escolher o gráfico pela intenção do dado, com o contrato semântico antes e as armadilhas do tipo declaradas — sem implementar biblioteca."

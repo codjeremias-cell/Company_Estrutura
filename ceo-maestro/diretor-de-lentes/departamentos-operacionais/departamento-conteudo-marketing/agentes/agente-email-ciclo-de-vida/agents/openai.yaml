@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de E-mail e Ciclo de Vida"
+  short_description: "Cria sequências e HTML de e-mail"
+  default_prompt: "Use $agente-email-ciclo-de-vida para produzir os e-mails desta atribuição."
+

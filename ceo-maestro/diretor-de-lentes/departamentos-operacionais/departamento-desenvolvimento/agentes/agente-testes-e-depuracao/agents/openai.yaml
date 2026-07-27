@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agente de Testes e Depuração"
+  short_description: "Escreve o teste, roda e prova"
+  default_prompt: "Use $agente-testes-e-depuracao para escrever os testes que faltam, rodar a bateria contra o candidato e reportar PASS/FAIL/SKIP com evidência fresca."

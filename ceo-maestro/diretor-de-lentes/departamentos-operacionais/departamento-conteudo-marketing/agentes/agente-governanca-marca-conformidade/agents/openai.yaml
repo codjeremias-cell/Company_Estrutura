@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agente de Governança e Conformidade"
+  short_description: "Revisa marca, direitos, dados e políticas"
+  default_prompt: "Use $agente-governanca-marca-conformidade para revisar o candidato desta atribuição."
+

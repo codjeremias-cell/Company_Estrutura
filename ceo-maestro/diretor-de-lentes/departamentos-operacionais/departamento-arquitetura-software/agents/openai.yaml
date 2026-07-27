@@ -1,0 +1,4 @@
+interface:
+  display_name: "Departamento de Arquitetura de Software"
+  short_description: "Estrutura macro, contratos e trade-offs"
+  default_prompt: "Use $departamento-arquitetura-software para converter os drivers em estrutura: limites e ownership, contratos de integração, cenários de qualidade, 2–3 opções com o que cada uma perde, ADR e C4 — sem modelar dados nem implementar."
