@@ -59,3 +59,47 @@ Uma sessão nova recebeu somente a pasta de trabalho e os casos, sem o nome ou o
 skill. Ela carregou `AGENTS.md`, descobriu `ceo-maestro/SKILL.md`, aplicou contrato,
 referências e Regras de Ouro e aderiu aos 10 casos. O teste também provou a borda atual:
 Diretor, Negócios e Juízes ainda ausentes geram `CAPABILITY_GAP`, não execução presumida.
+
+---
+
+## Acionamento em runtime — medido em 2026-07-27
+
+Até esta data, **nenhuma** skill desta Estrutura tinha rodado uma vez em runtime: nada estava
+instalado, e todo forward de todo pacote declarava `SKIP` de acionamento espontâneo. O
+`ceo-maestro` foi implantado como **porta única** em `.claude/skills/` e `.agents/skills/`, e o
+acionamento foi medido — não suposto.
+
+Método: quatro execuções `claude -p` em **sessão nova**, que descobre as skills do zero. A frase
+foi mantida **neutra e idêntica** nas rodadas 1, 3 e 4 — *"quero evoluir uma das minhas skills
+existentes porque ela não está disparando nos gatilhos certos; como conduzo isso?"*. A rodada 2
+usou de propósito uma frase carregada de vocabulário de governança, e por isso **não** vale como
+prova de disparo espontâneo.
+
+| # | Condição | `ceo-maestro` | SHA-256 conferido | Turnos | Veredito |
+|---:|---|---:|---|---:|---|
+| 1 | antes da §0 do `CLAUDE.md` | 0x | não | 10 | **não disparou** |
+| 2 | §0 + frase com "governança" | 5x | sim | 21 | disparou — prompt enviesado |
+| 3 | §0 + frase neutra | 1x | não | 10 | **rota certa, sem invocar** |
+| 4 | §0 + instrução "invoque, não descreva" | 8x | sim | 16 | **disparou** |
+
+**O que cada rodada isolou.** A 1 mostrou que o problema não era a skill: o `CLAUDE.md` mandava
+carregar o Catálogo e não mencionava a Estrutura, então ela não existia para o modelo. A 3 é a
+mais informativa — com a §0 no lugar, o modelo **acertou a rota sem carregar a skill**, em 10
+turnos e sem uma palavra do protocolo. Isso descartou a hipótese óbvia: **não era a
+`description`**, que já trazia o gatilho literal *"criar, evoluir, avaliar ou aposentar uma
+skill"*. Era competição com 75 outras skills, perdendo para a resposta direta. A 4 mudou uma
+única variável — a instrução de **invocar** em vez de descrever — e a mesma frase da rodada 3
+passou a carregar a skill.
+
+**O que a rodada 4 provou que o protocolo faz, e não só declara:** carregou o pacote, conferiu
+as capacidades por SHA-256 **runtime × fonte**, fixou a rota exclusiva ao
+`departamento-evolucao-skills`, exigiu `EXECUTIVE_MISSION` e **recusou abrir missão com alvo
+genérico**, citando `§1.1` e `BLOCKED_INVALID_MISSION`. A barreira de entrada funcionou contra
+quem a estava testando.
+
+**Limite declarado.** Isto prova o acionamento **da porta**, e só dela. Os 15 gerentes e os 66
+agentes **não** estão registrados no runtime — por desenho, verificado
+(`ceo-maestro=SIM ; departamento=0 ; agente=0`). O `SKIP` de acionamento espontâneo nos placares
+deles continua verdadeiro e **deve continuar**: agente é folha, e disparar sozinho seria a
+violação que o contrato dele proíbe. O que os placares dos Departamentos ainda não têm é prova
+de que a **cadeia inteira** roda ponta a ponta sob uma missão real.
