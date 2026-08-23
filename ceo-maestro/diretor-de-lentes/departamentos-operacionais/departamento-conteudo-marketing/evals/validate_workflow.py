@@ -29,12 +29,49 @@ STRUCTURE_ROOT = Path(
 ).resolve()
 DIRECTOR_SCHEMA_PATH = DIRECTOR_ROOT / "schemas" / "diretor-de-lentes.schema.json"
 RULES_PATH = STRUCTURE_ROOT / "regras-de-ouro" / "REGRAS-DE-OURO.md"
-LEGACY_ROOT = Path(
-    os.environ.get(
-        "LEGACY_CATALOG_ROOT",
-        str(STRUCTURE_ROOT.parent / "Catalogo-Skills-Unificado" / "skills"),
-    )
-).resolve()
+# TAREFA 36 — a fonte legada é PINADA, não viva.
+#
+# Até 2026-08-08 isto apontava para o `Catalogo-Skills-Unificado/skills` VIVO,
+# com override por `LEGACY_CATALOG_ROOT`. O efeito: em 2026-08-06 o commit
+# `58b202c` ("garimpo mattpocock/skills") melhorou duas skills do Catálogo, e
+# este Departamento passou a REPROVAR — `redator-tecnologia-ia/SKILL.md` e
+# `referencia/historico.md` com "hash divergente". Ninguém errou nada. O
+# Catálogo é um acervo VIVO e evoluir é a função dele; a Estrutura derivou de
+# UMA versão e é dessa versão que ela responde.
+#
+# Diagnosticado por medição em 2026-08-07: dos 11 arquivos declarados de
+# `redator-tecnologia-ia`, **9 batiam exatamente** — o caminho, a receita e a
+# declaração estavam sãos, e só o conteúdo de 2 havia mudado a montante. Não
+# era EOL nem adulteração: era drift real de upstream, e a trava fez o trabalho
+# dela ao acusar.
+#
+# O PINO, provado antes de ser adotado: as **28 de 28** declarações reproduzem
+# exatamente no commit `be19002` (= `58b202c~1`, o estado anterior ao garimpo)
+# — 9 reproduzem a partir do blob cru do git e 19 a partir do blob convertido
+# para CRLF. Zero ausentes, zero que não batem em lugar nenhum. O snapshot em
+# `fontes-legadas-pinadas/` carrega esses bytes verbatim, e o `.gitattributes`
+# do cofre marca a pasta como `-text` para que nenhuma conversão de fim de
+# linha os altere em qualquer checkout — sem isso os arquivos em LF virariam
+# CRLF e a conferência quebraria sem um caractere ter mudado.
+#
+# CUIDADO COM O RÓTULO, e eu já errei este: "reproduz do blob cru" NÃO é o
+# mesmo que "o arquivo é LF". Quatro dos 28 blobs do git JÁ carregam CRLF
+# dentro, então batem crus e mesmo assim são CRLF em disco. A divisão real do
+# snapshot é **5 arquivos puro-LF e 23 contendo CRLF**; publiquei "9 e 19" e
+# esse par descreve qual receita reproduz o hash, não o fim de linha. Quem
+# conferir a pasta contando terminadores de linha tem de esperar 5/23, não
+# 9/19 — e 28/28 hashes conferindo é o que decide, não a contagem de EOL.
+#
+# O OVERRIDE POR AMBIENTE FOI REMOVIDO de propósito. Numa conferência de
+# proveniência, poder apontar a raiz para outro lugar por variável de ambiente
+# é bypass: quem não gosta do vermelho muda o alvo em vez do conteúdo.
+#
+# Consequência deliberada: este validador **não olha mais o Catálogo vivo**.
+# Ressincronizar é ato explícito — mover o pino, recongelar o snapshot e
+# redeclarar os hashes no mesmo ato —, não algo que acontece por acidente
+# quando alguém melhora uma skill do acervo.
+PINO_DA_FONTE_LEGADA = "be19002"  # 58b202c~1, anterior ao garimpo de 06/ago
+LEGACY_ROOT = (PACKAGE_ROOT / "fontes-legadas-pinadas").resolve()
 
 DEPARTMENT = "departamento-conteudo-marketing"
 AGENT_CAPABILITY = {
@@ -126,15 +163,41 @@ try:
         validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_adr_series,
         validate_agents_folder,
         validate_frontmatter,
         validate_links,
         validate_openai_yaml,
         validate_required_files,
     )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        achar_corpo_neutralizado,
+        achar_pendencia_sem_dono,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
+    )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(f"[FAIL] motor compartilhado ausente em {STRUCTURE_ROOT}: {exc}")
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
+    )
     raise SystemExit(1)
 
 
@@ -667,6 +730,84 @@ def run() -> int:
             ("fonte normativa e tokens", True, validate_normative_source()),
             ("links internos resolvem", True, validate_links(PACKAGE_ROOT)),
             ("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT)),
+            (
+                "todo pacote gerente tem validador que roda a trava global",
+                True,
+                validate_cobertura_de_validadores(STRUCTURE_ROOT),
+            ),
+            (
+                "a recusa de digest() dispara e ninguém tem cópia privada do motor",
+                True,
+                validate_trava_de_digest(STRUCTURE_ROOT),
+            ),
+            (
+                "nenhuma asserção é verdadeira por construção sobre valor produzido",
+                True,
+                validate_sem_check_tautologico(STRUCTURE_ROOT),
+            ),
+            (
+                "nenhum placar de pacote declara total de cadeia como estado corrente",
+                True,
+                validate_placar_nao_declara_cadeia(STRUCTURE_ROOT),
+            ),
+            (
+                "a contagem publicada aponta para o digest do instrumento vigente",
+                True,
+                validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT),
+            ),
+            (
+                "as travas do modulo compartilhado nao estao neutralizadas",
+                True,
+                validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT),
+            ),
+            (
+                "toda pendencia declarada nomeia quem responde por ela",
+                True,
+                validate_pendencia_tem_dono(STRUCTURE_ROOT),
+            ),
+            # Par NEGATIVO da trava acima (T71): sem raiz para varrer, ela tem de
+            # FALHAR FECHADO. Trava que devolve vazio quando não consegue olhar
+            # nada fica verde por ausência, não por conformidade — e o passo 9
+            # exige negativos >= positivos, então acrescentar trava sem par
+            # desequilibra a suíte.
+            (
+                "trava do selo falha fechado quando a raiz não existe",
+                False,
+                validate_contagem_ligada_ao_instrumento(
+                    STRUCTURE_ROOT / "raiz-inexistente"
+                ),
+            ),
+            # Par NEGATIVO da trava da T84: planta a forma proibida — trava
+            # desligada por `return` precoce, corpo inteiro virando código morto
+            # — e exige que ela seja ACUSADA.
+            (
+                "trava desligada por return precoce é acusada",
+                False,
+                achar_corpo_neutralizado(
+                    "def validate_de_mentira(raiz):\n"
+                    "    return []\n"
+                    "    if not raiz.is_dir():\n"
+                    "        return ['raiz ausente']\n",
+                    "fixture",
+                ),
+            ),
+            # Par NEGATIVO da trava do dono (T71): planta a forma proibida —
+            # item de pendência sem linha na tabela de donos — e exige que ela
+            # seja ACUSADA.
+            (
+                "pendência sem dono é acusada",
+                False,
+                achar_pendencia_sem_dono(
+                    "# P\n\n## O que ainda não foi provado\n\n"
+                    "1. **Um.** texto\n2. **Dois.** texto\n",
+                    "fixture",
+                ),
+            ),
+            (
+                "a fonte normativa confere com o valor declarado em ORIGEM.md",
+                True,
+                validate_fonte_normativa_conferida(STRUCTURE_ROOT),
+            ),
             ("schema e refs locais", True, validate_schema_shape(schema)),
             (
                 "autoridade e rotas externas herdadas do Diretor",
@@ -847,4 +988,7 @@ def run() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

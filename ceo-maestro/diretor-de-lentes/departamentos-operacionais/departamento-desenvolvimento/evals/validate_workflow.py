@@ -22,6 +22,14 @@ SKILL_PATH = PACKAGE_ROOT / "SKILL.md"
 CONTRACT_PATH = PACKAGE_ROOT / "CONTRATO-DE-COMPROMISSO.md"
 OPENAI_PATH = PACKAGE_ROOT / "agents" / "openai.yaml"
 SCHEMA_PATH = PACKAGE_ROOT / "schemas" / "departamento-desenvolvimento.schema.json"
+# Valor DECLARADO do schema deste pacote, conferido a cada execucao por
+# conferir_digest_declarado(). Receita: sha256 do conteudo com CRLF->LF e sem
+# BOM (validador_schema.py::sha256_texto_normalizado) — a mesma da fonte
+# normativa, para que a conferencia sobreviva a um clone com outro EOL.
+# Quem alterar o schema atualiza esta linha no MESMO commit; sem isso, reprova.
+SCHEMA_DIGEST_DECLARADO = (
+    "sha256:29201676d2b09d9a6ecaf6f726f8e20d3ade3062e8e3a6b00f11551370d476f9"
+)
 EVALS_PATH = PACKAGE_ROOT / "evals" / "evals.json"
 AGENTS_ROOT = PACKAGE_ROOT / "agentes"
 REFERENCES_ROOT = PACKAGE_ROOT / "references"
@@ -38,14 +46,48 @@ RULES_PATH = STRUCTURE_ROOT / "regras-de-ouro" / "REGRAS-DE-OURO.md"
 sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
     from _compartilhado.validador_schema import (  # noqa: E402
-        collect_property_names, digest, find_const, sha256_file, validate_schema,
+        collect_property_names,
+        conferir_digest_das_regras,
+        conferir_digest_declarado,
+        digest,
+        find_const,
+        sha256_file,
+        validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_agents_folder, validate_frontmatter, validate_links,
-        validate_openai_yaml, validate_required_files,
+        validate_agents_folder, validate_contract_sections,
+        validate_frontmatter,
+        validate_links, validate_openai_yaml, validate_required_files,
+        validate_skill_tokens, SECOES_CONTRATO_AGENTE, TOKENS_SKILL_AGENTE,
+    )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
     )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(f"[FAIL] motor compartilhado ausente em {STRUCTURE_ROOT}/_compartilhado: {exc}")
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
+    )
     raise SystemExit(1)
 
 DEPARTMENT = "departamento-desenvolvimento"
@@ -266,6 +308,75 @@ def gate_fecha(led: dict[str, Any]) -> bool:
 def prova_fresca(led: dict[str, Any]) -> bool:
     return led.get("test_evidence", {}).get("against_digest") == led.get("candidate_digest")
 
+def _admission_def(schema: dict[str, Any]) -> dict[str, Any]:
+    return schema["$defs"]["departmentMissionAdmission"]
+
+
+def director_mission(schema: dict[str, Any], *, causal_over: dict[str, Any] | None = None,
+                     **over: Any) -> dict[str, Any]:
+    """Payload de teste. A trava nao mora aqui: mora no const do schema, lido por mission_verdict."""
+    director = "diretor-de-lentes"
+    base: dict[str, Any] = {
+        "artifact_type": "DEPARTMENT_MISSION",
+        "department_mission_id": "DM-DEV-001",
+        "causal": {
+            "work_item_id": "WI-DEV-001", "front_id": "FR-DEV-001",
+            "handoff_id": "HO-DEV-001", "message_id": "MSG-DIR-001",
+            "causation_message_ids": ["MSG-CEO-001"],
+            "contract_id": "CT-DEV-001", "contract_version": 1,
+            "contract_digest": DIG, "candidate_digest": DIG2,
+            "round": 1, "attempt": 1, "producer": director,
+            "producer_version": "1.0.0", "producer_digest": DIG,
+            "created_at": STAMP,
+        },
+        "recipient": DEPARTMENT, "mode": "ATUA",
+        "objective": "implementar o DAO de matricula no track Java",
+        "scope_in": ["DAO de matricula"],
+        "scope_out": ["modelo de dados", "nota"],
+        "inputs": ["contrato de arquitetura anexado"],
+        "deliverables": ["DEV_LEDGER com evidencia executada"],
+        "done": ["DAO com teste verde e revisao independente"],
+        "required_evidence": ["bateria executada contra o digest"],
+        "depends_on": ["grao da tabela de matricula"],
+        "handoff_to": [director],
+        "decision_authority": ["implementacao dentro das decisoes anexadas"],
+        "permissions": {
+            "default_policy": "deny",
+            "allowed_tools": ["filesystem_read"],
+            "allowed_resources": ["workspace"],
+            "expires_at": STAMP,
+        },
+        "stop_when": ["ledger devolvido ao Diretor"],
+        "return_to": director, "issued_at": STAMP,
+    }
+    if causal_over:
+        base["causal"] = {**base["causal"], **causal_over}
+    base.update(over)
+    return base
+
+
+def mission_verdict(mission: dict[str, Any], *, contract_digest: str,
+                    schema: dict[str, Any],
+                    target_present: bool = True) -> str:
+    """Classifica a missao de entrada contra o contrato local. Sem const, nao ha trava."""
+    adm = _admission_def(schema)
+    expected_p = adm["properties"]["causal"]["properties"]["producer"].get("const")
+    expected_r = adm["properties"]["return_to"].get("const")
+    expected_dest = adm["properties"]["recipient"].get("const")
+    if expected_p and mission.get("causal", {}).get("producer") != expected_p:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    if expected_r and mission.get("return_to") != expected_r:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    if expected_dest and mission.get("recipient") != expected_dest:
+        return "BLOCKED_INVALID_MISSION"
+    if not mission.get("causal", {}).get("contract_digest"):
+        return "BLOCKED_INVALID_MISSION"
+    if mission["causal"]["contract_digest"] != contract_digest:
+        return "BLOCKED_CONTRACT_MISMATCH"
+    if not target_present:
+        return "BLOCKED_INVALID_MISSION"
+    return "ACEITA"
+
 
 def run() -> int:
     cases: list[tuple[str, bool, list[str]]] = []
@@ -299,6 +410,41 @@ def run() -> int:
         err += validate_openai_yaml(AGENTS_ROOT / name / "agents" / "openai.yaml",
                                     display, f"${name}")
     case("frontmatter e interface dos oito agentes", True, err)
+
+    # --- Estrutura normativa dos contratos e SKILL de agente ------------------
+    # GUIA, passos 7 e 8. Até 2026-07-27 este validador não olhava heading de
+    # contrato nem token de SKILL, e os oito agentes deste pacote usavam uma
+    # anatomia própria: zero dos seis tokens, trava anti-bypass ausente. A
+    # conferência mora no _compartilhado; a lista do que é obrigatório continua
+    # sendo decisão deste pacote.
+    err = []
+    for name in AGENT_CAPABILITY:
+        err += validate_contract_sections(
+            AGENTS_ROOT / name / "CONTRATO-DE-COMPROMISSO.md",
+            SECOES_CONTRATO_AGENTE, name)
+        err += validate_skill_tokens(
+            AGENTS_ROOT / name / "SKILL.md", TOKENS_SKILL_AGENTE, name)
+    case("estrutura normativa dos oito agentes", True, err)
+
+    # As duas checagens de ESTRUTURA INTEIRA. Achado da rodada 4 do forward test de
+    # cadeia (2026-07-27): este era o unico dos 15 validadores que nao chamava
+    # nenhuma das duas -- ficava fora da trava global sem que nada acusasse.
+    case("série global de ADR é única em toda a estrutura", True,
+         validate_adr_series(STRUCTURE_ROOT))
+    case("todo pacote gerente tem validador que roda a trava global", True,
+         validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True,
+         validate_trava_de_digest(STRUCTURE_ROOT))
+    case("nenhuma asserção é verdadeira por construção sobre valor produzido", True,
+         validate_sem_check_tautologico(STRUCTURE_ROOT))
+    cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
+    cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)))
+    cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)))
+    cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(STRUCTURE_ROOT)))
+    case("a fonte normativa confere com o valor declarado em ORIGEM.md", True,
+         validate_fonte_normativa_conferida(STRUCTURE_ROOT))
+    case("contratos de gerente na anatomia canônica", True,
+         validate_contratos_de_gerente(STRUCTURE_ROOT))
     case("interface da gerente", True, validate_openai_yaml(
         OPENAI_PATH, "Departamento de Desenvolvimento", f"${DEPARTMENT}"))
     case("todos os links markdown internos resolvem", True, validate_links(PACKAGE_ROOT))
@@ -519,6 +665,27 @@ def run() -> int:
     check("os cinco tracks estão no enum do schema",
           len(schema["$defs"]["track"]["enum"]) == 5)
 
+    # --- J. Missao de entrada (CRIT-02 / SURPRESAS_BYPASS) -------------------
+    check("literal BLOCKED_BYPASS_ATTEMPT existe no validador",
+          "BLOCKED_BYPASS_ATTEMPT" in Path(__file__).read_text(encoding="utf-8"))
+    check("schema local trava producer de entrada no Diretor",
+          find_const(schema, "producer", "diretor-de-lentes"))
+    check("DEPARTMENT_MISSION de entrada com producer alheio é BLOCKED_BYPASS_ATTEMPT",
+          mission_verdict(director_mission(schema, causal_over={"producer": "ceo-maestro"}),
+                          contract_digest=DIG, schema=schema) == "BLOCKED_BYPASS_ATTEMPT")
+    check("DEPARTMENT_MISSION com return_to fora do Diretor é BLOCKED_BYPASS_ATTEMPT",
+          mission_verdict(director_mission(schema, return_to="ceo-maestro"),
+                          contract_digest=DIG, schema=schema) == "BLOCKED_BYPASS_ATTEMPT")
+    check("DEPARTMENT_MISSION íntegra do Diretor é ACEITA",
+          mission_verdict(director_mission(schema), contract_digest=DIG,
+                          schema=schema) == "ACEITA")
+    case("schema local rejeita DEPARTMENT_MISSION de entrada com producer forjado", False,
+         validate_schema(director_mission(schema, causal_over={"producer": "ceo-maestro"}),
+                         schema["$defs"]["departmentMissionAdmission"], schema))
+    case("schema local aceita DEPARTMENT_MISSION de entrada do Diretor", True,
+         validate_schema(director_mission(schema),
+                         schema["$defs"]["departmentMissionAdmission"], schema))
+
     # --- Catálogo ------------------------------------------------------------
     cat = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
     cs = cat.get("cases", [])
@@ -530,10 +697,11 @@ def run() -> int:
           "a separação responde ao defeito de instrumento de 2026-07-26")
     check("há ao menos quatro casos de operação",
           sum(1 for c in cs if c.get("tipo") == "OPERACAO") >= 4)
-    check("digest das regras é verificável",
-          RULES_PATH.is_file() and sha256_file(RULES_PATH).startswith("sha256:"))
-    check("digest do próprio schema é verificável",
-          digest(SCHEMA_PATH.read_text(encoding="utf-8")).startswith("sha256:"))
+    case("digest da fonte normativa confere com o declarado em ORIGEM.md", True,
+         conferir_digest_das_regras(RULES_PATH))
+    case("digest do próprio schema confere com o declarado", True,
+         conferir_digest_declarado(SCHEMA_PATH, SCHEMA_DIGEST_DECLARADO,
+                                   "schema do pacote"))
 
     failures = 0
     for name, expected, errors in cases:
@@ -552,4 +720,7 @@ def run() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

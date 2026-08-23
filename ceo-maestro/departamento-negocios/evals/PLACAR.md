@@ -1,6 +1,32 @@
 # Placar de Validação — Departamento de Negócios
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **170/170 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 238/238 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:e645676bfab9a19edbf06f9012e9d4a5c350dd3fc04b4b1b2e54c7ad5d7229ac` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reteste ADR-014 — 2026-07-29.** A migração do consumidor externo fechou em
+> **226/226 PASS, 0 FAIL, 0 WARN**. O delta de **+56** sobre o baseline próprio `170/170` é
+> composto por **+52 checks semânticos** — travas de `required_level`, propagação nos três
+> envelopes, matriz `6/7/9/10 × INTERNO/PRODUCAO`, nota externa inteira, faixas de veredito,
+> falha crítica/pendência bloqueante e integração atualizada com CEO e Diretor — e **+4 checks
+> dinâmicos de links** ao ADR-014. A régua decimal interna
+> `9,5`/`9,7` foi preservada; nenhum gate externo usa esse corte. O restante deste placar é
+> registro histórico da rodada de 2026-07-26.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **170/170 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 

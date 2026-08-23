@@ -1,0 +1,44 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-robustez-e-evidencia",
+  "lens": "robustez-e-evidencia",
+  "instancia": 1,
+  "round": "recoleta-c03-c05-c06",
+  "created_at": "2026-08-05T23:47:50-03:00",
+  "commit_julgado": "ab5882cf09a95d841168fd52faf656ac55997287",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "departamento-qa-usabilidade",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "Atende em parte, com lacuna nomeável nas duas primeiras cláusulas do critério. A favor: ~46 casos negativos EXECUTADOS (33 mutações de fixture em evals/validate_workflow.py:1591-1735, 11 de grafo/dimensão em 1839-1982, 3 de fronteira em 2052-2087), todos derivados por mutação de uma fixture positiva; a cláusula 'morte por exceção não conta como pega' é honrada de forma exemplar — o motor devolve LISTA de erros e nunca levanta (_compartilhado/validador_schema.py:284-390), e a única trava baseada em exceção exige a CLASSE própria DigestDeFixtureRecusado e recusa crédito a exceção genérica (_compartilhado/verificacoes_estrutura.py:959-987); as cinco travas globais que este pacote invoca carregam autoteste executado a cada chamada (verificacoes_estrutura.py:608-643, 864-904, 1004) e o retorno de cada uma alimenta o agregado, senão COBERTURA_SEM_EFEITO acusa. Contra: (1) o crédito é NÃO ATRIBUÍDO — 'check(label, bool(errors))' em validate_workflow.py:1733-1735 credita a mutação por QUALQUER erro do schema, não pelo erro da trava que o rótulo nomeia; (2) há caso provadamente creditado a trava INEXISTENTE — validate_workflow.py:1671-1673 troca recommended_next_step (objeto) por string e é rejeitado só pelo type-check (validador_schema.py:321-323 retorna cedo), enquanto NENHUM padrão anti-julgamento existe no schema (busca por nota/APROVAD/VALIDATED/veredito nos 1444 linhas: zero); o mesmo PASS sairia com a string 'x'; (3) 13 checks passam por PRESENÇA DE STRING, sem nenhum caso que os faça reprovar — validate_workflow.py:1417-1447 (12 checks: 'não executar testes' in texto, 'BLOCKED_BYPASS_ATTEMPT' in texto, 'Não aciona:** ninguém' in texto) e 1986-1989 ('schema do Diretor conhece o Departamento' = substring sobre o JSON serializado inteiro, que passaria se o nome só aparecesse numa description); C03 proíbe isso na letra; (4) travas sem NENHUM caso que as faça reprovar: nos 5 ramos condicionais de qaConsolidatedReport contei ~21 de 33 restrições sem contraprova (confidence const HIGH, defect_refs maxItems 0, critical_fail const false, coverage_summary.failed/unverified/missing const 0 e todo o ramo REWORK menos quality_state), e os ramos NOT_PROVEN e BLOCKED nunca chegam a valid_local — nem positiva nem negativamente (partial_report de 2022-2027 só vai para a ponte e para o schema do Diretor); nos ramos por agente (qaAssignment allOf[2..3], qaAgentReturn allOf[1..2]) só a capacidade de AGENTS[0] tem mutação; (5) mutações sobredeterminadas creditam a trava errada: 'READY promove SKIP' (1718-1723) dispara ao menos quatro regras independentes (test_summary.skip, skip_reasons, pending maxItems 0, coverage_summary.skipped) — apagar a regra de skip mantém o caso verde. A técnica certa EXISTE no próprio pacote e é aplicada em 2 de ~46 casos: 2058-2062 e 2068-2072 exigem 'not schema_only_errors and bool(bridge_errors)', isto é, provam QUAL portão pegou. Não é 7 porque não é acabamento: são casos não cobertos e prova de atribuição faltando, com uma cláusula do critério violada na letra. Não é 5 porque a bateria executada é grande, real e nasceu de escapes documentados (evals/ADVERSARIAL-AUDIT.md:20-27 registra 7 famílias e 5 contraprovas que PASSAVAM antes do endurecimento — o oposto de portão tautológico). O [FAIL] único da saída crua é a série global de ADR (020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/{A,B}/) — alheio a este pacote, DESCONTADO e sem efeito nesta nota.",
+      "evidencia": [
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1733-1735",
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1671-1673",
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1417-1447",
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1986-1989",
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1718-1723",
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:2052-2072",
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/schemas/departamento-qa-usabilidade.schema.json ($defs.qaConsolidatedReport.allOf[1..4]; allOf[3] NOT_PROVEN e allOf[4] BLOCKED sem caso)",
+        "_compartilhado/validador_schema.py:321-323",
+        "_compartilhado/verificacoes_estrutura.py:959-987",
+        "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/ADVERSARIAL-AUDIT.md:20-27",
+        "ceo-maestro/evals/recoleta-c03-c05-c06-2026-08-05/saida-crua/departamento-qa-usabilidade.stdout.txt:26 (FAIL de ADR, alheio, descontado)",
+        "ceo-maestro/evals/recoleta-c03-c05-c06-2026-08-05/saida-crua/departamento-qa-usabilidade.stdout.txt:125 (121/122)"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 6,
+  "confidence": "media",
+  "por_que_essa_confianca": "Alta na leitura (li o validador inteiro — 2148 linhas —, os cinco ramos condicionais do schema, o motor compartilhado nas partes invocadas e os dois documentos de eval; a afirmação de ausência vem de leitura completa das cinco funções validate_* e do main(), não de busca truncada). Média no todo porque PROIBIDO EXECUTAR: cada atribuição 'esta mutação dispara esta regra e só ela' é raciocínio estático sobre o validate_schema artesanal, não atribuição executada. Uma rodada com o erro impresso por caso poderia deslocar minha contagem de sobredeterminação; não deslocaria os achados (2) e (3), que se leem no fonte.",
+  "o_que_declaro_contra_mim": [
+    "Não executei nada — a proibição é do desenho e eu a cumpri. Logo, TODA atribuição mutação->regra aqui é estática. Meu achado mais forte (recommended_next_step rejeitado só pelo type-check) depende de validador_schema.py:321-323 retornar cedo no erro de tipo, que eu li e não rodei. Se rodar contradisser, o achado cai.",
+    "A contagem '~21 de 33 restrições sem contraprova' foi enumerada à mão a partir do JSON impresso de qaConsolidatedReport; aceito +/-2 de erro. O que NÃO é frágil é o qualitativo: os ramos NOT_PROVEN e BLOCKED nunca chegam a valid_local, e isso vem de leitura integral das funções, não de amostra.",
+    "Minha nota fica UM ponto abaixo do corte INTERNO, e isso decide. Considerei 7 e recusei: um juiz que leia a cláusula 'nada passa por presença de string' como restrita a travas de COMPORTAMENTO (poupando as 13 checagens documentais) chega em 7 legitimamente. Essa é a divergência viva, e eu a declaro em vez de escondê-la atrás da minha leitura.",
+    "Julguei um critério de um pacote. Não li SKILL.md nem CONTRATO-DE-COMPROMISSO.md por inteiro: se existir trava de C03 fora de evals/ e schemas/, eu não a vi. Li integralmente o validador, a estrutura condicional do schema, ADVERSARIAL-AUDIT.md, FORWARD-TEST.md e o adendo de contagem.",
+    "Minha primeira listagem de diretório resolveu, por um 'cd A || cd B' com A existente, na árvore PRINCIPAL e não no meu worktree. Foram só nomes de arquivo e contagem de linhas, e refiz tudo no worktree depois — mas não provei igualdade byte a byte entre as duas árvores para aquela chamada.",
+    "Creditei ao pacote o rigor das cinco travas globais, que é mérito do _compartilhado (o próprio adendo do pacote diz isso em PLACAR-ADENDO-2026-08-05:48). O que é mérito do pacote é invocá-las com EFEITO — e isso é exigido por gate de vizinho, não por virtude própria.",
+    "Meu veredito NÃO depende da T27: o defeito que aponto é de atribuição de contraprova, não de contagem declarada. A T27 entrar na árvore não moveria esta nota — declaro isso para que ninguém use o futuro para explicar o presente."
+  ]
+}

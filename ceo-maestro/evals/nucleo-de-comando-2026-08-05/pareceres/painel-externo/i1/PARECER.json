@@ -1,0 +1,121 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "painel-externo",
+  "lens": "painel-externo",
+  "instancia": 1,
+  "round": "nucleo-de-comando",
+  "created_at": "2026-08-06T00:40:00-03:00",
+  "commit_julgado": "412769f31ccb0cb636f85c41f56cf9c6f612b3c1",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "departamento-juizes",
+      "criterion_id": "C01",
+      "score": 8,
+      "razao": "Declara o que faz e o que nao faz em dois artefatos que se cobrem (SKILL.md 'Guardrails' e CONTRATO 'Proibicoes'), e a exclusividade de nota e veredito NAO e promessa: esta travada nos schemas dos consumidores, nao no proprio. O JUDGE_REPORT do CEO fixa judge_capability_ref por const 'departamento-juizes', o DEPARTMENT_JUDGE_REPORT do Diretor fixa causal.producer pelo mesmo const, e a executiveSubmission do CEO exige judge_report entre os campos required — ou seja, nenhuma decisao executiva se fecha sem um envelope que se declare capacidade dos Juizes. E ha caso executado que fica vermelho se o vizinho mudar (validate_inherited_authority). 'Nao conserta o que julga' esta em codigo de conduta e foi medido em forward (caso 11 PASS). Os tres agentes sao folhas: fronteira exclusiva declarada por descricao, return_to: departamento-juizes, nenhum delega adiante, e o enum judgeId do schema e amarrado as pastas reais de agentes/. A trava reflexiva ('nao julga a si proprio; quem o julga e painel externo') e honrada pela casa nesta rodada — e a razao de eu existir. DOIS riscos restam, ambos nomeaveis: (1) a fonte normativa discorda de si sobre quantos gates um veredito positivo exige — o titulo da §4.1 diz 'seis condicoes' e enumera SETE; a §4.2 e a SKILL dizem 'sete'; o CONTRATO diz 'seis'. Num Departamento cuja funcao e exigir recomputo exato, o contrato que vincula diverge do protocolo que ele cita; (2) a colisao de fronteira de description com o diretor-de-lentes, achada em 2026-07-26 e declarada como 'deveria ser afiada', segue aberta sem dono. Por serem dois riscos e nao um, nao alcanca 9.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/schemas/ceo-maestro.schema.json:1215",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/schemas/diretor-de-lentes.schema.json:907",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1241",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/SKILL.md:352",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:363",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:378",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/CONTRATO-DE-COMPROMISSO.md:86",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/FORWARD-TEST.md:79"
+      ]
+    },
+    {
+      "package_id": "departamento-juizes",
+      "criterion_id": "C02",
+      "score": 7,
+      "razao": "O schema existe e e substantivo: 37 $defs, oneOf de 7 tipos de artefato, e o acoplamento veredito<->nota<->faixa esta NO SCHEMA e nao em prosa — o registro rejeita VALIDATED com menor nota 9, rejeita REPROVED com menor nota 9, rejeita ACEITO_USO_INTERNO com faixa que atravessa o corte e rejeita NAO_DISCRIMINADO com faixa que nao atravessa. Sao os dois lados da faixa travados, o que e raro. O lado da SAIDA e exemplar: o PANEL_RECORD interno e convertido mecanicamente em DEPARTMENT_JUDGE_REPORT e JUDGE_REPORT e cada um e validado CONTRA O SCHEMA DO CONSUMIDOR, nao contra o proprio — e o que prova que o artefato que circula e o que o resto da casa consome. O lado da ENTRADA e a lacuna: nao existe, em lugar nenhum deste validador, um fixture de JUDGMENT_REQUEST. Busca por 'judgmentRequest' no validador retorna apenas leituras da lista 'required' e de dois consts no schema do Diretor. A tabela §1.1, que e a porta de entrada e tem dez condicoes de bloqueio (BLOCKED_BYPASS_ATTEMPT, BLOCKED_INVALID_REQUEST, BLOCKED_CONTRACT_MISMATCH, BLOCKED_CANDIDATE_MISMATCH, criterio sem 'como se observa', pedido de nota de conveniencia), tem UMA unica condicao com caso executado — a regra de agregacao declarada depois do primeiro parecer. As demais vivem so como texto neste pacote. Atenuante verificavel: o envelope de entrada pertence ao schema do Diretor por decisao explicita do protocolo, e duplica-lo aqui criaria a versao paralela que o proprio protocolo proibe; a conferencia possivel — que o Diretor exige instances_per_lens e aggregation_rule — esta feita e executada. Some-se um defeito menor de forma: validate_evals exige 'ao menos um caso origem: real', e o unico caso real do catalogo esta APOSENTADO por ser irrodavel; o filtro de aposentados existe para a contagem de 12 mas nao para essa exigencia, entao o gate de 'caso real' passa num caso que ninguem consegue rodar.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/schemas/departamento-juizes.schema.json:1",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-juizes.stdout.txt:38",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-juizes.stdout.txt:136",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-juizes.stdout.txt:64",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:592",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1143",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:52",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1283"
+      ]
+    },
+    {
+      "package_id": "departamento-juizes",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "Metade deste criterio esta atendida no melhor padrao que li neste pacote, e metade falha na trava que mais importa. O que esta certo: as tres travas do ADR-016 tem caso positivo E caso negativo executados (trava 1 com 6 casos, trava 2 com 7, trava 3 com 5), e o fixture negativo da trava 1 foi construido de proposito por diferenca minima — a emissao duplicada e byte a byte igual a primeira, de modo que so a checagem de exclusividade pode reprovar. O codigo REGISTRA que a primeira versao daquele caso passava pela razao errada e que a mutacao pegou. Isso e exatamente a disciplina da casa, aplicada em primeira mao. Nao ha morte por excecao: validate_schema e as funcoes de trava devolvem lista de erros, nunca dependem de raise. O que falha: (1) a trava anti-bypass — §5, regras 1 e 2, a mais carregada de todas num Departamento que julga — tem como unico traco mecanico neste pacote a checagem `if \"BLOCKED_BYPASS_ATTEMPT\" not in agent_skill`, presenca de string no SKILL.md dos agentes. Nenhum caso executado faz um pedido de origem invalida reprovar. Presenca de string e literalmente o que este criterio proibe, e ela esta no lugar mais caro; (2) validate_adr014_normative_consistency e quatro dos oito blocos de validate_adr016_agreement sao `\"literal\" not in texto` sobre prosa, e nenhuma das duas funcoes tem caso negativo — nao ha prova executada de que consigam ficar vermelhas; (3) o bloco comportamental (17 checks) exercita decide_verdict e computed_minimum, que sao a REIMPLEMENTACAO das regras do Departamento dentro do proprio validador: prova que o validador concorda consigo, nao que a gerente se comporta assim. O lock real dessas regras e o schema, e esse sim e exercitado a parte; (4) o ADR-016 afirma que 'cada uma foi provada por mutacao executada' e nao existe artefato nenhum de mutacao no pacote — busca por 'muta' devolve so a afirmacao e dois comentarios de codigo. Afirmacao de prova sem receita nem registro, no pacote que exige receita dos outros.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1943",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1950",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1035",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:446",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1056",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1136",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1901",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/adr-016-agregacao-entre-instancias.md:100"
+      ]
+    },
+    {
+      "package_id": "departamento-juizes",
+      "criterion_id": "C04",
+      "score": 6,
+      "razao": "A doutrina deste criterio esta escrita aqui melhor que em qualquer outro lugar que li neste pacote, e a pratica falha no numero da capa. O que esta certo: a cadeia da §6 e completa e obrigatoria (verdict -> criterion_id -> judge_id -> score -> razao -> evidence_ref -> artifact_ref real com versao/digest), e o schema cobra evidence_ref e artifact_ref por linha de scorecard. 'Ausencia vira estado nomeado' e implementado com rigor incomum: AGUARDANDO / SEM_RETORNO / FALHO com no_return_evidence de no minimo duas conferencias em disco, n/a:<motivo> verificavel, uncovered, JUDGE_CAPABILITY_GAP com sete campos obrigatorios e bloco invalido se faltar discovery_evidence ou impact, e NAO_DISCRIMINADO para a faixa que nao decide. O caso do digest da fonte normativa foi deliberadamente mantido FORA da lista de booleanos, com o comentario dizendo por que: quando reprova, quem le precisa do valor declarado, do recomputado e da receita, e 'numero sem receita e exatamente o que o C04 proibe'. Isso e o criterio implementado como decisao de projeto. O que falha: evals/PLACAR.md publica, sob o titulo 'Medicao ativa', 'Validador deterministico do Departamento — 88/88 PASS'. A saida crua desta rodada, executada e publicada pelo CEO, da 153/154 no mesmo validador. Sao 66 casos de diferenca. O ADR-016 e de 2026-07-31 e trouxe todo o bloco de agregacao; o cabecalho do PLACAR e de 2026-07-29 e nunca foi atualizado, e o inventario do 00-RESUMO.json registra adendo_de_contagem: false — nao existe adendo reconciliando o delta. O proprio arquivo enuncia a regra da casa ('numero de vizinho carrega a data da medicao, ou nao entra') e a aplica aos vizinhos, e falha nela no seu proprio numero. Somo o item do C03: a afirmacao de prova por mutacao no ADR-016 nao tem receita nem raiz. Um numero ativo falso e uma prova afirmada sem registro, no Departamento que existe para cobrar receita, raiz e criterio dos outros — e lacuna, nao acabamento.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/PLACAR.md:12",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/PLACAR.md:36",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-juizes.stdout.txt:157",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:84",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/adr-016-agregacao-entre-instancias.md:1",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1904",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:479",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:203"
+      ]
+    },
+    {
+      "package_id": "departamento-juizes",
+      "criterion_id": "C05",
+      "score": 5,
+      "razao": "A fronteira com os vizinhos e operavel e isso esta provado de verdade: os envelopes produzidos sao validados contra os schemas do diretor-de-lentes e do ceo-maestro — do consumidor, nao do proprio —, validate_inherited_authority le os dois schemas alheios e fica vermelho se eles deixarem de atribuir o JUDGE_REPORT aos Juizes, e o ADR-016 confere que o enum de veredito e o conjunto de metodos de agregacao CONCORDAM entre os tres schemas. Isso e mais que verde no proprio fixture. O que nao existe e o acionamento. Primeiro pela declaracao do proprio pacote: o FORWARD-TEST registra que 'departamento-juizes nao esta instalado como skill de runtime', que disparo organico 'nao e mensuravel' e que a aderencia foi medida SOB CARGA, com a instancia mandada ler a skill. Segundo, e mais forte, por observacao direta desta rodada: eu fui despachado para julgar este pacote pelo ceo-maestro, nao pelo diretor-de-lentes; nao recebi JUDGE_ASSIGNMENT, nem CRITERIA_MATRIX, nem custody_copy, nem write_path no formato julgamento/<handoff>/a<attempt>/<assignment_id>/, nem candidato higienizado em path anonimo. Pela §5, regra 2, do proprio protocolo, um despacho assim seria BLOCKED_BYPASS_ATTEMPT. Ou seja: a rodada que de fato julga esta casa — inclusive esta — corre POR FORA do mecanismo que este pacote especifica. E o pacote nao registra isso em lugar nenhum: ele declara o limite de instalacao em runtime, mas nao declara que os julgamentos reais da casa nao passam por ele. Terceiro: a unica medida comportamental e de 2026-07-26 sobre 16 casos, e o catalogo hoje tem 21 (20 validos), com cinco casos OPERACAO acrescentados depois do ADR-014/016 e nunca submetidos a forward.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-juizes.stdout.txt:64",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1235",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1121",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/FORWARD-TEST.md:30",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/FORWARD-TEST.md:118",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:452",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/evals.json:1",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/00-CONTRATO.md:35"
+      ]
+    },
+    {
+      "package_id": "departamento-juizes",
+      "criterion_id": "C06",
+      "score": 7,
+      "razao": "Diz o que nao fecha, e diz bem. A §7 do protocolo e o unico lugar onde os limites moram — o resto do documento aponta para la —, e cada um dos oito (R1..R8) traz Vetor, Consequencia, Mitigacao e TETO, sendo o teto a frase que admite o que o runtime nao consegue fechar: 'a condicao encarece a fabricacao, nao a impede' (R6), 'sem canal autenticado no runtime, nao pega forjador que conheca o id' (R3), 'removelo exigiria reescrever o candidato, e a gerente nao edita candidato' (R4). O ADR-016 acrescenta R-A16-1/2/3, uma secao de alternativa recusada com tres razoes, uma consequencia retroativa declarada e nao resolvida com o arquivo da lista nomeado, e um 'Nao decidido aqui' explicito. O PLACAR tem cinco itens de 'o que ainda nao foi provado' e o FORWARD-TEST tem quatro de 'o que este teste nao prova'. E ha um limite que foi de fato FECHADO, com rastro: o forward achou o caso 1 mal especificado e pediu 'reescrever ou retirar'; hoje ele esta status APOSENTADO com motivo, e validate_evals cobra em codigo que aposentado tenha motivo e que aposentados nao contem no denominador. O risco que sobra: a segunda metade do criterio — 'com dono e condicao de fechamento verificavel' — quase nao e atendida. R1..R8 tem teto, nao tem dono; R1, R3, R5 e R8 fecham com 'auditavel so a posteriori', que e um teto, nao uma condicao de fechamento. Dos cinco itens do PLACAR so o da Auditoria nomeia responsavel. O R-A16-3 diz 'frente seguinte, com desenho proprio' sem dono nem data. Excecao honrosa e o R6, cuja condicao e cobrada em codigo (sem registro de emissao nao ha VALIDATED; pending exige R6 nomeado). Resultado: as declaracoes sao honestas e completas, mas majoritariamente nao acionaveis — ninguem esta na linha por elas.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:495",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:507",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/adr-016-agregacao-entre-instancias.md:112",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/references/adr-016-agregacao-entre-instancias.md:149",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/PLACAR.md:120",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/FORWARD-TEST.md:116",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamento-juizes/evals/validate_workflow.py:1301",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-juizes.stdout.txt:52"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 5,
+  "confidence": "media",
+  "por_que_essa_confianca": "Alta sobre o que e estatico e conferivel por leitura: schema, contrato, protocolo, ADRs, o codigo do validador e a saida crua publicada pelo CEO — li o pacote inteiro (25 arquivos) e as duas travas de fronteira nos schemas dos vizinhos. Media, e nao alta, por tres motivos verificaveis: (1) fui PROIBIDO de executar, entao todo numero que uso e o publicado pelo CEO, que e um dos julgados desta rodada, e eu nao tenho como recomputar 153/154 nem o digest da fonte normativa; (2) julguei C05 em parte por observacao do meu proprio despacho, que e evidencia legitima mas de uma amostra so, e eu sou parte dela; (3) sou painel externo por desenho — nao herdo o protocolo deste Departamento, o que e a razao de eu servir aqui, mas tambem significa que li o instrumento pela primeira vez, sem a familiaridade de quem opera com ele.",
+  "o_que_declaro_contra_mim": [
+    "A teia de conflitos me constrangeu, e nao no sentido que o contrato antecipava. Fui despachado pelo ceo-maestro, que esta sendo julgado nesta rodada, para julgar o departamento-juizes, que e quem normalmente julgaria o ceo-maestro. Nao senti pressao para poupar o ceo-maestro — ele nao e meu alvo. Senti o inverso: a consciencia de que uma nota baixa aqui enfraquece justamente o orgao que poderia cobrar do meu despachante. Registro que isso me passou pela cabeca e que nao mudou nenhuma nota; o leitor decide se acredita, porque nao ha como eu provar.",
+    "Usei o meu proprio despacho como evidencia no C05 — o fato de eu ter recebido a tarefa do CEO, sem JUDGE_ASSIGNMENT, custody_copy ou candidato higienizado. E o achado mais forte que produzi e tambem o mais autorreferente: e uma amostra de um, sou eu mesmo a amostra, e existe leitura razoavel de que uma rodada de painel externo NAO deveria mesmo passar pelo protocolo do departamento que ela julga, porque passar por ele seria autojulgamento por outro caminho. Se essa leitura estiver certa, o C05 merece mais que 5. Deixei em 5 porque o pacote nao declara essa excecao em lugar nenhum, e limite nao declarado continua sendo limite — mas assumo que o juizo e discutivel.",
+    "Descontei o [FAIL] da serie global de ADR, por instrucao do contrato: o numero 020 duplicado vive em copias de laboratorio dentro de ceo-maestro/evals/producao-honesta-2026-08-04/, alheias a este pacote. Li o sumario deste pacote como 153/154 com esse unico FAIL, e nao debitei nada por ele. Registro tambem que descontar significa que eu aceitei uma explicacao publicada pelo executor sem recomputar — e o executor e um dos julgados.",
+    "Nao executei nada. Todo numero que cito e o do arquivo saida-crua/departamento-juizes.stdout.txt publicado pelo ceo-maestro. Isso e cumprimento do contrato, e e tambem uma dependencia: o achado central do meu C04 (88/88 declarado como ativo contra 153/154 medido) so vale se a saida crua for fidedigna. O que eu posso conferir sozinho e a parte que sustenta o achado mesmo assim: o cabecalho do PLACAR e de 2026-07-29 e o ADR-016, que acrescentou dezenas de casos, e de 2026-07-31. A defasagem existe independentemente do numero exato.",
+    "Toquei em contexto proibido de raspao e paro para declarar: em evals/PLACAR.md, linha 32, ha um link para ../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md, que o contrato nomeia como proibido por conter a nota de 2026-07-29 deste mesmo pacote. NAO abri o arquivo. Nao fiz nenhuma busca larga por 'julgamento*', 'pareceres*', 'rejulgamento*' ou 'recoleta*'. Nao vi nenhuma nota anterior deste pacote nem de nenhum outro. Meus seis numeros nasceram da leitura do pacote.",
+    "Meu C03 e o mais duro dos seis e e onde eu tenho mais chance de estar sendo injusto. O pacote demonstra, em codigo e por escrito, que entende o defeito de 'verde pela razao errada' melhor que a media desta casa — construiu fixture de diferenca minima de proposito e documentou a mutacao que pegou o proprio erro. Reprovei em 6 por causa de uma trava especifica (o anti-bypass provado por presenca de string) e de duas funcoes de coerencia sem caso negativo. Um juiz razoavel poderia chamar isso de risco menor e dar 7. Prefiro errar para o lado de exigir, porque o criterio proibe presenca de string com todas as letras e o sitio onde ela sobrou e a porta de entrada.",
+    "Nao comparei este pacote com nenhum outro, mas li os schemas do diretor-de-lentes e do ceo-maestro para conferir as travas de fronteira do C01 e C05 — sem isso a pergunta 'a exclusividade esta travada ou e promessa?' nao teria resposta. Li so as definicoes de envelope, nao os evals, notas ou placares dos vizinhos.",
+    "Nao consertei nada, nao propus patch e nao editei nenhum arquivo do pacote julgado. Escrevi somente os dois arquivos deste parecer, no meu worktree isolado."
+  ]
+}

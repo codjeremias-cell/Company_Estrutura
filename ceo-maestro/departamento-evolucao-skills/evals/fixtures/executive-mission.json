@@ -1,0 +1,72 @@
+{
+  "artifact_type": "EXECUTIVE_MISSION",
+  "mission_id": "mission-002",
+  "causal": {
+    "work_item_id": "work-002",
+    "front_id": "front-evolucao",
+    "handoff_id": "handoff-002",
+    "message_id": "message-missao-001",
+    "causation_message_ids": [
+      "message-ceo-002"
+    ],
+    "contract_id": "contract-002",
+    "contract_version": 1,
+    "contract_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "candidate_digest": "n/a",
+    "round": 1,
+    "attempt": 1,
+    "producer": "ceo-maestro",
+    "producer_version": "1.0.0",
+    "producer_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "producer_digest_recipe": "hashlib::sha256 sobre SKILL.md do produtor em bytes LF",
+    "created_at": "2026-07-26T22:00:00-03:00"
+  },
+  "recipients": [
+    "departamento-evolucao-skills"
+  ],
+  "objective": "Provar o envelope de fronteira do schema do CEO.",
+  "deliverable_type": "proposal",
+  "required_level": "INTERNO",
+  "scope_in": [
+    "alvo unico do departamento de evolucao"
+  ],
+  "scope_out": [
+    "editar a arvore viva do pacote"
+  ],
+  "constraints": [
+    "nao promover e nao pontuar"
+  ],
+  "decisions_binding": [
+    "oficial e LF nesta rodada"
+  ],
+  "dependencies": [
+    "schema do ceo-maestro"
+  ],
+  "acceptance_criteria": [
+    "ceo_schema exercitado sobre o envelope"
+  ],
+  "required_evidence": [
+    "saida crua do caso de fronteira"
+  ],
+  "matrix_exchange": {
+    "allowed": false,
+    "topics": [],
+    "read_scope": [],
+    "write_scope": [],
+    "consolidation_owner": null
+  },
+  "permissions": {
+    "default_policy": "deny",
+    "allowed_tools": [],
+    "allowed_resources": [
+      "ceo-maestro/departamento-evolucao-skills"
+    ],
+    "expires_at": "2026-08-28T23:59:59-03:00"
+  },
+  "stop_when": [
+    "fronteira devolvida ao CEO"
+  ],
+  "judge_gate_required": true,
+  "return_to": "ceo-maestro",
+  "issued_at": "2026-07-26T22:00:00-03:00"
+}

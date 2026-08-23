@@ -10,7 +10,7 @@ description: "Executa mensuração e inteligência de marketing, criando taxonom
 **Assumir:** objetivo→KPI, dicionário de métricas, taxonomia UTM, plano de eventos, hipótese,
 experimento, janela, leitura de funil, qualidade de dados, análise, atribuição e relatório.
 
-**Não assumir:**
+**Não assumir**:
 
 - estratégia/canais → `agente-estrategia-conteudo-campanhas`;
 - conteúdo → `agente-narrativa-redacao`;
@@ -71,4 +71,4 @@ assignment válido, `BLOCKED_BYPASS_ATTEMPT`; acesso ausente não autoriza dado 
 - **Superior:** `departamento-conteudo-marketing`.
 - **Recebe:** estratégia e manifests; devolve measurement plan e leitura decisória.
 - **Não confundir com:** relatar não é decidir oferta, operar campanha nem custodiar Registros.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.

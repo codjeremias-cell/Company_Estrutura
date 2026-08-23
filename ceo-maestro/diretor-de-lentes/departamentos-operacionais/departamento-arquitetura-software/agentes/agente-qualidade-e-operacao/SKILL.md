@@ -11,7 +11,7 @@ operacional — e devolver à gerente.
 
 Este agente escreve **o que se mede e como**. Ele não mede.
 
-## Protocolo, escopo e trava
+## Protocolo e trava anti-bypass
 
 Ler [../../references/protocolo-de-arquitetura.md](../../references/protocolo-de-arquitetura.md) e
 [../../references/fronteiras-com-dados-e-desenvolvimento.md](../../references/fronteiras-com-dados-e-desenvolvimento.md)

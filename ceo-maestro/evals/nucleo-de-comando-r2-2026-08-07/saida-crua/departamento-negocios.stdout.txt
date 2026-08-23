@@ -1,0 +1,240 @@
+===== INICIO departamento-negocios =====
+[PASS] arquivo existe: SKILL.md
+[PASS] arquivo existe: CONTRATO-DE-COMPROMISSO.md
+[PASS] arquivo existe: agents\openai.yaml
+[PASS] arquivo existe: schemas\departamento-negocios.schema.json
+[PASS] arquivo existe: evals\evals.json
+[PASS] arquivo existe: references\workflow-avaliacao-proposta.md
+[PASS] arquivo existe: references\protocolo-de-handoff.md
+[PASS] arquivo existe: references\regua-de-avaliacao.md
+[PASS] arquivo existe: references\comunicacao-matricial-cto.md
+[PASS] arquivo existe: references\bootstrap.md
+[PASS] arquivo existe: references\adr-001-rota-vigente-aos-juizes.md
+[PASS] arquivo existe: references\origem-sintese.md
+[PASS] arquivo existe: diretor-de-lentes\departamento-juizes\references\adr-014-dois-niveis-de-veredito.md
+[PASS] exatamente três diretórios de agentes
+[PASS] agente-estrategia-de-produto/SKILL.md
+[PASS] agente-estrategia-de-produto/CONTRATO-DE-COMPROMISSO.md
+[PASS] agente-estrategia-de-produto/agents/openai.yaml
+[PASS] agente-mercado-e-cliente/SKILL.md
+[PASS] agente-mercado-e-cliente/CONTRATO-DE-COMPROMISSO.md
+[PASS] agente-mercado-e-cliente/agents/openai.yaml
+[PASS] agente-viabilidade-e-monetizacao/SKILL.md
+[PASS] agente-viabilidade-e-monetizacao/CONTRATO-DE-COMPROMISSO.md
+[PASS] agente-viabilidade-e-monetizacao/agents/openai.yaml
+[PASS] agente-estrategia-de-produto: contrato na anatomia canônica
+[PASS] agente-estrategia-de-produto: SKILL.md com os tokens normativos
+[PASS] agente-mercado-e-cliente: contrato na anatomia canônica
+[PASS] agente-mercado-e-cliente: SKILL.md com os tokens normativos
+[PASS] agente-viabilidade-e-monetizacao: contrato na anatomia canônica
+[PASS] agente-viabilidade-e-monetizacao: SKILL.md com os tokens normativos
+[PASS] frontmatter name: departamento-negocios
+[PASS] description acionável: departamento-negocios
+[PASS] metadata cita $departamento-negocios
+[PASS] frontmatter name: agente-estrategia-de-produto
+[PASS] description acionável: agente-estrategia-de-produto
+[PASS] metadata cita $agente-estrategia-de-produto
+[PASS] frontmatter name: agente-mercado-e-cliente
+[PASS] description acionável: agente-mercado-e-cliente
+[PASS] metadata cita $agente-mercado-e-cliente
+[PASS] frontmatter name: agente-viabilidade-e-monetizacao
+[PASS] description acionável: agente-viabilidade-e-monetizacao
+[PASS] metadata cita $agente-viabilidade-e-monetizacao
+[PASS] série global de ADR é única em toda a estrutura
+[PASS] todo pacote gerente tem validador que roda a trava global
+[PASS] a recusa de digest() dispara e ninguém tem cópia privada do motor
+[PASS] nenhum placar de pacote declara total de cadeia como estado corrente
+[PASS] nenhuma asserção é verdadeira por construção sobre valor produzido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md
+[PASS] sem placeholder: CONTRATO-DE-COMPROMISSO.md
+[PASS] sem placeholder: SKILL.md
+[PASS] link resolve: SKILL.md -> CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: SKILL.md -> ../../regras-de-ouro/REGRAS-DE-OURO.md
+[PASS] link resolve: SKILL.md -> references/bootstrap.md
+[PASS] link resolve: SKILL.md -> references/workflow-avaliacao-proposta.md
+[PASS] link resolve: SKILL.md -> references/protocolo-de-handoff.md
+[PASS] link resolve: SKILL.md -> references/regua-de-avaliacao.md
+[PASS] link resolve: SKILL.md -> references/comunicacao-matricial-cto.md
+[PASS] link resolve: SKILL.md -> ../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md
+[PASS] link resolve: SKILL.md -> references/regua-de-avaliacao.md
+[PASS] link resolve: SKILL.md -> schemas/departamento-negocios.schema.json
+[PASS] link resolve: SKILL.md -> references/origem-sintese.md
+[PASS] sem placeholder: evals\FORWARD-TEST.md
+[PASS] sem placeholder: evals\PLACAR-ADENDO-2026-08-06-contagem-do-validador.md
+[PASS] sem placeholder: evals\PLACAR.md
+[PASS] link resolve: evals\PLACAR.md -> ../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md
+[PASS] link resolve: evals\PLACAR.md -> ../../../ORGANOGRAMA.md
+[PASS] link resolve: evals\PLACAR.md -> FORWARD-TEST.md
+[PASS] sem placeholder: references\adr-001-rota-vigente-aos-juizes.md
+[PASS] link resolve: references\adr-001-rota-vigente-aos-juizes.md -> ../../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md
+[PASS] sem placeholder: references\bootstrap.md
+[PASS] link resolve: references\bootstrap.md -> ../../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md
+[PASS] sem placeholder: references\comunicacao-matricial-cto.md
+[PASS] sem placeholder: references\origem-sintese.md
+[PASS] sem placeholder: references\protocolo-de-handoff.md
+[PASS] sem placeholder: references\regua-de-avaliacao.md
+[PASS] link resolve: references\regua-de-avaliacao.md -> ../../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md
+[PASS] sem placeholder: references\workflow-avaliacao-proposta.md
+[PASS] sem placeholder: agentes\agente-estrategia-de-produto\CONTRATO-DE-COMPROMISSO.md
+[PASS] sem placeholder: agentes\agente-estrategia-de-produto\SKILL.md
+[PASS] link resolve: agentes\agente-estrategia-de-produto\SKILL.md -> ../../../../regras-de-ouro/REGRAS-DE-OURO.md
+[PASS] link resolve: agentes\agente-estrategia-de-produto\SKILL.md -> ../../CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-estrategia-de-produto\SKILL.md -> CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-estrategia-de-produto\SKILL.md -> CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-estrategia-de-produto\SKILL.md -> ../../references/protocolo-de-handoff.md
+[PASS] link resolve: agentes\agente-estrategia-de-produto\SKILL.md -> ../../references/regua-de-avaliacao.md
+[PASS] link resolve: agentes\agente-estrategia-de-produto\SKILL.md -> ../../../../regras-de-ouro/REGRAS-DE-OURO.md
+[PASS] sem placeholder: agentes\agente-mercado-e-cliente\CONTRATO-DE-COMPROMISSO.md
+[PASS] sem placeholder: agentes\agente-mercado-e-cliente\SKILL.md
+[PASS] link resolve: agentes\agente-mercado-e-cliente\SKILL.md -> ../../../../regras-de-ouro/REGRAS-DE-OURO.md
+[PASS] link resolve: agentes\agente-mercado-e-cliente\SKILL.md -> ../../CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-mercado-e-cliente\SKILL.md -> CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-mercado-e-cliente\SKILL.md -> CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-mercado-e-cliente\SKILL.md -> ../../references/protocolo-de-handoff.md
+[PASS] link resolve: agentes\agente-mercado-e-cliente\SKILL.md -> ../../references/regua-de-avaliacao.md
+[PASS] link resolve: agentes\agente-mercado-e-cliente\SKILL.md -> ../../../../regras-de-ouro/REGRAS-DE-OURO.md
+[PASS] sem placeholder: agentes\agente-viabilidade-e-monetizacao\CONTRATO-DE-COMPROMISSO.md
+[PASS] sem placeholder: agentes\agente-viabilidade-e-monetizacao\SKILL.md
+[PASS] link resolve: agentes\agente-viabilidade-e-monetizacao\SKILL.md -> ../../../../regras-de-ouro/REGRAS-DE-OURO.md
+[PASS] link resolve: agentes\agente-viabilidade-e-monetizacao\SKILL.md -> ../../CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-viabilidade-e-monetizacao\SKILL.md -> CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-viabilidade-e-monetizacao\SKILL.md -> CONTRATO-DE-COMPROMISSO.md
+[PASS] link resolve: agentes\agente-viabilidade-e-monetizacao\SKILL.md -> ../../references/protocolo-de-handoff.md
+[PASS] link resolve: agentes\agente-viabilidade-e-monetizacao\SKILL.md -> ../../references/regua-de-avaliacao.md
+[PASS] link resolve: agentes\agente-viabilidade-e-monetizacao\SKILL.md -> ../../../../regras-de-ouro/REGRAS-DE-OURO.md
+[PASS] Regras de Ouro disponíveis
+[PASS] 15 evals pré-definidos
+[PASS] schema draft 2020-12
+[PASS] schema aceita BUSINESS_INTAKE
+[PASS] schema aceita BUSINESS_EVALUATION_PLAN
+[PASS] schema aceita BUSINESS_AGENT_MISSION
+[PASS] schema aceita BUSINESS_AGENT_MISSION
+[PASS] schema aceita BUSINESS_AGENT_MISSION
+[PASS] schema aceita BUSINESS_AGENT_REPORT
+[PASS] schema aceita BUSINESS_AGENT_REPORT
+[PASS] schema aceita BUSINESS_AGENT_REPORT
+[PASS] schema aceita BUSINESS_CONSOLIDATION
+[PASS] schema aceita BUSINESS_SCORECARD
+[PASS] schema aceita BUSINESS_GAP_REPORT
+[PASS] schema aceita BUSINESS_REWORK_ORDER
+[PASS] schema aceita BUSINESS_CAPABILITY_GAP
+[PASS] schema aceita BUSINESS_JUDGMENT_PACKAGE
+[PASS] schema aceita MATRIX_EXCHANGE_MESSAGE
+[PASS] schema aceita BUSINESS_RETURN
+[PASS] rejeita dois agentes
+[PASS] rejeita quarto agente
+[PASS] rejeita agente duplicado
+[PASS] rejeita plano sem cobertura BIZ-01..08
+[PASS] rejeita missão de agente produzida pelo CEO
+[PASS] rejeita gerente fabricando relatório
+[PASS] rejeita consolidação com dois relatórios
+[PASS] rejeita scorecard sem os oito critérios
+[PASS] rejeita 9,49 como pronto
+[PASS] rejeita nota baixa sem tratamento
+[PASS] rejeita pacote aos Juízes abaixo do corte
+[PASS] rejeita pacote de julgamento sem required_level
+[PASS] rejeita remetente diferente do produtor
+[PASS] rejeita mensagem matricial sem required_level
+[PASS] rejeita matriz para si próprio
+[PASS] rejeita fallback de capacidade
+[PASS] rejeita BUSINESS_RETURN sem required_level
+[PASS] rejeita JUDGE_REPORT produzido localmente
+[PASS] rejeita EXECUTIVE_DECISION produzido localmente
+[PASS] rejeita EXCEPTION_REQUEST produzido localmente
+[PASS] scorecard íntegro
+[PASS] rejeita mínimo interno divergente
+[PASS] rejeita critério duplicado
+[PASS] integridade rejeita cobertura parcial
+[PASS] bundle íntegro com três agentes
+[PASS] rejeita relatório ligado à missão errada
+[PASS] rejeita digest divergente
+[PASS] rejeita missão divergente da atribuição
+[PASS] rejeita relatório sem cobertura da missão
+[PASS] rejeita score sem relatório-fonte real
+[PASS] pacote padrão correlacionado
+[PASS] rejeita colisao de agent_mission_id mesmo com refs coordenadas
+[PASS] rejeita refs forjadas entre intake plano atribuicao e missao
+[PASS] schema rejeita findings duplicados ou conflitantes
+[PASS] schema rejeita recommended_scores duplicados ou conflitantes
+[PASS] rejeita consolidation.plan_ref forjado
+[PASS] rejeita scorecard.consolidation_ref forjado
+[PASS] rejeita identidade causal divergente desde o intake
+[PASS] rejeita evidencia de scorecard ausente dos relatorios
+[PASS] rejeita relatorio de tentativa divergente
+[PASS] rejeita message_id causal reutilizado
+[PASS] rejeita pacote de julgamento com referências forjadas
+[PASS] rejeita pacote de julgamento sem causalidade do scorecard
+[PASS] schema aceita pacote de verificação abaixo do corte
+[PASS] pacote de limitação correlacionado
+[PASS] delegações preservam escopo e permissões do CEO
+[PASS] cadeia de Negocios preserva contrato e rodada do CEO
+[PASS] rejeita EXECUTIVE_MISSION sem required_level
+[PASS] rejeita reinicio da rodada global do CEO
+[PASS] rejeita ferramenta ou efeito externo não autorizado
+[PASS] rejeita ampliação de escopo na delegação
+[PASS] matriz autorizada aceita
+[PASS] BUSINESS_RETURN preserva required_level
+[PASS] rejeita BUSINESS_RETURN com required_level divergente
+[PASS] rejeita pacote com required_level divergente
+[PASS] rejeita matriz com required_level divergente
+[PASS] matriz fechada bloqueia
+[PASS] um destinatário bloqueia matriz
+[PASS] tópico fora da missão bloqueia
+[PASS] mudança do consolidador bloqueia
+[PASS] ADR-014 aceita parecer coerente na borda 6/INTERNO
+[PASS] ADR-014 aplica o nível exigido na borda 6/INTERNO
+[PASS] ADR-014 aceita parecer coerente na borda 6/PRODUCAO
+[PASS] ADR-014 aplica o nível exigido na borda 6/PRODUCAO
+[PASS] ADR-014 aceita parecer coerente na borda 7/INTERNO
+[PASS] ADR-014 aplica o nível exigido na borda 7/INTERNO
+[PASS] ADR-014 aceita parecer coerente na borda 7/PRODUCAO
+[PASS] ADR-014 aplica o nível exigido na borda 7/PRODUCAO
+[PASS] ADR-014 aceita parecer coerente na borda 9/INTERNO
+[PASS] ADR-014 aplica o nível exigido na borda 9/INTERNO
+[PASS] ADR-014 aceita parecer coerente na borda 9/PRODUCAO
+[PASS] ADR-014 aplica o nível exigido na borda 9/PRODUCAO
+[PASS] ADR-014 aceita parecer coerente na borda 10/INTERNO
+[PASS] ADR-014 aplica o nível exigido na borda 10/INTERNO
+[PASS] ADR-014 aceita parecer coerente na borda 10/PRODUCAO
+[PASS] ADR-014 aplica o nível exigido na borda 10/PRODUCAO
+[PASS] rejeita nota fracionária no gate externo
+[PASS] rejeita parecer sem required_level
+[PASS] rejeita parecer com required_level divergente
+[PASS] rejeita veredito incompatível com a faixa externa
+[PASS] falha crítica força REPROVED
+[PASS] pendência bloqueante força REPROVED
+[PASS] ADR-016 aceita parecer NAO_DISCRIMINADO coerente com a faixa medida
+[PASS] ADR-016 nega uso interno e producao ao NAO_DISCRIMINADO
+[PASS] ADR-016 rejeita faixa que atravessa carimbada como aceite interno
+[PASS] ADR-016 preserva o aceite interno quando a faixa nao atravessa
+[PASS] todo score abaixo do corte é repassado ao Diretor
+[PASS] score abaixo do corte bloqueia sem matriz
+[PASS] retrabalho preserva gap agente criterios tentativa e contrato
+[PASS] rejeita retrabalho com gap_report_ref forjado
+[PASS] rejeita retrabalho com agente incompatível
+[PASS] rejeita retrabalho com critérios incompatíveis
+[PASS] rejeita attempt divergente do causal no retrabalho
+[PASS] rejeita retrabalho com contrato divergente do gap
+[PASS] rejeita retrabalho sem causalidade do gap
+[PASS] rejeita retrabalho sem mudança exigida pelo gap
+[PASS] rejeita retrabalho sem reteste exigido pelo gap
+[PASS] rejeita gap de outro candidato antes de rotear ao Diretor
+[PASS] rejeita mensagem ao Diretor sem causalidade do gap
+[PASS] MATRIX_EXCHANGE_MESSAGE aceita pelo schema do Diretor
+[PASS] MATRIX_EXCHANGE_MESSAGE aceita pela semântica do Diretor
+[PASS] EXECUTIVE_SUBMISSION de Negócios aceita pelo schema do CEO
+[PASS] EXECUTIVE_SUBMISSION de Negócios aceita pela semântica do CEO
+[PASS] rejeita submissão quando Negócios não é destinatário
+[PASS] rejeita submissão com parecer vencido
+[PASS] rejeita submissão de outro candidato
+[PASS] LIMITATION_REPORT de Negócios aceita pelo schema do CEO
+[PASS] LIMITATION_REPORT de Negócios aceita pela semântica do CEO
+[PASS] score interno isolado não abre LIMITATION_REPORT
+[PASS] rejeita criterio duplicado no LIMITATION_REPORT
+[PASS] rejeita limitação divergente do JUDGE_REPORT
+[PASS] regressão passa: ceo-maestro
+[PASS] regressão passa: diretor-de-lentes
+
+RESULTADO: 235/235 PASS; 0 FAIL; 0 WARN
+
+===== FIM departamento-negocios =====

@@ -40,7 +40,7 @@ capacidades previstas.
 - **QA:** executa bateria/benchmark e prova o produto.
 - **Segurança:** modela ameaça e risco especializado.
 - **Auditoria:** prova conformidade e responsabilidade.
-- **Juízes:** atribuem nota/veredito e aplicam o corte 9,5.
+- **Juízes:** atribuem nota/veredito pelas faixas fixas do ADR-014.
 - **Inovação:** descobre, desenha experimento, aprende e recomenda.
 
 ## Princípios preservados do legado

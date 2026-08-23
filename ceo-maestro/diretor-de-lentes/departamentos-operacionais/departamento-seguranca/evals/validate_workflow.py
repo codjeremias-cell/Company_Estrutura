@@ -39,6 +39,14 @@ SKILL_PATH = PACKAGE_ROOT / "SKILL.md"
 CONTRACT_PATH = PACKAGE_ROOT / "CONTRATO-DE-COMPROMISSO.md"
 OPENAI_PATH = PACKAGE_ROOT / "agents" / "openai.yaml"
 SCHEMA_PATH = PACKAGE_ROOT / "schemas" / "departamento-seguranca.schema.json"
+# Valor DECLARADO do schema deste pacote, conferido a cada execucao por
+# conferir_digest_declarado(). Receita: sha256 do conteudo com CRLF->LF e sem
+# BOM (validador_schema.py::sha256_texto_normalizado) — a mesma da fonte
+# normativa, para que a conferencia sobreviva a um clone com outro EOL.
+# Quem alterar o schema atualiza esta linha no MESMO commit; sem isso, reprova.
+SCHEMA_DIGEST_DECLARADO = (
+    "sha256:82de08c8aa7bce3efa4c09efbb64194853d919778e9a347c6d725c1af3bce7f2"
+)
 EVALS_PATH = PACKAGE_ROOT / "evals" / "evals.json"
 PLACAR_PATH = PACKAGE_ROOT / "evals" / "PLACAR.md"
 REFERENCES_ROOT = PACKAGE_ROOT / "references"
@@ -62,6 +70,8 @@ sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
     from _compartilhado.validador_schema import (  # noqa: E402
         collect_property_names,
+        conferir_digest_das_regras,
+        conferir_digest_declarado,
         digest,
         find_const,
         json_pointer,
@@ -69,17 +79,45 @@ try:
         validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_adr_series,
         validate_agents_folder,
+    validate_contract_sections,
+    validate_skill_tokens,
+    SECOES_CONTRATO_AGENTE,
+    TOKENS_SKILL_AGENTE,
         validate_frontmatter,
         validate_links,
         validate_openai_yaml,
         validate_required_files,
     )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
+    )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(
         "[FAIL] motor compartilhado ausente em "
         f"{STRUCTURE_ROOT}/_compartilhado: {exc}"
+    )
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
     )
     raise SystemExit(1)
 
@@ -1141,6 +1179,24 @@ def validate_structure() -> list[str]:
     errors.extend(validate_agents_folder(AGENTS_ROOT, AGENT_NAMES))
     if len(AGENT_NAMES) != 8:
         errors.append(f"o time é fixo em 8 capacidades, há {len(AGENT_NAMES)}")
+    # --- Estrutura normativa dos contratos e SKILL de agente ---------------
+    # GUIA, passos 7 e 8. Ate 2026-07-27 nenhum validador olhava heading de
+    # contrato de agente, e o resultado medido foi 15 de 66 conformes, com a
+    # trava anti-bypass ausente em 30. A conferencia mora no _compartilhado; a
+    # lista do que e obrigatorio continua sendo decisao deste pacote.
+    for _agente in sorted(p for p in AGENTS_ROOT.iterdir() if p.is_dir()):
+        errors.extend(
+            validate_contract_sections(
+                _agente / "CONTRATO-DE-COMPROMISSO.md",
+                SECOES_CONTRATO_AGENTE,
+                _agente.name,
+            )
+        )
+        errors.extend(
+            validate_skill_tokens(
+                _agente / "SKILL.md", TOKENS_SKILL_AGENTE, _agente.name
+            )
+        )
     return errors
 
 
@@ -1463,6 +1519,18 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
     case("todo link markdown interno do pacote resolve", True, validate_links(PACKAGE_ROOT))
     case("série global de ADR é única em toda a estrutura", True,
          validate_adr_series(STRUCTURE_ROOT))
+    case("todo pacote gerente tem validador que roda a trava global", True,
+         validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True,
+         validate_trava_de_digest(STRUCTURE_ROOT))
+    case("nenhuma asserção é verdadeira por construção sobre valor produzido", True,
+         validate_sem_check_tautologico(STRUCTURE_ROOT))
+    cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
+    cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)))
+    cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)))
+    cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(STRUCTURE_ROOT)))
+    case("a fonte normativa confere com o valor declarado em ORIGEM.md", True,
+         validate_fonte_normativa_conferida(STRUCTURE_ROOT))
     case("forma do schema: $defs, $ref e enum de identidades = pastas reais", True,
          validate_schema_shape(schema))
     case("ausência de nota: nenhum campo de score existe nem pode ser acrescentado", True,
@@ -2086,12 +2154,11 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
         "cada uma das oito capacidades tem função própria e sem repetição",
         len(set(AGENT_ROLE.values())) == 8 and len(AGENT_NAMES) == 8,
     )
-    condition(
-        "digest da fonte normativa e do próprio schema são verificáveis",
-        RULES_PATH.is_file()
-        and sha256_file(RULES_PATH).startswith("sha256:")
-        and sha256_file(SCHEMA_PATH).startswith("sha256:"),
-    )
+    case("digest da fonte normativa confere com o declarado em ORIGEM.md", True,
+         conferir_digest_das_regras(RULES_PATH))
+    case("digest do próprio schema confere com o declarado", True,
+         conferir_digest_declarado(SCHEMA_PATH, SCHEMA_DIGEST_DECLARADO,
+                                   "schema do pacote"))
 
     positives = sum(1 for _, expected, _ in cases if expected)
     negatives = len(cases) - positives
@@ -2122,4 +2189,7 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

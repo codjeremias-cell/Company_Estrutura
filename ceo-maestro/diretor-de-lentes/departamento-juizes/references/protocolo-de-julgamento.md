@@ -24,6 +24,10 @@ Digest é **conferido, nunca inventado**. O `candidate_digest` é recomputado so
 efetivamente aberto e comparado com o declarado no pedido; indisponibilidade de ferramenta de
 digest vira `pending` declarado e reduz a confiança, nunca uma conferência afirmada que não houve.
 
+`required_level` não altera a nota nem a faixa: é um invariante de destino. Ele chega da
+`EXECUTIVE_MISSION` pelo Diretor, é registrado no pedido e no relatório e nunca é escolhido pelos
+Juízes. Ausência ou divergência bloqueia antes de julgar.
+
 **Concluído quando:** os envelopes da rodada carregam o mesmo quarteto, o `candidate_digest` foi
 recomputado sobre o artefato aberto, e todo digest não conferível está em `pending`.
 
@@ -48,12 +52,22 @@ Schema no contratante. A gerente percorre esta tabela **no recebimento**, antes 
 | Condição observada no pedido | Desfecho |
 |---|---|
 | `causal.producer` ≠ `diretor-de-lentes`, ou `return_to` ≠ `diretor-de-lentes` | `BLOCKED_BYPASS_ATTEMPT` — nenhum critério é avaliado |
-| falta `candidate_digest`, `contract_digest`, `applicable_criteria`, `artifact_refs` ou `evidence_refs` | `BLOCKED_INVALID_REQUEST` |
+| falta `candidate_digest`, `contract_digest`, `required_level`, `applicable_criteria`, `artifact_refs` ou `evidence_refs` | `BLOCKED_INVALID_REQUEST`; nível ausente não vira `INTERNO` |
+| `required_level` diverge da `EXECUTIVE_MISSION` correlacionada | `BLOCKED_CONTRACT_MISMATCH` |
 | `applicable_criteria` vazio, ou critério sem **como se observa** | `BLOCKED_INVALID_REQUEST` — critério não observável não é pontuável |
 | `artifact_refs` do candidato não resolve, ou digest recomputado diverge do declarado | `BLOCKED_CANDIDATE_MISMATCH` |
 | `contract_digest` divergente do contrato vigente da rodada | `BLOCKED_CONTRACT_MISMATCH` |
 | `evidence_refs` que não resolve, item a item | `pending` + reduz a confiança possível; **não** bloqueia |
 | pedido pede nota de conveniência, veredito antecipado, arredondamento ou média | `BLOCKED_INVALID_REQUEST`, com o trecho literal registrado |
+| falta `instances_per_lens` ou `aggregation_rule` (ADR-016) | `BLOCKED_INVALID_REQUEST`; a regra de combinação **não é inferida**, e ausência não vira `MENOR` por padrão |
+| `aggregation_rule.declared_at` posterior ao `issued_at` de qualquer parecer da rodada | `BLOCKED_INVALID_REQUEST` — regra escolhida depois de ver as notas é seleção de resultado, não regra |
+
+**A regra de agregação é fixada antes de qualquer parecer existir** (ADR-016). O pedido traz
+`instances_per_lens` (1 a 5) e `aggregation_rule` = `{ method, declared_at, rationale }`, com
+`method` em `MENOR | MEDIANA | EMPATE_DECLARADO`. A gerente **copia** a regra recebida no
+`PANEL_RECORD` e no relatório; ela não a escolhe, não a troca no meio da rodada e não a completa
+quando ausente. Detalhe da combinação na §3, regra 9, e em
+[rubrica-e-corte.md](rubrica-e-corte.md).
 
 **Critério fecha na origem.** A gerente **nunca** cria, remove, reordena nem reescreve critério —
 antes ou depois de ver o candidato. Critério faltante exige novo pedido do Diretor, com nova
@@ -91,8 +105,9 @@ CRITERIA_MATRIX:
 
 - **Uma dona por critério.** Critério que duas óticas alcançam tem dona **e** `secondary_lens`:
   ambas pontuam e, na consolidação, vale a **menor** das duas notas (§3, regra 3).
-- **Critério sem dona** entra em `uncovered`, abre `JUDGE_CAPABILITY_GAP` (§1.5) e **proíbe**
-  `VALIDATED` na rodada (§4, regra 2). A gerente não o pontua por conta própria nem o descarta.
+- **Critério sem dona** entra em `uncovered`, abre `JUDGE_CAPABILITY_GAP` (§1.5) e **proíbe
+  qualquer veredito positivo** na rodada (§4.1). A gerente não o pontua por conta própria nem o
+  descarta.
 - A matriz é montada **antes** do sorteio e da emissão, e vai íntegra ao relatório final como
   registro de repartição; sem ela o `minimum_score` não é recalculável por terceiro.
 
@@ -106,6 +121,11 @@ JUDGE_ASSIGNMENT:
   assignment_id: "<id único por agente e por rodada>"
   judge_id: "<identidade da subskill de agentes/>"
   lens: "fidelidade-e-contrato | robustez-e-evidencia | experiencia-e-risco"
+  instance: <inteiro 1..instances_per_lens>   # ADR-016: qual instância desta lente
+  write_path: "julgamento/<handoff_id>/a<attempt>/<assignment_id>/"   # ADR-016, trava 1
+  custody_copy:                               # ADR-016, trava 3 — ANTES do despacho
+    { path: "<cópia dos bytes emitidos>", sha256: "sha256:<digest>",
+      bytes: <inteiro>, taken_at: "<ISO-8601, anterior a issued_at>" }
   mode: "VALIDACAO | DISPUTA | VERIFICACAO"
   contract_id: "<id>"
   contract_version: <inteiro>
@@ -114,7 +134,7 @@ JUDGE_ASSIGNMENT:
   anonymized_candidate: "<path anônimo já higienizado>"   # DISPUTA usa lista rotulada (modo-disputa-cega.md)
   criteria:                                  # SÓ os critérios cuja dona ou secundária é esta ótica
     - { criterion_id: "<id>", criterion_text: "<cópia literal>", role: "owner | secondary" }
-  rubric_ref: "rubrica-corte-v1"             # rubrica resolvida pela gerente (rubrica-e-corte.md)
+  rubric_ref: "rubrica-corte-v2"             # rubrica resolvida pela gerente (rubrica-e-corte.md)
   contract_excerpt:                          # cópia FIEL e literal do contrato julgado
     { intent: "<literal>", done: ["<literal>"], scope_in: ["<literal>"], scope_out: ["<literal>"],
       constraints: ["<literal>"], decisions: ["<ADR literal + estado: proposta | aceita | substituída>"],
@@ -132,6 +152,40 @@ JUDGE_ASSIGNMENT:
   atribuição daquela ótica.
 - **`assignment_id` no reenvio.** O reenvio único da §3, regra 6, **reusa o mesmo `assignment_id`**:
   mesma tarefa, mesma rodada; id novo quebraria a correlação com o `panel`.
+- **Caminho de escrita exclusivo por emissão** (ADR-016, trava 1). Duas emissões **nunca** compartilham
+  `write_path`, nem entre óticas, nem entre instâncias da mesma ótica, nem entre attempts. O formato
+  `julgamento/<handoff_id>/a<attempt>/<assignment_id>/` amarra as três coordenadas, e o mesmo valor é
+  repetido em `assignments[].destination` para que a exclusividade seja recalculável por terceiro. O
+  colapso observado em 2026-07-31 — duas instâncias da mesma ótica escrevendo no caminho canônico, uma
+  descartada por proveniência e não por mérito — é exatamente o que esta trava impede.
+- **Cópia de custódia antes do despacho** (ADR-016, trava 3). `custody_copy` é tomada **antes** de
+  emitir, com `path`, `sha256`, `bytes` e `taken_at` estritamente anterior a `issued_at`. Emissão sem
+  custódia é inválida. A medição de 2026-07-31 separou os dois desfechos: onde houve custódia, a perda
+  de bytes virou incidente contido; onde não houve, virou parecer irrecuperável.
+
+  **A receita do `sha256`, normativa desde 2026-08-08 (tarefa 42).** Até então ela não existia em
+  lugar nenhum — nem aqui, nem no schema, nem na designação, nem no contrato — e o custo foi
+  medido: **três juízes a reproduziram em 16, 438 e 1440 tentativas, e um não conseguiu.**
+
+  1. O conteúdo é lido **normalizado em LF** (`\r\n` → `\n`). Sem isso o digest muda com o
+     checkout, e essa é a explicação mais provável para o juiz que não reproduziu: a instância de
+     arquivo dá `83782d15…` com 2453 bytes em LF e outro número com os 2522 do checkout Windows.
+  2. Se `path` é **arquivo**: `sha256` do conteúdo; `bytes` é o tamanho desse mesmo conteúdo.
+  3. Se `path` é **diretório**: `sha256` da concatenação de `caminho relativo POSIX + conteúdo` de
+     cada arquivo, **na ordem crescente do caminho relativo** — não na ordem que o sistema de
+     arquivos devolve, que varia entre máquinas.
+  4. **`bytes` e `sha256` medem objetos diferentes no caso diretório**: o hash inclui os nomes, o
+     `bytes` soma **apenas os conteúdos**. Conferir um contra o outro acusa divergência sem que
+     nada esteja errado — é o que consumiu as 1440 tentativas.
+
+  A receita é **executada** pelo validador deste pacote contra as custódias reais em disco
+  (`custody_digest`), com mutação nos quatro pontos acima. Receita só em prosa já falhou cinco
+  vezes nesta casa; esta fica vermelha se deixar de reproduzir.
+
+  **Limite declarado:** a **base** do campo `path` continua não publicada — em uma
+  `JUDGMENT_REQUEST` ele parte da raiz do `ceo-maestro`, em um parecer de outra campanha parte da
+  pasta da campanha. O validador resolve por busca dos ancestrais e registra a ambiguidade; fechá-la
+  é declarar a base no `$defs/artifactRef`, que é outra frente.
 
 **Concluído quando:** cada ótica com critério na matriz tem atribuição registrada — com o
 quarteto de identidade, seus critérios literais, a mesma rubrica e `return_to: departamento-juizes`.
@@ -153,7 +207,7 @@ JUDGE_OPINION:
   critical_findings:                         # vazio quando não houver
     - { criterion_id: "<id> | n/a", tipo: "RI | RO | seguranca | evidencia-fabricada | DONE-nao-provado",
         descricao: "<o que foi observado>", evidence_ref: "<id>", artifact_ref: "<real>" }
-  required_changes: ["<mudança exigida, ligada a um criterion_id abaixo do corte>"]
+  required_changes: ["<mudança exigida, ligada a um criterion_id abaixo de 10 ou reprovado>"]
   confidence: "alta | media | baixa"         # "baixa" quando a evidência foi insuficiente
   abstencao: { motivo: "<conflito, contexto contaminado ou evidência ausente>" }   # opcional
   status: "COMPLETED | BLOCKED"
@@ -195,13 +249,36 @@ por esta tabela, sem exceção nem estado intermediário. `INVALID` e `CONFLICTE
 | `AVAILABLE` + parecer válido | sim | `COMPLETED` | não |
 | `AVAILABLE` + `abstencao` ou `status: BLOCKED` | sim | `BLOCKED` | **sim** — causa `ABSTENCAO` |
 | `AVAILABLE` + 2ª entrega fora do contrato | sim | `FALHO` | **sim** — causa parecer inválido |
-| `AVAILABLE` + nada devolvido | sim | `SEM_RETORNO` | **sim** — causa `SEM_RETORNO` |
+| `AVAILABLE` + **arquivo ausente e nenhum sinal de runtime** | sim | **`AGUARDANDO`** | não — ainda não há fato |
+| `AVAILABLE` + arquivo ausente **com** `EXECUTOR_ERROR` ou `TIMEOUT_DECLARADO` | sim | `SEM_RETORNO` | **sim** — causa `SEM_RETORNO` |
 | `INVALID` (identidade/ótica não conferem), `CONFLICTED` (participou da produção) ou `MISSING` (ótica sem agente na sessão) | **não** | `SEM_RETORNO` | **sim** — causa nomeada: `INVALID`, `CONFLICTED` ou `MISSING` |
 
 `AVAILABLE` com parecer válido é o único estado que termina sem lacuna.
 
+**Ausência de arquivo não é morte de executor** (ADR-016, trava 2). Em 2026-07-31 essa conclusão foi
+tirada **três vezes** na mesma rodada, e cada redespacho criou uma segunda instância da mesma ótica —
+foi assim que nasceram o escritor duplicado e a colisão que descartou um parecer por proveniência.
+
+Todo estado de não-entrega — `SEM_RETORNO`, `FALHO`, `AGUARDANDO` — carrega `no_return_evidence`:
+
+```yaml
+no_return_evidence:
+  checked_paths: ["<o write_path exclusivo daquela emissão>"]
+  checks:                                  # no mínimo 2, em instantes distintos
+    - { at: "<ISO-8601>", path: "<caminho>", exists: false }
+  runtime_signal: "EXECUTOR_ERROR | TIMEOUT_DECLARADO | NENHUM"
+  waited_seconds: <inteiro>
+```
+
+`runtime_signal: NENHUM` — isto é, **só o arquivo não apareceu** — admite exclusivamente
+`AGUARDANDO`. `SEM_RETORNO` e `FALHO` exigem `EXECUTOR_ERROR` ou `TIMEOUT_DECLARADO`. E enquanto o
+estado for `AGUARDANDO`, **não há redespacho**: emitir segunda atribuição para o mesmo
+`judge_id + handoff_id + attempt` viola a trava 1, porque duas emissões nunca compartilham
+`write_path` e a segunda instância não é a mesma tarefa.
+
 **Concluído quando:** cada agente com critério na matriz tem um `panel[].status` derivado desta
-tabela, e cada estado que a tabela marca com lacuna tem seu bloco da §1.5 aberto.
+tabela, cada estado que a tabela marca com lacuna tem seu bloco da §1.5 aberto, e todo estado de
+não-entrega carrega `no_return_evidence` com pelo menos duas conferências em disco.
 
 ## 2. Cegueira, independência e isolamento
 
@@ -267,9 +344,9 @@ e ao menos uma razão com `evidence_ref` que resolve.
    `secondary_lens` recebe duas notas; a nota do critério é a **menor** das duas, e a maior fica
    registrada no `scorecard` como linha própria. Divergência entre as duas é preservada, nunca
    mediada.
-4. **`minimum_score` = menor nota do `scorecard` aplicável.** Item com `n/a:<motivo>` declarado
-   não entra no mínimo e fica registrado. **Proibido** média, mediana, ponderação por
-   `confidence`, arredondamento e compensação entre critérios: `9,49` permanece abaixo de `9,5`.
+4. **`minimum_score` = menor nota inteira do `scorecard` aplicável.** Item com
+   `n/a:<motivo>` declarado não entra no mínimo e fica registrado. **Proibido** média, mediana,
+   ponderação por `confidence`, nota fracionária, arredondamento e compensação entre critérios.
 5. **Cobertura incompleta não vira nota.** Critério em `uncovered` (§1.2), ou de ótica cujo agente
    não devolveu parecer válido, **não recebe nota da gerente**. Ele fica sem linha no `scorecard`,
    com lacuna aberta (§1.5), e o efeito é o da §4, regra 2 — nunca uma nota estimada.
@@ -286,30 +363,69 @@ e ao menos uma razão com `evidence_ref` que resolve.
 8. **`critical_findings` não se consolidam por contagem.** Um único achado crítico válido de um
    único agente liga `critical_fail: true` — não há maioria, voto nem compensação por nota alta em
    outros critérios.
+9. **Mais de uma instância da mesma lente → a regra declarada no pedido** (ADR-016). Com
+   `instances_per_lens >= 2`, cada instância produz sua própria consolidação pelas regras 1 a 8, e só
+   então as consolidações são combinadas pelo `aggregation_rule.method` recebido — `MENOR`, `MEDIANA`
+   ou `EMPATE_DECLARADO`. O relatório declara `minimum_score_range` = (`lo`, `hi`), as consolidações
+   mínima e máxima entre instâncias.
+
+   **A fronteira com a regra 4 é a que importa.** A regra 4 proíbe média e mediana **entre critérios**,
+   e continua valendo integralmente. A regra 9 combina leituras da **mesma** ótica sobre o **mesmo**
+   critério: são três medidas do mesmo objeto, não três objetos. Aplicar a regra 9 entre critérios é
+   violar a regra 4, e o validador separa os dois casos.
+
+   Com uma instância, `lo == hi == minimum_score` e nada muda. Com mais de uma, faixa que **atravessa**
+   um corte do ADR-014 sai como `NAO_DISCRIMINADO` (§4.2) — nunca como o ponto que der mais jeito.
 
 **Concluído quando:** `minimum_score` é recalculável por terceiro a partir do `scorecard`, da
-`CRITERIA_MATRIX` e do `panel[]`, sem escolha entre regras; e todo critério do pedido está
-pontuado, declarado `n/a` com motivo, ou nomeado em lacuna aberta.
+`CRITERIA_MATRIX` e do `panel[]`, sem escolha entre regras; `minimum_score_range` é recalculável
+pelas mesmas fontes; e todo critério do pedido está pontuado, declarado `n/a` com motivo, ou nomeado
+em lacuna aberta.
 
 ## 4. Veredito
 
-### 4.1 `VALIDATED` — as seis condições, todas juntas
+### 4.1 Gates de qualquer veredito positivo — seis condições, todas juntas
 
 1. as três óticas com critério na matriz devolveram parecer válido;
 2. `uncovered` vazio — todo critério aplicável teve dona;
 3. todo critério do pedido tem nota ou `n/a:<motivo>` verificável;
-4. `minimum_score >= 9.5`, sem média e sem arredondamento;
+4. `minimum_score` é inteiro e recalculável, sem média nem arredondamento;
 5. `critical_fail: false`;
-6. `blocking_pending_refs` vazio.
+6. `blocking_pending_refs` vazio;
+7. `minimum_score_range` declarado, com `lo` e `hi` recalculáveis pela §3, regra 9 (ADR-016).
 
 Faltando **qualquer uma**, o veredito é `REPROVED`. Não existe validação parcial, condicional,
 "com ressalva" ou "aprovado se depois corrigirem".
 
-### 4.2 `REPROVED` — sempre com o que corrigir
+### 4.2 Faixa fixa do ADR-014 e o quarto veredito do ADR-016
 
-Toda reprovação carrega `criticisms` e `required_changes` não vazios, e cada item liga a um
-`criterion_id` com nota, razão e `evidence_ref`. Reprovação sem o que corrigir é parecer inútil e
-não sai.
+Com os sete gates íntegros, derivar sem discricionariedade, a partir da **faixa**:
+
+| `minimum_score_range` | `verdict` |
+|---|---|
+| `lo = hi = 10` | `VALIDATED` |
+| `lo ≥ 7` e `hi ≤ 9` | `ACEITO_USO_INTERNO` |
+| `hi ≤ 6` | `REPROVED` |
+| `lo ≤ 6` e `hi ≥ 7`, ou `lo` entre 7 e 9 e `hi = 10` | `NAO_DISCRIMINADO` |
+
+Com uma instância por lente, `lo == hi` e a tabela colapsa exatamente na do ADR-014 — a mudança é
+aditiva, não substitutiva.
+
+O `required_level` recebido **não move a faixa**. Ele serve ao consumidor do parecer:
+`PRODUCAO` exige `VALIDATED`; `INTERNO` aceita `VALIDATED` ou `ACEITO_USO_INTERNO`.
+**`NAO_DISCRIMINADO` não alcança nenhum dos dois** — não é reprovação nem aceite, e não autoriza
+produção, publicação, exposição a terceiro nem uso interno.
+
+`NAO_DISCRIMINADO` exige `instances_per_lens >= 2` e os **mesmos gates de integridade** de um
+veredito positivo. Falha crítica, lacuna de cobertura ou pendência bloqueante mandam `REPROVED`, não
+empate técnico: quem falhou um gate não está indiscriminado, está reprovado. Ele é reservado ao caso
+em que a única coisa que falta é **poder de resolução da medida**.
+
+`ACEITO_USO_INTERNO`, `NAO_DISCRIMINADO` e `REPROVED` carregam `criticisms` e `required_changes` não
+vazios, ligados a critério, razão e evidência. O aceite interno nomeia o risco menor que o separa de
+10; a reprovação nomeia o defeito ou a lacuna; e o não discriminado nomeia a faixa observada e pede
+**mais medida** — mais instâncias ou regra de agregação declarada —, nunca mudança no candidato que
+ninguém observou precisar.
 
 **Reprovação por lacuna de cobertura é nomeada como tal.** Quando a reprovação vier de ótica sem
 parecer, critério sem dona ou pendência bloqueante — e **não** de defeito observado no candidato —
@@ -332,7 +448,8 @@ Pedido do Diretor para atestar impossibilidade objetiva de um `LIMITATION_REPORT
 confere, contra o relatório e as provas anexadas:
 
 1. candidato, contrato, rodada e snapshot de notas correlacionados;
-2. **todos** os critérios abaixo do corte cobertos pelo relatório;
+2. **todos** os critérios abaixo do alvo do nível cobertos pelo relatório — 10 para `PRODUCAO`,
+   7 para `INTERNO`;
 3. tentativas executadas, com resultado verificável;
 4. alternativas avaliadas e descartadas com razão observável;
 5. melhor nota atingível coerente com o `scorecard` vigente;
@@ -407,12 +524,12 @@ o **único** lugar onde são declarados; o resto do documento aponta para cá.
 | Id | Vetor | Consequência | Mitigação | Teto |
 |---|---|---|---|---|
 | **R1** bypass por invocação explícita | a trava barra o disparo implícito, não a chamada **pelo nome** de um agente por Diretor, CEO, outro Departamento ou usuário | parecer produzido fora de rodada, sem higienização, sem matriz e fora do `panel` | trava contratual (§5, regra 1): o agente valida a `JUDGE_ASSIGNMENT` e recusa sem ela | auditável só a posteriori, pelo registro do bloqueio; o runtime não oferece controle de acesso por chamador |
-| **R2** correlação de substrato | as 3 óticas reduzem correlação de **critério**, não garantem substratos independentes; a §2, regra 7, separa identidades de execução, não modelos | os três erram **juntos** num candidato bem escrito e errado, e o `9,5` registra como acordo um único erro replicado | `panel[].substrate` e `panel[].tier` declarados pelo runtime + `pending` quando os três substratos coincidirem, o que rebaixa a leitura do veredito | substrato não exposto fica `desconhecido` e a independência permanece não verificada |
+| **R2** correlação de substrato | as 3 óticas reduzem correlação de **critério**, não garantem substratos independentes; a §2, regra 7, separa identidades de execução, não modelos | os três erram **juntos** num candidato bem escrito e errado, e a faixa registra como acordo um único erro replicado | `panel[].substrate` e `panel[].tier` declarados pelo runtime + `pending` quando os três substratos coincidirem, o que rebaixa a leitura do veredito | substrato não exposto fica `desconhecido` e a independência permanece não verificada |
 | **R3** proveniência do pedido | `causal.producer` é texto no próprio envelope e qualquer emissor o copia; a checagem possível é correlacionar o `judgment_request_id` fora do payload | pedido forjado com o id da rodada em curso executa como legítimo | correlação de id (§1.1) pega envelope reusado e engano de roteamento | sem canal autenticado no runtime, não pega forjador que conheça o id |
 | **R4** fingerprint estilístico | convenção de nome, idioma de comentário e formatação sobrevivem à higienização porque são o próprio conteúdo julgado | o agente reconhece o Departamento produtor sem marca explícita e a cegueira vira parcial sem ninguém perceber | anotar o fingerprint residual em `pending`, rodada a rodada (§2, regra 6) | removê-lo exigiria reescrever o candidato, e a gerente não edita candidato |
 | **R5** independência autodeclarada | os produtores do candidato chegam pelo pedido do Diretor; o formato é validável, a **veracidade** não | omissão ou declaração falsa faz um agente que participou da produção passar no teste da §2, regra 7, e julgar a própria obra | comparar `judge_id` contra os produtores declarados e registrar o teste por agente | sem registro de autoria emitido fora do pedido, o conflito omitido é indetectável |
-| **R6** integridade de execução do parecer | o recálculo por terceiro confere **aritmética**, não a **existência do processo**: `panel[]` e `scorecard` internamente coerentes são reproduzíveis mesmo sem nenhuma `JUDGE_ASSIGNMENT` emitida | a gerente pode fabricar os três pareceres sem invocar agente algum, e o Diretor integraria uma entrega com gate que nunca correu | `verdict: VALIDATED` **condicionado** ao registro de emissão de cada `JUDGE_ASSIGNMENT` (`assignment_id`, horário, destino) que resolva em artefato conferível; faltando, o veredito não pode ser `VALIDATED`; e R6 nomeado em **todo** relatório, sem condição | tudo é escrito pela própria gerente e não há canal de invocação auditável no runtime hoje: a condição **encarece a fabricação, não a impede** |
-| **R7** critério não observável aceito | a §1.1 rejeita critério sem "como se observa", mas quem julga a observabilidade é a própria gerente, no mesmo passe | critério vago aceito vira nota subjetiva com aparência de scorecard, e o `9,5` mede opinião | rejeição no recebimento + `owner_reason` amarrado ao texto literal do critério (§1.2), que expõe o critério que não sustenta amarração | sem revisão externa da matriz, um critério vago com amarração plausível atravessa |
+| **R6** integridade de execução do parecer | o recálculo por terceiro confere **aritmética**, não a **existência do processo**: `panel[]` e `scorecard` internamente coerentes são reproduzíveis mesmo sem nenhuma `JUDGE_ASSIGNMENT` emitida | a gerente pode fabricar os três pareceres sem invocar agente algum, e o Diretor integraria uma entrega com gate que nunca correu | qualquer veredito positivo **condicionado** ao registro de emissão de cada `JUDGE_ASSIGNMENT` (`assignment_id`, horário, destino) que resolva em artefato conferível; faltando, o veredito é `REPROVED`; e R6 nomeado em **todo** relatório, sem condição | tudo é escrito pela própria gerente e não há canal de invocação auditável no runtime hoje: a condição **encarece a fabricação, não a impede** |
+| **R7** critério não observável aceito | a §1.1 rejeita critério sem "como se observa", mas quem julga a observabilidade é a própria gerente, no mesmo passe | critério vago aceito vira nota subjetiva com aparência de scorecard, e a faixa mede opinião | rejeição no recebimento + `owner_reason` amarrado ao texto literal do critério (§1.2), que expõe o critério que não sustenta amarração | sem revisão externa da matriz, um critério vago com amarração plausível atravessa |
 | **R8** bypass para fora | simétrico de R1: a §5, regras 2 e 4, proíbe mensagem paralela, mas nenhum controle técnico de canal existe — gerente ou agente pode escrever direto ao Departamento produtor, ao CEO ou a Jeremias | nota, crítica ou pista de veredito sai da rodada sem passar pelo relatório, e o `return_to` vira acordo de boa-fé | instrução contratual (§5, regras 2 e 4), `return_to` único por envelope e registro em `pending` de toda saída detectada | como em R1, só auditável a posteriori — e apenas se a mensagem paralela deixar rastro no que a própria gerente registra |
 
 **Concluído quando:** todo relatório nomeia **R6** em `pending` incondicionalmente e nomeia pelo

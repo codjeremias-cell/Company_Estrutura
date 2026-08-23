@@ -1,6 +1,23 @@
 # Placar — Departamento de Conteúdo e Marketing
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **39/39 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 50/50 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:c03ff43a6699f00533ea0eeb260a336b0dd3ceba43f3c78a5ef593fa84b459c7` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **39/39 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 

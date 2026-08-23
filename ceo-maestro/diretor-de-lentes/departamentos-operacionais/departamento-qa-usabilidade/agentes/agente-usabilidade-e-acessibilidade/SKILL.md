@@ -24,7 +24,7 @@ nunca redesenhar, corrigir, pontuar ou confundir opinião com medição.
 - responsividade da experiência entre desktop, web e mobile;
 - jogabilidade compreensível, onboarding e dificuldade percebida quando jogo.
 
-**Não assumir:**
+**Não assumir**:
 
 - correção de regra, cálculo, dado, CRUD ou conteúdo →
   `agente-testes-funcionais`;

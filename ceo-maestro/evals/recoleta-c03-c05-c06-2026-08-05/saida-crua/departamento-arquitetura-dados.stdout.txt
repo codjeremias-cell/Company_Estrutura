@@ -1,0 +1,129 @@
+FORWARD_SUMMARY {"behavioral_assertions_reported": 49, "behavioral_assertions_verified": 0, "behavioral_cases_reported": 16, "behavioral_status": "NOT_REPRODUCIBLE", "forward_overall": "NOT_PROVEN", "normative_claims_reported": 2, "normative_claims_unverified": 0, "normative_claims_verified": 2}
+[PASS] arquivos obrigatÃ³rios da gerente â€” esperado vÃ¡lido
+[PASS] references/ completo â€” esperado vÃ¡lido
+[PASS] agentes/ contÃ©m exatamente os seis nomes canÃ´nicos â€” esperado vÃ¡lido
+[PASS] frontmatter da gerente â€” esperado vÃ¡lido
+[PASS] frontmatter e interface dos seis agentes â€” esperado vÃ¡lido
+[PASS] estrutura normativa dos seis agentes â€” esperado vÃ¡lido
+[PASS] interface da gerente â€” esperado vÃ¡lido
+[PASS] todos os links markdown internos resolvem â€” esperado vÃ¡lido
+[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido
+       sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md
+[PASS] todo pacote gerente tem validador que roda a trava global â€” esperado vÃ¡lido
+[PASS] a recusa de digest() dispara e ninguÃ©m tem cÃ³pia privada do motor â€” esperado vÃ¡lido
+[PASS] nenhuma asserÃ§Ã£o Ã© verdadeira por construÃ§Ã£o sobre valor produzido â€” esperado vÃ¡lido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md â€” esperado vÃ¡lido
+[PASS] posiÃ§Ã£o na hierarquia e fonte normativa por nÃ­vel â€” esperado vÃ¡lido
+[PASS] enum workerId bate com as pastas reais de agentes/ â€” esperado vÃ¡lido
+[PASS] schema nÃ£o tem nenhum campo de nota â€” esperado vÃ¡lido
+[PASS] schema nÃ£o tem nenhum campo de cÃ³digo â€” esperado vÃ¡lido
+[PASS] schema nÃ£o tem nenhum campo de arquitetura macro â€” esperado vÃ¡lido
+[PASS] producer travado por const no causalHeader â€” esperado vÃ¡lido
+[PASS] measured travado em false â€” R2, projeÃ§Ã£o nunca vira mediÃ§Ã£o â€” esperado vÃ¡lido
+[PASS] immutability_ack travado em true â€” L1 â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_PLAN com piso atendido â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_PLAN com piso nÃ£o atendido e nenhuma onda â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_TASK de PERGUNTAS_VOLUMETRIA â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_RETURN de PERGUNTAS_VOLUMETRIA â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_TASK de ESCOLHA_PERSISTENCIA â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_RETURN de ESCOLHA_PERSISTENCIA â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_TASK de MODELO_GRAO â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_RETURN de MODELO_GRAO â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_TASK de EVOLUCAO_MIGRACAO â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_RETURN de EVOLUCAO_MIGRACAO â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_TASK de ESCALA_ACESSO â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_RETURN de ESCALA_ACESSO â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_TASK de CONTRATOS_INTEGRIDADE â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_RETURN de CONTRATOS_INTEGRIDADE â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_CAPABILITY_GAP â€” esperado vÃ¡lido
+[PASS] schema aceita DATA_LEDGER com o gate fechado â€” esperado vÃ¡lido
+[PASS] piso declarado atendido com apenas duas perguntas â€” esperado rejeitado
+[PASS] piso declarado atendido sem volumetria â€” esperado rejeitado
+[PASS] piso nÃ£o atendido mas com onda emitida â€” esperado rejeitado
+[PASS] plano com produtor forjado por outro Departamento â€” esperado rejeitado
+[PASS] plano devolvido para fora do Departamento â€” esperado rejeitado
+[PASS] tarefa com capacidade trocada para o agente â€” esperado rejeitado
+[PASS] tarefa de modelagem emitida na onda da persistÃªncia â€” esperado rejeitado
+[PASS] forbidden_context sem a proibiÃ§Ã£o de produzir cÃ³digo â€” esperado rejeitado
+[PASS] forbidden_context vazio â€” esperado rejeitado
+[PASS] tarefa endereÃ§ada a agente fora do time â€” esperado rejeitado
+[PASS] tarefa com retorno endereÃ§ado ao Diretor â€” esperado rejeitado
+[PASS] modelo concluÃ­do sem nenhum grÃ£o declarado â€” esperado rejeitado
+[PASS] grÃ£o vazio de significado â€” esperado rejeitado
+[PASS] evoluÃ§Ã£o concluÃ­da sem plano de migraÃ§Ã£o â€” esperado rejeitado
+[PASS] escala concluÃ­da sem nenhuma justificativa de acesso â€” esperado rejeitado
+[PASS] persistÃªncia concluÃ­da sem evidÃªncia da escolha â€” esperado rejeitado
+[PASS] perguntas concluÃ­das com apenas duas perguntas â€” esperado rejeitado
+[PASS] contratos concluÃ­dos sem nenhum contrato de dado â€” esperado rejeitado
+[PASS] retorno BLOCKED sem motivo â€” esperado rejeitado
+[PASS] retorno BLOCKED com motivo (aceito) â€” esperado vÃ¡lido
+[PASS] Ã­ndice declarado como medido â€” R2 violada â€” esperado rejeitado
+[PASS] Ã­ndice sem acesso que o justifique â€” esperado rejeitado
+[PASS] cache proposto sem invalidaÃ§Ã£o declarada â€” esperado rejeitado
+[PASS] cache com invalidaÃ§Ã£o declarada (aceito) â€” esperado vÃ¡lido
+[PASS] fase destrutiva fora do CONTRACT â€” L1/ADR-008 Â§7 â€” esperado rejeitado
+[PASS] plano de migraÃ§Ã£o sem reconhecer a imutabilidade â€” esperado rejeitado
+[PASS] fase de migraÃ§Ã£o sem rollback â€” esperado rejeitado
+[PASS] campo PII sem retenÃ§Ã£o declarada â€” L7 â€” esperado rejeitado
+[PASS] campo PII com retenÃ§Ã£o e RLS (aceito) â€” esperado vÃ¡lido
+[PASS] dependÃªncia ao desenvolvimento sem restriÃ§Ã£o anexada â€” esperado rejeitado
+[PASS] efeito colateral IN_TRANSACTION sem outbox â€” L5 â€” esperado rejeitado
+[PASS] IN_TRANSACTION com CDC nÃ£o basta â€” sÃ³ outbox Ã© escrita no commit â€” esperado rejeitado
+[PASS] escrita no outbox dentro da transaÃ§Ã£o (aceita) â€” esperado vÃ¡lido
+[PASS] entrega ENTREGUE com GRAO AUSENTE â€” esperado rejeitado
+[PASS] entrega ENTREGUE com EVOLUCAO_ROLLBACK AUSENTE â€” esperado rejeitado
+[PASS] entrega ENTREGUE com ACESSO_JUSTIFICADO AUSENTE â€” esperado rejeitado
+[PASS] closure com apenas dois itens â€” esperado rejeitado
+[PASS] ENTREGUE sem nenhum grÃ£o declarado â€” esperado rejeitado
+[PASS] ENTREGUE sem nenhuma justificativa de acesso â€” esperado rejeitado
+[PASS] ENTREGUE sem plano de migraÃ§Ã£o â€” esperado rejeitado
+[PASS] ENTREGUE sem registro de emissÃ£o das tarefas â€” R6 â€” esperado rejeitado
+[PASS] ENTREGUE com lacuna de capacidade aberta â€” esperado rejeitado
+[PASS] ENTREGUE com pendÃªncia pendurada â€” esperado rejeitado
+[PASS] conflito arquitetural sem escalaÃ§Ã£o â€” esperado rejeitado
+[PASS] conflito arquitetural contornado com entrega normal â€” esperado rejeitado
+[PASS] conflito arquitetural escalado e bloqueado (aceito) â€” esperado vÃ¡lido
+[PASS] piso nÃ£o atendido com entrega normal â€” esperado rejeitado
+[PASS] livro-razÃ£o declarando teste executado â€” esperado rejeitado
+[PASS] entrega INCOMPLETA com item ausente (aceita) â€” esperado vÃ¡lido
+[PASS] livro-razÃ£o devolvido para fora do Diretor â€” esperado rejeitado
+[PASS] Diretor aceita o DEPARTMENT_RETURN convertido do DATA_LEDGER â€” esperado vÃ¡lido
+[PASS] Diretor rejeita retorno com autor divergente do produtor â€” esperado rejeitado
+[PASS] Diretor rejeita retorno endereÃ§ado ao CEO â€” esperado rejeitado
+[PASS] Diretor aceita estrutura, mas o teste executado nÃ£o vem daqui â€” esperado vÃ¡lido
+[PASS] Diretor reconhece este Departamento como operacional â€” esperado vÃ¡lido
+[PASS] Diretor reconhece este Departamento como produtor causal â€” esperado vÃ¡lido
+[PASS] Arquitetura de Software delega para este Departamento â€” esperado vÃ¡lido
+[PASS] gate fecha quando os trÃªs itens estÃ£o atendidos â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com GRAO ausente â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com EVOLUCAO_ROLLBACK ausente â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com ACESSO_JUSTIFICADO ausente â€” esperado vÃ¡lido
+[PASS] dois itens atendidos nÃ£o compensam o terceiro â€” esperado vÃ¡lido
+[PASS] dez acessos justificados nÃ£o substituem o grÃ£o â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha sem registro de emissÃ£o â€” R6 â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com lacuna aberta â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com conflito arquitetural â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha se o piso nÃ£o foi atendido â€” esperado vÃ¡lido
+[PASS] grÃ£o sem significado nÃ£o conta como declarado â€” esperado vÃ¡lido
+[PASS] grÃ£o com significado conta â€” esperado vÃ¡lido
+[PASS] evoluÃ§Ã£o sem rollback em uma fase nÃ£o Ã© reversÃ­vel â€” esperado vÃ¡lido
+[PASS] evoluÃ§Ã£o com destrutivo fora do CONTRACT nÃ£o Ã© reversÃ­vel â€” esperado vÃ¡lido
+[PASS] evoluÃ§Ã£o sem versÃ£o livre declarada nÃ£o Ã© reversÃ­vel â€” esperado vÃ¡lido
+[PASS] evoluÃ§Ã£o completa Ã© reversÃ­vel â€” esperado vÃ¡lido
+[PASS] acesso 'por garantia' nÃ£o Ã© justificado â€” esperado vÃ¡lido
+[PASS] acesso declarado como medido nÃ£o Ã© aceito â€” R2 â€” esperado vÃ¡lido
+[PASS] acesso amarrado a pergunta nomeada Ã© justificado â€” esperado vÃ¡lido
+[PASS] uma fase sÃ³ nÃ£o Ã© plano de evoluÃ§Ã£o â€” esperado vÃ¡lido
+[PASS] catÃ¡logo de evals tem ao menos 12 casos â€” esperado vÃ¡lido
+[PASS] todo caso do catÃ¡logo declara acionamento e aderÃªncia â€” esperado vÃ¡lido
+[PASS] catÃ¡logo tem ao menos um caso de recusa por fronteira â€” esperado vÃ¡lido
+[PASS] contrato central interpretado permanece falha-fechada â€” esperado vÃ¡lido
+[PASS] mutaÃ§Ã£o obrigatÃ³ria ANCHOR_FABRICATED Ã© rejeitada â€” esperado vÃ¡lido
+[PASS] mutaÃ§Ã£o obrigatÃ³ria CITATION_UNVERIFIED Ã© rejeitada â€” esperado vÃ¡lido
+[PASS] mutaÃ§Ã£o obrigatÃ³ria SUMMARY_TAMPERED Ã© rejeitada â€” esperado vÃ¡lido
+[PASS] mutaÃ§Ã£o obrigatÃ³ria CLAIM_OMITTED Ã© rejeitada â€” esperado vÃ¡lido
+[PASS] digest da fonte normativa confere com o declarado em ORIGEM.md â€” esperado vÃ¡lido
+[PASS] digest do prÃ³prio schema confere com o declarado â€” esperado vÃ¡lido
+[PASS] placar declara a contagem vigente do validador â€” esperado vÃ¡lido
+
+Resultado: 124/125 casos passaram.

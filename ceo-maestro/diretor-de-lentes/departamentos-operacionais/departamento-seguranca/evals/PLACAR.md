@@ -1,6 +1,23 @@
 # Placar de migração — Departamento de Segurança
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **184/184 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 193/193 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:a6eaaa8d96c4ecdf0c6d1076ac3bb4603748f75ddf7ee7313ed8c09a88c9305f` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **184/184 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -32,7 +49,13 @@ profundidade 4, oito agentes na profundidade 6.
 | Regressão — `departamento-inovacao-melhoria` *(entrou por frente paralela durante esta cascata; rodada 2 daquele pacote — hoje 122/122, ver nota acima)* | 59/59 PASS | **sim** |
 | **Total mecânico da cadeia comparável à linha de base** (motor + 14 validadores) | **1408/1408 PASS** | **sim** |
 | **Total mecânico observado agora** (motor + 15 validadores, já com Inovação) | **1467/1467 PASS** | **sim** |
-| Integridade do legado, recalculada no passo 10 | 154 arquivos · 956.235 bytes · digest `d92607a3…1d83` **idêntico** | **sim** |
+| Integridade do legado, recalculada no passo 10 | 154 arquivos · 956.235 bytes · digest `d92607a3fa32f80c44b9a9b18bfce20b16a7c8b69bc5d0756b24754fc3ad1d83` **idêntico** | **sim** |
+
+> **Receita do digest acima, acrescentada em 2026-08-22 (tarefa 102).** Até esta data ele era publicado **só truncado** (`d92607a3…1d83`) e sem como reproduzir: o objeto da alegação não está no pacote — os arquivos legados vivem **fora da Estrutura**, e o validador do pacote não carrega manifesto de legado. Quem lesse a linha não tinha o que executar.
+>
+> `_compartilhado/verificacoes_pacote.py::digest_de_arvore` sobre `SKILL - Nova formula/maestro/comite-de-lentes/lente-especialista-seguranca`, a partir da raiz do cofre. **Reexecutado em 2026-08-22: 154 arquivos, 956.235 bytes e o mesmo valor** — o número sempre esteve certo; o que faltava era poder conferi-lo.
+>
+> Aqueles bytes são **congelados por `.gitattributes`** (`"SKILL - Nova formula/maestro/comite-de-lentes/**" -text`), então cru e normalizado dão o mesmo valor — conferido nos dois. É o mesmo desfecho que o `departamento-registros` deu ao digest dele, que foi achado irreprodutível, teve a receita fixada e o valor republicado por inteiro.
 | Forward comportamental (15 prompts de [evals.json](evals.json)) | — | **NÃO — pendente** |
 | Baseline comportamental do pacote legado `lente-especialista-seguranca` | — | **NÃO — pendente** |
 | Acionamento por `description` em runtime | — | **NÃO — pendente** |
@@ -224,6 +247,36 @@ amostragem de string; o que ele cobre é a **conta** derivada da tabela §1 da r
 donas exclusivas e não onze. Dizer que ele cobre a prosa seria o gate tautológico que o passo 9 proíbe.
 
 ## O que ainda não foi provado
+
+### Estado vigente das obrigações — conferido em 2026-08-08
+
+> **Duas obrigações desta seção estavam declaradas como pendentes e não estão.** A campanha [`remedicao-dos-sete-2026-08-03`](../../../../evals/remedicao-dos-sete-2026-08-03/PLACAR.md) executou as duas sobre este pacote. O texto dos itens abaixo é registro da rodada em que foi escrito e fica como está; o estado corrente é este.
+
+| obrigação | estado em 2026-08-08 | quem emitiu |
+|---|---|---|
+| Auditoria independente | **EXECUTADA** em 2026-08-03 · `governance_report` **NONCOMPLIANT** · **3 achados** nomeados, com dono e condição de correção | `departamento-auditoria-responsabilidades` |
+| Parecer dos Juízes | **EMITIDO** em 2026-08-03 · veredito **REPROVED** · `minimum_score` **6**, faixa **6–8** · **2 de 8** critérios `NAO_DISCRIMINADO` | `departamento-juizes` |
+
+> **A faixa atravessa o corte, e isso é o achado — não um detalhe.** Duas instâncias da mesma lente, sobre os mesmos bytes e com a mesma rubrica, divergiram em 54% dos pares na campanha. Onde a faixa cruza o 6/7, consertar "até passar" seria mirar num número que a régua não distingue. O aceite interno deste pacote **nunca esteve estabelecido**, e continua não estando.
+> **E há um limite nesta leitura, declarado pela própria campanha:** a árvore viva mudou durante a medição, e para este pacote o objeto julgado é o da **custódia** — o `candidate_digest` do `JUDGMENT_REQUEST` já não reproduz contra o disco. Isso não invalida a nota; invalida a pretensão de que ela descreva o pacote de agora.
+
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da mesma campanha: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | o próprio Departamento | os 15 prompts forem executados contra instância nova e independente, com resposta produzida e conferida |
+| 2 | o próprio Departamento | a `lente-especialista-seguranca` for avaliada nos mesmos cenários, ou este item registrar a decisão de não comparar, com motivo |
+| 3 | o próprio Departamento | houver medição de acionamento em sessão nova com frase neutra, no molde da §1b do `CLAUDE.md` do cofre |
+| 4 | o próprio Departamento | houver âncora externa ao pacote que prove a emissão — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo. Depende das tarefas 50 e 57; nenhuma trava de dentro fecha isto |
+| 5 | — | já fechado no próprio texto, com data |
+| 6 | o próprio Departamento | cada risco residual da §8 do protocolo tiver regra que o feche, ou for reclassificado como limite aceito, com dono e data |
+| 7 | `diretor-de-lentes` | o `testSummary` do schema do Diretor proibir por FORMA o valor que hoje só o contrato proíbe |
+| 8 | `ceo-maestro` | os prompts comportamentais do `ceo-maestro/evals/README.md` forem reexecutados após a entrada deste Departamento |
+| 9 | `departamento-juizes` | um veredito novo dos Juízes suceder o de 2026-08-03. Ver o estado vigente acima |
+| 10 | — | já fechado no próprio texto, com data |
+
 
 Declarado como `SKIP`, com motivo — prova executada > checklist, e sucesso simulado é violação
 (RI-04):

@@ -1,6 +1,23 @@
 # Placar — Departamento de Evolução de Skills
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **57/57 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 91/91 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:98276d3fe9aa55ca5a072151e69f7aabf75d3a54680890f8aa247fedf3ac760d` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **57/57 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -75,6 +92,30 @@ sem remover; e quem escreve não prova.
 
 ## O que ainda não foi provado
 
+### Estado vigente das obrigações — conferido em 2026-08-08
+
+> **Duas obrigações desta seção estavam declaradas como pendentes e não estão.** A campanha [`remedicao-dos-sete-2026-08-03`](../../evals/remedicao-dos-sete-2026-08-03/PLACAR.md) executou as duas sobre este pacote. O texto dos itens abaixo é registro da rodada em que foi escrito e fica como está; o estado corrente é este.
+
+| obrigação | estado em 2026-08-08 | quem emitiu |
+|---|---|---|
+| Auditoria independente | **EXECUTADA** em 2026-08-03 · `governance_report` **NONCOMPLIANT** · **5 achados** nomeados, com dono e condição de correção | `departamento-auditoria-responsabilidades` |
+| Parecer dos Juízes | **EMITIDO** em 2026-08-03 · veredito **REPROVED** · `minimum_score` **6**, faixa **6–7** · **3 de 8** critérios `NAO_DISCRIMINADO` | `departamento-juizes` |
+
+> **A faixa atravessa o corte, e isso é o achado — não um detalhe.** Duas instâncias da mesma lente, sobre os mesmos bytes e com a mesma rubrica, divergiram em 54% dos pares na campanha. Onde a faixa cruza o 6/7, consertar "até passar" seria mirar num número que a régua não distingue. O aceite interno deste pacote **nunca esteve estabelecido**, e continua não estando.
+
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da mesma campanha: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | — | já fechado no próprio texto, com data |
+| 2 | o próprio Departamento | a Fase 2 do piloto rodar sobre skill nova com instrumento que discrimine — o próprio piloto mediu que só 5 dos 9 casos separam, e `java-db-foundation` tem um único caso |
+| 3 | `departamento-auditoria-responsabilidades` | um `AUDIT_RECEIPT` sobre este pacote fechar sem achado bloqueante. Ver o estado vigente acima |
+| 4 | `departamento-registros` | a colheita de material rodar de fato pela entrada de aprendizagem, com `EVOLUTION_LEDGER` que a cite |
+| 5 | o próprio Departamento | houver âncora externa ao pacote que prove a emissão — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo. Depende das tarefas 50 e 57; nenhuma trava de dentro fecha isto |
+
+
 `SKIP` declarado com motivo:
 
 1. **Forward comportamental — EXECUTADO; esta seção estava vencida.** Corrigido em 2026-07-26: o
@@ -83,10 +124,25 @@ sem remover; e quem escreve não prova.
    mecânica desta mesma página já declarava a execução. A seção criada para não esconder ausência de
    prova estava negando prova existente.
 
-   O que **de fato** continua aberto: **3 asserções falharam** (57 de 60) e **1 caso não rodou** (15
-   de 16), sem inventário — precisam ser nomeados um a um antes de este item fechar. E a evidência é
-   de **aderência**, não de **acionamento**: os prompts rodaram sob carga explícita, então nada aqui
-   prova que a skill dispara sozinha pelos gatilhos declarados.
+   *Correção de 2026-07-27, segunda passada:* a primeira redação desta linha dizia que as 3
+   asserções falhadas e o caso não rodado estavam "sem inventário". **Estavam inventariados** — o
+   [FORWARD-TEST.md](FORWARD-TEST.md) nomeia os três casos e o motivo de cada um. O erro foi meu,
+   ao corrigir a contradição anterior sem reler o forward.
+
+   O que **de fato** continua aberto, com os casos já nomeados no forward — e aqui, ao contrário
+   dos pacotes vizinhos, **as três são lacuna real de comportamento, não defeito do instrumento**:
+
+   - **caso 2** — *"indica que a demanda pode nascer na inovação"*: ofereceu `MINERACAO` mas não
+     nomeou o Departamento de Inovação;
+   - **caso 3** — *"declara SKIP com motivo quando não há transcript"*: pediu o placar gravado em
+     vez de declarar `SKIP`;
+   - **caso 5** — *"exige o caso falhando antes e passando depois"*: exigiu o baseline sem
+     explicitar o vermelho→verde.
+
+   As três são candidatas a **fixture negativa permanente** no validador deste pacote: cada uma
+   descreve um comportamento que o contrato exige e a skill não entregou. O **caso 1 é inválido
+   por especificação**. E a evidência é de **aderência**, não de **acionamento**: os prompts
+   rodaram sob carga explícita.
 2. **Rodada real — Fase 1 executada, Fase 2 não.** O piloto
    [PILOTO-2026-07-26.md](PILOTO-2026-07-26.md) rodou a **medição** sobre os placares gravados da
    campanha C1 (2026-07-19) em três skills do track Java, e produziu um achado que muda a ordem do
@@ -116,3 +172,7 @@ e `capabilityGap.required_capability` ganharam `departamento-evolucao-skills`, e
 Se a frente que cuida da **lente de negócios** também estiver editando
 `ceo-maestro/schemas/ceo-maestro.schema.json`, **estes são os quatro pontos a reconciliar** — as
 duas frentes tocam exatamente os mesmos enums. O `AGENTS.md` também mudou, na linha da hierarquia.
+
+## Envelope de fronteira (T87 r4, overlay cand-B)
+
+Herda r3 cand-B. Acrescenta o mesmo fail-closed da MISSION que cand-A r4 e isenta `isolamento*/**/root/otica` na cobertura global, por caminho POSIX exato computado em `_excecoes_otica_de_isolamento`. Nao edita o modulo compartilhado vivo. Este overlay nao e promocao.

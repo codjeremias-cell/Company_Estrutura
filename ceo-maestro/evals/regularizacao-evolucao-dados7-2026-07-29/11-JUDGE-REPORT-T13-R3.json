@@ -1,0 +1,68 @@
+{
+    "artifact_type":  "JUDGE_REPORT",
+    "report_id":  "JUDGE-T13-CANDG-R3",
+    "causal":  {
+                   "work_item_id":  "TASK-13",
+                   "front_id":  "FRONT-DADOS7-AUDIT-REWORK",
+                   "handoff_id":  "HANDOFF-T13-JUDGES-DIRECTOR-VALID-R3",
+                   "message_id":  "MSG-T13-JUDGES-DIRECTOR-VALID-R3-01",
+                   "causation_message_ids":  [
+                                                 "MSG-T13-DIRECTOR-JUDGES-VALID-R3-01"
+                                             ],
+                   "contract_id":  "CONTRACT-T13-EVOL-DADOS7-20260729",
+                   "contract_version":  1,
+                   "contract_digest":  "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+                   "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                   "round":  3,
+                   "attempt":  1,
+                   "producer":  "departamento-juizes",
+                   "producer_version":  "1",
+                   "producer_digest":  "sha256:a63511167a86d36fa240f124a8e23824fc868597c49af1be33157d72a5660b7a",
+                   "created_at":  "2026-07-30T16:54:31-03:00"
+               },
+    "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+    "judge_capability_ref":  "departamento-juizes",
+    "judge_capability_digest":  "sha256:a63511167a86d36fa240f124a8e23824fc868597c49af1be33157d72a5660b7a",
+    "scorecard":  [
+                      {
+                          "criterion_id":  "C1-FIDELIDADE",
+                          "applicable":  true,
+                          "score":  10,
+                          "evidence_refs":  [
+                                                "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-FID/OPINION.md"
+                                            ]
+                      },
+                      {
+                          "criterion_id":  "C2-ROBUSTEZ",
+                          "applicable":  true,
+                          "score":  10,
+                          "evidence_refs":  [
+                                                "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-ROB/OPINION.md"
+                                            ]
+                      },
+                      {
+                          "criterion_id":  "C3-MANUTENCAO",
+                          "applicable":  true,
+                          "score":  9,
+                          "evidence_refs":  [
+                                                "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-RISK/OPINION.md"
+                                            ]
+                      }
+                  ],
+    "minimum_score":  9,
+    "verdict":  "ACEITO_USO_INTERNO",
+    "required_level":  "PRODUCAO",
+    "critical_fail":  false,
+    "blocking_pending_refs":  [
+
+                              ],
+    "evidence_refs":  [
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-FID/OPINION.md",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-ROB/OPINION.md",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-RISK/OPINION.md",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/25-VALIDATION-MANAGER-LEDGER-R3.md",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/auditoria-r3/04-GOVERNANCE-REPORT-R3.json"
+                      ],
+    "issued_at":  "2026-07-30T16:54:31-03:00",
+    "expires_at":  "2026-07-31T16:54:31-03:00"
+}

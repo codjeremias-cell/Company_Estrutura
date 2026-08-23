@@ -1,0 +1,48 @@
+{
+  "artifact_type": "CRITERIA_MATRIX",
+  "request_id": "JR-NUCLEO-R2-20260807",
+  "criterios": [
+    {
+      "criterion_id": "C01",
+      "criterion_text": "Contrato e fronteira: o pacote declara o que faz, o que não faz e com quem fala; a fronteira é respeitada na prática, não só no texto.",
+      "owner": "fidelidade-e-contrato"
+    },
+    {
+      "criterion_id": "C02",
+      "criterion_text": "Schema e envelope: as saídas validam contra o schema declarado, e o envelope de fronteira é o que o vizinho consome.",
+      "owner": "fidelidade-e-contrato"
+    },
+    {
+      "criterion_id": "C03",
+      "criterion_text": "Trava com prova: cada trava tem caso executado que a faz reprovar; nada passa por presença de string; morte por exceção não conta como pega.",
+      "owner": "robustez-e-evidencia"
+    },
+    {
+      "criterion_id": "C04",
+      "criterion_text": "Evidência e rastreabilidade: todo número publicado vem com receita, raiz e critério; digest reproduz; ausência vira estado nomeado.",
+      "owner": "robustez-e-evidencia"
+    },
+    {
+      "criterion_id": "C05",
+      "criterion_text": "Uso pela cadeia: o pacote é realmente acionado pelo protocolo que declara — quem chama, com que envelope, e existe prova de trânsito.",
+      "owner": "experiencia-e-risco"
+    },
+    {
+      "criterion_id": "C06",
+      "criterion_text": "Limites declarados: o pacote diz o que não faz, onde falha e o que não sabe, de forma nomeada e verificável.",
+      "owner": "experiencia-e-risco"
+    }
+  ],
+  "painel_externo": {
+    "pacote": "departamento-juizes",
+    "criterios": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "C06"
+    ],
+    "motivo": "as tres lentes sao agentes dele; julga-lo com elas e autojulgamento (precedente 2026-07-29)"
+  }
+}

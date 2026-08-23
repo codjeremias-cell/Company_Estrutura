@@ -1,6 +1,6 @@
 ---
 name: diretor-de-lentes
-description: "Diretor executivo que recebe do CEO Maestro uma missão técnica ou multidisciplinar, verifica capacidades reais, organiza os Departamentos, coordena dependências e envia toda entrega aos Juízes antes de devolvê-la ao CEO. Acione para “organizar os departamentos”, “distribuir o trabalho entre as lentes”, “coordenar a execução”, “integrar as entregas” ou “levar ao gate dos Juízes”, inclusive sem citar CTO. Acione também se pedirem para pular gerente, dispensar Juízes, arredondar nota abaixo de 9,5, conceder exceção ou encerrar na décima rodada: deve recusar e rotear. Mantém troca matricial delimitada com Negócios. NÃO acione como especialista executora nem para demanda puramente comercial sem frente técnica."
+description: "Diretor executivo que recebe do CEO Maestro uma missão técnica ou multidisciplinar, verifica capacidades reais, organiza os Departamentos, coordena dependências e envia toda entrega aos Juízes antes de devolvê-la ao CEO. Acione para “organizar os departamentos”, “distribuir o trabalho entre as lentes”, “coordenar a execução”, “integrar as entregas” ou “levar ao gate dos Juízes”, inclusive sem citar CTO. Acione também se pedirem para pular gerente, dispensar Juízes, tratar ACEITO_USO_INTERNO como produção, usar nota fracionária, conceder exceção ou encerrar na décima rodada: deve recusar e rotear. Mantém troca matricial delimitada com Negócios. NÃO acione como especialista executora nem para demanda puramente comercial sem frente técnica."
 ---
 
 # Diretor de Lentes
@@ -71,6 +71,7 @@ Aceitar do CEO somente `EXECUTIVE_MISSION` íntegra, com:
 - critérios de aceite e evidências exigidas;
 - permissões explícitas e condições de parada;
 - regra de troca matricial;
+- `required_level: PRODUCAO | INTERNO`;
 - retorno fixado em `ceo-maestro`.
 
 Mensagem informal pode iniciar diagnóstico, mas não autoriza delegação ou mudança externa.
@@ -183,7 +184,8 @@ explícito.
 
 ### 6. Aplicar a barreira dos Juízes
 
-Emitir `JUDGMENT_REQUEST` para **cada** `DEPARTMENT_RETURN` que contenha entrega. O
+Emitir `JUDGMENT_REQUEST` para **cada** `DEPARTMENT_RETURN` que contenha entrega, propagando sem
+alteração o `required_level` da missão. O
 `departamento-juizes` recebe candidato e evidências, avalia com seus agentes independentes
 e devolve `JUDGE_REPORT`. O Diretor:
 
@@ -192,12 +194,14 @@ e devolve `JUDGE_REPORT`. O Diretor:
 3. preserva veredito, críticas e dissensos;
 4. não pontua, não escolhe vencedor e não corrige;
 5. materializa `DEPARTMENT_GATE_RECORD`, correlacionando missão, retorno, pedido e parecer;
-6. encaminha reprovação ao Departamento responsável, com critérios de reteste.
+6. encaminha veredito que não alcance o nível exigido ao Departamento responsável, com critérios
+   de reteste.
 
 `DEPARTMENT_RETURN` isolado nunca autoriza integração. Somente
-`DEPARTMENT_GATE_RECORD.decision: ACCEPTED_FOR_INTEGRATION`, com os mesmos produtor,
-contrato, versão, candidato e rodada, atravessa a barreira. Sem Juízes disponíveis, nenhuma
-entrega atravessa.
+`DEPARTMENT_GATE_RECORD.decision: ACCEPTED_FOR_INTEGRATION`, com os mesmos produtor, contrato,
+versão, candidato, rodada e `required_level`, atravessa a barreira. `VALIDATED` alcança qualquer
+nível; `ACEITO_USO_INTERNO` alcança apenas `INTERNO`; `REPROVED` nunca integra. Sem Juízes
+disponíveis, nenhuma entrega atravessa.
 
 **Concluído quando:** a entrega tem parecer vigente do mesmo candidato ou voltou para
 retrabalho/bloqueio.
@@ -208,10 +212,10 @@ Integrar somente entregas aprovadas no gate aplicável e versões correlacionada
 candidato integrado novamente aos Juízes quando a integração modificar conteúdo, digest,
 comportamento ou risco.
 
-- menor nota aplicável `>= 9,5` e demais gates íntegros → preparar
+- veredito alcança o `required_level` e demais gates íntegros → preparar
   `EXECUTIVE_SUBMISSION`;
-- menor nota `< 9,5` com melhoria viável → `D_REWORK`;
-- menor nota `< 9,5` com limite objetivo alegado → conferir `LIMITATION_REPORT` e
+- veredito não alcança o nível, com melhoria viável → `D_REWORK`;
+- veredito não alcança o nível, com limite objetivo alegado → conferir `LIMITATION_REPORT` e
   encaminhá-lo ao CEO sem validá-lo;
 - falha crítica, regra violada, evidência ausente ou pendência bloqueante → bloquear;
 - décima rodada sem corte → informar o CEO; somente o CEO registra `LIMIT_REACHED`.
@@ -246,8 +250,9 @@ digests e dono da consolidação. O Diretor decide viabilidade técnica; Negóci
 de sua autoridade comercial; conflito de prioridade, orçamento, escopo ou risco aceito
 volta ao CEO.
 
-Negócios pode conversar diretamente com Juízes para seu próprio gate. Isso não o subordina
-ao Diretor e não autoriza o Diretor a editar a proposta comercial.
+Entrega de Negócios chega aos Juízes somente pelo Diretor. Negócios prepara o pacote e o envia pela
+matriz autorizada; o Diretor emite `JUDGMENT_REQUEST` e devolve o parecer pela mesma matriz. Isso
+não subordina Negócios ao Diretor nem autoriza o Diretor a editar a proposta comercial.
 
 ## Guardrails
 
@@ -286,10 +291,10 @@ Preservar anexos originais. Síntese não apaga divergência.
 destinatários e troca matricial autorizada.
 
 **Sai:** o Diretor verifica os Departamentos, abre missões técnicas somente para gerentes
-disponíveis, troca com Negócios dentro dos tópicos autorizados, integra retornos, exige
-Auditoria e envia cada entrega aos Juízes. Com notas `9,5 / 9,7 / 10` e gates íntegros,
-devolve `EXECUTIVE_SUBMISSION`. Com `9,49 / 10 / 10`, devolve ao Departamento responsável
-para `REWORK`; não arredonda e não pede exceção.
+disponíveis, troca com Negócios dentro dos tópicos autorizados, integra retornos, exige Auditoria
+e envia cada entrega aos Juízes. Com notas `10 / 10 / 10`, devolve `EXECUTIVE_SUBMISSION` para
+qualquer nível. Com `9 / 10 / 10`, integra somente em missão `INTERNO`; em `PRODUCAO`, devolve ao
+Departamento responsável para `REWORK`. Nota fracionária é parecer inválido.
 
 ## Evidência de conclusão da própria skill
 
@@ -299,8 +304,9 @@ Esta migração só está pronta quando:
   [references/origem-migracao.md](references/origem-migracao.md);
 - nome, pasta e metadata usam `diretor-de-lentes`;
 - links locais e caminhos hierárquicos resolvem;
-- contrato e schema rejeitam bypass de agente, ausência de Juízes, nota `9,49` e exceção
-  aprovada pelo Diretor, além de produtor ou digest divergente;
+- contrato e schema rejeitam bypass de agente, ausência de Juízes, nota fracionária,
+  `ACEITO_USO_INTERNO` em `PRODUCAO` e exceção aprovada pelo Diretor, além de produtor, nível ou
+  digest divergente;
 - retorno departamental só integra por `DEPARTMENT_GATE_RECORD` completo e toda troca com
   Negócios possui `MATRIX_EXCHANGE_MESSAGE` validável;
 - os mesmos casos passam em teste pós-skill independente;

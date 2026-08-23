@@ -1,0 +1,45 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-robustez-e-evidencia",
+  "lens": "robustez-e-evidencia",
+  "instancia": 2,
+  "round": "recoleta-c03-c05-c06",
+  "created_at": "2026-08-05T23:45:03-03:00",
+  "commit_julgado": "ab5882cf09a95d841168fd52faf656ac55997287",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "departamento-qa-usabilidade",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "Atende em parte, com lacuna observavel e nomeavel. O que atende: cerca de 49 dos 122 casos da saida crua sao reprovacoes EXECUTADAS, nao presenca de string - 32 fixtures negativas (evals/validate_workflow.py:1591-1735), cada uma mutacao de UM ponto sobre uma base independentemente afirmada verde nas 11 fixtures positivas (:1572-1588); 12 mutacoes sobre a camada de recalculo (grafo, particao de borda, derive_state) em :1839-1982; 3 rejeicoes do consumidor em :2074-2087. O ponto mais forte da casa esta em :2058-2072: os dois casos do gate composto nao aceitam 'deu erro', exigem 'not schema_only_errors and bool(bridge_errors)' - a mutacao precisa passar no schema estrutural E ser pega pela ponte, o que prova que a trava acrescenta poder que o schema nao tem. Nao ha morte por excecao creditada: o proprio validador converte ImportError em FAIL nomeado em vez de traceback (:126-144), e a saida crua confirma traceback=false (saida-crua/00-RESUMO.json:123). O que NAO atende, e por isso nao chega a 7: (a) 12 dos 122 checks passam por presenca literal de string, sem nenhum caso executado que os faca reprovar - evals/validate_workflow.py:1414-1447 - e nao sao checks perifericos: sao justamente 'Departamento declara orquestrar e nao executar' (:1423, 'nao executar testes' in manager.lower()), 'preserva gate dos Juizes' (:1428), 'anti-bypass explicito' (:1442, 'BLOCKED_BYPASS_ATTEMPT' in text) e 'e folha da arvore' (:1446, 'Nao aciona:** ninguem' in text). Sao as garantias contratuais do pacote, e um SKILL.md que contivesse a frase dentro de uma negacao continuaria verde. O criterio diz, literalmente, 'nada passa por presenca de string'; quatro familias de alegacao normativa passam exatamente assim. (b) Toda fixture negativa e aceita por 'bool(errors)' (:1735, :1843, :2077), nunca por QUAL erro disparou, e ha tres casos em que o rotulo credita uma trava que o caso nao exercita: :1671-1673 'agente embute julgamento em texto livre' troca o objeto por string e e recusado por tipo, identico para qualquer nao-objeto; :1675-1677 'julgamento no owner' e recusado pelo enum operationalOwner (schemas/departamento-qa-usabilidade.schema.json:95-105), que dispara igual para owner='fulano'; :1698-1700 'relatorio inclui nota' e recusado por additionalProperties:false, o mesmo mecanismo de 'campo extra no plano' (:1607), enquanto a trava especifica de nota (FORBIDDEN_RESULT_KEYS, :1543-1550) nunca e mutada. Nao e morte por excecao, mas e a mesma doenca que a clausula nomeia: credito a trava que nao disparou. (c) Nenhuma mutacao do proprio validador: nada no pacote prova que apagar um check fica vermelho. O motor compartilhado faz isso para os detectores dele (_compartilhado/verificacoes_estrutura.py:864-904 e :1239-1284, com fixture por regra e recusa a creditar excecao como pega), e o pacote herda esse rigor em 4 dos seus 122 checks (:1465-1482) e nao o pratica em nenhum dos outros 118. O FAIL da serie global de ADR (saida crua, linha 26) e alheio - copias de laboratorio em ceo-maestro/evals/producao-honesta-2026-08-04/ - e foi DESCONTADO: nao pesa nesta nota.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1414-1447",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1591-1735",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1671-1677",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:1698-1700",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:2058-2072",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/validate_workflow.py:126-144",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/schemas/departamento-qa-usabilidade.schema.json:95-105",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_estrutura.py:907-1024",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_estrutura.py:1239-1284",
+        "saida-crua/departamento-qa-usabilidade.stdout.txt:13-24 (os 12 checks de presenca de string, todos PASS)",
+        "saida-crua/departamento-qa-usabilidade.stdout.txt:52-83 (as 32 fixtures negativas executadas)",
+        "saida-crua/departamento-qa-usabilidade.stdout.txt:113-114 (os dois casos do gate composto)",
+        "saida-crua/00-RESUMO.json:118-123 (121/122, exit 1, traceback false)"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 6,
+  "confidence": "alta",
+  "por_que_essa_confianca": "A nota nao depende de execucao: as duas familias de defeito estao no fonte, em linhas citaveis, e a saida crua confirma que os checks correspondentes sairam PASS. Li o validador inteiro (2148 linhas), o schema nos pontos que os rotulos das mutacoes invocam, e o motor compartilhado nas quatro funcoes que o pacote chama. O unico ponto onde nao pude fechar por leitura foi confirmar empiricamente que apagar um dos 12 checks de string deixaria a suite verde - mas isso segue por construcao: nenhum outro check le aqueles arquivos.",
+  "o_que_declaro_contra_mim": [
+    "Nao executei nada. O desenho proibe, e a proibicao e correta, mas significa que toda afirmacao minha sobre o que a suite FARIA sob mutacao e leitura de codigo, nao medida. Especificamente, nao provei que apagar um check fica vermelho - eu acuso o pacote de nao provar isso e tambem nao provei.",
+    "Contei 'cerca de 49' casos com reprovacao executada mapeando linhas da saida crua contra funcoes do fonte, a olho. A contagem exata pode variar em 2 ou 3 para mais ou para menos; a nota nao depende dela, mas o numero que publiquei nao tem receita reexecutavel e deve ser lido como ordem de grandeza.",
+    "Abri evals/ADVERSARIAL-AUDIT.md, que traz um 'APROVADO' autodeclarado pelo proprio candidato, datado de 2026-07-26, antes de eu fixar minha nota. Nao e nota de C03 nem veredito de Juizes - e autodeclaracao dentro do artefato julgado, o que por si e um sinal contra o pacote (veredito nao mora dentro do que se julga) - mas registro que li um 'aprovado' antes de decidir. Nao mudou minha leitura: aquela auditoria mede 9/9 e 10/10 ataques bloqueados no gate composto, que e exatamente a parte que eu ja tinha classificado como a mais forte, e nada nela toca os 12 checks de string.",
+    "evals/PLACAR.md:5-8 aponta para ceo-maestro/evals/julgamento-pacotes-2026-07-29/08-RESUMO.md, que e contexto proibido. Vi o link e NAO abri. Nenhuma nota de C03 chegou aos meus olhos em nenhum momento.",
+    "Hesitei entre 6 e 7 e o que decidiu foi a letra do criterio, nao uma medida: o pacote tem volume e qualidade de contraprova bem acima do piso da banda 4-6, e um juiz que lesse 'nada passa por presenca de string' como principio orientador em vez de como requisito literal daria 7 com honestidade. Registro que meu 6 e a leitura estrita, e que a distancia entre 6 e 7 aqui e uma decisao de leitura do contrato, nao um fato observado a mais.",
+    "Julguei o commit ab5882c, descendente do 4446786 declarado no contrato da recoleta. Os commits intermediarios tocam evals/ e registros, nao o pacote; mas nao verifiquei diff arquivo a arquivo, entao nao posso afirmar que a arvore do pacote e byte-identica a que o CEO executou.",
+    "Nao pontuei o candidato da T27 e nao o li. Se ele instala travas que exigem a contagem declarada, isso melhoraria C04 antes de C03, e de todo modo nao esta na arvore: e estado futuro."
+  ]
+}

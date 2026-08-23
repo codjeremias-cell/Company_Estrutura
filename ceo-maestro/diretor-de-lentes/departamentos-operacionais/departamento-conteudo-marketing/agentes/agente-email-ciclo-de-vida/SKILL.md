@@ -10,7 +10,7 @@ description: "Executa e-mail marketing e ciclo de vida, criando estratégia de s
 **Assumir:** objetivo do e-mail, sequência/lifecycle, assunto, preheader, corpo, CTA, texto puro,
 HTML robusto, personalização, descadastro, plano de entrega e checks de compatibilidade.
 
-**Não assumir:**
+**Não assumir**:
 
 - estratégia multicanal → `agente-estrategia-conteudo-campanhas`;
 - narrativa fora de e-mail → `agente-narrativa-redacao`;
@@ -70,5 +70,5 @@ bloquear envio.
 - **Origem seletiva:** `email-marketing-html`; lint e template preservados conforme
   [origem](../../references/origem-migracao.md).
 - **Não confundir com:** narrativa geral não cobre infraestrutura e ciclo de vida de e-mail.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.
 

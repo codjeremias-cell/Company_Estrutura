@@ -1,0 +1,28 @@
+{
+  "artifact_type": "EXCEPTION_AUTHORIZATION",
+  "authorization_id": "EXAUTH-T13-R6-R3",
+  "exception_request_id": "EXREQ-T13-R6-R3",
+  "decision": "APPROVED",
+  "authorized_by": "jeremias",
+  "identity_evidence_ref": "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29/07-JEREMIAS-APPROVAL-EVIDENCE.md",
+  "citation_exact": "“Aprovo a exceção de uso único EXREQ-T13-R6-R3",
+  "candidate_digest": "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+  "score_snapshot_digest": "sha256:2bae089119427b638b659757b41e05cf4a7879e79138e178c3a5e29ce2397427",
+  "actual_minimum_score": 9,
+  "scope": [
+    "Autorizar uso único para promover cand-G exclusivamente sobre evals.json, forward-proveniencia.json, FORWARD-TEST.md, PLACAR.md e validate_workflow.py do pacote canônico de Arquitetura de Dados.",
+    "Após a promoção, executar as regressões canônicas, confirmar paridade dos runtimes Claude e Codex e atualizar o estado da tarefa 13.",
+    "Não alterar ADR-014, ADR-015, RO-W8, o corte de PRODUCAO ou qualquer gate inegociável."
+  ],
+  "conditions": [
+    "Usar exclusivamente o candidate_digest sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5.",
+    "Usar exclusivamente o score_snapshot_digest sha256:2bae089119427b638b659757b41e05cf4a7879e79138e178c3a5e29ce2397427.",
+    "Manter R6 declarado como risco residual aceito apenas para esta promoção.",
+    "Interromper sem promoção final se digest, regressão, paridade ou gate inegociável divergir.",
+    "Marcar esta autorização como CONSUMED após o primeiro uso bem-sucedido; reutilização é proibida."
+  ],
+  "issued_at": "2026-07-30T17:29:51-03:00",
+  "expires_at": "2026-07-31T17:17:55-03:00",
+  "usage_policy": "single_use",
+  "status": "CONSUMED"
+}

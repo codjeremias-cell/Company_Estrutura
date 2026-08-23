@@ -1,0 +1,175 @@
+{
+  "round": "nucleo-de-comando",
+  "commit_julgado": "412769f",
+  "regra": "MENOR entre instancias, MENOR entre criterios, NAO_DISCRIMINADO se faixa cruza 7",
+  "pacotes": {
+    "ceo-maestro": {
+      "criterios": {
+        "C01": 6,
+        "C02": 7,
+        "C03": 6,
+        "C04": 5,
+        "C05": 5,
+        "C06": 7
+      },
+      "min": 5,
+      "cruza": [
+        "C01"
+      ],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "DOMINANCIA: C04=5 sem divergencia; resolver C01 nao levanta o minimo",
+      "minimo_dominante": 5,
+      "instancias": {
+        "C01": [
+          8,
+          6
+        ],
+        "C02": [
+          7,
+          8
+        ],
+        "C03": [
+          6,
+          6
+        ],
+        "C04": [
+          5,
+          5
+        ],
+        "C05": [
+          5,
+          5
+        ],
+        "C06": [
+          7,
+          8
+        ]
+      }
+    },
+    "diretor-de-lentes": {
+      "criterios": {
+        "C01": 8,
+        "C02": 9,
+        "C03": 7,
+        "C04": 6,
+        "C05": 7,
+        "C06": 7
+      },
+      "min": 6,
+      "cruza": [],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "sem faixa cruzando",
+      "minimo_dominante": 6,
+      "instancias": {
+        "C01": [
+          9,
+          8
+        ],
+        "C02": [
+          9,
+          9
+        ],
+        "C03": [
+          7,
+          7
+        ],
+        "C04": [
+          6,
+          6
+        ],
+        "C05": [
+          7,
+          7
+        ],
+        "C06": [
+          7,
+          7
+        ]
+      }
+    },
+    "departamento-juizes": {
+      "criterios": {
+        "C01": 7,
+        "C02": 7,
+        "C03": 6,
+        "C04": 6,
+        "C05": 5,
+        "C06": 7
+      },
+      "min": 5,
+      "cruza": [],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "sem faixa cruzando",
+      "minimo_dominante": 5,
+      "instancias": {
+        "C01": [
+          8,
+          7
+        ],
+        "C02": [
+          7,
+          7
+        ],
+        "C03": [
+          6,
+          6
+        ],
+        "C04": [
+          6,
+          6
+        ],
+        "C05": [
+          5,
+          5
+        ],
+        "C06": [
+          7,
+          7
+        ]
+      }
+    },
+    "departamento-negocios": {
+      "criterios": {
+        "C01": 6,
+        "C02": 8,
+        "C03": 5,
+        "C04": 4,
+        "C05": 4,
+        "C06": 6
+      },
+      "min": 4,
+      "cruza": [
+        "C01"
+      ],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "DOMINANCIA: C04=4 sem divergencia; resolver C01 nao levanta o minimo",
+      "minimo_dominante": 4,
+      "instancias": {
+        "C01": [
+          7,
+          6
+        ],
+        "C02": [
+          8,
+          8
+        ],
+        "C03": [
+          5,
+          5
+        ],
+        "C04": [
+          4,
+          4
+        ],
+        "C05": [
+          4,
+          4
+        ],
+        "C06": [
+          6,
+          6
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "artifact_type": "JUDGMENT_REQUEST",
+  "request_id": "JR-NUCLEO-R2-20260807",
+  "producer": "diretor-de-lentes",
+  "return_to": "diretor-de-lentes",
+  "mode": "VALIDACAO",
+  "contract_id": "CONTRATO-NUCLEO-R2-20260807",
+  "contract_version": 1,
+  "contract_digest": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+  "required_level": "INTERNO",
+  "candidatos": [
+    "ceo-maestro",
+    "diretor-de-lentes",
+    "departamento-negocios",
+    "departamento-juizes"
+  ],
+  "instances_per_lens": 2,
+  "aggregation_rule": {
+    "method": "MENOR",
+    "entre": "instancias, depois criterios",
+    "nao_discriminado": "apenas quando a faixa cruzada pode decidir; havendo criterio acordado abaixo do corte ha dominancia"
+  },
+  "custody_copy": {
+    "path": "evals/nucleo-de-comando-r2-2026-08-07/saida-crua",
+    "sha256": "sha256:0c592c799f991d7252321af7d45f458721a9b75273093126047b7a590d1e5d2a",
+    "bytes": 44838,
+    "taken_at": "2026-08-07T01:30:00-03:00",
+    "arquivos": 5
+  },
+  "nota_de_limite": "Emitido pelo unico ator de runtime, que tambem e um dos julgados. O papel esta declarado em cada artefato; a separacao de atores NAO existe no runtime atual (teto OI-04)."
+}

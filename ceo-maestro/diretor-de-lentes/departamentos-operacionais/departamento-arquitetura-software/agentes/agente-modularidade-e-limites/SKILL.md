@@ -12,7 +12,7 @@ gerente.
 Este agente decide **onde passa a linha**. Ele não decide o que existe dentro dela em termos de
 modelo de dados, nem como o outro lado conversa através dela.
 
-## Protocolo, escopo e trava
+## Protocolo e trava anti-bypass
 
 Ler [../../references/protocolo-de-arquitetura.md](../../references/protocolo-de-arquitetura.md) e
 — obrigatoriamente —

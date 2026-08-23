@@ -1,0 +1,146 @@
+{
+  "commit": "4446786",
+  "executado_por": "ceo-maestro no papel de executor; as lentes nao executam",
+  "receita": "python evals/validate_workflow.py, cwd no pacote, PYTHONDONTWRITEBYTECODE=1; sumario = ULTIMO da saida",
+  "escopo": "SOMENTE os criterios que travam cada pacote; os demais nao sao remedidos",
+  "nota": "o FAIL unico por pacote e a serie de ADR 020 duplicada por copias de laboratorio de outra frente - alheio aos quatro. O inventario acompanha porque C05 (uso pela cadeia) e C06 (limites declarados) se leem no pacote, nao na saida do validador.",
+  "pacotes": {
+    "departamento-arquitetura-dados": {
+      "trava_em": [
+        "C05"
+      ],
+      "sumario_proprio": "124/125",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": true,
+        "references": [
+          "adr-008-dados-skill-nova-e-seis-agentes.md",
+          "adr-021-identidade-de-candidato-por-conteudo.md",
+          "fronteiras-do-departamento.md",
+          "gates-e-licoes-de-producao.md",
+          "origem-e-fundamentacao.md",
+          "protocolo-de-dados.md"
+        ],
+        "agentes": [
+          "agente-contratos-e-integridade",
+          "agente-escala-e-acesso",
+          "agente-escolha-de-persistencia",
+          "agente-evolucao-e-migracao",
+          "agente-modelo-e-grao",
+          "agente-perguntas-e-volumetria"
+        ],
+        "schemas": [
+          "departamento-arquitetura-dados.schema.json"
+        ]
+      }
+    },
+    "departamento-desenvolvimento": {
+      "trava_em": [
+        "C05"
+      ],
+      "sumario_proprio": "111/112",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": true,
+        "references": [
+          "adr-012-desenvolvimento-executa-com-oito-agentes.md",
+          "fronteiras-do-departamento.md",
+          "origem-migracao.md",
+          "politica-tecnica.md",
+          "protocolo-de-desenvolvimento.md",
+          "tracks-e-geradores.md"
+        ],
+        "agentes": [
+          "agente-java-e-spring",
+          "agente-javafx-desktop",
+          "agente-mobile-flutter",
+          "agente-persistencia-e-sql",
+          "agente-revisao-e-refatoracao",
+          "agente-tauri-desktop",
+          "agente-testes-e-depuracao",
+          "agente-web-frontend"
+        ],
+        "schemas": [
+          "departamento-desenvolvimento.schema.json"
+        ]
+      }
+    },
+    "departamento-conteudo-marketing": {
+      "trava_em": [
+        "C05",
+        "C06"
+      ],
+      "sumario_proprio": "42/43",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": true,
+        "references": [
+          "adr-007-departamento-e-time-elastico.md",
+          "fundamentos-pesquisa-2026-07-26.md",
+          "origem-migracao.md",
+          "protocolo-conteudo-marketing.md"
+        ],
+        "agentes": [
+          "agente-direcao-arte-imagem",
+          "agente-email-ciclo-de-vida",
+          "agente-estrategia-conteudo-campanhas",
+          "agente-governanca-marca-conformidade",
+          "agente-inteligencia-relatoria-marketing",
+          "agente-narrativa-redacao",
+          "agente-publicidade-conversao",
+          "agente-roteiro-producao-video"
+        ],
+        "schemas": [
+          "departamento-conteudo-marketing.schema.json"
+        ]
+      }
+    },
+    "departamento-qa-usabilidade": {
+      "trava_em": [
+        "C03",
+        "C06"
+      ],
+      "sumario_proprio": "121/122",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura: sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": true,
+        "references": [
+          "adr-011-qa-executa-sem-julgar.md",
+          "bootstrap.md",
+          "fontes-canonicas-e-fronteiras.md",
+          "origem-migracao.md",
+          "perfis-e-matriz-de-cobertura.md",
+          "protocolo-qa-usabilidade.md"
+        ],
+        "agentes": [
+          "agente-testes-funcionais",
+          "agente-testes-nao-funcionais",
+          "agente-usabilidade-e-acessibilidade"
+        ],
+        "schemas": [
+          "departamento-qa-usabilidade.schema.json"
+        ]
+      }
+    }
+  }
+}

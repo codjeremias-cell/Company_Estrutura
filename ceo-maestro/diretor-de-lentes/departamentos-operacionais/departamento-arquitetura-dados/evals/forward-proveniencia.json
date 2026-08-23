@@ -1,0 +1,89 @@
+{
+  "versao": 1,
+  "gate_contract": {
+    "policy_id": "forward-provenance-v1",
+    "inventory": "REQUIRED_FOR_NORMATIVE_CLAIMS",
+    "verified_claim_requires": [
+      "rule_id",
+      "source_anchor",
+      "rule_line_sha256"
+    ],
+    "positive_outcome_requires": "BEHAVIORAL_RAW_EVIDENCE_AND_ALL_NORMATIVE_CLAIMS_VERIFIED",
+    "absent_raw_evidence_outcome": "NOT_PROVEN",
+    "case_outcome_when_raw_absent": "PROVENANCE_VERIFIED_BEHAVIOR_NOT_REPRODUCIBLE",
+    "non_normative_fallback": "LABEL_AS_UNVERIFIED_NON_NORMATIVE",
+    "normative_source_path": "../../../../../regras-de-ouro/REGRAS-DE-OURO.md",
+    "raw_absence": {
+      "status": "ABSENT",
+      "behavioral_result": "HISTORICAL_REPORT_NOT_REPRODUCIBLE"
+    },
+    "official_source_prefix": "https://supabase.com/docs/",
+    "external_source_role": {
+      "role_id": "CORROBORATIVE_TECHNICAL_SOURCE",
+      "normative_authority": false,
+      "may_create_rule": false,
+      "may_replace_rule": false
+    },
+    "derived_summary": {
+      "persistence": "FORBIDDEN",
+      "emitted_by": "validate_workflow.py",
+      "stdout_prefix": "FORWARD_SUMMARY "
+    },
+    "required_mutations": [
+      "ANCHOR_FABRICATED",
+      "CITATION_UNVERIFIED",
+      "SUMMARY_TAMPERED",
+      "CLAIM_OMITTED"
+    ]
+  },
+  "medicao_original": "2026-07-26",
+  "reconciliado_em": "2026-07-29",
+  "escopo": "Reconciliação das citações normativas relatadas no caso 15; as respostas brutas do forward não estão disponíveis.",
+  "artefatos_brutos_forward": {
+    "caminho_relatado": "scratchpad/forward/dados-NN.md",
+    "status": "ABSENT",
+    "behavioral_result": "HISTORICAL_REPORT_NOT_REPRODUCIBLE"
+  },
+  "fonte_normativa": {
+    "caminho": "../../../../../regras-de-ouro/REGRAS-DE-OURO.md",
+    "revisao_git_que_ja_continha_as_regras": "36027a2b23d38ea22792447d59077bdb8c36492b"
+  },
+  "fontes_externas_nao_normativas": [
+    {
+      "id": "supabase-js-v1-select",
+      "url": "https://supabase.com/docs/reference/javascript/v1/select",
+      "afirmacao_suportada": "Projetos Supabase retornam por padrão no máximo 1000 linhas; a configuração pode ser alterada nas API Settings.",
+      "papel": "CORROBORATIVE_TECHNICAL_SOURCE"
+    }
+  ],
+  "casos": [
+    {
+      "case_id": 15,
+      "behavioral_checks_reported": {
+        "pass": 3,
+        "fail": 0,
+        "verification": "NOT_REPRODUCIBLE"
+      },
+      "expected_normative_claim_count": 2,
+      "citacoes_normativas": [
+        {
+          "rule_id": "RO-W1",
+          "claim": "PÚBLICA por design",
+          "source_anchor": "PÚBLICA por design",
+          "rule_line_sha256": "sha256:452953fa9936238792f1104c12cd16b12939fe8da10c6a237326f59852619d20",
+          "verification": "VERIFIED"
+        },
+        {
+          "rule_id": "RO-W8",
+          "claim": "consulta sem limite corta em 1000 linhas no Supabase",
+          "source_anchor": "Consulta sem limite corta em 1000 linhas no Supabase",
+          "rule_line_sha256": "sha256:fd92723710ca7c8d6cda1683950bff1198bf9792fc6acbbb9d98b2ef8172d42c",
+          "verification": "VERIFIED",
+          "external_source_ref": "supabase-js-v1-select"
+        }
+      ],
+      "provenance_gate": "PASS",
+      "overall": "PROVENANCE_VERIFIED_BEHAVIOR_NOT_REPRODUCIBLE"
+    }
+  ]
+}

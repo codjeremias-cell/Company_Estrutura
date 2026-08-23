@@ -1,0 +1,128 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-robustez-e-evidencia#i2",
+  "lens": "robustez-e-evidencia",
+  "instancia": 2,
+  "round": "nucleo-de-comando",
+  "created_at": "2026-08-06T00:00:00-03:00",
+  "commit_julgado": "412769f31ccb0cb636f85c41f56cf9c6f612b3c1",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "A camada de meta-travas e exemplar e supera o criterio: validate_trava_de_digest afirma a CLASSE da excecao levantada, de modo que morte por excecao generica nao pode ser creditada como pega; validate_sem_check_tautologico carrega autoteste que exige que CADA regra dispare na sua propria fixture e nao transborde para as outras; o runner deriva actual_valid de listas de erro RETORNADAS, logo excecao aborta a corrida em vez de virar caso verde (traceback: false). Contra: existe uma trava que nao pode disparar e que nenhum dos 96 casos prova. O schema publicado expressa 'REPROVED exige minimum_score<=6 OU critical_fail OU pendencia bloqueante' como anyOf, e o motor compartilhado nao implementa anyOf e o ignora EM SILENCIO. O invariante sobrevive somente porque external_verdict o reconfere em codigo; nenhum caso o exercita — os vereditos forjados na suite sao apenas ACEITO_USO_INTERNO e VALIDATED, nunca um REPROVED limpo com nota alta. Como a schema e a fronteira contra a qual pacotes vizinhos validam, um consumidor que valide um JUDGE_REPORT so pela schema aceita o veredito incoerente. Soma-se a isso que nenhum caso fixa QUAL erro disparou: actual_valid = not errors aceita qualquer string de erro, entao uma trava pode morrer sem que seu caso fique vermelho. Lacuna nomeavel de cobertura, nao defeito que impeca o uso.",
+      "evidencia": [
+        "_compartilhado/validador_schema.py:14-18",
+        "_compartilhado/validador_schema.py:284-390",
+        "ceo-maestro/schemas/ceo-maestro.schema.json:1162-1198",
+        "ceo-maestro/evals/validate_workflow.py:650-655",
+        "ceo-maestro/evals/validate_workflow.py:3453-3468",
+        "ceo-maestro/evals/validate_workflow.py:2901",
+        "ceo-maestro/evals/validate_workflow.py:3189",
+        "ceo-maestro/evals/validate_workflow.py:3406",
+        "_compartilhado/verificacoes_estrutura.py:959-975",
+        "_compartilhado/verificacoes_estrutura.py:1269-1300"
+      ]
+    },
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C04",
+      "score": 5,
+      "razao": "A cultura de evidencia e real: cada bloco do placar e datado e o documento recusa reescrever historico; a mutacao em memoria de external_verdict e publicada com numero (55/55 caiu para 49/55); as quatro rodadas de acionamento em runtime trazem condicao, turnos e SHA-256 por linha, e a rodada enviesada e explicitamente desqualificada como prova; o campo adendo_de_contagem: false transforma ausencia em estado nomeado. Contra, quatro defeitos na evidencia efetivamente publicada nesta rodada. (1) Numero com raiz errada: 00-RESUMO.json:107 publica sumario_proprio 99/100 para departamento-negocios, mas esse e o sumario do Diretor — o validador de Negocios ecoa a saida dos vizinhos sem delimitador e a receita declarada ('sumario = ULTIMO da saida') colheu a repeticao final do Diretor; o numero proprio de Negocios, RESULTADO: 230/233 PASS; 3 FAIL, esta no mesmo arquivo capturado. (2) Evidencia corrompida: todo acento das quatro saidas e do proprio 00-RESUMO.json esta em mojibake, porque a receita publicada declara PYTHONDONTWRITEBYTECODE=1 e OMITE o PYTHONIOENCODING=utf-8 que a receita de regressao da casa exige; seguir a receita publicada nao reproduz evidencia legivel. (3) Lista publicada sem criterio declarado e contra o proprio contrato: 00-RESUMO.json:29-34 atribui quatro subordinados_diretos ao ceo-maestro, incluindo departamento-juizes, enquanto SKILL.md:41 diz tres pares executivos, SKILL.md:49 diz 'nao chamar Juizes' e DIRECT_EXECUTIVES no validador tem exatamente tres. (4) Deriva de contagem: o numero proprio mais recente do placar e 55/55 e a receita devolve 96 casos, sem adendo. Registro tambem que o contrato desta rodada vaza, nas linhas 10-15, a tabela de notas de 2026-07-29 dos pacotes julgados. Todos os numeros tem receita e raiz declaradas e o erro e recuperavel a partir da saida crua publicada — e isso que o mantem fora da faixa de quebrado.",
+      "evidencia": [
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:4",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:107",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:29-34",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:16",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:255",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:277",
+        "ceo-maestro/SKILL.md:41",
+        "ceo-maestro/SKILL.md:49",
+        "ceo-maestro/evals/validate_workflow.py:55-59",
+        "ceo-maestro/evals/PLACAR.md:122-125",
+        "ceo-maestro/evals/PLACAR.md:146-151",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/ceo-maestro.stdout.txt:99",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/00-CONTRATO.md:10-15"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C03",
+      "score": 7,
+      "razao": "Cem casos executados, cada linha declarando a polaridade esperada, e o oraculo de veredito e exercitado NOS DOIS SENTIDOS: rejeita REPROVED limpo com minimo 9, rejeita ACEITO_USO_INTERNO com minimo 10, rejeita VALIDATED com minimo 9 e aceita REPROVED com minimo 6. As travas de gate sao provadas contra a nota: falha critica e pendencia bloqueante forcam REPROVED 'mesmo com 10'. As travas do ADR-016 disparam nos dois sentidos, incluindo faixa que atravessa carimbada como aceite interno. Varri as schemas de toda a estrutura por palavras-chave que o motor compartilhado ignora em silencio e a schema deste pacote nao usa nenhuma — nao ha aqui trava inerte por construcao. Roda as tres meta-travas com autoteste e a conferencia da fonte normativa por digest. Risco menor que sobra, e o unico que nomeio: o runner deriva actual_valid = not errors e nenhum caso fixa QUAL erro disparou, entao um caso negativo pode continuar verde por um erro diferente do que ele diz provar. Atende o criterio inteiro; sobra esse risco.",
+      "evidencia": [
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:46-49",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:63-64",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:37-45",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:4-7",
+        "ceo-maestro/diretor-de-lentes/evals/validate_workflow.py:1789-1802",
+        "_compartilhado/validador_schema.py:14-18",
+        "_compartilhado/verificacoes_estrutura.py:1239-1300"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C04",
+      "score": 6,
+      "razao": "A disciplina de datar e forte e em varios pontos supera o criterio: o callout 'Marco historico' marca TODO resultado de 2026-07-26 como evidencia pre-ADR-014 que 'nao descreve a regra vigente', o que e obsolescencia virando estado nomeado; a regra da casa sobre numero de vizinho esta citada e aplicada; o delta e explicado por conteudo e nao so por numero (+26 casos com a lista do que cobrem); a conferencia da fonte normativa por digest tem receita no codigo e caso verde; e a saida crua deste pacote e limpa e autocontida, de modo que o 99/100 que lhe foi atribuido e verificavelmente dele. Contra, e decisivo para esta faixa: existe deriva de contagem exatamente na linha que se declara corrente. A tabela e encabecada 'Medicao ativa' e a linha 'Validador deterministico do Diretor' declara 79/79 PASS; a receita hoje devolve 100 casos, e o inventario da propria rodada registra adendo_de_contagem: false. Numero rotulado como ativo que a receita nao devolve mais e defeito observado, nao risco residual — por isso nao alcanca a faixa de 7 a 8, e a qualidade do resto o mantem no topo da faixa abaixo.",
+      "evidencia": [
+        "ceo-maestro/diretor-de-lentes/evals/PLACAR.md:10-12",
+        "ceo-maestro/diretor-de-lentes/evals/PLACAR.md:23-26",
+        "ceo-maestro/diretor-de-lentes/evals/PLACAR.md:35-37",
+        "ceo-maestro/diretor-de-lentes/evals/PLACAR.md:14-21",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:103",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:101",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:46",
+        "_compartilhado/validador_schema.py:114-117"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C03",
+      "score": 5,
+      "razao": "A superficie negativa e grande e boa: cerca de 190 casos proprios, a maioria 'rejeita ...', cobrindo refs forjadas, identidade causal, IDs duplicados, digest divergente e reuso de message_id, alem de validar os proprios envelopes contra a schema E a semantica reais dos vizinhos. Roda as tres meta-travas com autoteste. Contra, um golpe direto na proibicao literal do criterio: as linhas 2338-2348 rebaixam um FAIL de regressao a WARN quando a saida do vizinho CONTEM as strings 'adr-003-conformidade-sem-nota.md' e 'Resultado: 31/32 casos passaram.' — isto e, um desvio de reprovacao decidido por presenca de string, que o criterio proibe por nome. E o ramo e inalcancavel hoje, porque aquela receita devolve 95/96 ha muito tempo: uma anistia de falha que nenhum caso executado pode exercitar. Alem disso, duas das suas travas disparam sobre sujeito que o pacote nao possui: 'regressao passa: <vizinho>' converte o exit code de outro processo em FAIL proprio, sem conseguir distinguir 'eu quebrei o vizinho' de 'o vizinho esta quebrado por conta propria' — descontada a serie de ADR em si, o desenho continua sendo fato deste pacote. Por fim, o runner imprime [PASS] <nome> sem declarar a polaridade esperada, entao a prova de que a trava disparou fica so no nome do caso.",
+      "evidencia": [
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2338-2348",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2321-2354",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:1296-1303",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:232",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:243",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:121-231",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:43-46",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/ceo-maestro.stdout.txt:99"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C04",
+      "score": 4,
+      "razao": "Ha higiene real de evidencia: a nota de reconciliacao nomeia a regra da casa sobre numero de vizinho e admite que onze de quinze placares declaravam para si um numero menor que o real — isso e honesto e cobre as linhas de vizinho. Mas a deriva de contagem no numero PROPRIO e flagrante e multipla, e a mesma nota que protege o vizinho REAFIRMA o proprio: o placar declara 170/170 PASS, declara 226/226 PASS 0 FAIL 0 WARN no reteste ADR-014, repete 'fechou 170/170 PASS, 0 FAIL, 0 WARN' e publica a linha 'Falhas ou advertencias abertas: 0'. A receita desta rodada devolve RESULTADO: 230/233 PASS; 3 FAIL, e nao existe adendo de contagem. A linha do zero de falhas nao esta apenas velha: e afirmativamente falsa contra a saida crua da propria rodada. Segundo, ha uma contagem morta embutida em codigo EXECUTAVEL, nao em prosa: o ramo de anistia exige a string literal 'Resultado: 31/32 casos passaram.' na saida do vizinho, numero que aquela receita nao devolve mais. Terceiro, a saida deste pacote nao e delimitada: combined[-500:] enxerta os ultimos 500 caracteres do stdout+stderr de outro processo, cortado no meio da palavra, dentro da propria lista de falhas, e a cauda de cada vizinho — inclusive o 'Resultado:' dele — e repetida duas vezes na transcricao. O dano dessa escolha esta medido nesta rodada: o ultimo 'Resultado:' da saida deste pacote e o do Diretor, e foi ele que acabou publicado como sumario proprio. Numero proprio errado, zero de falhas falso, contagem morta em codigo e saida sem raiz recuperavel sem ler o fonte.",
+      "evidencia": [
+        "ceo-maestro/departamento-negocios/evals/PLACAR.md:31",
+        "ceo-maestro/departamento-negocios/evals/PLACAR.md:37",
+        "ceo-maestro/departamento-negocios/evals/PLACAR.md:11",
+        "ceo-maestro/departamento-negocios/evals/PLACAR.md:73",
+        "ceo-maestro/departamento-negocios/evals/PLACAR.md:19-21",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2342",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2350-2354",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:255",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:232",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:277",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:117"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 4,
+  "confidence": "media",
+  "por_que_essa_confianca": "Alta para C04 e media para C03, e o parecer carrega uma so chave. Todo achado de C04 e textual e verificavel por caminho e linha nos artefatos publicados: numero do placar contra numero da saida crua, string morta contra saida atual, lista publicada contra a constante normativa do proprio pacote. Ja C03 depende de eu NAO executar, por instrucao expressa: pude ler que o anyOf e ignorado no motor, que nenhum caso da suite forja um REPROVED limpo e que o runner nao fixa qual erro disparou, mas nao pude mutar uma trava e confirmar que fica vermelha. A lição desta casa e que mutacao verde e pergunta, nao aprovacao — e eu so pude fazer a pergunta pelo codigo, nao pela execucao. Se alguem executar as mutacoes que aponto, o C03 dos tres pode se mover nos dois sentidos.",
+  "o_que_declaro_contra_mim": [
+    "Senti a tentacao OPOSTA a esperada, exatamente como o despacho previu: ao fechar 6 e 5 para o ceo-maestro me peguei perguntando se estava sendo duro para provar independencia de quem me despachou. Testei com a pergunta inversa — daria esses numeros a um pacote que nao me tivesse despachado? — e so mantive os achados que sobreviveram com citacao de arquivo e linha independente de quem enviou o despacho. Declaro que a pressao foi real e que ela existiu na direcao da severidade, nao da leniencia.",
+    "Fui contaminado pelas notas de 2026-07-29 antes de poder evitar: o 00-CONTRATO.md as traz nas linhas 10-15 e eu as li no primeiro arquivo que o despacho mandou abrir. Sei que os tres pacotes que julgo carregavam 1, 1 e 5. Isso e vazamento do proprio contrato, ja declarado por outro juiz, mas nao deixa de ter me alcancado. O risco concreto e de ancoragem por contraste — 'devem ter melhorado desde entao' — e observo que meus seis numeros ficaram todos acima ou iguais aos vazados, o que e exatamente o padrao que a ancoragem produziria. Formei cada nota a partir do artefato e so depois notei essa relacao; nao consigo provar que a ordem foi essa.",
+    "Recebi tres achados de terceiros junto com a tarefa, o que e um ancoramento. Mitiguei abrindo primeiro os validadores, placares e schemas e lendo a saida crua de ponta a ponta: cheguei ao problema do departamento-negocios sozinho, ao notar as caudas duplicadas e a linha RESULTADO: 230/233 antes de conferir a dica. Mas confirmei os tres e nao refutei nenhum por inteiro, e isso merece ser dito. A unica correcao que oponho a uma das dicas e de fundo: o anyOf e mesmo inerte, porem o invariante NAO fica aberto no caminho semantico, porque external_verdict o reconfere; a dica sugeria um buraco maior do que o que existe.",
+    "Nao executei nada, por instrucao. Logo, tudo que digo sobre travas e leitura de codigo, e ja errei antes achando que presenca de call site prova efeito. Especificamente: afirmo que nenhum dos 96 casos do CEO forja um REPROVED limpo com nota alta com base em varredura das atribuicoes de verdict na suite; se existir um caso construido por outro caminho que eu nao tenha alcancado, o C03 do ceo-maestro sobe.",
+    "Contei o total proprio do departamento-negocios como 233 derivando das linhas da saida, e nao executando o validador. A conta fecha (linhas 1 a 232 mais a linha 243) e coincide com o RESULTADO impresso, mas e derivacao minha sobre uma saida que eu mesmo apontei como mal delimitada.",
+    "Descontei a serie de ADR (020 duplicado por copias de laboratorio de outra frente) em todos os seis pares, como o contrato manda, e digo que descontei. Sem esse desconto, os tres pacotes teriam FAIL aberto na rodada e eu teria julgado outra coisa."
+  ]
+}

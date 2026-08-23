@@ -11,7 +11,7 @@ estilo, contrato, versionamento, idempotência e **modo de falha** — e devolve
 Este agente decide **como as partes conversam através da fronteira** que outro traçou. Ele não move
 a fronteira e não implementa a conversa.
 
-## Protocolo, escopo e trava
+## Protocolo e trava anti-bypass
 
 Ler [../../references/protocolo-de-arquitetura.md](../../references/protocolo-de-arquitetura.md) e
 [../../references/fronteiras-com-dados-e-desenvolvimento.md](../../references/fronteiras-com-dados-e-desenvolvimento.md)

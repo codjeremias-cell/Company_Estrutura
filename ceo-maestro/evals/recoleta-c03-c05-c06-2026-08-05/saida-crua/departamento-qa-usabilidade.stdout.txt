@@ -1,0 +1,125 @@
+== Departamento de QA e Usabilidade: validaÃ§Ã£o ==
+[PASS] arquivos obrigatÃ³rios
+[PASS] trÃªs agentes canÃ´nicos e completos
+[PASS] contratos e SKILL dos agentes seguem a estrutura normativa
+[PASS] frontmatter e tamanho do Departamento
+[PASS] metadata do Departamento
+[PASS] frontmatter e tamanho de agente-testes-funcionais
+[PASS] metadata de agente-testes-funcionais
+[PASS] frontmatter e tamanho de agente-testes-nao-funcionais
+[PASS] metadata de agente-testes-nao-funcionais
+[PASS] frontmatter e tamanho de agente-usabilidade-e-acessibilidade
+[PASS] metadata de agente-usabilidade-e-acessibilidade
+[PASS] caminho normativo correto no Departamento
+[PASS] Departamento declara orquestrar e nÃ£o executar
+[PASS] Departamento preserva gate dos JuÃ­zes
+[PASS] fonte normativa correta em agente-testes-funcionais
+[PASS] anti-bypass explÃ­cito em agente-testes-funcionais
+[PASS] agente-testes-funcionais Ã© folha da Ã¡rvore
+[PASS] fonte normativa correta em agente-testes-nao-funcionais
+[PASS] anti-bypass explÃ­cito em agente-testes-nao-funcionais
+[PASS] agente-testes-nao-funcionais Ã© folha da Ã¡rvore
+[PASS] fonte normativa correta em agente-usabilidade-e-acessibilidade
+[PASS] anti-bypass explÃ­cito em agente-usabilidade-e-acessibilidade
+[PASS] agente-usabilidade-e-acessibilidade Ã© folha da Ã¡rvore
+[PASS] todos os links markdown resolvem
+[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura: sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md
+[PASS] todo pacote gerente tem validador que roda a trava global
+[PASS] a recusa de digest() dispara e ninguÃ©m tem cÃ³pia privada do motor
+[PASS] nenhuma asserÃ§Ã£o Ã© verdadeira por construÃ§Ã£o sobre valor produzido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md
+[PASS] evals contÃ©m ao menos 12 casos
+[PASS] evals contÃ©m caso de origem real
+[PASS] cada eval possui ao menos 3 assertions
+[PASS] prompts nÃ£o nomeiam a skill nem usam token
+[PASS] ids dos evals sÃ£o Ãºnicos
+[PASS] schema possui os seis artefatos
+[PASS] todos os $refs locais resolvem
+[PASS] enum de agentes coincide com pastas reais
+[PASS] schema nÃ£o materializa nota ou validaÃ§Ã£o
+[PASS] todo objeto do schema Ã© fechado
+[PASS] fixture positiva QA_TEST_PLAN
+[PASS] fixture positiva QA_ASSIGNMENT funcional
+[PASS] fixture positiva QA_ASSIGNMENT nÃ£o funcional
+[PASS] fixture positiva QA_ASSIGNMENT usabilidade
+[PASS] fixture positiva QA_AGENT_RETURN funcional
+[PASS] fixture positiva QA_AGENT_RETURN nÃ£o funcional
+[PASS] fixture positiva QA_AGENT_RETURN usabilidade
+[PASS] fixture positiva QA_AGENT_RETURN com FAIL materializado
+[PASS] fixture positiva QA_ROUTE_REJECTION
+[PASS] fixture positiva QA_CAPABILITY_GAP
+[PASS] fixture positiva QA_CONSOLIDATED_REPORT
+[PASS] fixture negativa rejeita plano com produtor forjado
+[PASS] fixture negativa rejeita critÃ©rio aplicÃ¡vel sem dona
+[PASS] fixture negativa rejeita critÃ©rio aplicÃ¡vel com N/A divergente
+[PASS] fixture negativa rejeita campo extra no plano
+[PASS] fixture negativa rejeita plano inventa dimensÃ£o de borda
+[PASS] fixture negativa rejeita assignment com capacidade da irmÃ£
+[PASS] fixture negativa rejeita assignment salta a gerente
+[PASS] fixture negativa rejeita permissÃ£o nÃ£o Ã© default-deny
+[PASS] fixture negativa rejeita aÃ§Ã£o ativa sem autorizaÃ§Ã£o
+[PASS] fixture negativa rejeita aÃ§Ã£o ativa sem limites operacionais
+[PASS] fixture negativa rejeita aÃ§Ã£o ativa esconde conta de teste como N/A
+[PASS] fixture negativa rejeita aÃ§Ã£o ativa mascara cleanup como N/A com espaÃ§os
+[PASS] fixture negativa rejeita aÃ§Ã£o ativa com timestamp invÃ¡lido
+[PASS] fixture negativa rejeita retorno com produtor de outra agente
+[PASS] fixture negativa rejeita retorno assume fronteira da irmÃ£
+[PASS] fixture negativa rejeita PASS sem evidÃªncia
+[PASS] fixture negativa rejeita SKIP sem detalhe
+[PASS] fixture negativa rejeita retorno concluÃ­do promove SKIP
+[PASS] fixture negativa rejeita FAIL sem defeito nem pendÃªncia
+[PASS] fixture negativa rejeita agente embute julgamento em texto livre
+[PASS] fixture negativa rejeita agente embute julgamento no owner do prÃ³ximo passo
+[PASS] fixture negativa rejeita agente salta a gerente no retorno
+[PASS] fixture negativa rejeita rejeiÃ§Ã£o depois de iniciar aÃ§Ã£o
+[PASS] fixture negativa rejeita gap esconde decisÃ£o do Diretor
+[PASS] fixture negativa rejeita READY com falha
+[PASS] fixture negativa rejeita CONSULTA declarada PROVED
+[PASS] fixture negativa rejeita relatÃ³rio inclui nota
+[PASS] fixture negativa rejeita READY sem cadeia probatÃ³ria
+[PASS] fixture negativa rejeita READY sem cobertura positiva
+[PASS] fixture negativa rejeita READY com pendÃªncia aberta
+[PASS] fixture negativa rejeita READY promove SKIP
+[PASS] fixture negativa rejeita falha com estado PROVED
+[PASS] derivaÃ§Ã£o positiva exige prova total
+[PASS] uma falha forÃ§a retrabalho
+[PASS] um SKIP impede PROVED
+[PASS] CONSULTA nunca vira PROVED
+[PASS] propriedade funcional tem dona Ãºnica
+[PASS] propriedade nÃ£o funcional tem dona Ãºnica
+[PASS] propriedade humana tem dona Ãºnica
+[PASS] resumo Ã© recalculado dos casos
+[PASS] as 12 dimensÃµes formam partiÃ§Ã£o canÃ´nica
+[PASS] grafo assignment-retorno-relatÃ³rio fecha
+[PASS] partiÃ§Ã£o incompleta das 12 dimensÃµes Ã© detectada
+[PASS] retorno correlacionado Ã  assignment errada Ã© detectado
+[PASS] cobertura aritmeticamente incoerente Ã© detectada
+[PASS] digest divergente da assignment Ã© detectado
+[PASS] execuÃ§Ã£o ativa com limpeza nÃ£o comprovada Ã© detectada
+[PASS] execuÃ§Ã£o ativa com limpeza parcial impede READY
+[PASS] handoff causal divergente Ã© detectado
+[PASS] contrato causal divergente Ã© detectado
+[PASS] grafo com FAIL correlacionado fecha
+[PASS] defeito e pendÃªncia de outro caso sÃ£o detectados
+[PASS] schema do Diretor conhece o Departamento
+[PASS] entrada real DEPARTMENT_MISSION aceita pelo Diretor
+[PASS] DEPARTMENT_RETURN derivado aceito pelo consumidor
+[PASS] ponte semÃ¢ntica reconcilia relatÃ³rio e retorno
+[PASS] retorno autentica o relatÃ³rio por SHA-256
+[PASS] retorno Ã© causado pelo relatÃ³rio consolidado
+[PASS] fronteira conservadora de incerteza passa no gate composto
+[PASS] UNVERIFIED e MISSING permanecem visÃ­veis na fronteira
+[PASS] incerteza na fronteira conserva pendÃªncias
+[PASS] gate composto bloqueia ocultaÃ§Ã£o aceita pelo schema estrutural
+[PASS] gate composto bloqueia causal vÃ¡lido porÃ©m divergente
+[PASS] consumidor rejeita retorno direto de agente
+[PASS] consumidor rejeita returned_by divergente
+[PASS] consumidor rejeita salto ao CEO
+[PASS] legado existe para prova de integridade
+[PASS] manifesto contÃ©m 87 arquivos
+[PASS] legado ainda contÃ©m 87 arquivos
+[PASS] manifesto e legado tÃªm os mesmos caminhos
+[PASS] SHA-256 e bytes do legado permanecem intactos
+[PASS] todo arquivo possui uma classe de recorte
+
+RESULTADO: 121/122 PASS; 1 FAIL

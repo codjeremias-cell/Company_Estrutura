@@ -1,0 +1,81 @@
+{
+  "receita": "python evals/validate_workflow.py, cwd na raiz do pacote, env PYTHONIOENCODING=utf-8 PYTHONDONTWRITEBYTECODE=1, subprocess.run(..., encoding=\"utf-8\"). Sumário próprio: token delimitado; ambiguidade vira AMBIGUO, nunca palpite.",
+  "coletado_por": "ceo-maestro/evals/coletar_saida_crua.py",
+  "gate": "Este arquivo NÃO é publicado como evidência com problemas_do_coletor preenchido.",
+  "pacotes": {
+    "ceo-maestro": {
+      "sumario_proprio": {
+        "passou": 107,
+        "total": 107,
+        "token": "Resultado: (dialeto comum, ocorrência única)"
+      },
+      "exit": 0,
+      "fails": [],
+      "inventario": {
+        "subordinados_diretos": [
+          "departamento-evolucao-skills",
+          "departamento-negocios",
+          "diretor-de-lentes"
+        ],
+        "PLACAR.md": true,
+        "adendos_de_contagem": [
+          "PLACAR-ADENDO-2026-08-06-contagem-do-validador.md"
+        ]
+      },
+      "problemas_do_coletor": []
+    },
+    "diretor-de-lentes": {
+      "sumario_proprio": {
+        "passou": 101,
+        "total": 101,
+        "token": "Resultado: (dialeto comum, ocorrência única)"
+      },
+      "exit": 0,
+      "fails": [],
+      "inventario": {
+        "subordinados_diretos": [
+          "departamento-juizes"
+        ],
+        "PLACAR.md": true,
+        "adendos_de_contagem": [
+          "PLACAR-ADENDO-2026-08-06-contagem-do-validador.md"
+        ]
+      },
+      "problemas_do_coletor": []
+    },
+    "departamento-juizes": {
+      "sumario_proprio": {
+        "passou": 155,
+        "total": 155,
+        "token": "Resultado: (dialeto comum, ocorrência única)"
+      },
+      "exit": 0,
+      "fails": [],
+      "inventario": {
+        "subordinados_diretos": [],
+        "PLACAR.md": true,
+        "adendos_de_contagem": [
+          "PLACAR-ADENDO-2026-08-06-contagem-do-validador.md"
+        ]
+      },
+      "problemas_do_coletor": []
+    },
+    "departamento-negocios": {
+      "sumario_proprio": {
+        "passou": 235,
+        "total": 235,
+        "token": "RESULTADO: (exclusivo)"
+      },
+      "exit": 0,
+      "fails": [],
+      "inventario": {
+        "subordinados_diretos": [],
+        "PLACAR.md": true,
+        "adendos_de_contagem": [
+          "PLACAR-ADENDO-2026-08-06-contagem-do-validador.md"
+        ]
+      },
+      "problemas_do_coletor": []
+    }
+  }
+}

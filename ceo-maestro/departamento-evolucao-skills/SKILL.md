@@ -256,7 +256,7 @@ Esta skill só está pronta quando:
 - contrato e schema rejeitam: missão fora do CEO, invocação direta de agente, `deliverable_type:
   product`, recomendação sem placar, candidato provado por quem o escreveu, fronteira sem candidato
   e ledger sem registro de emissão;
-- a `EXECUTIVE_SUBMISSION` produzida é aceita pelo schema do `ceo-maestro`, executado como regressão;
+- a `EXECUTIVE_SUBMISSION` produzida e aceita pelo schema do `ceo-maestro` (documento-raiz, nao `$def` extraida), executado sobre fixture em disco; o caso `schema do CEO aceita EXECUTIVE_MISSION` exercita o schema-raiz sobre fixture propria; `_erros_se_missao_nao_for_objeto` e chamado em `run()`; MISSION nao-dict ou invalida nao passa em silencio; a cobertura global isenta `isolamento*/**/root/otica` por caminho POSIX exato (arenas de julgamento, nao pacote gerente); ausencia de qualquer fixture sai `[FAIL]` nomeado; o `evals/PLACAR.md` do overlay registra os casos e o selo aponta para este validador; apagar o uso de `ceo_schema` na MISSION deixa o aceite vermelho;
 - os mesmos casos passam em teste registrado em [evals/PLACAR.md](evals/PLACAR.md);
 - `departamento-registros` existe e o relatório de aprendizagem resolve — **pendente**.
 

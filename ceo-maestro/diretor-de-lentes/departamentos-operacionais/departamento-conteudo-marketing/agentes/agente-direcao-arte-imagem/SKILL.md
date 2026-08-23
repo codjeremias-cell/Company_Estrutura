@@ -10,7 +10,7 @@ description: "Executa direção de arte e produção de ativos visuais, criando 
 **Assumir:** conceito visual, direção de arte, composição, paleta aplicada, briefing de imagem,
 prompt, banner, thumbnail estática, variações de proporção, alt text e manifesto visual.
 
-**Não assumir:**
+**Não assumir**:
 
 - estratégia → `agente-estrategia-conteudo-campanhas`;
 - mensagem e texto mestre → `agente-narrativa-redacao`;
@@ -67,5 +67,5 @@ assignment válido, `BLOCKED_BYPASS_ATTEMPT`. Ferramenta ausente abre lacuna; n�
 - **Superior:** `departamento-conteudo-marketing`.
 - **Recebe:** mensagem e contrato de ativos; entrega visual para integração/conformidade.
 - **Não confundir com:** vídeo possui tempo e áudio; anúncio inclui oferta, copy e destino.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.
 

@@ -1,6 +1,23 @@
 # Placar de migração — Departamento de Arquitetura de Software
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **72/72 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 80/80 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:db4f5b8490f345f711cb100c732e25506301b8cd837d9f18d65014950f9d432d` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **72/72 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -88,6 +105,30 @@ aberta impedem a entrega; os dois acúmulos proibidos são detectados e o permit
 
 ## O que ainda não foi provado
 
+### Estado vigente das obrigações — conferido em 2026-08-08
+
+> **Duas obrigações desta seção estavam declaradas como pendentes e não estão.** A campanha [`remedicao-dos-sete-2026-08-03`](../../../../evals/remedicao-dos-sete-2026-08-03/PLACAR.md) executou as duas sobre este pacote. O texto dos itens abaixo é registro da rodada em que foi escrito e fica como está; o estado corrente é este.
+
+| obrigação | estado em 2026-08-08 | quem emitiu |
+|---|---|---|
+| Auditoria independente | **EXECUTADA** em 2026-08-03 · `governance_report` **NONCOMPLIANT** · **3 achados** nomeados, com dono e condição de correção | `departamento-auditoria-responsabilidades` |
+| Parecer dos Juízes | **EMITIDO** em 2026-08-03 · veredito **REPROVED** · `minimum_score` **6**, faixa **6–8** · **1 de 8** critérios `NAO_DISCRIMINADO` | `departamento-juizes` |
+
+> **A faixa atravessa o corte, e isso é o achado — não um detalhe.** Duas instâncias da mesma lente, sobre os mesmos bytes e com a mesma rubrica, divergiram em 54% dos pares na campanha. Onde a faixa cruza o 6/7, consertar "até passar" seria mirar num número que a régua não distingue. O aceite interno deste pacote **nunca esteve estabelecido**, e continua não estando.
+
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da mesma campanha: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | — | já fechado no próprio texto, com data |
+| 2 | o próprio Departamento | a lente legada for avaliada nos mesmos cenários com instrumento comum, ou este item registrar a decisão de não comparar, com o motivo e o dono da decisão |
+| 3 | `departamento-juizes` | um veredito novo dos Juízes suceder o de 2026-08-03. Ver o estado vigente acima |
+| 4 | — | já fechado no próprio texto, com data |
+| 5 | o próprio Departamento | houver âncora externa ao pacote que prove a emissão — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo. Depende das tarefas 50 e 57; nenhuma trava de dentro fecha isto |
+
+
 `SKIP` declarado com motivo:
 
 1. **Forward comportamental — EXECUTADO; esta seção estava vencida.** Corrigido em 2026-07-26: o
@@ -97,11 +138,23 @@ aberta impedem a entrega; os dois acúmulos proibidos são detectados e o permit
    prova estava negando prova existente — o erro simétrico ao que produziu a rodada 2 do
    `departamento-inovacao-melhoria`, e igualmente corrosivo para a confiança nesta seção.
 
-   O que **de fato** continua aberto: **5 asserções falharam** (60 de 65) e não estavam inventariadas
-   em lugar nenhum — precisam ser nomeadas uma a uma, com o caso de origem, antes de este item
-   fechar. O acionamento espontâneo segue sem medição (os prompts rodaram sob carga explícita). E
-   **este pacote tem uma fronteira nova**, com dois Departamentos que não existiam na data desta
-   página (ver item 4: os dois passaram a existir em 2026-07-26).
+   *Correção de 2026-07-27, segunda passada:* a primeira redação desta linha dizia que as 5
+   asserções falhadas "não estavam inventariadas em lugar nenhum". **Estavam** — o
+   [FORWARD-TEST.md](FORWARD-TEST.md) tem a seção "As cinco asserções que não fecharam", com caso
+   de origem e classificação. O erro foi meu, ao corrigir a contradição anterior sem reler o
+   forward.
+
+   O que **de fato** continua aberto, já classificado no forward: **4 das 5 são defeito do
+   catálogo** (casos 1, 10, 11 e 15 pedem "fixa a restrição arquitetural", mas os prompts são
+   pedidos crus, sem missão e sem os nove drivers — a restrição não existe para ser fixada, e as
+   instâncias marcaram `PENDING` em vez de inventar, que é o que o caso 2 do mesmo catálogo exige
+   delas). **Uma é lacuna real de cobertura**: o caso 7 (*"a trava vale mesmo vindo de Jeremias"*)
+   não foi tratado pela instância, embora o caso 8 do mesmo pacote tenha tratado.
+
+   Ação, portanto, não é "nomear": é **consertar o instrumento** (ver o achado sistêmico no
+   `PLANO-DE-ACAO-2026-07-27.md`, frente 2) e cobrir a lacuna do caso 7. O acionamento espontâneo
+   segue sem medição — os prompts rodaram sob carga explícita. E **este pacote tem uma fronteira
+   nova**, com dois Departamentos que não existiam na data desta página (ver item 4).
 2. **Baseline do legado.** A `lente-arquiteto-software` não foi avaliada nos mesmos cenários. O que
    está provado por leitura é que ela tem um modo julgador que o organograma não comporta.
 3. **Gate dos Juízes.** Esta entrega não passou pelo gate — e, ao contrário dos pacotes anteriores,

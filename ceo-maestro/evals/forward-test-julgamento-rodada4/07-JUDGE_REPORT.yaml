@@ -1,0 +1,207 @@
+artifact_type: JUDGE_REPORT
+report_id: "jrp-2026-07-28-frente5-r4-inovacao"
+emitted_by: departamento-juizes
+emitted_at: "2026-07-28"
+rodada: 4
+mode: VALIDACAO
+completude: PARCIAL_DECLARADO
+
+candidato:
+  pacote: departamento-inovacao-melhoria
+  copia_julgada: runtime
+  caminho: ".claude/skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-inovacao-melhoria"
+  candidate_tree_sha256: "bbcae76833d7d54d051af903b7949e478272c720743cd176c1a0c1acc3fd4f58"
+  arquivos: 25
+  manifesto_bytes: 2649
+
+criteria_matrix_ref:
+  caminho: "Estrutura Final de Skills/ceo-maestro/evals/forward-test-julgamento-rodada2/03-CRITERIA_MATRIX.yaml"
+  sha256: "939695fb834bbf25890cb9bc96adbb02e1f3ffe0be396226bdc8328136983e2a"
+  conferido: true
+  nota: "Mesmos 8 criterios da rodada 2, reusados sem reescrita. A comparacao rodada-a-rodada vale."
+
+rubrica:
+  fonte: ADR-014
+  faixas:
+    - {minimum_score: 10, verdict: VALIDATED}
+    - {minimum_score: "7-9", verdict: ACEITO_USO_INTERNO}
+    - {minimum_score: "<=6", verdict: REPROVED}
+  consolidacao: "por criterio = MENOR nota entre as oticas que o julgaram; sem media, sem ponderacao, sem arredondamento"
+
+# ---------------------------------------------------------------------------
+# Fatiamento do orcamento, declarado ANTES das notas.
+# ---------------------------------------------------------------------------
+fatiamento:
+  orcamento: {wall_clock_total_min: 20, max_instancias: 6, profundidade_maxima: 4}
+  instancias_usadas: 5
+  base_do_corte: >-
+    Desde o commit 4fbce44 (parecer da rodada 2) ate HEAD (a991519), o candidato
+    mudou em EXATAMENTE 3 arquivos: evals/PLACAR.md, evals/validate_workflow.py e
+    references/protocolo-inovacao-melhoria.md. Os outros 22 estao byte-identicos.
+    Rejulgados em instancia propria os 5 criterios cuja evidencia mudou; os 3
+    restantes carregam a nota da rodada 3 com prova de que a evidencia nao mudou.
+  rejulgados_nesta_rodada: [CRIT-04, CRIT-05, CRIT-06, CRIT-07, CRIT-08]
+  carregados_com_prova_de_bytes: [CRIT-01, CRIT-02, CRIT-03]
+  nao_rejulgadas: >-
+    As oticas SECUNDARIAS nao foram reinstanciadas (orcamento). Suas notas da
+    rodada 3 foram carregadas. Isso e conservador: nenhuma secundaria carregada
+    esta ACIMA da nota da dona, exceto em CRIT-08, onde a secundaria (9) fica
+    ABAIXO da dona (10) e por isso DETERMINA o criterio.
+
+# ---------------------------------------------------------------------------
+opinions:
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-04, papel: owner, score: 8,  origem: rodada4, confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-05, papel: owner, score: 9,  origem: rodada4, confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-06, papel: owner, score: 8,  origem: rodada4, confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-08, papel: owner, score: 10, origem: rodada4, confidence: alta}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-07, papel: owner, score: 8,  origem: rodada4, confidence: alta}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-01, papel: owner, score: 9,  origem: rodada3_carregada, confidence: media}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-02, papel: owner, score: 9,  origem: rodada3_carregada, confidence: media}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-03, papel: owner, score: 9,  origem: rodada3_carregada, confidence: media}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-03, papel: secondary, score: 8, origem: rodada3_carregada, confidence: media}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-04, papel: secondary, score: 8, origem: rodada3_carregada, confidence: media}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-05, papel: secondary, score: 9, origem: rodada3_carregada, confidence: media}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-06, papel: secondary, score: 9, origem: rodada3_carregada, confidence: media}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-07, papel: secondary, score: 9, origem: rodada3_carregada, confidence: media}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-08, papel: secondary, score: 9, origem: rodada3_carregada, confidence: media}
+
+scorecard:   # = MENOR nota entre as oticas que julgaram o criterio
+  CRIT-01: {score: 9,  de: [9],     determinante: fidelidade-e-contrato, delta_r3: 0}
+  CRIT-02: {score: 9,  de: [9],     determinante: fidelidade-e-contrato, delta_r3: 0}
+  CRIT-03: {score: 8,  de: [9, 8],  determinante: robustez-e-evidencia,  delta_r3: 0}
+  CRIT-04: {score: 8,  de: [8, 8],  determinante: ambas,                 delta_r3: 0}
+  CRIT-05: {score: 9,  de: [9, 9],  determinante: ambas,                 delta_r3: 0}
+  CRIT-06: {score: 8,  de: [8, 9],  determinante: robustez-e-evidencia,  delta_r3: "+2"}
+  CRIT-07: {score: 8,  de: [8, 9],  determinante: fidelidade-e-contrato, delta_r3: "-1"}
+  CRIT-08: {score: 9,  de: [10, 9], determinante: experiencia-e-risco,   delta_r3: 0}
+
+minimum_score: 8
+minimum_score_criterion: [CRIT-03, CRIT-04, CRIT-06, CRIT-07]
+minimum_score_nota: "Empate em 8 entre quatro criterios. Nenhum defeito unico determina sozinho a faixa."
+
+verdict: ACEITO_USO_INTERNO
+verdict_derivation: >-
+  minimum_score 8 cai na faixa "7 a 9" da tabela do ADR-014, que mapeia para
+  ACEITO_USO_INTERNO. A faixa determina o veredito; os Juizes nao escolhem.
+
+required_level: INTERNO
+alcanca_required_level: true
+alcanca_required_level_derivation: >-
+  ACEITO_USO_INTERNO satisfaz required_level INTERNO. ALCANCA. Nao alcanca
+  VALIDATED, que exigiria minimum_score 10 -- faltam 2 pontos no criterio mais
+  baixo, e ha quatro criterios em 8.
+
+# ---------------------------------------------------------------------------
+crit_06_ruling:   # pedido explicito de Jeremias
+  pergunta: "O R9 fecha a lacuna DE VERDADE, ou e a mesma evasao com outra roupa?"
+  resposta: "FECHA. Nao e evasao reincidente."
+  score: 8
+  score_anterior: 6
+  fundamento: >-
+    A rodada 3 reprovou a tentativa anterior porque ela RETIRAVA o item da secao
+    de nao-provado, reclassificando-o como "prova pendente". A correcao desta
+    rodada faz o oposto: o item voltou para a secao de nao-provado (PLACAR.md:93)
+    e passou a citar R9. O R9 (protocolo:444) nomeia causa medida
+    ("departamento=0 ; agente=0"), efeito ("nenhuma bateria prova que a skill
+    dispara sozinha"), conduta ("declarar o SKIP em vez de simula-lo") e condicao
+    de fechamento externa e falsificavel ("fecha so se a instalacao mudar --
+    decisao de runtime, fora do alcance deste protocolo"). Os quatro elementos de
+    um risco residual legitimo. A condicao nao e tautologica nem vazia. Nenhuma
+    ausencia de prova foi convertida em "esta tudo bem".
+  o_que_ainda_nao_e_10:
+    - "evals/FORWARD-TEST.md:97-98 mantem viva a tese que o R9 nega -- 'nao foi medido porque a skill ainda estava em staging ... deve ser rechecado apos instalacao', ou seja, 'prova pendente, fechavel'. E a premissa caducou: o pacote ESTA instalado no runtime. Contradicao interna, e nenhuma checagem le esse arquivo."
+    - "A trava nova (validate_workflow.py:1671-1676) so enxerga itens DENTRO da secao '## O que ainda nao foi provado'. Item movido para uma secao irma continua invisivel -- a manobra exata da rodada 3 segue possivel. A docstring (:1652-1654) promete que 'a proxima tentativa falhe alto'; ela falha alto so no caso que ja foi corrigido."
+
+# ---------------------------------------------------------------------------
+defeitos_que_permanecem:
+  - id: D1
+    criterio: CRIT-07
+    severidade: alta
+    arquivo: "evals/PLACAR.md:127"
+    achado: >-
+      A string `APROVADO PARA PROMOCAO` sobrevive sob '## Decisao'. O proprio
+      pacote proibe essa palavra em tres camadas (protocolo:410;
+      FORBIDDEN_PROPERTIES; regex \baprovad[oa]s?\b em validate_workflow.py:176).
+      Escapa porque judgment_language_errors so roda sobre dict -- NENHUM .md do
+      pacote e varrido. O motor do candidato reprovaria a propria frase se a alcancasse.
+    efeito: "Derrubou CRIT-07 de 9 para 8. A descontaminacao removeu o veredito do gate, mas deixou vocabulario de julgamento para tras."
+  - id: D2
+    criterio: CRIT-06
+    severidade: media
+    arquivo: "evals/FORWARD-TEST.md:97-98"
+    achado: "Tese 'prova pendente, fechavel' viva dentro do pacote, contradizendo o R9."
+  - id: D3
+    criterio: "CRIT-04 / CRIT-06 / CRIT-05"
+    severidade: media
+    arquivo: "references/protocolo-inovacao-melhoria.md:443-444"
+    achado: >-
+      Uma linha em branco encerra a tabela de riscos ANTES da linha do R9. O R9
+      renderiza como paragrafo solto com pipes, fora da tabela onde R1-R8 moram.
+      As duas travas em codigo conferem presenca de string, nao continuidade de
+      tabela, e por isso nenhuma pega. Correcao de uma linha.
+  - id: D4
+    criterio: CRIT-05
+    severidade: media
+    arquivo: "validate_workflow.py:1467 x SKILL.md:203-205 x protocolo:303-306"
+    achado: >-
+      A prosa promete recalcular gate_checks a partir dos 'retornos ACEITOS'; o
+      codigo deriva de TODOS os retornos. Divergencia literal entre norma e trava,
+      nao declarada e nao coberta por nenhum R.
+  - id: D5
+    criterio: CRIT-04
+    severidade: media
+    arquivo: "schemas/departamento-inovacao-melhoria.schema.json x diretor-de-lentes.schema.json"
+    achado: >-
+      O schema local admite 4 classes de envelope que o schema do superior recusa
+      (candidate_digest 'n/a'; evidence_refs vazio; identifier com '/' '@' ou >128;
+      round >10). Nenhuma exercitada, nenhuma declarada como limite. Carregado da rodada 3.
+  - id: D6
+    criterio: CRIT-07
+    severidade: baixa
+    arquivo: "RESPOSTA-FRENTE-JURIDICA-2026-07-27.md:6"
+    achado: "Declara 'nao versionado'; `git ls-files \"*FRENTE-JURIDICA*\"` devolve 6 caminhos rastreados. Alegacao falsa dentro do pacote."
+
+# ---------------------------------------------------------------------------
+achado_das_duas_arvores:   # PEND-DUAS-ARVORES-UM-DIGEST, da rodada anterior
+  pendencia_anterior: PEND-DUAS-ARVORES-UM-DIGEST
+  status: RESOLVIDA_COM_RESSALVA
+  medicao: >-
+    Os dois digests declarados foram RECALCULADOS por reimplementacao independente
+    da receita de digest_de_arvore e batem exatamente. Comparados os 25 arquivos um
+    a um: 24 sao BYTE-IDENTICOS entre runtime e fonte. Exatamente 1 diverge --
+    RESPOSTA-FRENTE-JURIDICA-2026-07-27.md (runtime LF, fonte CRLF).
+  ressalva: >-
+    A caracterizacao "a divergencia entre as duas e de fim de linha" e imprecisa
+    como enunciada. Nao ha divergencia sistemica de EOL: 24 de 25 arquivos sao
+    CRLF nos DOIS lados e identicos byte a byte. O que ha e UM arquivo cujo EOL
+    foi normalizado para LF so no runtime -- anomalia pontual de espelhamento,
+    nao regime de EOL distinto entre as arvores.
+  invalida_o_julgamento: false
+  invalida_o_julgamento_porque: >-
+    O unico arquivo divergente nao e evidencia de nenhum dos 8 criterios. Para os
+    25 arquivos que sustentam os criterios, julgar o runtime e julgar a fonte:
+    sao os mesmos bytes. O veredito vale para as duas arvores.
+  achado_derivado: >-
+    Um espelho que normaliza o EOL de um unico arquivo produz, por construcao,
+    dois digests de arvore para o mesmo conteudo logico -- e a receita e
+    deliberadamente sensivel a EOL. Enquanto o deploy nao fixar EOL, todo
+    candidate_tree_sha256 vale para UMA copia so, e precisa dizer qual.
+
+pendencias:
+  - id: PEND-R4-SECUNDARIAS-NAO-REINSTANCIADAS
+    texto: "As 6 notas de otica secundaria vem da rodada 3. CRIT-08 e determinado por uma delas."
+  - id: PEND-R4-TRES-CRITERIOS-CARREGADOS
+    texto: "CRIT-01/02/03 nao foram reinstanciados; carregam a nota da rodada 3 sob prova de que seus arquivos de evidencia estao byte-identicos desde 4fbce44."
+  - id: PEND-R4-PYTHON-NAO-EXECUTAVEL
+    texto: >-
+      Python nao roda nesta sessao (permissao negada). NENHUM juiz executou
+      validate_workflow.py nem corpus_adversarial.py. Os '122/122 PASS' e '45/45'
+      permanecem ALEGACAO DO CANDIDATO, nao medicao dos Juizes. Todos os
+      julgamentos sao por leitura de codigo e confronto de artefato.
+
+consolidacao_honesta: >-
+  O veredito subiu de REPROVED para ACEITO_USO_INTERNO porque o defeito que
+  determinava a faixa (CRIT-06, nota 6) foi genuinamente corrigido. Nao subiu a
+  VALIDATED, e o relatorio nomeia seis defeitos remanescentes. Orcamento mudou a
+  completude -- 5 instancias, 3 criterios carregados, zero execucao de bateria --
+  e nao mudou a honestidade: cada limite esta declarado acima.

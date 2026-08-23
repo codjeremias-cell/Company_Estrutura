@@ -1,0 +1,70 @@
+artifact_type: CRITERIA_MATRIX
+criteria_matrix_id: "cmx-2026-07-28-frente5-r3-inovacao"
+judgment_request_ref: "jrq-2026-07-28-frente5-r3-inovacao"
+emitted_by: departamento-juizes
+emitted_at: "2026-07-28T00:00:00-03:00"
+mode: VALIDACAO
+mode_fixed_reason: >-
+  Um unico candidato em artifact_refs (departamento-inovacao-melhoria). Protocolo
+  secao 1.0: um candidato -> VALIDACAO. Modo fixado no recebimento.
+
+# ---------------------------------------------------------------------------
+# REUSO DECLARADO — este e o unico fator que NAO mudou de proposito.
+# ---------------------------------------------------------------------------
+reuso_de_matriz:
+  origem: "forward-test-julgamento-rodada2/03-CRITERIA_MATRIX.yaml"
+  origem_sha256: "939695fb834bbf25890cb9bc96adbb02e1f3ffe0be396226bdc8328136983e2a"
+  origem_conferida: true
+  conteudo_reusado_literalmente: >-
+    Os 8 criterion_id, seus criterion_text, owner_lens, owner_reason,
+    secondary_lens, secondary_reason, o bloco uncovered, o uncovered_nota, a
+    reducao_declarada e a repartição_por_otica sao REUSADOS SEM UMA LETRA DE
+    ALTERACAO do artefato de origem. Nenhum criterio foi criado, removido,
+    reordenado ou reescrito nesta rodada.
+  justificativa: >-
+    O contrato do candidato nao mudou, entao os criterios derivados dele
+    continuam validos. Varredura dos contratos dos Juizes nao encontrou regra
+    que proiba reusar matriz de outra rodada; a matriz e particao interna da
+    gerente e nao carrega nota (o proprio artefato de origem declara
+    consolidacao_antecipada: PROIBIDA). As tres exigencias do contrato §1.2
+    (cobrir todo criterion_id, ser montada antes da delegacao, ir integra ao
+    relatorio) sao satisfeitas pelo reuso.
+  rebind_aplicado:
+    - campo: judgment_request_ref
+      de: "jrq-2026-07-28-frente5-r2-inovacao"
+      para: "jrq-2026-07-28-frente5-r3-inovacao"
+      motivo: >-
+        Protocolo §1: o quarteto viaja identico em todo envelope DESTA rodada e
+        e conferido caractere a caractere. Reusar o conteudo e permitido;
+        carregar o endereco de outra rodada quebraria a correlacao.
+    - campo: reconciliacao_1_1
+      de: "candidate_tree_sha256 1913add7...e921, com PEND-DIGEST-NAO-RECOMPUTADO-PELA-GERENTE"
+      para: "candidate_tree_sha256 e50aa566...0346, recomputado pela propria gerente"
+      motivo: >-
+        A §1.1 e reconciliacao do PEDIDO, nao dos criterios. Candidato novo
+        exige reconciliacao nova. Ver 00-RECEBIMENTO.md §1. A pendencia da
+        rodada 2 esta FECHADA nesta rodada.
+  regra_vizinha_respeitada:
+    regra: "protocolo §2 — forbidden_context: 'rodada anterior e historico de retrabalho'"
+    aplicacao: >-
+      O historico fornecido por Jeremias (veredito anterior, minimum_score
+      anterior, qual criterio levou a nota baixa) NAO foi repassado a nenhuma
+      otica. As tres julgaram cegas. A pergunta sobre o §12 chegou a otica dona
+      como pergunta aberta, sem revelar que havia parecer anterior.
+
+criterios_congelados: true
+
+# Particao integral reusada da origem (ver origem_sha256 acima).
+repartição_por_otica:
+  fidelidade-e-contrato:
+    owner: ["CRIT-01", "CRIT-02", "CRIT-03", "CRIT-07"]
+    secondary: ["CRIT-04"]
+  robustez-e-evidencia:
+    owner: ["CRIT-04", "CRIT-05", "CRIT-06", "CRIT-08"]
+    secondary: ["CRIT-03"]
+  experiencia-e-risco:
+    owner: []
+    secondary: ["CRIT-05", "CRIT-06", "CRIT-07", "CRIT-08"]
+
+uncovered: []
+consolidacao_antecipada: "PROIBIDA — nenhuma nota, banda ou veredito existe neste artefato."

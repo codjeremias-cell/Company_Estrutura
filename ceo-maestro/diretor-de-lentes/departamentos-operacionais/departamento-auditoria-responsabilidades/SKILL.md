@@ -55,6 +55,12 @@ com as Regras de Ouro bloqueia a operação e volta ao Diretor.
   matriz, ao consolidar estados e ao derivar o veredito.
 - Ler [references/adr-003-conformidade-sem-nota.md](references/adr-003-conformidade-sem-nota.md) ao
   questionar por que não há nota, por que há três estados por dentro e dois na fronteira.
+- Ler [references/adr-017-inspecao-em-papel-sob-porta-unica.md](references/adr-017-inspecao-em-papel-sob-porta-unica.md)
+  ao descobrir que nenhum `agente-*` resolve como skill invocável — é a decisão que explica por que
+  isso não bloqueia a rodada, e por que `COMPLIANT` continua exigindo inspeção executada.
+- Usar [scripts/inspecao_executada.py](scripts/inspecao_executada.py) e
+  [scripts/emitir_governanca.py](scripts/emitir_governanca.py) para reabrir âncoras e emitir os
+  envelopes. São código, não referência: o veredito sai deles.
 - Ler [references/origem-migracao.md](references/origem-migracao.md) ao verificar proveniência,
   recorte migrado ou política de rollback do pacote legado.
 - Validar artefatos internos contra
@@ -94,15 +100,25 @@ existem, são válidas e têm dona única.
 6. Confirmar independência: nenhum `auditor_id` entre os participantes declarados da solução.
 7. Registrar substrato e tier quando o runtime os expuser (`desconhecido` se não expostos); os três
    coincidindo, declarar a coincidência em `pending` (protocolo, §7, R2).
-8. Registrar cada agente como `AVAILABLE`, `INVALID`, `CONFLICTED` ou `MISSING`, com caminho e
-   evidência; cada estado converte para `panel[].status` pela tabela do protocolo (§1.6).
+8. Registrar cada agente como `AVAILABLE`, `AVAILABLE_AS_METHOD`, `INVALID`, `CONFLICTED` ou
+   `MISSING`, com caminho e evidência; cada estado converte para `panel[].status` pela tabela do
+   protocolo (§1.6).
 
-Agente ausente **não é substituído nem reaproveitado**: a gerente não audita no lugar dele, e as
-dimensões daquela capacidade ficam `NAO_PROVADO` com a lacuna aberta — nunca `CONFORME` por
-ausência de achado.
+**Sob porta única, o normal é `AVAILABLE_AS_METHOD`** — [ADR-017](references/adr-017-inspecao-em-papel-sob-porta-unica.md).
+Nenhum `agente-*` resolve como skill invocável nesta Estrutura, e isso é arquitetura deliberada, não
+falha. O `CONTRATO-DE-COMPROMISSO.md` do agente é então o **método**, e a gerente o executa **no
+papel daquele agente**, registrando em `method` qual contrato executou, sobre qual digest.
 
-**Concluído quando:** as três capacidades têm dona única, cada agente está registrado com caminho e
-evidência, e substrato/tier estão anotados por agente acionado.
+Isso **não** é a gerente auditando no lugar do agente por conveniência. A diferença é mecânica: cada
+dimensão que afirma algo tem de trazer **âncora que reabra** — arquivo, linha, citação e digest.
+Sem âncora não há estado; há `NAO_PROVADO`.
+
+**Contrato do agente ausente continua sendo `MISSING`**, continua abrindo lacuna e continua levando
+a `NAO_PROVADO`. A porta única tirou o endereço do agente, não o método dele — e ausência de
+evidência permanece ausência.
+
+**Concluído quando:** as três capacidades têm dona única, cada agente está registrado com caminho,
+estado e evidência, e substrato/tier estão anotados por papel executado.
 
 ## Workflow obrigatório
 
@@ -141,7 +157,7 @@ Elo de custódia faltante torna a evidência **não conferida**: ela não susten
 **Concluído quando:** existe registro, por agente acionado, do teste de independência, da custódia
 completa por evidência repassada, do digest recomputado, do contexto limpo e do substrato/tier.
 
-### 4. Emitir uma `AUDIT_TASK` por capacidade acionada
+### 4. Emitir uma `AUDIT_TASK` por capacidade acionada e **executar o método**
 
 Uma tarefa por capacidade com dimensão na rodada. Copiar as dimensões atribuídas com o papel
 (`owner` ou `secondary`), o escopo exclusivo, os checks, a prova mínima, a custódia e
@@ -151,8 +167,17 @@ Nunca antecipar conclusão esperada, veredito desejado, rodada anterior ou prefe
 Registrar a emissão — `task_id`, horário e destino: sem esse registro o veredito **não pode** ser
 `APROVADO` nem `APROVADO_COM_RESSALVAS` (protocolo, §7, R6).
 
-**Concluído quando:** cada capacidade acionada tem tarefa registrada, com quarteto, dimensões,
-custódia e destino conferível.
+Em `AVAILABLE_AS_METHOD`, **executar o método** é o passo, e ele tem forma fixa:
+
+1. abrir o `CONTRATO-DE-COMPROMISSO.md` do agente e recomputar o digest dele;
+2. percorrer as **Obrigações** e a **Barreira de saída** daquele contrato, item a item, sobre este
+   candidato — é a régua, e não é resumível;
+3. registrar em `method` o contrato, o digest e as contagens **lidas no documento**;
+4. para cada dimensão que vá afirmar algo, gravar `evidence_anchors` com arquivo, linha, citação
+   literal e digest do arquivo.
+
+**Concluído quando:** cada capacidade acionada tem tarefa registrada e método executado, com
+contrato, digest e âncoras que reabrem.
 
 ### 5. Aceitar recibos válidos
 
@@ -180,18 +205,167 @@ nunca `CONFORME` por ausência de achado, nunca `NAO_APLICAVEL` por conveniênci
 **Concluído quando:** as dez dimensões têm estado rastreável até recibo e evidência, ou estão
 `NAO_PROVADO` com lacuna aberta, e a matriz é reproduzível por terceiro.
 
-### 7. Emitir o veredito e derivar o binário
+> **Quatro limites viajam em `pending`, em toda emissão, sem condição.** `R6` — a existência do
+> painel auditor não é verificável pelo runtime. `R9` — a âncora prova que um arquivo foi
+> reaberto na versão declarada, e **não** liga a dimensão ao artefato que deveria sustentá-la;
+> pertinência é mérito, e mérito é dos Juízes. `R10` — **nada assina este envelope**: edição do
+> arquivo depois de gravado é invisível ao emissor e ao validador, e a defesa correspondente é o
+> **consumidor recomputar**, do lado do CEO. `R11` — **o TETO DO MÉTODO**, e ele é de outra
+> natureza que os três: forjar a evidência é chamar as mesmas funções que a verificam, medido
+> por origem independente em 2026-08-02 a **80 linhas e 0,031 s**. Quem lê o envelope na
+> barreira lê os quatro limites no próprio artefato, e não precisa lembrar deles de fora. O
+> `R9` viajava como `R8` até a rodada 3 e colidia com o `R8` do §7 do protocolo, que é *bypass
+> para fora*.
 
-Aplicar a precedência da [referência de dimensões](references/dimensoes-e-conformidade.md), §4, uma
-única vez: qualquer `NAO_CONFORME` ou `NAO_PROVADO` → **`REPROVADO`**; sem bloqueio e com ao menos
-uma `RESSALVA` → **`APROVADO_COM_RESSALVAS`**; sem bloqueio nem ressalva → **`APROVADO`**.
+#### O que `COMPLIANT` certifica — e o que ele NÃO certifica
 
-Derivar o binário pela tabela: `REPROVADO` → `NONCOMPLIANT` com **uma violação por dimensão
+Isto não é comentário: é o campo `compliance_claim`, obrigatório no `AUDIT_LEDGER` **e** no
+`GOVERNANCE_REPORT`, com os dois textos como `const` nos dois schemas e como constantes em
+[`scripts/inspecao_executada.py`](scripts/inspecao_executada.py). Alargar a alegação exige
+**quatro edições, em quatro arquivos**, e uma só derruba a emissão.
+
+> **Certifica:** nenhum valor deste envelope foi aceito como digitado quando divergia da
+> evidência reaberta. Toda âncora declarada foi reaberta contra a raiz auditada, cada citação
+> foi conferida no byte, cada total foi recontado dos recibos em disco e cada estado da matriz
+> foi rederivado dos mesmos recibos.
+>
+> **NÃO certifica:** que a evidência não foi forjada. Forjar a evidência é chamar as mesmas
+> funções que a verificam — `OI-04`, 2026-08-02, 80 linhas, 0,031 s, 1 tentativa, 4 arquivos
+> lidos, zero conhecimento do conteúdo auditado. Atacante e verificador compartilham o código,
+> o processo e a árvore. Fechar isto exige âncora **externa ao pacote**, e não cabe no runtime
+> atual.
+
+**A alegação foi reduzida; a verificação, não.** Nenhuma trava das rodadas 1 a 4 saiu, e a
+rodada 5 acrescentou quatro. O que mudou foi a frase que descreve o alcance.
+
+#### O manifesto do candidato descreve o PRÓPRIO candidato
+
+A seção que estava aqui — *"sem origem independente não há `COMPLIANT`"* — **foi
+retirada na rodada 8**, com o gate que ela descrevia. O motivo está em
+`137-RETIRADO-NA-R8-COM-MOTIVO-E-PROVA.md`: o emissor não deriva quem produziu os
+casos; ele lia um `produced_by` digitado por quem depositou a rodada. Alegação
+velha que sobrevive em prosa é o achado `OI5-08`, e retirar o gate sem retirar a
+frase seria repeti-lo.
+
+O que entra protege algo que o pacote **ainda afirma**: a própria identidade. O
+`manifest.json` tem de descrever **o próprio** candidato — `candidate_id` derivado
+do caminho, e cada arquivo declarado batendo com o que o pacote entrega. `C07` da
+rodada 7 mediu por que a trava precisa ser própria: o manifesto entregue como
+`cand-G` era byte-idêntico ao do `cand-F`, e a árvore **reproduzia**. A conferência
+acontece em `main`, fora de qualquer `if`: `DIVERGENTE` sai
+`[BLOCKED_MANIFESTO_NAO_DESCREVE_O_PROPRIO_CANDIDATO]`, **exit 2, nenhum
+envelope**; `SEM_MANIFESTO` é estado nomeado, viaja no envelope e **não bloqueia**,
+com o limite declarado em `LIMITES-DECLARADOS-EM-PROSA.md`.
+
+### 7. Emitir o veredito e derivar o binário — **rodando o emissor**
+
+O `AUDIT_LEDGER` e o `GOVERNANCE_REPORT` **não são digitados**. Saem de
+[`scripts/emitir_governanca.py`](scripts/emitir_governanca.py), executado sobre os recibos gravados
+em disco:
+
+```bash
+python scripts/emitir_governanca.py <pasta-da-rodada> <raiz-auditada>
+```
+
+**Antes de rodar, `rodada.json` tem de declarar `candidate_root`** — o caminho da raiz do
+candidato, relativo à `<raiz-auditada>`. É dele que o emissor tira a árvore sobre a qual recomputa
+o `candidate_digest`. Sem esse campo a identidade **não é conferida**, e isso não passa em
+silêncio.
+
+**O que a medição mostra, e não o que seria bonito escrever. Sem `candidate_root` há DOIS
+desfechos, e quem decide entre eles é o veredito interno.**
+
+**Ramo A — veredito interno diferente de `REPROVADO`.** O ramo `COMPLIANT` do schema do
+`AUDIT_LEDGER` exige `candidate_identity.status == CONFERIDO`. Com `NAO_CONFERIDO` o ledger não
+passa no próprio schema, a corrida **aborta e nada é gravado** — não sai envelope, e não sai
+`pending`:
+
+```text
+[IDENTIDADE_NAO_CONFERIDA] identidade NAO conferida: a rodada não declara candidate_root e nenhuma raiz do candidato foi passada; nada foi recomputado
+[ABORTA] o AUDIT_LEDGER não passa no próprio schema:
+         $.candidate_identity.status: 'NAO_CONFERIDO' difere de const 'CONFERIDO'
+```
+
+Exit 2. Neste ramo, o operador **não** deve procurar um envelope nem uma linha de `pending` que
+não existem.
+
+**Ramo B — veredito interno `REPROVADO`.** A cláusula acima é o `else` de
+`if internal_verdict == "REPROVADO"`: quando o veredito **é** `REPROVADO` ela não se aplica, o
+ledger com `NAO_CONFERIDO` passa no schema, e os **dois envelopes são gravados**, com exit 0:
+
+```text
+[IDENTIDADE_NAO_CONFERIDA] identidade NAO conferida: a rodada não declara candidate_root e nenhuma raiz do candidato foi passada; nada foi recomputado
+
+veredito interno: REPROVADO | binário: NONCOMPLIANT | identidade: NAO_CONFERIDO (ausente) | âncoras 11/11 reabertas (contadas por scripts/inspecao_executada.py::contar_ancoras_declaradas) | métodos 3/3 conferidos
+```
+
+Neste ramo o `pending` **existe** e carrega a razão da identidade não conferida, ao lado de `R6`,
+`R9` e `R10`.
+
+Nos dois ramos, quem barra ou deixa passar é o **gate de schema do `AUDIT_LEDGER`** sobre
+`$.candidate_identity.status`; o `[IDENTIDADE_NAO_CONFERIDA]` é aviso impresso antes e **não é ele
+que decide**. E nos dois ramos ausência de conferência **nunca** vira `COMPLIANT` — o que muda é
+se existe envelope para ler. Medido pelo caso `o passo 7 descreve os dois ramos, e os dois acontecem`, na bateria deste
+pacote, que roda a **mesma** entrada nas duas formas e exige desfechos diferentes.
+
+> **Por que esta correção está aqui, e por que ela mudou duas vezes.** Até a rodada 2 esta página
+> ensinava que o envelope saía com `candidate_identity.status: NAO_CONFERIDO` e a razão ia para
+> `pending`. A rodada 3 mediu um caso em que nada é gravado e reescreveu a página afirmando isso
+> **sem condição** — e os Juízes mediram a outra metade: com veredito interno `REPROVADO` a
+> corrida sai exit 0 e grava os dois arquivos. **As duas versões estavam certas sobre um ramo e
+> erradas sobre o outro.** A correção da rodada 4 é nomear a variável que decide, e descrever os
+> dois. Nas duas vezes a correção tentadora — afrouxar o ramo `COMPLIANT` do ledger para a prosa
+> voltar a ser verdade — **foi recusada**: quem muda é o texto, nunca o gate. Medido em
+> `prova-r3/02-PROVA-DE-MUTACAO-R3.json` (`M20-SEM-CANDIDATE-ROOT`) e em
+> `prova-r4/41-DOIS-RAMOS-DO-PASSO-7.json` (os dois ramos).
+
+Ausência de conferência permanece ausência.
+
+> **Por que esta linha existe.** Na rodada 1 desta correção a conferência de identidade morava
+> atrás de um quarto argumento que nenhuma documentação mencionava, e a invocação publicada aqui
+> era exatamente a que a pulava. Com `candidate_digest` falso, o comando desta página gravava
+> `COMPLIANT` carregando `sha256:ffff…`. **O caminho que a instrução ensina é parte da trava** —
+> ADR-018 —, e o validador do pacote executa o comando publicado com digest falso a cada rodada,
+> exigindo que ele barre.
+
+Um terceiro argumento sobrepõe a raiz, para operação fora de rodada. Ele **não** liga nem desliga a
+conferência — só diz onde olhar:
+
+```bash
+python scripts/emitir_governanca.py <pasta-da-rodada> <raiz-auditada> <raiz-do-candidato>
+```
+
+O emissor confere a identidade do candidato **antes de tudo**: recomputa o `candidate_digest` pela
+receita `_compartilhado/verificacoes_pacote.py::digest_de_arvore` e, se divergir, imprime
+`[BLOCKED_CANDIDATE_MISMATCH]`, sai com 2 e **não grava envelope nenhum** — nada é auditado.
+
+Depois chama `verificar_inspecao_executada` **antes** de montar a matriz, reabre cada âncora
+contra o disco e monta a matriz com os estados **efetivos** — nunca os declarados no recibo.
+Dimensão cuja âncora não reabre é rebaixada a `NAO_PROVADO`, e o rebaixamento é **nomeado** em
+`pending`. Só então aplica a precedência da
+[referência de dimensões](references/dimensoes-e-conformidade.md), §4, uma única vez: qualquer
+`NAO_CONFORME` ou `NAO_PROVADO` → **`REPROVADO`**; sem bloqueio e com ao menos uma `RESSALVA` →
+**`APROVADO_COM_RESSALVAS`**; sem bloqueio nem ressalva → **`APROVADO`**.
+
+Deriva o binário pela tabela: `REPROVADO` → `NONCOMPLIANT` com **uma violação por dimensão
 bloqueada**; os outros dois → `COMPLIANT` com `violations` vazio. **Cada ressalva vira `pending`**
 com dono, impacto e condição de fechamento — ressalva que fica só no texto não existe para o gate.
 
-**Concluído quando:** o veredito casa exatamente uma das três regras, o binário foi derivado sem
-escolha, e cada bloqueio virou violação e cada ressalva virou pendência com dono.
+**A gerente não recalcula à mão o que o emissor calculou, e não corrige o que ele devolveu.**
+Divergir do emissor é reescrever a prova depois de ver o resultado.
+
+**Concluído quando:** o emissor rodou e **um dos dois desfechos acima** aconteceu, sem terceiro
+possível:
+
+- **emitiu** (exit 0) — os dois envelopes gravados, o veredito casando exatamente uma das três
+  regras, cada bloqueio virado violação, cada ressalva virada pendência com dono, cada
+  rebaixamento por âncora que não reabriu nomeado, `R6`/`R9`/`R10` em `pending` **nos dois
+  envelopes**, e `candidate_identity.status` `CONFERIDO` — ou `NAO_CONFERIDO` com a razão em
+  `pending`, o que só é possível com veredito interno `REPROVADO`;
+- **recusou** (exit 2) — `[ABORTA]`, `[BLOCKED_CANDIDATE_MISMATCH]`,
+  `[BLOCKED_RECEIPT_IDENTITY_MISMATCH]`, `[BLOCKED_ANCHOR_COUNT_MISMATCH]` ou
+  `[BLOCKED_LEDGER_EVIDENCE_MISMATCH]` no console, e **nenhum arquivo gravado**. Não procure
+  envelope nem `pending`: não existem.
 
 ### 8. Devolver ao Diretor
 
@@ -213,10 +387,13 @@ blocos, decisões executivas necessárias e a cadeia completa até artefato real
 - Nunca produzir, corrigir, mesclar ou reescrever o candidato, nem propor patch.
 - Nunca executar build, teste, lint ou bateria; nunca chamar o testador.
 - Nunca herdar contagem de teste de outro Departamento no próprio `test_summary`.
-- Nunca pontuar de 0 a 10, somar dimensões, tirar percentual de conformidade ou aplicar corte de
-  9,5 — a nota é do `departamento-juizes`.
+- Nunca pontuar de 0 a 10, somar dimensões, tirar percentual de conformidade ou aplicar as faixas
+  de veredito — a nota é do `departamento-juizes`.
 - Nunca atribuir estado a dimensão sem recibo válido, nem converter ausência de achado em
   `CONFORME`.
+- Nunca afirmar estado sem **âncora que reabra**: arquivo, linha, citação e digest. Dimensão sem
+  âncora é `NAO_PROVADO`, e `NAO_PROVADO` bloqueia.
+- Nunca digitar o `AUDIT_LEDGER` ou o `GOVERNANCE_REPORT` à mão, nem editar o que o emissor gravou.
 - Nunca aceitar `NAO_APLICAVEL` genérico: sem justificativa específica do candidato, é
   `NAO_PROVADO`.
 - Nunca rebaixar para ressalva uma falha bloqueante de `AUTH`, escopo, `INTENT`, prova fresca,
@@ -245,9 +422,10 @@ fecha volta ao passo apontado.
 - [ ] Matriz com as dez dimensões, donas e segundos inspetores — passo 2 (dimensões, §1).
 - [ ] Independência, custódia completa e contexto limpo por agente — passo 3 (§2).
 - [ ] Uma `AUDIT_TASK` por capacidade, com registro de emissão que resolve — passo 4 (§1.1).
+- [ ] Método executado por papel, com contrato, digest e contagens lidas — passo 4 (§1.2).
 - [ ] Todo recibo aceito, devolvido uma vez, `FALHO` ou em lacuna — passo 5 (§1.6, §3).
-- [ ] Estado por dimensão rastreável até recibo e evidência — passo 6 (§3).
-- [ ] Veredito casando uma regra, binário derivado, violações e ressalvas — passo 7 (dimensões, §4).
+- [ ] Estado por dimensão rastreável até recibo e **âncora que reabre** — passo 6 (§3).
+- [ ] Emissor rodado, envelopes gravados, veredito casando uma regra — passo 7 (dimensões, §4).
 - [ ] Saída única ao Diretor, `test_summary` 0/0/0 e **R6** em `pending` — passo 8 (§7).
 
 ## Formato de devolução

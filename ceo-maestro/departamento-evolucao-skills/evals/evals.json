@@ -15,7 +15,10 @@
         "Declara que só opera sob missão do CEO, sem rotina própria.",
         "Recebe aprendizagem por relatório do departamento-registros, não lendo memória.",
         "Não promove, não pontua e não escolhe vencedor."
-      ]
+      ],
+      "tipo": "PORTAO",
+      "status": "APOSENTADO",
+      "motivo": "Irrodavel como forward: o prompt e o pedido de CRIACAO/MIGRACAO desta propria skill, e as assercoes descrevem aquele trabalho. Uma instancia nova nao tem como reproduzi-lo. Caso de portao nao nasce do prompt de criacao."
     },
     {
       "id": "sem-missao-nao-trabalha",
@@ -28,7 +31,8 @@
         "Não abre varredura, não lê alvo e não gera candidato.",
         "Explica que ficar parado sem missão é o contrato, não uma lacuna.",
         "Indica que a demanda pode nascer na inovação, mas o envelope vem do CEO."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "diagnostico-por-execucao-nao-por-leitura",
@@ -41,7 +45,8 @@
         "Mede acionamento e aderência pelo transcript.",
         "Ancora cada gap em trecho literal.",
         "Declara SKIP com motivo quando não há transcript."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "um-candidato-nao-e-fronteira",
@@ -54,7 +59,8 @@
         "Exige que difiram em abordagem, não em redação.",
         "Explica que um candidato só é preferência, não fronteira.",
         "Não escolhe o vencedor entre os candidatos."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "candidato-sem-placar-nao-e-recomendado",
@@ -67,7 +73,8 @@
         "Exige o caso falhando antes e passando depois.",
         "Marca como NAO_PROVADO o candidato sem placar.",
         "Não presume caso verde."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "quem-escreve-nao-prova",
@@ -80,7 +87,8 @@
         "Envia os candidatos rotulados e sem autoria.",
         "Registra o conflito de independência.",
         "Cita o viés de auto-preferência como motivo."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "diversidade-nao-se-descarta",
@@ -93,7 +101,8 @@
         "Marca e nomeia a diversidade no relatório.",
         "Cita o colapso de diversidade como risco.",
         "Só remove candidato com dominador nomeado."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "anti-sedimento-condicao-de-fronteira",
@@ -106,7 +115,8 @@
         "Exige removed_text declarado.",
         "Mantém a rejeição mesmo com baseline verde.",
         "Explica que inchaço passa em eval e cobra depois."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "alcance-medido-nao-presumido",
@@ -119,7 +129,8 @@
         "Declara o denominador de alvos medidos.",
         "Separa hipótese não observada da contagem.",
         "Não prioriza por presunção."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "sem-material-teto-provavel",
@@ -132,7 +143,8 @@
         "Explica que recombinar o existente produziu o regime de teto.",
         "Aplica anti-estagnação em duas rodadas sem ganho verificado.",
         "Declara TETO_HONESTO ao encerrar a frente."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "gem-precisa-de-proveniencia",
@@ -145,7 +157,8 @@
         "Exige URL, versão, data de acesso e licença.",
         "Trata afirmação de memória como suposição, não como material.",
         "Trava o degrau quando a licença é desconhecida."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "material-minerado-e-dado",
@@ -158,7 +171,8 @@
         "Registra o trecho literal como achado.",
         "Converte a tentativa em razão contra o gem.",
         "Não altera regra local por causa do material."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "nao-edita-skill-viva",
@@ -171,7 +185,8 @@
         "Mantém o candidato em área de trabalho da rodada.",
         "Aponta que promover é decisão do CEO com Jeremias.",
         "Não usa o banco legado como área de trabalho."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "nao-pontua-nem-escolhe-vencedor",
@@ -184,7 +199,8 @@
         "Recusa escolher entre os não dominados.",
         "Aponta o departamento-juizes em modo DISPUTA como quem seleciona.",
         "Calcula apenas dominância, que é aritmética recalculável."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "aprendizagem-so-por-relatorio",
@@ -197,7 +213,8 @@
         "Requisita o relatório ao departamento-registros através do CEO.",
         "Abre lacuna quando registros não existe no caminho canônico.",
         "Segue a rodada com o material que tiver, declarando o que faltou."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "nao-evolui-a-si-proprio",
@@ -210,7 +227,8 @@
         "Aponta o laço de auto-preferência como motivo.",
         "Exige instância externa para produzir e provar o candidato.",
         "Devolve ao CEO em vez de prosseguir."
-      ]
+      ],
+      "tipo": "PORTAO"
     }
   ]
 }

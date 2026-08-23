@@ -56,3 +56,18 @@ Evidência comportamental:
 ## Observação
 
 O ensaio mede aderência comportamental aos prompts. Integridade de schema, causalidade, correlação de artefatos e regressões externas são cobertas separadamente por `validate_workflow.py`.
+
+## Adendo determinístico ADR-014 — 2026-07-29
+
+O ensaio comportamental histórico acima não foi reescrito. A migração do contrato externo foi
+provada no validador determinístico:
+
+- `required_level` obrigatório e idêntico em missão, pacote de julgamento, matriz e retorno;
+- fronteiras externas `6`, `7`, `9` e `10` exercidas em `INTERNO` e `PRODUCAO`;
+- `10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO`, `0–6 → REPROVED`;
+- nota externa fracionária, nível ausente/divergente e veredito incompatível são rejeitados;
+- `ACEITO_USO_INTERNO` alcança somente `INTERNO`;
+- falha crítica e pendência bloqueante forçam `REPROVED`;
+- a régua decimal interna `9,5`/`9,7` continua coberta separadamente.
+
+Resultado desta bateria ampliada: **226/226 PASS, 0 FAIL, 0 WARN**.

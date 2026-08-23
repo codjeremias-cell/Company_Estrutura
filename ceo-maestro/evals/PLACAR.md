@@ -1,6 +1,23 @@
 # Placar — baseline × CEO Maestro
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **33/33 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 166/166 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:b1ffba0f7b9cd3321d7adc3308788a2de63fc98457e79e82199e6763a693f6e5` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](julgamento-pacotes-2026-07-29/08-RESUMO.md), para não
+contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **33/33 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -103,3 +120,51 @@ agentes **não** estão registrados no runtime — por desenho, verificado
 deles continua verdadeiro e **deve continuar**: agente é folha, e disparar sozinho seria a
 violação que o contrato dele proíbe. O que os placares dos Departamentos ainda não têm é prova
 de que a **cadeia inteira** roda ponta a ponta sob uma missão real.
+
+---
+
+## Migração ADR-014 — medição fresca de 2026-07-29
+
+Esta seção é uma nova medição. As seções anteriores permanecem como histórico fiel do gate
+binário e das sessões que existiam nas datas declaradas; seus números e resultados não foram
+reescritos.
+
+| Métrica | Antes | Depois | Delta |
+|---|---:|---:|---:|
+| casos determinísticos do CEO | 33 | **55** | **+22** |
+| resultado | 33/33 PASS | **55/55 PASS** | 0 regressões |
+
+Dezenove dos 22 casos acrescentados cobrem diretamente o ADR-014:
+
+- as oito combinações da matriz `6 / 7 / 9 / 10 × INTERNO / PRODUCAO`;
+- `required_level` ausente na missão, no parecer e na decisão;
+- divergência missão → parecer e parecer → decisão;
+- `ACEITO_USO_INTERNO` tentando cruzar uma exigência `PRODUCAO`;
+- nota externa decimal;
+- falha crítica e pendência bloqueante forçando `REPROVED`;
+- tentativa de manter veredito positivo diante de falha crítica.
+
+Os outros três fecham um falso-verde de fronteira encontrado na auditoria desta medição: missão,
+submissão e `CAPABILITY_GAP` de `departamento-evolucao-skills` eram aceitos pelo schema, porém
+rejeitados pelo validador sem caso que expusesse a divergência. Os três pares executivos agora
+compartilham o mesmo conjunto canônico.
+
+O gate vigente usa notas externas inteiras e as faixas do ADR-014:
+`10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO`, `0–6 → REPROVED`. Exceção preserva o alvo do
+nível — 10 em `PRODUCAO`, 7 em `INTERNO` — sem restaurar um corte decimal externo.
+
+### Prova contra falso-verde
+
+O mapeamento `external_verdict` foi adulterado **somente em memória** para sempre devolver
+`VALIDATED`; nenhum arquivo foi modificado pela mutação. O validador caiu de **55/55** para
+**49/55**: as seis fronteiras incompatíveis ficaram vermelhas pelo oráculo independente das
+fixtures. Portanto, alterar simultaneamente o gerador e a validação não mascara a régua.
+
+### Verificações desta medição
+
+- `evals/evals.json`: JSON válido;
+- `schemas/ceo-maestro.schema.json`: JSON válido;
+- `evals/validate_workflow.py`: compilação Python válida;
+- execução determinística: **55/55 PASS**;
+- mutação semântica: **49/55**, falha esperada detectada;
+- `git diff --check`: sem erro de whitespace.

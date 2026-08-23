@@ -1,0 +1,160 @@
+===== INICIO departamento-juizes =====
+[PASS] pacote, agentes e vínculos externos — esperado válido
+[PASS] metadata da gerente e dos três agentes — esperado válido
+[PASS] fonte normativa única e tokens de contrato — esperado válido
+[PASS] ADR-014, rubrica, exemplos e SKILL são coerentes — esperado válido
+[PASS] ADR-016: regra de agregação concorda entre schema, protocolo e rubrica — esperado válido
+[PASS] links internos do pacote resolvem — esperado válido
+[PASS] série global de ADR é única em toda a estrutura — esperado válido
+[PASS] todo pacote gerente tem validador que roda a trava global — esperado válido
+[PASS] a recusa de digest() dispara e ninguém tem cópia privada do motor — esperado válido
+[PASS] nenhuma asserção é verdadeira por construção sobre valor produzido — esperado válido
+[PASS] nenhum placar de pacote declara total de cadeia como estado corrente — esperado válido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md — esperado válido
+[PASS] schema interno e referências locais — esperado válido
+[PASS] autoridades herdadas dos schemas de fronteira — esperado válido
+[PASS] catálogo de evals — esperado válido
+[PASS] schema aceita CRITERIA_MATRIX — esperado válido
+[PASS] schema aceita JUDGE_ASSIGNMENT — esperado válido
+[PASS] schema aceita JUDGE_ASSIGNMENT de robustez — esperado válido
+[PASS] schema aceita JUDGE_OPINION — esperado válido
+[PASS] schema aceita JUDGE_CAPABILITY_GAP — esperado válido
+[PASS] schema aceita PANEL_RECORD — esperado válido
+[PASS] schema aceita PANEL_HANDOFF — esperado válido
+[PASS] schema aceita INDEPENDENT_VERIFICATION — esperado válido
+[PASS] atribuição rejeita rubrica v1 — esperado rejeitado
+[PASS] PANEL_RECORD exige required_level — esperado rejeitado
+[PASS] PANEL_RECORD rejeita minimum_score fracionário — esperado rejeitado
+[PASS] atribuição rejeita ótica trocada para o agente — esperado rejeitado
+[PASS] atribuição rejeita retorno fora da gerente — esperado rejeitado
+[PASS] atribuição exige proibição explícita de autoria — esperado rejeitado
+[PASS] atribuição rejeita juiz de fora de agentes/ — esperado rejeitado
+[PASS] parecer rejeita nota fracionária — esperado rejeitado
+[PASS] parecer rejeita nota fora de 0..10 — esperado rejeitado
+[PASS] parecer aceita n/a com motivo verificável — esperado válido
+[PASS] parecer rejeita n/a sem motivo — esperado rejeitado
+[PASS] parecer BLOCKED com abstenção é válido — esperado válido
+[PASS] parecer BLOCKED exige abstenção declarada — esperado rejeitado
+[PASS] parecer COMPLETED exige ao menos uma nota — esperado rejeitado
+[PASS] registro rejeita VALIDATED com menor nota 9 — esperado rejeitado
+[PASS] registro rejeita REPROVED com menor nota 9 (faixa é ACEITO_USO_INTERNO) — esperado rejeitado
+[PASS] registro aceita ACEITO_USO_INTERNO com menor nota 9 — esperado válido
+[PASS] registro rejeita ACEITO_USO_INTERNO sem crítica nem mudança pedida — esperado rejeitado
+[PASS] registro aceita ACEITO_USO_INTERNO com menor nota 7 (piso da faixa) — esperado válido
+[PASS] registro rejeita ACEITO_USO_INTERNO com menor nota 6 — esperado rejeitado
+[PASS] registro rejeita ACEITO_USO_INTERNO com menor nota 10 (é VALIDATED) — esperado rejeitado
+[PASS] reprovação sem crítica e mudança é rejeitada — esperado rejeitado
+[PASS] registro rejeita VALIDATED com lacuna aberta — esperado rejeitado
+[PASS] lacuna força REPROVED mesmo com mínimo 10 — esperado válido
+[PASS] registro rejeita VALIDATED com critério sem dona — esperado rejeitado
+[PASS] critério sem dona força REPROVED mesmo com mínimo 10 — esperado válido
+[PASS] registro rejeita VALIDATED sem registro de emissão (R6) — esperado rejeitado
+[PASS] ausência de emissão força REPROVED mesmo com mínimo 10 — esperado válido
+[PASS] registro exige R6 nomeado em pending — esperado rejeitado
+[PASS] registro rejeita VALIDATED com falha crítica — esperado rejeitado
+[PASS] falha crítica força REPROVED mesmo com mínimo 10 — esperado válido
+[PASS] pendência bloqueante força REPROVED mesmo com mínimo 10 — esperado válido
+[PASS] registro rejeita retorno fora do Diretor — esperado rejeitado
+[PASS] handoff rejeita consenso com motivo de liderança — esperado rejeitado
+[PASS] handoff aceita decisão de liderança com motivo — esperado válido
+[PASS] handoff rejeita liderança sem motivo declarado — esperado rejeitado
+[PASS] handoff rejeita COMPLETED com lacuna aberta — esperado rejeitado
+[PASS] handoff rejeita COMPLETED com menos de 2 pareceres — esperado rejeitado
+[PASS] verificação rejeita impossibilidade sem tentativa executada — esperado rejeitado
+[PASS] verificação aceita NOT_VERIFIED com conferência parcial — esperado válido
+[PASS] Diretor aceita o DEPARTMENT_JUDGE_REPORT produzido — esperado válido
+[PASS] CEO aceita o JUDGE_REPORT produzido — esperado válido
+[PASS] Diretor aceita DEPARTMENT_JUDGE_REPORT interno com mínimo 9 — esperado válido
+[PASS] CEO aceita JUDGE_REPORT interno com mínimo 9 — esperado válido
+[PASS] Diretor rejeita DEPARTMENT_JUDGE_REPORT sem required_level — esperado rejeitado
+[PASS] CEO rejeita JUDGE_REPORT sem required_level — esperado rejeitado
+[PASS] Diretor rejeita VALIDATED com 9,49 — esperado rejeitado
+[PASS] CEO rejeita VALIDATED com 9,49 — esperado rejeitado
+[PASS] Diretor rejeita parecer forjado por outro Departamento — esperado rejeitado
+[PASS] Diretor aceita reprovação com crítica e mudança — esperado válido
+[PASS] Diretor rejeita reprovação muda — esperado rejeitado
+[PASS] dois avaliadores no mesmo critério: vale a menor — esperado válido
+[PASS] minimum_score é o mínimo do scorecard — esperado válido
+[PASS] média alta não substitui a menor nota — esperado válido
+[PASS] n/a declarado não entra no mínimo — esperado válido
+[PASS] 10 em tudo valida — esperado válido
+[PASS] 9 em um critério não atravessa para VALIDATED — esperado válido
+[PASS] 9 em um critério cai em ACEITO_USO_INTERNO — esperado válido
+[PASS] 7 em um critério cai em ACEITO_USO_INTERNO — esperado válido
+[PASS] 6 em um critério reprova — esperado válido
+[PASS] PRODUCAO passa somente com VALIDATED — esperado válido
+[PASS] INTERNO passa com mínimo 9 — esperado válido
+[PASS] INTERNO passa com mínimo 7 — esperado válido
+[PASS] INTERNO não passa com mínimo 6 — esperado válido
+[PASS] critério sem dona reprova mesmo com 10 em tudo — esperado válido
+[PASS] ótica ausente reprova mesmo com 10 em tudo — esperado válido
+[PASS] falha crítica reprova mesmo com 10 em tudo — esperado válido
+[PASS] pendência bloqueante reprova mesmo com 10 em tudo — esperado válido
+[PASS] sem registro de emissão não há VALIDATED (R6) — esperado válido
+[PASS] digest da fonte normativa confere com o declarado em ORIGEM.md — esperado válido
+[PASS] trava 1 aceita emissões com caminho exclusivo por emissão — esperado válido
+[PASS] trava 1 rejeita duas emissões no mesmo caminho de escrita — esperado rejeitado
+[PASS] trava 1 rejeita caminho que não deriva do assignment_id — esperado rejeitado
+[PASS] trava 1 rejeita caminho de outro attempt — esperado rejeitado
+[PASS] trava 1 rejeita emissão sem caminho de escrita — esperado rejeitado
+[PASS] trava 1 aceita duas instâncias por lente com caminhos distintos — esperado válido
+[PASS] trava 2 aceita AGUARDANDO com arquivo ausente e sem sinal de runtime — esperado válido
+[PASS] trava 2 rejeita SEM_RETORNO concluído só por ausência de arquivo — esperado rejeitado
+[PASS] trava 2 rejeita FALHO concluído só por ausência de arquivo — esperado rejeitado
+[PASS] trava 2 aceita SEM_RETORNO com sinal de runtime observado — esperado válido
+[PASS] trava 2 rejeita não-entrega sem conferência em disco — esperado rejeitado
+[PASS] trava 2 rejeita não-entrega com uma só conferência — esperado rejeitado
+[PASS] trava 2 rejeita redespacho da mesma ótica e instância no mesmo attempt — esperado rejeitado
+[PASS] trava 3 aceita despacho com custódia anterior e digest — esperado válido
+[PASS] trava 3 rejeita despacho sem cópia de custódia — esperado rejeitado
+[PASS] trava 3 rejeita custódia tomada depois do despacho — esperado rejeitado
+[PASS] trava 3 rejeita custódia sem digest sha256 — esperado rejeitado
+[PASS] trava 3 rejeita custódia sem bytes verificáveis — esperado rejeitado
+[PASS] regra de agregação declarada antes de todo parecer é aceita — esperado válido
+[PASS] regra declarada depois do primeiro parecer é rejeitada — esperado rejeitado
+[PASS] regra com método fora do enum é rejeitada — esperado rejeitado
+[PASS] rodada sem regra de agregação é rejeitada — esperado rejeitado
+[PASS] método de agregação MENOR é declarável — esperado válido
+[PASS] método de agregação MEDIANA é declarável — esperado válido
+[PASS] método de agregação EMPATE_DECLARADO é declarável — esperado válido
+[PASS] painel de 3 lentes × 2 instâncias tem forma válida — esperado válido
+[PASS] painel com instância repetida na mesma lente é rejeitado — esperado rejeitado
+[PASS] painel sem a segunda instância declarada é rejeitado — esperado rejeitado
+[PASS] faixa 6–8 entre instâncias sai como NAO_DISCRIMINADO — esperado válido
+[PASS] faixa 9–10 entre instâncias também atravessa o corte — esperado válido
+[PASS] faixa 7–8, que não atravessa, continua ACEITO_USO_INTERNO — esperado válido
+[PASS] faixa 5–6, que não atravessa, continua REPROVED — esperado válido
+[PASS] uma instância só nunca produz NAO_DISCRIMINADO — esperado válido
+[PASS] falha crítica manda REPROVED, não empate técnico — esperado válido
+[PASS] lacuna de cobertura manda REPROVED, não empate técnico — esperado válido
+[PASS] NAO_DISCRIMINADO não alcança PRODUCAO — esperado válido
+[PASS] NAO_DISCRIMINADO não alcança INTERNO — esperado válido
+[PASS] schema aceita PANEL_RECORD NAO_DISCRIMINADO com faixa que atravessa — esperado válido
+[PASS] schema rejeita NAO_DISCRIMINADO com faixa que não atravessa o corte — esperado rejeitado
+[PASS] schema rejeita NAO_DISCRIMINADO com uma instância por lente — esperado rejeitado
+[PASS] schema rejeita NAO_DISCRIMINADO mudo — esperado rejeitado
+[PASS] schema rejeita NAO_DISCRIMINADO com falha crítica — esperado rejeitado
+[PASS] schema rejeita ACEITO_USO_INTERNO com faixa que atravessa o corte — esperado rejeitado
+[PASS] schema rejeita VALIDATED com faixa 9–10 — esperado rejeitado
+[PASS] PANEL_RECORD exige minimum_score_range — esperado rejeitado
+[PASS] PANEL_RECORD exige aggregation_rule — esperado rejeitado
+[PASS] PANEL_RECORD rejeita método de agregação fora do enum — esperado rejeitado
+[PASS] JUDGE_ASSIGNMENT exige write_path — esperado rejeitado
+[PASS] JUDGE_ASSIGNMENT exige custody_copy — esperado rejeitado
+[PASS] JUDGE_ASSIGNMENT rejeita caminho fora do formato da emissão — esperado rejeitado
+[PASS] schema aceita JUDGE_ASSIGNMENT de segunda instância — esperado válido
+[PASS] schema aceita AGUARDANDO com runtime_signal NENHUM — esperado válido
+[PASS] schema rejeita SEM_RETORNO com runtime_signal NENHUM — esperado rejeitado
+[PASS] schema rejeita FALHO com runtime_signal NENHUM — esperado rejeitado
+[PASS] schema aceita SEM_RETORNO com EXECUTOR_ERROR observado — esperado válido
+[PASS] schema aceita FALHO com TIMEOUT_DECLARADO observado — esperado válido
+[PASS] schema rejeita AGUARDANDO sem no_return_evidence — esperado rejeitado
+[PASS] schema rejeita SEM_RETORNO sem no_return_evidence — esperado rejeitado
+[PASS] Diretor aceita DEPARTMENT_JUDGE_REPORT NAO_DISCRIMINADO — esperado válido
+[PASS] CEO aceita JUDGE_REPORT NAO_DISCRIMINADO — esperado válido
+[PASS] Diretor rejeita faixa que atravessa carimbada como aceite interno — esperado rejeitado
+[PASS] CEO rejeita faixa que atravessa carimbada como aceite interno — esperado rejeitado
+
+Resultado: 155/155 casos passaram.
+
+===== FIM departamento-juizes =====

@@ -3,6 +3,10 @@
   "versao": "1.0.0",
   "data": "2026-07-26",
   "instrucao": "Cada caso roda contra instância nova e independente, sem o pacote citado no prompt. 'acionou' mede se a skill foi ativada pelo gatilho; 'aderiu' mede se a resposta respeitou o contrato. Enquanto o forward não rodar, ambos permanecem NAO_MEDIDO — declarar outra coisa viola a RI-04.",
+  "forward_provenance_policy": {
+    "policy_id": "forward-provenance-v1",
+    "contract": "forward-proveniencia.json"
+  },
   "cases": [
     {
       "id": 1,
@@ -231,3 +235,4 @@
     }
   ]
 }
+

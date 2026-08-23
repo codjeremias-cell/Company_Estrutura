@@ -1,0 +1,118 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-robustez-e-evidencia-i1-nucleo-de-comando",
+  "lens": "robustez-e-evidencia",
+  "instancia": 1,
+  "round": "nucleo-de-comando",
+  "created_at": "2026-08-06T10:40:00-03:00",
+  "commit_julgado": "412769f31ccb0cb636f85c41f56cf9c6f612b3c1",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "As travas sao executadas de verdade: cada caso 'esperado rejeitado' faz deepcopy de um fixture valido, muta UM campo e re-executa a funcao real de validacao, exigindo lista de erros nao vazia (evals/validate_workflow.py:3452-3462). O ataque de prefixo ('R6 x','R9 x','R10 x','R11 x') e executado contra payload quase-certo, que e o caso dificil (:2646-2648). Morte por excecao NAO e creditada: nao ha except abrangente no harness, e a ausencia do motor compartilhado e tratada com [FAIL] impresso mais comentario explicando que ModuleNotFoundError e subclasse de ImportError e por isso o segundo braco existe (:35-45) - exatamente o defeito que o criterio nomeia, tratado de proposito. LACUNA que impede 7: existe trava declarada no schema proprio do pacote SEM nenhum caso que a faca reprovar, e ela falha aberta. schemas/ceo-maestro.schema.json:1174 usa 'anyOf' dentro do 'then' da regra de REPROVED; o motor compartilhado implementa so oneOf e allOf (_compartilhado/validador_schema.py:300,309) e o docstring avisa que palavras nao suportadas 'sao ignoradas em silencio' (:14-18). Nenhum dos 96 casos fica vermelho se o bloco for apagado. Pior: mesmo SE anyOf fosse implementado, os tres ramos sao 'properties' puros sem 'required' (schema:1175-1195), logo o ramo critical_fail e vacuamente verdadeiro para qualquer instancia que omita o campo - a regra e inerte por duas causas independentes. Risco adicional nao provado: 'actual_valid = not errors' (:3453) credita o caso por QUALQUER erro, sem fixar qual regra disparou.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:3452",
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:3453",
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:2646",
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:35",
+        "Estrutura Final de Skills/ceo-maestro/schemas/ceo-maestro.schema.json:1174",
+        "Estrutura Final de Skills/ceo-maestro/schemas/ceo-maestro.schema.json:1182",
+        "Estrutura Final de Skills/_compartilhado/validador_schema.py:14",
+        "Estrutura Final de Skills/_compartilhado/validador_schema.py:300"
+      ]
+    },
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C04",
+      "score": 5,
+      "razao": "O que sustenta a nota: o 00-RESUMO.json declara receita literal ('python evals/validate_workflow.py, cwd no pacote, PYTHONDONTWRITEBYTECODE=1; sumario = ULTIMO da saida', :4), raiz ('commit: ee916c6', :2) e criterio; conferi por git merge-base que ee916c6 e ancestral da arvore julgada; o stdout cru dos quatro foi publicado, e foi ele que permitiu me convencer dos defeitos abaixo; 'traceback: false' e estado nomeado. TRES DEFEITOS. (1) O instrumento colheu o sumario ERRADO e publicou: 00-RESUMO.json:107 registra departamento-negocios.sumario_proprio = '99/100', que e o numero do Diretor. Mecanismo rastreado ate o fim: o validador de Negocios imprime combined[-500:] do vizinho como detalhe de FAIL (departamento-negocios/evals/validate_workflow.py:2350-2354), duas vezes; os 500 chars finais da saida do Diretor terminam em 'Resultado: 99/100 casos passaram.', que vira a ULTIMA linha 'Resultado:' do stdout de Negocios (departamento-negocios.stdout.txt:277); a receita 'ULTIMO da saida' colheu o numero do vizinho. O sumario proprio real esta em :255, 'RESULTADO: 230/233 PASS; 3 FAIL; 0 WARN', em formato que a receita nao casa. (2) O registro se autocontradiz sem sinalizar: o mesmo objeto traz fails com 3 itens e sumario 99/100, que implica 1 falha; 3 FAIL e 99/100 nao podem ser ambos verdadeiros, e uma conferencia de uma linha teria pego. (3) Deriva de contagem em tempo presente no placar proprio: evals/PLACAR.md:10 afirma 'A cadeia canonica hoje soma 1531/1531 PASS' - alegacao corrente, sem data, tudo-PASS - enquanto a propria rodada que o CEO publicou mostra ao menos um FAIL em cada um dos quatro pacotes; a mesma linha declara o numero proprio como '33/33 PASS' (2026-07-26) e hoje a receita devolve 95/96 com 1 FAIL; adendo_de_contagem: false (00-RESUMO.json:16).",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:2",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:4",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:107",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:16",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:255",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:277",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2350",
+        "Estrutura Final de Skills/ceo-maestro/evals/PLACAR.md:10",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/ceo-maestro.stdout.txt:99"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C03",
+      "score": 7,
+      "razao": "Atende o criterio inteiro. As travas sao executadas por mutacao sobre fixture valido e o veredito e a lista de erros da funcao real (diretor-de-lentes/evals/validate_workflow.py, laco de asserção identico ao padrao da casa). O que me convence e a cobertura das BORDAS da regra de agregacao nos DOIS sentidos, que e onde a trava tem de morder: aceita o caso coerente e reprova o incoerente - 'DEPARTMENT_JUDGE_REPORT aceita NAO_DISCRIMINADO com faixa que atravessa' (stdout:37) contra 'rejeita NAO_DISCRIMINADO sem faixa que atravessa' (:38) e 'rejeita NAO_DISCRIMINADO com uma instancia' (:39); 'rejeita REPROVED limpo com minimo 9' (:46), 'rejeita ACEITO_USO_INTERNO com minimo 10' (:47), 'rejeita VALIDATED com minimo 9' (:48) contra 'aceita REPROVED com minimo 6' (:49). Trava que so soubesse dizer nao reprovaria tambem os casos validos, e nao reprova. Ha ainda mutacao de forja executada: 'gate rejeita regra de agregacao trocada entre pedido e parecer' (:43), 'faixa que nao bate com o minimum_score declarado' (:44), 'faixa invertida' (:45). Morte por excecao nao e creditada: 5 ocorrencias de except no arquivo inteiro, nenhuma envolvendo o harness. Conferi que o schema deste pacote NAO tem anyOf inerte (0 ocorrencias). RISCO MENOR que sobra, e por isso nao e 9: a assercao e 'not errors', que credita o caso por qualquer erro sem fixar qual regra disparou; as mutacoes sao cirurgicas, mas a razao da reprovacao nao esta presa.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:37",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:38",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:39",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:46",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:49",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:43",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/validate_workflow.py:1"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C04",
+      "score": 6,
+      "razao": "Existe deriva de contagem, e ela esta na linha que o proprio pacote rotula como corrente. evals/PLACAR.md:10-12 traz uma tabela intitulada 'Medicao ativa' cuja primeira linha declara 'Validador deterministico do Diretor | 79/79 PASS'. A receita hoje devolve 99/100 com 1 FAIL (diretor-de-lentes.stdout.txt:103). Ou seja: numero errado E alegacao de tudo-PASS onde ha FAIL, numa linha explicitamente marcada como ativa. Some-se que o mesmo arquivo carrega um SEGUNDO numero proprio, '50/50 PASS' (:35), da reconciliacao de 2026-07-26: dois numeros proprios num arquivo so, nenhum dos dois corrente, e adendo_de_contagem: false (00-RESUMO.json:46). O que sustenta o 6 e nao deixa cair mais: a disciplina de datacao existe e esta aplicada onde foi pensada - :23-26 poe em quarentena todo resultado de 2026-07-26 dizendo que e evidencia pre-ADR-014 e 'nao descreve a regra vigente', e :35 marca os numeros de vizinho como registro historico, com a regra 'numero de vizinho carrega a data da medicao, ou nao entra'. Alem disso a saida propria e limpa e delimitada: uma unica linha 'Resultado:' sem ambiguidade, e foi por isso que a colheita do CEO acertou o numero deste pacote (00-RESUMO.json:38). A falha e a linha 'ativa' nao ter acompanhado a evolucao do proprio validador.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/PLACAR.md:10",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/PLACAR.md:12",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/PLACAR.md:23",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/PLACAR.md:35",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:103",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:38",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:46"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C03",
+      "score": 5,
+      "razao": "Descontei a serie de ADR, que e alheia. Restam defeitos do proprio pacote. (1) DUAS das tres reprovacoes nao sao sobre ele: evals/validate_workflow.py:2317-2334 executa por subprocess os validadores de CEO e Diretor e converte o exit code deles em check(False) proprio (:2350-2354). Trava que dispara por defeito do vizinho nao e trava sobre este candidato: o criterio pede caso executado que faca a trava reprovar POR defeito do pacote, e aqui o pacote reprova sem defeito seu. (2) O caminho de escape dessa mesma regra e decidido por presenca de string com numero congelado: :2338-2348 rebaixa para WARN somente se a saida do CEO contiver 'adr-003-conformidade-sem-nota.md', NAO contiver 'departamento-negocios' e contiver o literal 'Resultado: 31/32 casos passaram.'. O CEO devolve 95/96 hoje, o literal nao casa mais, e o caso vira FAIL duro. Um desfecho de trava decidido por casamento de string com contagem petrificada e exatamente o que o criterio proibe. (3) Parcela relevante da suite e presenca, nao trava: existencia de arquivo (stdout:1-13), 'sem placeholder' e 'link resolve' (:47-101), e 'SKILL.md com os tokens normativos' e 'metadata cita $X' (:25-41) - da ordem de 96 dos 233 casos; o teste de tokens normativos e trava declarada provada so por presenca de string, sem mutacao que a mostre vermelha. O QUE SEGURA EM 5 e nao deixa cair para 4: existe bloco genuino e forte de trava causal executada contra forja - 'rejeita colisao de agent_mission_id mesmo com refs coordenadas' (:152), 'rejeita refs forjadas entre intake plano atribuicao e missao' (:153), 'rejeita consolidation.plan_ref forjado' (:156), 'rejeita evidencia de scorecard ausente dos relatorios' (:159), 'rejeita message_id causal reutilizado' (:161).",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2317",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2338",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2342",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2350",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:232",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:243",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:25",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:152"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C04",
+      "score": 4,
+      "razao": "Descontada a serie de ADR, sobram tres defeitos de rastreabilidade, um deles com dano demonstrado nesta rodada. (1) A saida NAO e delimitada, e isso corrompeu uma medicao publicada. O validador imprime combined[-500:] da saida dos vizinhos como detalhe de FAIL (:2350-2354) e a lista de falhas reimprime o mesmo detalhe, de modo que 'Resultado: 95/96' do CEO e 'Resultado: 99/100' do Diretor aparecem DUAS vezes cada no stream deste pacote, sem marca de dono (stdout:233-241, 244-252, 258-266, 269-277). O corte de 500 chars ate parte a palavra ao meio, o que produz o ilegivel '[FAIL] regressao passa: ceo-maestro: eitado' (:232) - cauda de 'rejeitado'. O sumario proprio esta em :255 com outro token, 'RESULTADO: 230/233 PASS; 3 FAIL; 0 WARN'. Consequencia medida: a ultima linha 'Resultado:' do arquivo e a do Diretor (:277), e foi ela que a receita colheu. Numero que circula sem raiz no proprio stream e falha deste pacote; a publicacao do numero errado e falha de quem publicou, e esta cobrada la. (2) Deriva de contagem: evals/PLACAR.md:10-11 declara '226/226 PASS, 0 FAIL, 0 WARN' como resultado do reteste ADR-014, e a linha :37 declara 'Falhas ou advertencias abertas | 0'. A receita hoje devolve 230/233 com 3 FAIL. Declarado 0 FAIL contra 3 FAIL reais, e 226 contra 233 casos, com adendo_de_contagem: false (00-RESUMO.json:117). (3) Contagem petrificada dentro do codigo executavel: o literal 'Resultado: 31/32 casos passaram.' (:2342) e um numero que a receita parou de devolver ha tempo e que ainda governa fluxo de controle, sem qualquer reconciliacao. Mitigacao real, que considerei: :19 data os numeros de vizinho como registro historico e enuncia a regra 'numero de vizinho carrega a data da medicao, ou nao entra' - a disciplina e conhecida pelo pacote, so nao alcancou o numero proprio nem o literal no codigo.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:232",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:255",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:277",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2350",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2342",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/PLACAR.md:11",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/PLACAR.md:37",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/PLACAR.md:19",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:117"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 4,
+  "confidence": "alta",
+  "por_que_essa_confianca": "Os tres fatos que outros juizes publicaram foram conferidos na fonte, nao aceitos: o anyOf inerte esta em schemas/ceo-maestro.schema.json:1174 e o motor so implementa oneOf e allOf (_compartilhado/validador_schema.py:300,309, com o aviso em :14-18); a sub-execucao por subprocess esta em departamento-negocios/evals/validate_workflow.py:2317-2334 com a conversao em FAIL proprio em :2350-2354; e a nao delimitacao da saida foi rastreada do mecanismo (combined[-500:]) ate a consequencia (00-RESUMO.json:107 com o numero do Diretor). Cada nota se apoia em arquivo e linha que reli. A confianca nao e maxima em um ponto declarado abaixo: nao pude executar nada, entao a inercia do anyOf e a ausencia de caso que a prove sao deducao a partir do codigo do motor e da leitura da suite, nao mutacao executada.",
+  "o_que_declaro_contra_mim": [
+    "O 00-CONTRATO.md que fui mandado ler traz, nas linhas 10-15, a tabela com as notas de 2026-07-29 dos quatro pacotes. Eu as vi antes de poder evitar - estao no segundo paragrafo do documento de abertura. E vazamento do proprio CEO, que no mesmo arquivo (:80-86) me proibe de ler os arquivos que contem exatamente esses numeros. Declaro o que vi e declaro o efeito que tento neutralizar: as notas vazadas eram muito baixas (1, 1, 2, 5) e as minhas sao mais altas; nao consigo provar que a ancora nao me puxou para cima, so posso dizer que cada nota que dei esta amarrada a arquivo e linha que reli, e que reconstrui cada achado a partir da fonte.",
+    "Fui avisado de que outras instancias sentiram a tentacao de ser MAIS duras com o CEO para provar independencia. Senti essa, e nao a oposta. Percebi-a no momento de fechar o C03 do ceo-maestro: eu tinha 96 casos genuinamente executados por mutacao, tratamento deliberado de morte por excecao, e UM bloco de schema inerte - e minha primeira inclinacao foi levar a nota para 5 pelo simbolismo de reprovar quem me despachou. Corrigi para 6 aplicando a mesma pergunta que aplicaria a qualquer pacote: o criterio diz 'cada trava tem caso executado', uma trava nao tem, isso e lacuna nomeavel e vai para a banda 4-6, mas no topo dela, porque a superficie provada e grande e o efeito da regra morta e coberto pela camada semantica. Registro que a correcao foi consciente e que ela pode ter compensado demais.",
+    "Nao executei nada, por proibicao expressa. Logo, tres afirmacoes minhas sao leitura de codigo e nao medida: que nenhum caso fica vermelho se o bloco anyOf for apagado; que o ramo critical_fail seria vacuamente verdadeiro mesmo com anyOf implementado; e que o escape hatch de :2338-2348 nao casa mais hoje. As tres decorrem do texto do motor e da suite, e cada uma seria decidida em minutos por uma mutacao executada. Quem puder executar, execute antes de tratar isso como fato medido.",
+    "A assercao 'not errors' aparece nos tres pacotes e eu a cobrei com peso diferente: nomeei-a como risco menor no Diretor (7) e como risco adicional no CEO (6), onde havia outro defeito somando. Nao a cobrei no C03 de Negocios, cujo harness e booleano e tem problema distinto. Se alguem entender que o risco de razao nao fixada deveria pesar igual nos dois primeiros, a nota do Diretor cairia para 6 e a distancia entre os dois desapareceria.",
+    "Meu C04 do ceo-maestro pune a publicacao do numero errado, e meu C04 de departamento-negocios pune o stream que produziu esse numero. E o mesmo evento cobrado em dois pacotes. Sustento que sao defeitos distintos - um e colher e publicar sem conferir, o outro e emitir numero sem marca de dono - mas quem ler as duas razoes vera a mesma cena descrita duas vezes, e tem o direito de achar que contei duas vezes."
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conselheiro de Negócios"
+  short_description: "Parecer de viabilidade: quem paga, por quê e quanto"
+  default_prompt: "Use $conselho-negocios para o parecer de mercado. Nomeie o público-pagante, 3 a 5 concorrentes com preço e origem, o corte de MVP e o voto. Você recomenda; não decide."

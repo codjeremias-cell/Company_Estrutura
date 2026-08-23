@@ -5,14 +5,22 @@
 Calcular:
 
 ```text
-minimum_score = min(scorecard[i].score para toda avaliação aplicável)
+minimum_score = min(scorecard[i].score inteiro para toda avaliação aplicável)
 ```
 
-Validar normalmente somente quando:
+Derivar primeiro o veredito fixo:
 
 ```text
-minimum_score >= 9,5
-AND judge_verdict = VALIDATED
+10  -> VALIDATED
+7–9 -> ACEITO_USO_INTERNO
+0–6 -> REPROVED
+```
+
+Depois conferir o nível:
+
+```text
+required_level = PRODUCAO -> somente VALIDATED alcança
+required_level = INTERNO  -> VALIDATED ou ACEITO_USO_INTERNO alcança
 AND critical_fail = false
 AND blocking_pending_refs = []
 AND DONE está provado
@@ -20,8 +28,9 @@ AND contrato, candidato, avaliações e evidências estão vigentes
 AND Regras de Ouro e autorizações aplicáveis estão conformes
 ```
 
-A média não compensa nota baixa. `9,49` permanece `9,49`. Nota ausente, não independente ou
-sem evidência não entra como zero nem como 10: invalida o parecer.
+A média não compensa nota baixa. Nota fracionária é inválida e não é arredondada. Nota ausente,
+não independente ou sem evidência não entra como zero nem como 10: invalida o parecer e força
+`REPROVED`.
 
 ## `JUDGE_REPORT`
 
@@ -31,7 +40,8 @@ Exigir:
 - `contract_id`, versão e `candidate_digest`;
 - scorecard de todas as avaliações aplicáveis;
 - `minimum_score` recalculável;
-- veredito `VALIDATED` ou `REPROVED`;
+- `required_level` recebido no pedido;
+- veredito `VALIDATED`, `ACEITO_USO_INTERNO` ou `REPROVED`, derivado da faixa;
 - `critical_fail`, pendências bloqueantes e evidências;
 - críticas acionáveis e mudanças necessárias;
 - data e validade.
@@ -40,10 +50,10 @@ O CEO confere integridade; não refaz o julgamento.
 
 ## Retrabalho
 
-Usar `REWORK` quando existir mudança verificável capaz de elevar a menor nota ou remover um
-gate. Devolver ao dono executivo:
+Usar `REWORK` quando o veredito não alcançar o `required_level` e existir mudança verificável
+capaz de elevar a menor nota ou remover um gate. Devolver ao dono executivo:
 
-- avaliação abaixo do corte;
+- avaliação abaixo do alvo do nível;
 - evidência;
 - mudança necessária;
 - critério de reteste;
@@ -56,7 +66,7 @@ Pressa, custo alto, cansaço ou média elevada não provam impossibilidade.
 Considerar `LIMITATION_REPORT` elegível somente quando trouxer:
 
 1. candidato, contrato, rodada e snapshot exatos das notas;
-2. todas as avaliações abaixo de 9,5;
+2. todas as avaliações abaixo do alvo do nível — 10 para `PRODUCAO`, 7 para `INTERNO`;
 3. fatores objetivos e evidências correspondentes;
 4. tentativas de correção já executadas e seus resultados;
 5. alternativas consideradas e motivo verificável de descarte;
@@ -99,8 +109,9 @@ candidate_digest: "sha256:<digest>"
 score_snapshot_digest: "sha256:<digest>"
 judge_report_ref: "<ref>"
 limitation_report_ref: "<ref>"
-actual_minimum_score: 9.3
-cutoff_score: 9.5
+actual_minimum_score: 9
+required_level: PRODUCAO
+cutoff_score: 10
 requested_scope: ["<escopo exato>"]
 residual_risks: ["<risco residual>"]
 mitigations: ["<mitigação vigente>"]
@@ -125,6 +136,7 @@ Aceitar somente declaração de Jeremias em canal confiável que identifique:
 - `request_id`;
 - candidato e versão;
 - nota real;
+- nível exigido e alvo numérico;
 - escopo autorizado;
 - riscos aceitos e condições;
 - validade.
@@ -145,7 +157,7 @@ identity_evidence_ref: "<turno ou registro confiável>"
 citation_exact: "<declaração inequívoca>"
 candidate_digest: "sha256:<digest>"
 score_snapshot_digest: "sha256:<digest>"
-actual_minimum_score: 9.3
+actual_minimum_score: 9
 scope: ["<escopo exato>"]
 conditions: []
 issued_at: "<ISO-8601>"
@@ -163,6 +175,7 @@ Após autorização válida:
 
 - registrar `VALIDATED_BY_EXCEPTION`, nunca `VALIDATED`;
 - preservar `actual_minimum_score`;
+- preservar `required_level` e o alvo da exceção;
 - fixar `acceptance_basis: jeremias_exception`;
 - anexar autorização, relatório e riscos;
 - limitar o aceite ao escopo e validade autorizados;
@@ -172,9 +185,11 @@ Após autorização válida:
 
 | Situação | Decisão |
 |---|---|
-| menor nota `>= 9,5`, gates íntegros | `VALIDATED` |
-| menor nota `< 9,5`, melhoria viável | `REWORK` |
-| menor nota `< 9,5`, alegação vaga | `REWORK` ou `BLOCKED` |
+| mínimo `10`, veredito `VALIDATED`, gates íntegros | `VALIDATED` |
+| mínimo `7–9`, missão `INTERNO`, gates íntegros | `ACEITO_USO_INTERNO` |
+| mínimo `7–9`, missão `PRODUCAO` | `REWORK` ou pacote de limitação |
+| mínimo `0–6`, melhoria viável | `REWORK` |
+| veredito abaixo do nível, alegação vaga | `REWORK` ou `BLOCKED` |
 | limitação provada, aguardando Jeremias | `AWAITING_HUMAN_EXCEPTION` |
 | Jeremias autorizou o pacote exato | `VALIDATED_BY_EXCEPTION` |
 | Jeremias recusou, autorização venceu ou pacote mudou | `BLOCKED` ou `REWORK` |
@@ -182,7 +197,9 @@ Após autorização válida:
 
 ## Exemplos
 
-- Notas `9,5 / 9,7 / 10`: pode validar se os demais gates passarem.
-- Notas `10 / 10 / 9,49`: não validar e não arredondar; devolver para retrabalho.
-- Nota `9,3` com relatório completo: pedir autorização; continuar bloqueado enquanto aguarda.
-- Nota `9,3` com autorização exata de Jeremias: validar por exceção e exibir `9,3`.
+- Notas `10 / 10 / 10`: `VALIDATED` se os demais gates passarem.
+- Notas `10 / 9 / 10`: `ACEITO_USO_INTERNO`; alcança `INTERNO`, não `PRODUCAO`.
+- Nota fracionária `9,5`: parecer inválido; não arredondar nem mapear para faixa.
+- Nota `6` com relatório completo para missão `INTERNO`: alvo da exceção é `7`; continuar
+  bloqueado enquanto aguarda.
+- Nota `9` com relatório completo para missão `PRODUCAO`: alvo da exceção é `10`.

@@ -1,0 +1,108 @@
+{
+  "artifact_type": "EXECUTIVE_MISSION",
+  "mission_id": "MISSION-T13-EVOL-DADOS7-20260729",
+  "causal": {
+    "work_item_id": "TASK-13",
+    "front_id": "FRONT-DADOS7-RI06",
+    "handoff_id": "HANDOFF-T13-CEO-EVOL-R1",
+    "message_id": "MSG-T13-CEO-EVOL-R1-01",
+    "causation_message_ids": [],
+    "contract_id": "CONTRACT-T13-EVOL-DADOS7-20260729",
+    "contract_version": 1,
+    "contract_digest": "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+    "candidate_digest": "n/a",
+    "round": 1,
+    "attempt": 1,
+    "producer": "ceo-maestro",
+    "producer_version": "1",
+    "producer_digest": "sha256:5fe11a01b225690c56c87a7fd617425d087c86f74c7693f141c7dfc9877076ff",
+    "created_at": "2026-07-29T21:55:58-03:00"
+  },
+  "recipients": [
+    "departamento-evolucao-skills"
+  ],
+  "objective": "Produzir e provar uma fronteira de candidatos que regularize a correção técnica da tarefa 7 pela rota canônica de Evolução de Skills, sem fabricar autoria nem promover evidência ausente.",
+  "deliverable_type": "proposal",
+  "required_level": "PRODUCAO",
+  "scope_in": [
+    "Pacote departamento-arquitetura-dados e seus cinco artefatos de eval alterados na tarefa 7",
+    "Artefatos 02-RESULTADO-E-AUDITORIA.md, 03-DEV-TEST-RETURN.md e 05-AUDIT-RECEIPTS.md da tarefa 7",
+    "Área isolada de candidatos da rodada regularizacao-evolucao-dados7-2026-07-29",
+    "Prova baseline vermelho-verde, fronteira de Pareto e submissão executiva da tarefa 13"
+  ],
+  "scope_out": [
+    "Outputs brutos scratchpad/forward/dados-NN.md ausentes",
+    "Tarefas 8 e 9",
+    "Alteração dos ADR-014, ADR-015 ou da RO-W8",
+    "Publicação, push ou entrega a terceiros",
+    "Atribuição retroativa de autoria"
+  ],
+  "constraints": [
+    "O Departamento de Evolução não edita a skill viva, não pontua, não escolhe vencedor e não promove",
+    "Cada gap deve ter ao menos dois candidatos distintos em área isolada",
+    "Quem produzir candidatos não pode provar esses candidatos",
+    "O comportamento histórico permanece NOT_PROVEN sem outputs brutos autênticos",
+    "R6 deve permanecer explicitamente pending no retorno",
+    "A ausência de relatório de aprendizagem deve ser registrada como lacuna e TETO_PROVAVEL"
+  ],
+  "decisions_binding": [
+    "Jeremias autorizou seguir com a tarefa 13 em 2026-07-29",
+    "A tarefa 7 está tecnicamente concluída, mas não promovida a PRODUCAO",
+    "O candidato técnico da tarefa 7 tem digest sha256:6745d7b423d1275a1f059a3c3ae247a8771eb063a0bc6152b4601ca06da2c3f4"
+  ],
+  "dependencies": [
+    "Evidências frescas e rastreáveis da tarefa 7",
+    "Quatro capacidades verificadas do Departamento de Evolução de Skills",
+    "Auditoria e JUDGE_REPORT independentes antes de qualquer promoção"
+  ],
+  "acceptance_criteria": [
+    "Missão e retornos validam contra os schemas canônicos",
+    "Gap observado possui trecho literal e alcance com denominador",
+    "Ao menos dois candidatos distintos declaram texto removido e delta de tamanho",
+    "Agente independente executa baseline vermelho-verde por candidato e por caso",
+    "CANDIDATE_SET e EVOLUTION_LEDGER permitem recalcular a fronteira",
+    "Governança COMPLIANT e minimum_score 10 sustentam eventual promoção a PRODUCAO",
+    "Regressões do pacote e da cadeia terminam sem FAIL e os runtimes mantêm paridade por SHA-256"
+  ],
+  "required_evidence": [
+    "Registro de emissão de cada EVOLUTION_TASK",
+    "EVOLUTION_RETURN de diagnóstico, candidatos e prova",
+    "Scoreboard baseline e pós por candidato e caso",
+    "CANDIDATE_SET e EVOLUTION_LEDGER",
+    "Governance report correlacionado ao candidato e às Regras de Ouro",
+    "JUDGE_REPORT vigente do mesmo candidato",
+    "Transcripts de regressão e hashes de paridade dos runtimes"
+  ],
+  "matrix_exchange": {
+    "allowed": false,
+    "topics": [],
+    "read_scope": [],
+    "write_scope": [],
+    "consolidation_owner": null
+  },
+  "permissions": {
+    "default_policy": "deny",
+    "allowed_tools": [
+      "filesystem_read",
+      "candidate_workspace_write",
+      "skill_eval_execute",
+      "sha256"
+    ],
+    "allowed_resources": [
+      "Estrutura Final de Skills/ceo-maestro/departamento-evolucao-skills/evals/regularizacao-dados7-2026-07-29",
+      "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados",
+      "Estrutura Final de Skills/ceo-maestro/evals/retrabalho-arquitetura-dados-2026-07-29",
+      "Estrutura Final de Skills/regras-de-ouro/REGRAS-DE-OURO.md"
+    ],
+    "expires_at": "2026-07-30T23:59:59-03:00"
+  },
+  "stop_when": [
+    "A fronteira provada e o EVOLUTION_LEDGER forem devolvidos ao CEO",
+    "Uma capacidade obrigatória estiver ausente ou inválida",
+    "A prova independente não puder ser executada sem tocar o canônico",
+    "Houver conflito com as Regras de Ouro ou com o contrato executivo"
+  ],
+  "judge_gate_required": true,
+  "return_to": "ceo-maestro",
+  "issued_at": "2026-07-29T21:55:58-03:00"
+}

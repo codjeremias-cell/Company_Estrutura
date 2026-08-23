@@ -5,25 +5,31 @@
 > Desenvolvimento, Design UX/UI, QA e Usabilidade, Segurança, Conteúdo e Marketing, Registros e
 > **Inovação e Melhoria** estão materializados — os **dez** Departamentos operacionais desta página
 > têm pasta, contrato, schema e validador próprios, e o Departamento de Juízes, em camada paralela,
-> também. Cadeia canônica medida em 2026-07-26, após a cascata de Inovação e Melhoria:
-> **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote). O que falta em quase
+> também. Cadeia canônica medida em 2026-07-29, após a adoção do ADR-014 em toda a cadeia de
+> julgamento: **1697/1697 PASS** (motor compartilhado 66 + os 15 validadores de pacote). O que falta em quase
 > todos é **prova comportamental em runtime**, não estrutura. As fontes legadas permanecem intactas
 > para rollback.
 >
-> *Delta 1530 → 1531: a nota de reconciliação inserida nos placares acrescentou um link markdown ao
-> `PLACAR.md` do `departamento-negocios`, cujo validador emite um check por link resolvido. Medido,
-> não suposto — cobertura nova de um caso, não regressão.*
+> *Reconciliação da medição: o plano desta frente herdou 1532 de outro checkout, mas o HEAD
+> comparável já media 1575 verificações. O delta reproduzível é 1575 → 1697, inteiramente explicado
+> pela cobertura nova em CEO (+22), Negócios (+56), Diretor (+26) e Juízes (+18).*
 
 ## Estado da migração
 
 - [x] `regras-de-ouro/` — fonte normativa única da nova estrutura.
-- [x] `ceo-maestro/` — contrato executivo, handoffs, gate 9,5 e exceção de Jeremias.
+- [x] `ceo-maestro/` — contrato executivo, handoffs, dois níveis do ADR-014 e exceção de Jeremias.
+  Mecânica: **55/55 PASS**.
 - [x] `ceo-maestro/departamento-negocios/` — gerente, três agentes, matriz com o Diretor e
-  validação. Mecânica: 169/169 PASS; forward: 15/15 casos e 62/62 assertions PASS.
+  validação. Mecânica: **226/226 PASS**; forward: 15/15 casos e 62/62 assertions PASS.
+- [x] `especialista-planejador/` — **fora da cadeia de comando**, no topo da Estrutura, instalado em
+  2026-08-08. Consultor direto de Jeremias: sem superior, sem subordinado, sem `EXECUTIVE_MISSION`.
+  Mecânica própria: **14/14 PASS**. Ver a seção *Fora da cadeia de comando* mais abaixo — ele não
+  entra na contagem de Departamentos operacionais nem na de pares executivos do CEO.
 - [x] `ceo-maestro/diretor-de-lentes/` — núcleo diretor, contratos, handoffs, schema e
-  validação; os Departamentos operacionais continuam em migração separada.
+  validação; os Departamentos operacionais continuam em migração separada. Mecânica:
+  **79/79 PASS**.
 - [x] `ceo-maestro/diretor-de-lentes/departamento-juizes/` — gerente, três agentes, protocolo,
-  rubrica, schema e validação. Origem: `lente-juizes`. Mecânica executada: 61/61 PASS.
+  rubrica, schema e validação. Origem: `lente-juizes`. Mecânica executada: **88/88 PASS**.
   **Forward comportamental executado em 2026-07-26** — 15/16 casos, 60/60 assertions, zero
   contorno, acionamento 13/16 unânime em roteamento cego (18 instâncias independentes). Pendências
   abertas: caso 1 do `evals.json` mal especificado e colisão de description com o Diretor. Baseline
@@ -173,6 +179,10 @@ flowchart TB
 
     EVO["Departamento de Evolução de Skills<br/><code>departamento-evolucao-skills</code><br/>só sob missão do CEO"]
 
+    ESP(["especialista-planejador<br/>consultor direto de Jeremias<br/><b>FORA da cadeia de comando</b>"])
+
+    HUM <-. "consulta e devolve; não é subordinado<br/>e não é par executivo" .-> ESP
+
     HUM --> CEO
     CEO --> CTO
     CEO --> NEG
@@ -194,6 +204,13 @@ flowchart TB
 
     JUIZ -. "parecer ao CTO" .-> CTO
 ```
+
+O `especialista-planejador` aparece **solto**, ligado só a Jeremias e por traço pontilhado de mão
+dupla, porque é exatamente isso que ele é: um consultor que Jeremias consulta e que devolve a
+Jeremias. Ele **não** tem seta para o CEO, para o CTO nem para Departamento nenhum — não emite nem
+recebe `EXECUTIVE_MISSION`, não fala com departamentos e não é um quarto par executivo. O fluxo
+inteiro é `Jeremias → especialista → Jeremias → ceo-maestro`, e o último passo é decisão de
+Jeremias, não repasse do especialista.
 
 O traço contínuo representa subordinação. O traço pontilhado representa comunicação executiva.
 Nos fluxos de Conteúdo e Marketing, o Departamento solicita contexto ao CTO, o CTO usa a matriz
@@ -461,14 +478,17 @@ privacidade/consentimento, política do canal e mensuração. Decisões em
 - `agente-julgar-fidelidade-e-contrato`
 - `agente-julgar-robustez-e-evidencia`
 
-**Migrado em 2026-07-26.** Opera em dois modos: **VALIDACAO** (padrão — um candidato, nota
-absoluta por critério, veredito pela **menor** nota, corte `>= 9,5`) e **DISPUTA** (herdado do
-legado — 2+ candidatos, julgamento comparativo cego, handoff consultivo). Cada critério aplicável
-recebe exatamente uma ótica dona antes da delegação; critério sem dona, ótica sem parecer, falha
-crítica ou pendência bloqueante **proíbem** `VALIDATED`, e a reprovação resultante é nomeada como
-lacuna de cobertura, não como defeito do candidato. Sem média, sem arredondamento, sem compensação
-entre critérios. Decisões em
-`ceo-maestro/diretor-de-lentes/departamento-juizes/references/adr-002-nota-absoluta-e-modo-duplo.md`.
+**Migrado em 2026-07-26 e atualizado pelo ADR-014 em 2026-07-28.** Opera em dois modos:
+**VALIDACAO** (padrão — um candidato, nota inteira por critério e veredito pela **menor** nota) e
+**DISPUTA** (herdado do legado — 2+ candidatos, julgamento comparativo cego, handoff consultivo).
+Na validação, `10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO` e `0–6 → REPROVED`; o
+`required_level` do pedido determina se o veredito alcança `PRODUCAO` ou `INTERNO`, sem alterar a
+régua. Cada critério aplicável recebe exatamente uma ótica dona antes da delegação; critério sem
+dona, ótica sem parecer, falha crítica ou pendência bloqueante proíbem qualquer veredito positivo,
+e a reprovação resultante é nomeada como lacuna de cobertura, não como defeito do candidato. Sem
+média, nota fracionária, arredondamento ou compensação entre critérios. Decisões em
+`ceo-maestro/diretor-de-lentes/departamento-juizes/references/adr-002-nota-absoluta-e-modo-duplo.md`
+e `ceo-maestro/diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md`.
 
 ### 11. Departamento de Registros
 
@@ -541,6 +561,37 @@ Decisões em `ceo-maestro/departamento-evolucao-skills/references/adr-004-evoluc
 - `agente-mercado-e-cliente`
 - `agente-viabilidade-e-monetizacao`
 
+## Fora da cadeia de comando — `especialista-planejador`
+
+> Esta seção **não** entra na numeração acima. Os itens 1–13 são nós da cadeia; este não é nó
+> nenhum. Está aqui para que a árvore canônica não minta por omissão sobre uma pasta que existe.
+
+- Pasta/skill: `especialista-planejador` — **no topo da Estrutura**, irmã de `ceo-maestro`,
+  instalada em 2026-08-08.
+- Subordinação: **nenhuma.** Não responde ao CEO, ao CTO nem a Departamento algum.
+- Subordinados: **nenhum.** Não tem `agentes/`, não delega e não convoca.
+- Canal único: **Jeremias.** Fluxo `Jeremias → especialista → Jeremias → ceo-maestro`.
+- Papel: consultor direto de Jeremias, sobre planejamento. Opina para Jeremias; quem leva a decisão
+  à cadeia — se levar — é Jeremias.
+- **Não é um quarto par executivo.** Os pares executivos do CEO continuam sendo **três**, e só
+  três: `diretor-de-lentes`, `departamento-negocios` e `departamento-evolucao-skills`. Nada em
+  `ceo-maestro/SKILL.md`, no contrato do CEO, na `description` ou na matriz de rota foi alterado
+  para acomodá-lo — o *"e mais ninguém"* do CEO segue literal e íntegro.
+- **Não emite nem recebe `EXECUTIVE_MISSION`**, `DEPARTMENT_MISSION`, `JUDGMENT_REQUEST` nem
+  qualquer envelope da cadeia. Não tem `return_to`.
+- Anatomia deliberadamente reduzida: `SKILL.md`, `CONTRATO-DE-COMPROMISSO.md`, `agents/openai.yaml`,
+  `referencia/` e `evals/`. **Sem `agentes/`, sem `schemas/`, sem `references/`** — o validador do
+  próprio pacote **reprova** se qualquer uma dessas três aparecer, porque a presença delas seria a
+  primeira assinatura de um nó de cadeia. Ver o *Contrato estrutural obrigatório* abaixo, que
+  registra a exceção.
+- Prova mecânica: `evals/validate_workflow.py` próprio, **14/14 PASS**, incluindo as quatro travas
+  globais obrigatórias (cobertura de validadores, trava de digest, sem check tautológico, fonte
+  normativa conferida).
+- Fonte normativa: a mesma de todos — `../regras-de-ouro/REGRAS-DE-OURO.md`.
+- Vertente avulsa: existe uma variante irmã em `Catalogo-Skills-Unificado/skills/`, com a **mesma
+  doutrina byte a byte** e envelope diferente. A fronteira doutrina × envelope, com o digest e o
+  comando de conferência, está publicada dentro da própria `SKILL.md`.
+
 ## Árvore canônica alvo
 
 ```text
@@ -556,6 +607,13 @@ Estrutura Final de Skills/
 ├── regras-de-ouro/
 │   ├── REGRAS-DE-OURO.md
 │   └── ORIGEM.md
+├── especialista-planejador/   # FORA da cadeia — consultor direto de Jeremias
+│   ├── SKILL.md
+│   ├── CONTRATO-DE-COMPROMISSO.md
+│   ├── agents/openai.yaml
+│   ├── referencia/origem-e-fundamentacao.md
+│   └── evals/                 # validate_workflow.py, PLACAR.md
+│                              # sem agentes/, sem schemas/, sem references/
 └── ceo-maestro/
     ├── SKILL.md
     ├── CONTRATO-DE-COMPROMISSO.md
@@ -716,6 +774,15 @@ Toda skill da estrutura futura deverá declarar, no mínimo:
 - referência obrigatória à fonte única `regras-de-ouro/REGRAS-DE-OURO.md`;
 - compromisso de bloquear a operação quando houver conflito com as Regras de Ouro.
 
+**Uma exceção, e ela é declarada, não tolerada.** O `especialista-planejador` está **fora da cadeia
+de comando** e por isso não tem superior, não tem canal de retorno para a cadeia e não passa pelo
+`departamento-juizes`: não há entrega de departamento para julgar, porque ele não é departamento.
+O que ele mantém, sem exceção, é o resto — papel declarado, responsabilidades, proibições, entradas
+e saídas, evidências, referência obrigatória a `regras-de-ouro/REGRAS-DE-OURO.md` e o compromisso de
+bloquear diante de conflito com as Regras de Ouro. A ausência das três pastas de nó de cadeia
+(`agentes/`, `schemas/`, `references/`) é **verificada pelo validador do próprio pacote**, que
+reprova se alguma aparecer — a exceção é provada, não confiada.
+
 ## Mapeamento dos nomes atuais para os nomes propostos
 
 | Atual | Proposto |
@@ -735,6 +802,7 @@ Toda skill da estrutura futura deverá declarar, no mínimo:
 | `orquestrador-registros` | `departamento-registros` |
 | inexistente | `departamento-negocios` |
 | inexistente | `departamento-evolucao-skills` (skill nova, fora da lista original) |
+| `especialista-planejador` (canônica do Catálogo) | `especialista-planejador` — **não é migração de lente nem nó de cadeia**: variante da mesma doutrina instalada no topo da Estrutura em 2026-08-08, como consultor direto de Jeremias, fora da cadeia de comando. A canônica do Catálogo **continua existindo** e não foi aposentada. |
 
 ## Estado desta etapa
 
@@ -783,7 +851,7 @@ Conteúdo e Marketing já produz candidatos editoriais e de campanha, e o `depar
 — materializado em 2026-07-26 — deu a software o implementador canônico que faltava. Com a cascata do
 `departamento-inovacao-melhoria` fechada no mesmo dia, **os dez Departamentos operacionais desta
 página estão materializados e auditados na estrutura** — mais o Departamento de Juízes, que ocupa
-camada paralela e não é um deles —, e a cadeia canônica fecha em **1531/1531 PASS**. O que falta agora é **prova comportamental em runtime** em quase todos eles — nenhum foi
+camada paralela e não é um deles —, e a cadeia canônica fecha em **1697/1697 PASS**. O que falta agora é **prova comportamental em runtime** em quase todos eles — nenhum foi
 medido por acionamento espontâneo a partir da `description`, e Inovação declara esse `SKIP`
 explicitamente no seu placar. A ordem sugerida das frentes está na seção 7 do
 [GUIA-DE-EXPANSAO-E-MIGRACAO.md](GUIA-DE-EXPANSAO-E-MIGRACAO.md), que também continua desatualizada

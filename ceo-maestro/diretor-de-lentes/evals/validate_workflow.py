@@ -27,6 +27,7 @@ RULES_PATH = STRUCTURE_ROOT / "regras-de-ouro" / "REGRAS-DE-OURO.md"
 sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
     from _compartilhado.validador_schema import (  # noqa: E402
+        conferir_digest_das_regras,
         digest,
         find_const,
         json_pointer,
@@ -34,16 +35,41 @@ try:
         validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_adr_series,
         validate_frontmatter,
         validate_links,
         validate_openai_yaml,
         validate_required_files,
     )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
+    )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(
         "[FAIL] motor compartilhado ausente em "
         f"{STRUCTURE_ROOT}/_compartilhado: {exc}"
+    )
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
     )
     raise SystemExit(1)
 
@@ -176,7 +202,26 @@ def department_return(
     }
 
 
-def judgment_request() -> dict[str, Any]:
+def aggregation_rule(
+    method: str = "MENOR", declared_at: str = "2026-07-26T17:00:00-03:00"
+) -> dict[str, Any]:
+    """ADR-016: a regra de combinação entre instâncias da mesma lente.
+
+    O Diretor a fixa no pedido, antes de qualquer parecer existir. Regra
+    escolhida depois de ver as notas não é regra: é seleção de resultado.
+    """
+    return {
+        "method": method,
+        "declared_at": declared_at,
+        "rationale": "Fixada no pedido, antes de emitir qualquer atribuição aos Juízes.",
+    }
+
+
+def judgment_request(
+    required_level: str = "PRODUCAO",
+    instances_per_lens: int = 1,
+    rule: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     candidate = digest("a")
     return {
         "artifact_type": "JUDGMENT_REQUEST",
@@ -185,7 +230,10 @@ def judgment_request() -> dict[str, Any]:
         "department_return_ref": "department-return-003",
         "candidate_digest": candidate,
         "contract_digest": digest("0"),
+        "required_level": required_level,
         "applicable_criteria": ["Fidelidade, robustez e experiência."],
+        "instances_per_lens": instances_per_lens,
+        "aggregation_rule": rule or aggregation_rule(),
         "artifact_refs": ["artifacts/implementation.zip"],
         "evidence_refs": ["evidence/test-report.json"],
         "return_to": "diretor-de-lentes",
@@ -194,12 +242,26 @@ def judgment_request() -> dict[str, Any]:
 
 
 def department_judge_report(
-    scores: list[float] | None = None,
+    scores: list[int] | None = None,
     verdict: str = "VALIDATED",
+    required_level: str = "PRODUCAO",
+    *,
+    critical_fail: bool = False,
+    blocking_pending_refs: list[str] | None = None,
+    instances_per_lens: int = 1,
+    score_range: tuple[int, int] | None = None,
+    rule: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    values = [9.5, 9.8, 10.0] if scores is None else scores
+    # ADR-014: VALIDATED exige 10 em todos os critérios aplicáveis. A fixture
+    # padrão é o caso positivo, então ela sobe para 10 — o antigo [9.5, ...]
+    # era o caso positivo sob a rubrica v1.
+    values = [10, 10, 10] if scores is None else scores
     candidate = digest("a")
-    reproved = verdict == "REPROVED"
+    needs_explanation = verdict != "VALIDATED"
+    # ADR-016: com uma instância por lente, lo == hi == minimum_score, e o
+    # comportamento anterior é preservado byte a byte.
+    if score_range is None:
+        score_range = (min(values), min(values))
     return {
         "artifact_type": "DEPARTMENT_JUDGE_REPORT",
         "report_id": "department-judge-report-001",
@@ -208,6 +270,8 @@ def department_judge_report(
         "candidate_digest": candidate,
         "contract_digest": digest("0"),
         "round": 1,
+        "instances_per_lens": instances_per_lens,
+        "aggregation_rule": rule or aggregation_rule(),
         "scorecard": [
             {
                 "criterion_id": f"criterion-{index + 1:02d}",
@@ -217,15 +281,21 @@ def department_judge_report(
             for index, score in enumerate(values)
         ],
         "minimum_score": min(values),
+        "minimum_score_range": {"lo": score_range[0], "hi": score_range[1]},
         "verdict": verdict,
-        "critical_fail": False,
-        "blocking_pending_refs": [],
+        "required_level": required_level,
+        "critical_fail": critical_fail,
+        "blocking_pending_refs": blocking_pending_refs or [],
         "evidence_refs": ["evidence/judge-report.json"],
         "criticisms": (
-            ["A robustez ficou abaixo do contrato."] if reproved else []
+            ["A robustez deixou risco ou falha observável."]
+            if needs_explanation
+            else []
         ),
         "required_changes": (
-            ["Corrigir a falha e executar o reteste indicado."] if reproved else []
+            ["Fechar o risco ou a falha e executar o reteste indicado."]
+            if needs_explanation
+            else []
         ),
         "issued_at": "2026-07-26T17:10:00-03:00",
         "expires_at": "2026-07-27T17:10:00-03:00",
@@ -233,9 +303,15 @@ def department_judge_report(
 
 
 def department_gate_record(
-    scores: list[float] | None = None,
+    scores: list[int] | None = None,
     verdict: str = "VALIDATED",
     decision: str = "ACCEPTED_FOR_INTEGRATION",
+    required_level: str = "PRODUCAO",
+    *,
+    critical_fail: bool = False,
+    blocking_pending_refs: list[str] | None = None,
+    instances_per_lens: int = 1,
+    score_range: tuple[int, int] | None = None,
 ) -> dict[str, Any]:
     candidate = digest("a")
     return {
@@ -244,17 +320,30 @@ def department_gate_record(
         "causal": causal("diretor-de-lentes", candidate),
         "department_mission": department_mission(),
         "department_return": department_return(),
-        "judgment_request": judgment_request(),
-        "judge_report": department_judge_report(scores, verdict),
+        "judgment_request": judgment_request(
+            required_level, instances_per_lens=instances_per_lens
+        ),
+        "judge_report": department_judge_report(
+            scores,
+            verdict,
+            required_level,
+            critical_fail=critical_fail,
+            blocking_pending_refs=blocking_pending_refs,
+            instances_per_lens=instances_per_lens,
+            score_range=score_range,
+        ),
         "decision": decision,
         "recorded_at": "2026-07-26T17:12:00-03:00",
     }
 
 
-def executive_matrix_contract() -> dict[str, Any]:
+def executive_matrix_contract(
+    required_level: str = "PRODUCAO",
+) -> dict[str, Any]:
     return {
         "mission_id": "mission-001",
         "causal": causal("ceo-maestro"),
+        "required_level": required_level,
         "recipients": ["diretor-de-lentes", "departamento-negocios"],
         "matrix_exchange": {
             "allowed": True,
@@ -268,6 +357,7 @@ def executive_matrix_contract() -> dict[str, Any]:
 
 def matrix_exchange_message(
     sender: str = "diretor-de-lentes",
+    required_level: str = "PRODUCAO",
 ) -> dict[str, Any]:
     recipient = (
         "departamento-negocios"
@@ -279,6 +369,7 @@ def matrix_exchange_message(
         "matrix_message_id": "matrix-message-001",
         "causal": causal(sender),
         "executive_mission_ref": "mission-001",
+        "required_level": required_level,
         "sender": sender,
         "recipient": recipient,
         "topic": "Viabilidade técnica e comercial.",
@@ -352,10 +443,39 @@ def director_return(artifact_type: str = "PROGRESS") -> dict[str, Any]:
     }
 
 
+def band_for(score: int) -> str:
+    if score == 10:
+        return "VALIDATED"
+    if score >= 7:
+        return "ACEITO_USO_INTERNO"
+    return "REPROVED"
+
+
+def verdict_for_scores(
+    scores: list[int], score_range: dict[str, int] | None = None
+) -> str:
+    # ADR-016: com faixa que atravessa um corte, o veredito é NAO_DISCRIMINADO.
+    # Com uma instância (lo == hi) a função devolve exatamente o que devolvia.
+    if score_range and band_for(score_range["lo"]) != band_for(score_range["hi"]):
+        return "NAO_DISCRIMINADO"
+    return band_for(min(scores))
+
+
+def verdict_reaches_level(verdict: str, required_level: str) -> bool:
+    # ADR-016: NAO_DISCRIMINADO não alcança nenhum nível — não é reprovação nem
+    # aceite, e não autoriza produção, publicação nem uso interno.
+    if required_level == "PRODUCAO":
+        return verdict == "VALIDATED"
+    if required_level == "INTERNO":
+        return verdict in {"VALIDATED", "ACEITO_USO_INTERNO"}
+    return False
+
+
 def route_after_judgment(
-    scores: list[float],
+    scores: list[int],
     verdict: str,
     *,
+    required_level: str = "PRODUCAO",
     critical_fail: bool = False,
     blocking_pending: bool = False,
     rules_compliant: bool = True,
@@ -366,15 +486,19 @@ def route_after_judgment(
     if (
         not judges_available
         or not scores
+        or required_level not in {"PRODUCAO", "INTERNO"}
+        or any(type(score) is not int for score in scores)
         or critical_fail
         or blocking_pending
         or not rules_compliant
     ):
         return "D_BLOCKED"
-    minimum_score = min(scores)
-    if minimum_score >= 9.5 and verdict == "VALIDATED":
+    expected_verdict = verdict_for_scores(scores)
+    if verdict != expected_verdict:
+        return "D_BLOCKED"
+    if verdict_reaches_level(verdict, required_level):
         return "D_READY_FOR_CEO"
-    if minimum_score < 9.5 and limitation_complete:
+    if limitation_complete:
         return "D_LIMITATION_VERIFIED"
     if round_number >= 10:
         return "D_LIMIT_REACHED_RETURNED"
@@ -497,11 +621,51 @@ def validate_department_gate_record(
     if report_artifact["minimum_score"] != computed_minimum:
         errors.append("gate: minimum_score não corresponde ao scorecard")
 
+    if request_artifact["required_level"] != report_artifact["required_level"]:
+        errors.append("gate: required_level divergente entre pedido e parecer")
+
+    # ADR-016: a regra de agregação é FIXADA NO PEDIDO e apenas COPIADA pelos
+    # Juízes. Divergência entre pedido e parecer significa regra trocada depois
+    # de ver as notas — que é exatamente o que o ADR existe para impedir.
+    if request_artifact.get("aggregation_rule") != report_artifact.get(
+        "aggregation_rule"
+    ):
+        errors.append("gate: aggregation_rule divergente entre pedido e parecer")
+    if request_artifact.get("instances_per_lens") != report_artifact.get(
+        "instances_per_lens"
+    ):
+        errors.append("gate: instances_per_lens divergente entre pedido e parecer")
+    faixa = report_artifact.get("minimum_score_range")
+    if not isinstance(faixa, dict):
+        errors.append("gate: parecer sem minimum_score_range")
+    else:
+        if faixa["lo"] > faixa["hi"]:
+            errors.append("gate: minimum_score_range invertida")
+        if faixa["lo"] != report_artifact["minimum_score"]:
+            errors.append(
+                "gate: minimum_score não é a ponta baixa da faixa medida"
+            )
+        if report_artifact.get("instances_per_lens", 1) == 1 and faixa["lo"] != faixa["hi"]:
+            errors.append("gate: faixa aberta com uma única instância por lente")
+
+    expected_verdict = (
+        "REPROVED"
+        if report_artifact["critical_fail"]
+        or report_artifact["blocking_pending_refs"]
+        else verdict_for_scores(
+            [item["score"] for item in report_artifact["scorecard"]],
+            faixa if isinstance(faixa, dict) else None,
+        )
+    )
+    if report_artifact["verdict"] != expected_verdict:
+        errors.append("gate: veredito não corresponde à faixa e aos bloqueios")
+
     if record["decision"] == "ACCEPTED_FOR_INTEGRATION":
-        if report_artifact["verdict"] != "VALIDATED":
-            errors.append("gate: integração aceita sem veredito VALIDATED")
-        if computed_minimum < 9.5:
-            errors.append("gate: integração aceita abaixo de 9,5")
+        if not verdict_reaches_level(
+            report_artifact["verdict"],
+            request_artifact["required_level"],
+        ):
+            errors.append("gate: veredito não alcança o required_level")
         if report_artifact["critical_fail"]:
             errors.append("gate: integração aceita com falha crítica")
         if report_artifact["blocking_pending_refs"]:
@@ -525,6 +689,8 @@ def validate_matrix_exchange_message(
         errors.append("matriz: troca não autorizada")
     if message["executive_mission_ref"] != mission_contract["mission_id"]:
         errors.append("matriz: referência da missão divergente")
+    if message["required_level"] != mission_contract["required_level"]:
+        errors.append("matriz: required_level divergente da missao")
     if message["topic"] not in matrix["topics"]:
         errors.append("matriz: tópico fora do contrato")
     if not set(message["read_scope"]).issubset(matrix["read_scope"]):
@@ -592,7 +758,283 @@ def validate_ceo_authority_contract() -> list[str]:
             definitions[definition], property_name, expected
         ):
             errors.append(message)
+    executive_mission = definitions.get("executiveMission", {})
+    if "required_level" not in executive_mission.get("required", []):
+        errors.append("EXECUTIVE_MISSION do CEO não exige required_level")
+    level_enum = (
+        executive_mission.get("properties", {})
+        .get("required_level", {})
+        .get("enum", [])
+    )
+    if set(level_enum) != {"PRODUCAO", "INTERNO"}:
+        errors.append("EXECUTIVE_MISSION do CEO não fixa PRODUCAO|INTERNO")
     return errors
+
+
+# ---------------------------------------------------------------------------
+# TAREFA 43 — o gate existe como FORMA e nunca existiu como FATO
+# ---------------------------------------------------------------------------
+#
+# `validate_department_gate_record` (acima) confere a FORMA do envelope contra
+# fixtures, e passa. O que ninguém conferia é se ele **existe** para os retornos
+# reais. Medido em 2026-08-08, varrendo 2137 envelopes com `artifact_type` na
+# árvore: **38 `DEPARTMENT_RETURN` em disco e 0 `DEPARTMENT_GATE_RECORD`**.
+#
+# O `SKILL.md` deste Diretor, linha 310: *"retorno departamental só integra por
+# `DEPARTMENT_GATE_RECORD` completo"*. A única porta obrigatória nunca foi
+# aberta, e 38 retornos passaram assim mesmo. Não é defeito de instrumento —
+# nenhum conserto de medição alcança isto. É a cadeia não sendo usada.
+#
+# POR QUE TETO NUMÉRICO E NÃO LISTA DE NOMES. O precedente da casa é a
+# `BYPASS_HISTORICO_2026_08_06` da T32, uma lista de nomes sob o comentário
+# "só pode ENCOLHER". Medido em 2026-08-08: ela nasceu com 7 e hoje tem 13 —
+# cinco entradas entraram sem justificativa escrita e o comentário ainda diz 7.
+# Lista de nomes cresce em silêncio porque acrescentar uma linha parece
+# inofensivo no diff. Um TETO obriga quem cresce a **mudar um número**, que é
+# a menor unidade de mudança que um revisor não deixa passar. (Tarefa 53.)
+#
+# E o teto é `<=`, não `==`, de propósito: exigir igualdade proibiria a
+# melhora, que é o `gate-de-maximalidade-proibe-o-futuro`. Quando a contagem
+# cair, a trava DIZ para baixar o teto, em vez de reprovar quem melhorou.
+#
+# A UNIDADE É O RETORNO DISTINTO, NÃO O ARQUIVO. Medido em 2026-08-08: há **38
+# envelopes** `DEPARTMENT_RETURN` em disco, **35** com `department_return_id` e
+# apenas **19 ids distintos** — o mesmo retorno viaja copiado entre campanhas.
+# Contar arquivos daria 38 e inflaria a dívida por duplicação de cópia, que não
+# é dívida de governança. O primeiro número que escrevi aqui foi 38, e era o
+# denominador errado pelo mesmo motivo que os 90/19 da própria tarefa 43 não
+# reproduziam: contagem de instância não é contagem de coisa.
+#
+# LIMITE DECLARADO: os **3** envelopes sem `department_return_id` são invisíveis
+# para esta trava — sem id não há o que correlacionar. Ficam nomeados aqui em
+# vez de escondidos; fechá-los é exigir o campo no schema, que é outra frente.
+#
+# ---------------------------------------------------------------------------
+# 19 → 35, em 2026-08-20, POR DECISÃO EXPLÍCITA DE JEREMIAS.
+#
+# A trava fez o que devia: recusou-se a deixar a dívida crescer em silêncio e
+# obrigou a mudar um número. Este comentário é o preço desse número, e é o que
+# o mecanismo pede em troca — subir o teto sem escrever aqui seria burlá-lo.
+#
+# O QUE CRESCEU, e não é duplicação de cópia: são **16 `department_return_id`
+# distintos** emitidos sem `DEPARTMENT_GATE_RECORD` correlacionado, todos de
+# campanhas da vertente empresa —
+#   DEPTRET-T87-AUDITORIA-R1..R4                    (4)
+#   DEPTRETURN-T14-AUDITORIA-R2-20260803            (1)
+#   DEPTRETURN-T15-{AUDITORIA-R5,R6,R9}-2026080{2,3}(3)
+#   DEPTRETURN-T15-DESENVOLVIMENTO-R6,R7-20260802   (2)
+#   DEPTRETURN-T15-QA-R6,R7-20260802                (2)
+#   DEPTRETURN-T15-REGISTROS-R7-20260802            (1)
+#   DEPTRETURN-T15-SEGURANCA-R6-20260802            (1)
+#   DR-T13-AUDIT-R2, DR-T13-AUDIT-R3                (2)
+#
+# ISTO NÃO É CONSERTO, É RECONHECIMENTO DE DÍVIDA. O defeito que a linha 310 do
+# `SKILL.md` descreve continua aberto: *"retorno departamental só integra por
+# `DEPARTMENT_GATE_RECORD` completo"*, e trinta e cinco retornos integraram sem
+# ele. Fechar de verdade é emitir os gates que faltam — o que **não** se faz
+# retroativamente sem forjar registro de rodada que já passou.
+#
+# A CATRACA CONTINUA VALENDO, e é o que impede este número de virar hábito: 36
+# reprova, e 34 reprova pedindo para baixar o teto. O único caminho daqui é
+# para baixo.
+# --- T94, decisao (b) de Jeremias em 2026-08-21: EXIGIR O GATE NO FLUXO VIVO.
+#
+# A catraca anterior era por CONTAGEM, e tinha um buraco que so aparece quando se
+# procura: se um retorno historico ganhasse gate e um NOVO aparecesse sem, o total
+# continuaria 35 e a trava ficaria MUDA. Contagem nao sabe QUAIS. O conjunto sabe.
+#
+# Esta tupla e a divida HISTORICA, congelada em 2026-08-22 a partir da MEDICAO (nao
+# digitada): sao os retornos que ja integraram sem gate, todos de campanhas T12, T13,
+# T14, T15, T71 e T87, encerradas. Emitir os gates deles hoje seria escrever que um
+# portao foi aberto quando nao foi -- forjar evidencia, que e o que a cadeia inteira
+# existe para impedir.
+#
+# A REGRA QUE PASSA A VALER: retorno que NAO esteja nesta lista e nao tenha gate
+# REPROVA na hora, sem teto e sem folga. E se um destes ganhar gate, a lista tem de
+# encolher no mesmo ato -- senao a folga volta a crescer calada. O unico caminho e
+# para baixo, e agora por NOME.
+DIVIDA_HISTORICA_SEM_GATE = (
+    "DEPTRET-T12-AUDITORIA-20260803",
+    "DEPTRET-T12-AUDITORIA-R3-20260803",
+    "DEPTRET-T12-AUDITORIA-R4-20260804",
+    "DEPTRET-T12-AUDITORIA-REBASE-20260803",
+    "DEPTRET-T12-DESENVOLVIMENTO-REBASE-20260803",
+    "DEPTRET-T12-EVOLUCAO-CONSERTO-AUD-T12R-07-E-05-20260803",
+    "DEPTRET-T15-AUDITORIA-R7-20260803",
+    "DEPTRET-T71-AUDITORIA-R1",
+    "DEPTRET-T71-AUDITORIA-R10",
+    "DEPTRET-T71-AUDITORIA-R2",
+    "DEPTRET-T71-AUDITORIA-R3",
+    "DEPTRET-T71-AUDITORIA-R4",
+    "DEPTRET-T71-AUDITORIA-R5",
+    "DEPTRET-T71-AUDITORIA-R6",
+    "DEPTRET-T71-AUDITORIA-R7",
+    "DEPTRET-T71-AUDITORIA-R8",
+    "DEPTRET-T71-AUDITORIA-R9",
+    "DEPTRET-T71-C10-AUDITORIA-R1",
+    "DEPTRET-T71-C10-AUDITORIA-R2",
+    "DEPTRET-T87-AUDITORIA-R1",
+    "DEPTRET-T87-AUDITORIA-R2",
+    "DEPTRET-T87-AUDITORIA-R3",
+    "DEPTRET-T87-AUDITORIA-R4",
+    "DEPTRETURN-T14-AUDITORIA-R2-20260803",
+    "DEPTRETURN-T15-AUDITORIA-R5-20260802",
+    "DEPTRETURN-T15-AUDITORIA-R6-20260802",
+    "DEPTRETURN-T15-AUDITORIA-R9-20260803",
+    "DEPTRETURN-T15-DESENVOLVIMENTO-R6-20260802",
+    "DEPTRETURN-T15-DESENVOLVIMENTO-R7-20260802",
+    "DEPTRETURN-T15-QA-R6-20260802",
+    "DEPTRETURN-T15-QA-R7-20260802",
+    "DEPTRETURN-T15-REGISTROS-R7-20260802",
+    "DEPTRETURN-T15-SEGURANCA-R6-20260802",
+    "DR-T13-AUDIT-R2",
+    "DR-T13-AUDIT-R3",
+)
+
+# Mantido DERIVADO da lista, e nao ao lado dela: numero que se edita sozinho e o que
+# deixou a divida crescer de 19 para 35 sem ninguem ver.
+TETO_RETORNOS_SEM_GATE = len(DIVIDA_HISTORICA_SEM_GATE)
+
+_PASTAS_FORA = {"candidatos", "lab", "overlay", "instrumentos", "fontes",
+                "__pycache__", "backup"}
+
+
+def _envelopes_em_disco(raiz: Path) -> list[dict[str, Any]]:
+    """Todo objeto com `artifact_type` no topo de um .json ou linha de .ndjson."""
+    achados: list[dict[str, Any]] = []
+    for caminho in list(raiz.rglob("*.json")) + list(raiz.rglob("*.ndjson")):
+        if _PASTAS_FORA & set(caminho.parts):
+            continue
+        try:
+            texto = caminho.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        objetos: list[Any] = []
+        try:
+            objetos.append(json.loads(texto))
+        except json.JSONDecodeError:
+            for linha in texto.splitlines():
+                if linha.strip():
+                    try:
+                        objetos.append(json.loads(linha))
+                    except json.JSONDecodeError:
+                        pass
+        for obj in objetos:
+            if isinstance(obj, dict) and isinstance(obj.get("artifact_type"), str):
+                achados.append(obj)
+    return achados
+
+
+def retornos_sem_gate(envelopes: list[dict[str, Any]]) -> list[str]:
+    """Os `department_return_id` que nenhum `DEPARTMENT_GATE_RECORD` correlaciona.
+
+    Recebe os envelopes já lidos para poder ser exercitada com fixture — uma
+    trava que só sabe ler o disco não tem como provar que fica vermelha.
+    """
+    retornos = {
+        e["department_return_id"]
+        for e in envelopes
+        if e["artifact_type"] == "DEPARTMENT_RETURN"
+        and isinstance(e.get("department_return_id"), str)
+    }
+    cobertos = set()
+    for e in envelopes:
+        if e["artifact_type"] != "DEPARTMENT_GATE_RECORD":
+            continue
+        ref = e.get("department_return")
+        if isinstance(ref, dict):
+            ref = ref.get("id") or ref.get("ref") or ref.get("artifact_id")
+        if isinstance(ref, str):
+            cobertos.add(ref)
+    return sorted(retornos - cobertos)
+
+
+def validate_gate_record_cobre_os_retornos(raiz: Path) -> list[str]:
+    """Nenhum retorno NOVO integra sem gate, e a dívida antiga só encolhe.
+
+    Compara CONJUNTOS, não contagens. A versão por contagem era cega à troca —
+    um histórico ganhando gate e um novo aparecendo sem mantinham o total em 35,
+    e a trava não dizia nada. Aqui os dois lados falam:
+
+      * `novos`    — sem gate e fora da dívida congelada: reprova na hora, sem
+                     teto, sem folga. É a decisão (b) do Jeremias, e é o único
+                     caminho que faz o número cair com o tempo.
+      * `quitados` — na dívida congelada e já com gate: reprova pedindo para
+                     tirar da lista, senão a folga volta a crescer calada.
+    """
+    return _comparar_com_divida(set(retornos_sem_gate(_envelopes_em_disco(raiz))))
+
+
+def _comparar_com_divida(descobertos: set[str]) -> list[str]:
+    """A comparacao, separada do disco para poder ser EXERCITADA.
+
+    Ficava embutida na varredura, e por isso so era testavel rodando a arvore
+    inteira -- o que significa que os dois ramos so eram exercitados se a arvore
+    real contivesse o caso. Como ela nao contem (a divida esta congelada e nada
+    novo apareceu), nenhum dos dois tinha prova. Separar torna o autoteste
+    possivel, e ele chama a funcao de PRODUCAO, nao uma copia dela.
+    """
+    historica = set(DIVIDA_HISTORICA_SEM_GATE)
+    erros: list[str] = []
+
+    novos = sorted(descobertos - historica)
+    if novos:
+        erros.append(
+            f"RETORNO_NOVO_SEM_GATE: {len(novos)} DEPARTMENT_RETURN fora da dívida "
+            f"congelada e sem DEPARTMENT_GATE_RECORD correlacionado — retorno "
+            f"departamental só integra por gate completo (SKILL.md:310), e desde "
+            f"2026-08-22 isso vale no fluxo vivo. Os novos: {novos[:5]}"
+        )
+
+    quitados = sorted(historica - descobertos)
+    if quitados:
+        erros.append(
+            f"DIVIDA_ENCOLHEU: {len(quitados)} retorno(s) da dívida histórica já "
+            f"têm gate. Remova-os de DIVIDA_HISTORICA_SEM_GATE no mesmo ato — a "
+            f"lista só pode encolher, e lista que não acompanha vira folga que "
+            f"cresce calada: {quitados[:5]}"
+        )
+    return erros
+
+
+def _autoteste_do_gate() -> list[str]:
+    """A trava se exercita com fixture, nos dois sentidos.
+
+    Sem isto ela seria só uma contagem do disco: verde hoje por acaso, e sem
+    nada provando que sabe ficar vermelha.
+    """
+    erros = []
+    ret = {"artifact_type": "DEPARTMENT_RETURN", "department_return_id": "DR-X"}
+    gate = {"artifact_type": "DEPARTMENT_GATE_RECORD", "department_return": "DR-X"}
+    if retornos_sem_gate([ret]) != ["DR-X"]:
+        erros.append("autoteste do gate: retorno sem gate não foi detectado")
+    if retornos_sem_gate([ret, gate]) != []:
+        erros.append("autoteste do gate: retorno COM gate foi acusado — a trava "
+                     "reprovaria quem cumpriu")
+    aninhado = {"artifact_type": "DEPARTMENT_GATE_RECORD",
+                "department_return": {"id": "DR-X"}}
+    if retornos_sem_gate([ret, aninhado]) != []:
+        erros.append("autoteste do gate: referência aninhada não foi reconhecida")
+
+    # --- T94: os DOIS ramos da comparacao com a divida congelada.
+    # Cada amostra isola UM ramo. Sem isso, mutar `novos` ou `quitados` nao muda
+    # nada na arvore de hoje -- a divida esta congelada e nada novo apareceu --,
+    # e o mutante sobrevive por a arvore nao conter o caso, nao por a trava valer.
+    congelada = set(DIVIDA_HISTORICA_SEM_GATE)
+    um_historico = next(iter(congelada))
+
+    if _comparar_com_divida(set(congelada)):
+        erros.append("autoteste do gate: a divida congelada INTACTA foi acusada — "
+                     "a trava reprovaria o estado que ela mesma declara aceito")
+    so_novo = _comparar_com_divida(congelada | {"DEPTRET-INVENTADO-R1"})
+    if not any("RETORNO_NOVO_SEM_GATE" in e for e in so_novo):
+        erros.append("autoteste do gate: retorno NOVO sem gate nao foi acusado — "
+                     "e o ramo que a decisao (b) existe para criar")
+    so_quitado = _comparar_com_divida(congelada - {um_historico})
+    if not any("DIVIDA_ENCOLHEU" in e for e in so_quitado):
+        erros.append("autoteste do gate: divida que ENCOLHEU nao foi acusada — sem "
+                     "isso a lista deixa de acompanhar e a folga cresce calada")
+    return erros
 
 
 def validate_package() -> list[str]:
@@ -630,14 +1072,17 @@ def validate_package() -> list[str]:
             OPENAI_PATH,
             "Diretor de Lentes",
             "$diretor-de-lentes",
-            expected_short="Coordena Departamentos e o gate dos Juízes",
+            expected_short="Coordena Departamentos e propaga o nível do gate",
         )
     )
     errors.extend(
         validate_links(
             PACKAGE_ROOT,
-            exclude=[PACKAGE_ROOT / "departamento-juizes",
-                     PACKAGE_ROOT / "departamentos-operacionais"],
+            exclude=[
+                PACKAGE_ROOT / "departamento-juizes",
+                PACKAGE_ROOT / "departamentos-operacionais",
+                PACKAGE_ROOT / "evals" / "regularizacao-dados7-2026-07-29",
+            ],
         )
     )
 
@@ -650,7 +1095,8 @@ def validate_package() -> list[str]:
         "DIRECTOR_CAPABILITY_GAP",
         "EXECUTIVE_SUBMISSION",
         "LIMITATION_REPORT",
-        "9,49",
+        "required_level",
+        "ACEITO_USO_INTERNO",
         "Jeremias",
         "../../regras-de-ouro/REGRAS-DE-OURO.md",
     ]
@@ -709,6 +1155,21 @@ def run() -> int:
 
     cases.append(("pacote, vínculos e metadata", True, validate_package()))
     cases.append(("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT)))
+    cases.append(("todo pacote gerente tem validador que roda a trava global", True, validate_cobertura_de_validadores(STRUCTURE_ROOT)))
+    cases.append(("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT)))
+    cases.append(("nenhuma asserção é verdadeira por construção sobre valor produzido", True, validate_sem_check_tautologico(STRUCTURE_ROOT)))
+    cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
+    cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)))
+    cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)))
+    cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(STRUCTURE_ROOT)))
+    cases.append(("a fonte normativa confere com o valor declarado em ORIGEM.md", True, validate_fonte_normativa_conferida(STRUCTURE_ROOT)))
+    # T43: o gate existe como forma e nunca como fato — 38 retornos, 0 gates.
+    cases.append(("todo DEPARTMENT_RETURN tem GATE_RECORD, dentro do teto declarado",
+                  True, validate_gate_record_cobre_os_retornos(STRUCTURE_ROOT)))
+    cases.append(("a trava do gate sabe ficar vermelha (fixture nos dois sentidos)",
+                  True, _autoteste_do_gate()))
+    # GUIA, passo 7: as 12 secoes do contrato de gerente, em toda a estrutura.
+    cases.append(("contratos de gerente na anatomia canônica", True, validate_contratos_de_gerente(STRUCTURE_ROOT)))
     cases.append(("schema e referências locais", True, validate_schema_shape(schema)))
     cases.append(
         (
@@ -753,6 +1214,300 @@ def run() -> int:
                 validate_schema(fixture, schema, schema),
             )
         )
+
+    request_without_level = judgment_request()
+    request_without_level.pop("required_level")
+    cases.append(
+        (
+            "JUDGMENT_REQUEST exige required_level",
+            False,
+            validate_schema(request_without_level, schema, schema),
+        )
+    )
+
+    report_without_level = department_judge_report()
+    report_without_level.pop("required_level")
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT exige required_level",
+            False,
+            validate_schema(report_without_level, schema, schema),
+        )
+    )
+
+    fractional_report = department_judge_report(
+        [9.5, 10, 10],
+        "ACEITO_USO_INTERNO",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT rejeita score fracionário",
+            False,
+            validate_schema(fractional_report, schema, schema),
+        )
+    )
+
+    request_unknown_level = judgment_request("DESCONHECIDO")
+    cases.append(
+        (
+            "JUDGMENT_REQUEST rejeita required_level desconhecido",
+            False,
+            validate_schema(request_unknown_level, schema, schema),
+        )
+    )
+
+    # --- ADR-016: a regra de agregação nasce no pedido do Diretor -----------
+
+    request_without_rule = judgment_request()
+    request_without_rule.pop("aggregation_rule")
+    cases.append(
+        (
+            "JUDGMENT_REQUEST exige aggregation_rule",
+            False,
+            validate_schema(request_without_rule, schema, schema),
+        )
+    )
+
+    request_without_instances = judgment_request()
+    request_without_instances.pop("instances_per_lens")
+    cases.append(
+        (
+            "JUDGMENT_REQUEST exige instances_per_lens",
+            False,
+            validate_schema(request_without_instances, schema, schema),
+        )
+    )
+
+    request_unknown_method = judgment_request()
+    request_unknown_method["aggregation_rule"]["method"] = "MEDIA"
+    cases.append(
+        (
+            "JUDGMENT_REQUEST rejeita método de agregação fora do enum",
+            False,
+            validate_schema(request_unknown_method, schema, schema),
+        )
+    )
+
+    request_rule_without_time = judgment_request()
+    request_rule_without_time["aggregation_rule"].pop("declared_at")
+    cases.append(
+        (
+            "JUDGMENT_REQUEST rejeita regra sem declared_at",
+            False,
+            validate_schema(request_rule_without_time, schema, schema),
+        )
+    )
+
+    for method in ("MENOR", "MEDIANA", "EMPATE_DECLARADO"):
+        cases.append(
+            (
+                f"JUDGMENT_REQUEST aceita agregação {method}",
+                True,
+                validate_schema(
+                    judgment_request(rule=aggregation_rule(method=method)),
+                    schema,
+                    schema,
+                ),
+            )
+        )
+
+    report_without_range = department_judge_report()
+    report_without_range.pop("minimum_score_range")
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT exige minimum_score_range",
+            False,
+            validate_schema(report_without_range, schema, schema),
+        )
+    )
+
+    report_without_rule = department_judge_report()
+    report_without_rule.pop("aggregation_rule")
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT exige aggregation_rule",
+            False,
+            validate_schema(report_without_rule, schema, schema),
+        )
+    )
+
+    undiscriminated_report = department_judge_report(
+        [6, 10, 10],
+        "NAO_DISCRIMINADO",
+        "INTERNO",
+        instances_per_lens=2,
+        score_range=(6, 8),
+    )
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT aceita NAO_DISCRIMINADO com faixa que atravessa",
+            True,
+            validate_schema(undiscriminated_report, schema, schema),
+        )
+    )
+
+    undiscriminated_stable = copy.deepcopy(undiscriminated_report)
+    undiscriminated_stable["minimum_score_range"] = {"lo": 5, "hi": 6}
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT rejeita NAO_DISCRIMINADO sem faixa que atravessa",
+            False,
+            validate_schema(undiscriminated_stable, schema, schema),
+        )
+    )
+
+    undiscriminated_solo = copy.deepcopy(undiscriminated_report)
+    undiscriminated_solo["instances_per_lens"] = 1
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT rejeita NAO_DISCRIMINADO com uma instância",
+            False,
+            validate_schema(undiscriminated_solo, schema, schema),
+        )
+    )
+
+    accepted_crossing = department_judge_report(
+        [7, 10, 10],
+        "ACEITO_USO_INTERNO",
+        "INTERNO",
+        instances_per_lens=2,
+        score_range=(6, 7),
+    )
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT rejeita aceite interno com faixa que atravessa",
+            False,
+            validate_schema(accepted_crossing, schema, schema),
+        )
+    )
+
+    cases.append(
+        (
+            "NAO_DISCRIMINADO não alcança PRODUCAO nem INTERNO",
+            True,
+            []
+            if not verdict_reaches_level("NAO_DISCRIMINADO", "PRODUCAO")
+            and not verdict_reaches_level("NAO_DISCRIMINADO", "INTERNO")
+            else ["NAO_DISCRIMINADO alcançou um required_level"],
+        )
+    )
+
+    gate_undiscriminated = department_gate_record(
+        [6, 10, 10],
+        "NAO_DISCRIMINADO",
+        "ACCEPTED_FOR_INTEGRATION",
+        "INTERNO",
+        instances_per_lens=2,
+        score_range=(6, 8),
+    )
+    cases.append(
+        (
+            "gate INTERNO não integra NAO_DISCRIMINADO",
+            False,
+            validate_department_gate_record(gate_undiscriminated, schema),
+        )
+    )
+
+    gate_rule_swapped = department_gate_record(
+        [10, 10, 10],
+        "VALIDATED",
+        "ACCEPTED_FOR_INTEGRATION",
+        "PRODUCAO",
+    )
+    gate_rule_swapped["judge_report"]["aggregation_rule"] = aggregation_rule(
+        method="MEDIANA"
+    )
+    cases.append(
+        (
+            "gate rejeita regra de agregação trocada entre pedido e parecer",
+            False,
+            validate_department_gate_record(gate_rule_swapped, schema),
+        )
+    )
+
+    gate_range_forged = department_gate_record(
+        [10, 10, 10],
+        "VALIDATED",
+        "ACCEPTED_FOR_INTEGRATION",
+        "PRODUCAO",
+    )
+    gate_range_forged["judge_report"]["minimum_score_range"] = {"lo": 6, "hi": 10}
+    cases.append(
+        (
+            "gate rejeita faixa que não bate com o minimum_score declarado",
+            False,
+            validate_department_gate_record(gate_range_forged, schema),
+        )
+    )
+
+    gate_open_range_solo = department_gate_record(
+        [10, 10, 10],
+        "VALIDATED",
+        "ACCEPTED_FOR_INTEGRATION",
+        "PRODUCAO",
+    )
+    gate_open_range_solo["judge_report"]["minimum_score"] = 10
+    gate_open_range_solo["judge_report"]["minimum_score_range"] = {"lo": 10, "hi": 9}
+    cases.append(
+        (
+            "gate rejeita faixa invertida",
+            False,
+            validate_department_gate_record(gate_open_range_solo, schema),
+        )
+    )
+
+    reproved_nine = department_judge_report(
+        [9, 10, 10],
+        "REPROVED",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT rejeita REPROVED limpo com mínimo 9",
+            False,
+            validate_schema(reproved_nine, schema, schema),
+        )
+    )
+
+    accepted_ten = department_judge_report(
+        [10, 10, 10],
+        "ACEITO_USO_INTERNO",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT rejeita ACEITO_USO_INTERNO com mínimo 10",
+            False,
+            validate_schema(accepted_ten, schema, schema),
+        )
+    )
+
+    validated_nine = department_judge_report(
+        [9, 10, 10],
+        "VALIDATED",
+        "PRODUCAO",
+    )
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT rejeita VALIDATED com mínimo 9",
+            False,
+            validate_schema(validated_nine, schema, schema),
+        )
+    )
+
+    reproved_six = department_judge_report(
+        [6, 10, 10],
+        "REPROVED",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "DEPARTMENT_JUDGE_REPORT aceita REPROVED com mínimo 6",
+            True,
+            validate_schema(reproved_six, schema, schema),
+        )
+    )
 
     agent_mission = department_mission("agente-seguranca-aplicacao")
     cases.append(
@@ -825,6 +1580,116 @@ def run() -> int:
             validate_department_gate_record(
                 department_gate_record(), schema
             ),
+        )
+    )
+
+    internal_nine = department_gate_record(
+        [9, 10, 10],
+        "ACEITO_USO_INTERNO",
+        "ACCEPTED_FOR_INTEGRATION",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "gate INTERNO integra ACEITO_USO_INTERNO com mínimo 9",
+            True,
+            validate_department_gate_record(internal_nine, schema),
+        )
+    )
+
+    internal_seven = department_gate_record(
+        [7, 10, 10],
+        "ACEITO_USO_INTERNO",
+        "ACCEPTED_FOR_INTEGRATION",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "gate INTERNO integra ACEITO_USO_INTERNO com mínimo 7",
+            True,
+            validate_department_gate_record(internal_seven, schema),
+        )
+    )
+
+    internal_ten = department_gate_record(
+        [10, 10, 10],
+        "VALIDATED",
+        "ACCEPTED_FOR_INTEGRATION",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "gate INTERNO integra VALIDATED com mínimo 10",
+            True,
+            validate_department_gate_record(internal_ten, schema),
+        )
+    )
+
+    production_nine = department_gate_record(
+        [9, 10, 10],
+        "ACEITO_USO_INTERNO",
+        "ACCEPTED_FOR_INTEGRATION",
+        "PRODUCAO",
+    )
+    cases.append(
+        (
+            "gate PRODUCAO rejeita ACEITO_USO_INTERNO",
+            False,
+            validate_department_gate_record(production_nine, schema),
+        )
+    )
+
+    internal_six = department_gate_record(
+        [6, 10, 10],
+        "REPROVED",
+        "ACCEPTED_FOR_INTEGRATION",
+        "INTERNO",
+    )
+    cases.append(
+        (
+            "gate INTERNO rejeita REPROVED com mínimo 6",
+            False,
+            validate_department_gate_record(internal_six, schema),
+        )
+    )
+
+    mismatched_level = department_gate_record()
+    mismatched_level["judge_report"]["required_level"] = "INTERNO"
+    cases.append(
+        (
+            "gate rejeita required_level divergente",
+            False,
+            validate_department_gate_record(mismatched_level, schema),
+        )
+    )
+
+    critical_reproved = department_gate_record(
+        [10, 10, 10],
+        "REPROVED",
+        "BLOCKED",
+        "PRODUCAO",
+        critical_fail=True,
+    )
+    cases.append(
+        (
+            "falha crítica força REPROVED mesmo com 10",
+            True,
+            validate_department_gate_record(critical_reproved, schema),
+        )
+    )
+
+    pending_reproved = department_gate_record(
+        [10, 10, 10],
+        "REPROVED",
+        "BLOCKED",
+        "INTERNO",
+        blocking_pending_refs=["pending/blocking-001"],
+    )
+    cases.append(
+        (
+            "pendência bloqueante força REPROVED mesmo com 10",
+            True,
+            validate_department_gate_record(pending_reproved, schema),
         )
     )
 
@@ -911,6 +1776,62 @@ def run() -> int:
         )
     )
 
+    cases.append(
+        (
+            "troca matricial INTERNO preserva required_level",
+            True,
+            validate_matrix_exchange_message(
+                matrix_exchange_message(required_level="INTERNO"),
+                executive_matrix_contract(required_level="INTERNO"),
+                schema,
+            ),
+        )
+    )
+
+    matrix_without_level = matrix_exchange_message()
+    matrix_without_level.pop("required_level")
+    cases.append(
+        (
+            "troca matricial exige required_level",
+            False,
+            validate_matrix_exchange_message(
+                matrix_without_level,
+                executive_matrix_contract(),
+                schema,
+            ),
+        )
+    )
+
+    matrix_unknown_level = matrix_exchange_message(
+        required_level="DESCONHECIDO"
+    )
+    cases.append(
+        (
+            "troca matricial rejeita required_level desconhecido",
+            False,
+            validate_matrix_exchange_message(
+                matrix_unknown_level,
+                executive_matrix_contract(),
+                schema,
+            ),
+        )
+    )
+
+    matrix_divergent_level = matrix_exchange_message(
+        required_level="INTERNO"
+    )
+    cases.append(
+        (
+            "troca matricial rejeita required_level divergente",
+            False,
+            validate_matrix_exchange_message(
+                matrix_divergent_level,
+                executive_matrix_contract(),
+                schema,
+            ),
+        )
+    )
+
     matrix_outside_topic = matrix_exchange_message()
     matrix_outside_topic["topic"] = "Alterar o orçamento do produto."
     cases.append(
@@ -985,53 +1906,113 @@ def run() -> int:
 
     checks = [
         (
-            "corte exato 9,5 prepara CEO",
-            route_after_judgment([9.5, 9.7, 10.0], "VALIDATED")
+            "10 em tudo prepara CEO",
+            route_after_judgment([10, 10, 10], "VALIDATED")
             == "D_READY_FOR_CEO",
         ),
         (
-            "9,49 não arredonda",
-            route_after_judgment([9.49, 10.0, 10.0], "REPROVED") == "D_REWORK",
+            "nota fracionária 9,5 é bloqueada",
+            route_after_judgment([9.5, 9.7, 10.0], "VALIDATED")
+            == "D_BLOCKED",
+        ),
+        (
+            "nota fracionária 9,49 não arredonda",
+            route_after_judgment([9.49, 10, 10], "ACEITO_USO_INTERNO")
+            == "D_BLOCKED",
         ),
         (
             "média alta não compensa menor nota",
-            route_after_judgment([9.0, 10.0, 10.0], "REPROVED") == "D_REWORK",
+            route_after_judgment([6, 10, 10], "REPROVED") == "D_REWORK",
+        ),
+        (
+            "INTERNO aceita mínimo 9",
+            route_after_judgment(
+                [9, 10, 10],
+                "ACEITO_USO_INTERNO",
+                required_level="INTERNO",
+            )
+            == "D_READY_FOR_CEO",
+        ),
+        (
+            "PRODUCAO não aceita mínimo 9",
+            route_after_judgment(
+                [9, 10, 10],
+                "ACEITO_USO_INTERNO",
+                required_level="PRODUCAO",
+            )
+            == "D_REWORK",
+        ),
+        (
+            "INTERNO aceita mínimo 7",
+            route_after_judgment(
+                [7, 10, 10],
+                "ACEITO_USO_INTERNO",
+                required_level="INTERNO",
+            )
+            == "D_READY_FOR_CEO",
+        ),
+        (
+            "INTERNO reprova mínimo 6",
+            route_after_judgment(
+                [6, 10, 10],
+                "REPROVED",
+                required_level="INTERNO",
+            )
+            == "D_REWORK",
+        ),
+        (
+            "veredito divergente da faixa bloqueia",
+            route_after_judgment(
+                [9, 10, 10],
+                "REPROVED",
+                required_level="INTERNO",
+            )
+            == "D_BLOCKED",
+        ),
+        (
+            "required_level desconhecido bloqueia",
+            route_after_judgment(
+                [10, 10, 10],
+                "VALIDATED",
+                required_level="DESCONHECIDO",
+            )
+            == "D_BLOCKED",
         ),
         (
             "Auditoria não substitui Juízes ausentes",
             route_after_judgment(
-                [10.0], "VALIDATED", judges_available=False
+                [10], "VALIDATED", judges_available=False
             )
             == "D_BLOCKED",
         ),
         (
             "falha crítica bloqueia",
-            route_after_judgment([10.0], "VALIDATED", critical_fail=True)
+            route_after_judgment([10], "VALIDATED", critical_fail=True)
             == "D_BLOCKED",
         ),
         (
             "RI/RO violada bloqueia",
-            route_after_judgment([10.0], "VALIDATED", rules_compliant=False)
+            route_after_judgment([10], "VALIDATED", rules_compliant=False)
             == "D_BLOCKED",
         ),
         (
             "pendência bloqueante impede submissão",
             route_after_judgment(
-                [10.0], "VALIDATED", blocking_pending=True
+                [10], "VALIDATED", blocking_pending=True
             )
             == "D_BLOCKED",
         ),
         (
             "limite completo segue ao CEO sem validar",
             route_after_judgment(
-                [9.3, 10.0], "REPROVED", limitation_complete=True
+                [6, 10], "REPROVED", limitation_complete=True
             )
             == "D_LIMITATION_VERIFIED",
         ),
         (
             "décima rodada retorna limite ao CEO",
             route_after_judgment(
-                [9.4, 10.0], "REPROVED", round_number=10
+                [6, 10], "REPROVED", round_number=10
             )
             == "D_LIMIT_REACHED_RETURNED",
         ),
@@ -1068,13 +2049,20 @@ def run() -> int:
                 None,
             ),
         ),
-        (
-            "digest das regras é verificável",
-            RULES_PATH.is_file() and sha256_file(RULES_PATH).startswith("sha256:"),
-        ),
     ]
     for name, passed in checks:
         cases.append((name, True, [] if passed else ["condição comportamental falhou"]))
+
+    # --- C04 — a fonte normativa confere contra o valor DECLARADO ------------
+    # Fora da lista de booleanos de propósito: quando isto reprova, quem lê
+    # precisa do valor declarado, do recomputado e da receita. A lista acima só
+    # sabe dizer "condição comportamental falhou", e número sem receita é
+    # exatamente o que o C04 proíbe.
+    cases.append((
+        "digest da fonte normativa confere com o declarado em ORIGEM.md",
+        True,
+        conferir_digest_das_regras(RULES_PATH),
+    ))
 
     failures = 0
     for name, expected_valid, errors in cases:
@@ -1096,4 +2084,7 @@ def run() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

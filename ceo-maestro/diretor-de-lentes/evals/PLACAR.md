@@ -1,6 +1,48 @@
 # Placar de migração — Diretor de Lentes
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **50/50 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 106/106 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:1011f32b0ea6714833da869a568c9e538b92208fdd3c806611a6ec7aa786db7b` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Atualização ativa — ADR-014 (2026-07-29)
+
+O contrato corrente usa notas externas **inteiras** e separa o fato julgado do nível exigido:
+`10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO` e `0–6 → REPROVED`. Falha crítica ou pendência
+bloqueante força `REPROVED`, qualquer que seja a nota. `PRODUCAO` passa somente com
+`VALIDATED`; `INTERNO` passa com `VALIDATED` ou `ACEITO_USO_INTERNO`.
+
+| Medição ativa | Resultado |
+|---|---:|
+| Validador determinístico do Diretor | **79/79 PASS** |
+| Baseline imediatamente anterior à migração integral | 53/53 PASS |
+| Delta explicado pelo ADR-014 | **+26 casos** |
+| Catálogo ativo | `evals.json` v1.1.0, atualizado em 2026-07-29 |
+
+O delta cobre `required_level` obrigatório e preservado, notas inteiras, faixas 6/7/9/10,
+integração distinta para `INTERNO` e `PRODUCAO`, divergência entre pedido e parecer, ausência de
+nível, nível desconhecido, fração e bloqueios que impedem veredito positivo.
+Inclui ainda a propagação obrigatória de `required_level` na troca matricial, com rejeição
+de ausência, valor desconhecido ou divergência em relação à missão executiva.
+
+> **Marco histórico.** Todo resultado datado de 2026-07-26 abaixo — inclusive
+> [FORWARD-TEST.md](FORWARD-TEST.md), o corte `9,5`, notas fracionárias e totais de cadeia daquela
+> medição — é evidência **pré-ADR-014**. Foi preservado para rastreabilidade e não descreve a regra
+> vigente.
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **50/50 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -35,7 +77,7 @@ o contrato migrado:
 
 O baseline comprova que renomear a pasta sem reconstruir o contrato não seria
 suficiente. As lacunas estavam na hierarquia, na relação matricial, no fail-closed,
-no corte individual de 9,5 e na autoridade de exceção.
+no corte individual de 9,5 então vigente (rubrica v1, pré-ADR-014) e na autoridade de exceção.
 
 ## Forward comportamental
 

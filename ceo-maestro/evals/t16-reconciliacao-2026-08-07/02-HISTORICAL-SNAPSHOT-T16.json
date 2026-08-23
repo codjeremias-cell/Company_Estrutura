@@ -1,0 +1,9 @@
+{
+  "artifact_type": "HISTORICAL_PRESERVATION_SNAPSHOT",
+  "campaign": "ceo-maestro/evals/barreiras-em-prosa-2026-08-03",
+  "captured_at": "2026-08-07T19:15:00-03:00",
+  "file_count": 294,
+  "tree_digest": "sha256:8fbf9fd97d03cb10fbfa6ebae7bd8858791e1cfbc566f91b2788d9a190ea7f2b",
+  "recipe": "_compartilhado/verificacoes_pacote.py::digest_de_arvore",
+  "write_policy": "somente leitura; a campanha histórica não é destino de escrita desta missão"
+}

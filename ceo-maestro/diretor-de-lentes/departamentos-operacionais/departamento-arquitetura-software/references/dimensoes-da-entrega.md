@@ -58,7 +58,7 @@ Três regras da rubrica antiga sobrevivem — não como cálculo, como **postura
 |---|---|
 | escala 0–10 por dimensão | `departamento-juizes`, rubrica própria |
 | pesos e soma ponderada | idem |
-| corte 9,5 e dimensão crítica ≥ 9,0 | idem — corte é do gate, não da produção |
+| corte 9,5 e dimensão crítica ≥ 9,0 | idem — a régua vigente é a do ADR-014, não da produção |
 | vetos e `REPROVADA` | idem |
 | `NÃO_JULGÁVEL`, `BLOQUEADO_AUTOJULGAMENTO` | idem, e o aparato de independência nasceu lá |
 | confiança `high/medium/low` como nota paralela | virou a dimensão 7, como cobertura |

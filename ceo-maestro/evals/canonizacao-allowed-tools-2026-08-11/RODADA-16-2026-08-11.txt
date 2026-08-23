@@ -1,0 +1,52 @@
+RODADA DOS 16 VALIDADORES CANONICOS - 2026-08-11
+Saida crua. Canonico = */evals/validate_workflow.py NAO aninhado dentro de outro evals/.
+Receita por pacote: cd <pacote> && PYTHONIOENCODING=utf-8 PYTHONDONTWRITEBYTECODE=1 python evals/validate_workflow.py
+Extrator ancorado na linha RESULTADO/Resultado; os 16 emitiram numero, nenhum omitido.
+
+--- ANTES DA MUDANCA (baseline) ---
+# validadores canonicos encontrados: 16
+  82/83   FAIL=1   rc=1 [linha RESULTADO] ceo-maestro\departamento-evolucao-skills
+ 238/238  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\departamento-negocios
+ 172/172  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamento-juizes
+ 129/129  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-arquitetura-dados
+  79/80   FAIL=1   rc=1 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-arquitetura-software
+ 178/178  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-auditoria-responsabilidades
+  50/50   FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-conteudo-marketing
+ 114/116  FAIL=2   rc=1 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-desenvolvimento
+ 121/121  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-design-ux-ui
+ 139/139  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-inovacao-melhoria
+ 126/126  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-qa-usabilidade
+ 181/182  FAIL=1   rc=1 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-registros
+ 193/193  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-seguranca
+ 106/106  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes
+ 151/151  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro
+  17/17   FAIL=0   rc=0 [linha RESULTADO] especialista-planejador
+
+# SOMA: 2076/2081  FAIL=5
+# SEM NUMERO EXTRAIDO: nenhum
+
+--- DEPOIS DA MUDANCA (final) ---
+# validadores canonicos encontrados: 16
+  83/83   FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\departamento-evolucao-skills
+ 238/238  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\departamento-negocios
+ 172/172  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamento-juizes
+ 129/129  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-arquitetura-dados
+  80/80   FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-arquitetura-software
+ 178/178  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-auditoria-responsabilidades
+  50/50   FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-conteudo-marketing
+ 116/116  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-desenvolvimento
+ 121/121  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-design-ux-ui
+ 139/139  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-inovacao-melhoria
+ 126/126  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-qa-usabilidade
+ 182/182  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-registros
+ 193/193  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-seguranca
+ 106/106  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro\diretor-de-lentes
+ 151/151  FAIL=0   rc=0 [linha RESULTADO] ceo-maestro
+  17/17   FAIL=0   rc=0 [linha RESULTADO] especialista-planejador
+
+# SOMA: 2081/2081  FAIL=0
+# SEM NUMERO EXTRAIDO: nenhum
+
+--- MOTOR COMPARTILHADO ---
+cd 'Estrutura Final de Skills' && PYTHONIOENCODING=utf-8 python _compartilhado/teste_validador_schema.py
+Resultado: 66/66 casos passaram.  (identico antes e depois; ver PROVA C)

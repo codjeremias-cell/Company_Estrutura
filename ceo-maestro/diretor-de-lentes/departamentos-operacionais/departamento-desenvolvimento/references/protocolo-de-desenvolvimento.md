@@ -48,7 +48,7 @@ evidência é do candidato entregue, reúne dependências e emite o retorno.
 
 | # | Gate | Falha |
 |---|---|---|
-| G1 | missão pertence a este Departamento | devolve ao Diretor sem produzir |
+| G1 | missão pertence a este Departamento — `$defs/departmentMissionAdmission` | devolve `BLOCKED_BYPASS_ATTEMPT` se o const do Diretor não casa |
 | G2 | track tem agente declarado | `DEV_CAPABILITY_GAP` |
 | G3 | decisões upstream presentes para o pacote | `DEV_CAPABILITY_GAP` |
 | G4 | um agente líder por pacote, sem escrita sobreposta | plano rejeitado |

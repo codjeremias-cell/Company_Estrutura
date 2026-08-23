@@ -1,5 +1,27 @@
 # Placar — Departamento de Inovação e Melhoria
 
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 139/139 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:28b140655655c0e405b9107224a6d3cda62792bceab6a1626d7bf3b925bb416d` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote **já foi submetido ao `departamento-juizes`** pela rota canônica — deixou de
+estar formalmente não julgado. Os pareceres, as notas e o histórico de rodadas vivem **fora
+deste pacote**, em [`ceo-maestro/evals/FORWARD-TEST-JULGAMENTO.md`](../../../../evals/FORWARD-TEST-JULGAMENTO.md).
+
+**Por que não estão aqui.** Uma versão anterior deste placar reproduzia o veredito e a
+crítica da rodada anterior. O efeito foi medido no julgamento seguinte: a superfície julgada
+passou a conter o julgamento anterior sobre ela mesma, e uma das óticas devolveu o critério
+afetado com **confiança reduzida**. Candidato que carrega o parecer do próprio gate contamina
+a rodada seguinte. O placar registra **o que o pacote é**; o que o gate achou dele é do gate.
+
 ## Escopo
 
 Migração do legado `orquestrador-inovacao-melhoria` para Departamento
@@ -64,19 +86,49 @@ Parecer executado em [ADVERSARIAL-AUDIT.md](ADVERSARIAL-AUDIT.md):
 
 ## O que ainda não foi provado
 
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da remedição de 2026-08-03: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | o próprio Departamento | houver bateria que meça acionamento espontâneo por gatilho, e não só alcance por delegação explícita |
+| 2 | o próprio Departamento | o corpus adversarial deixar de compartilhar o motor do validador — hoje ele prova que as 45 mutações conhecidas caem, nunca que não há uma 46ª classe |
+| 3 | o próprio Departamento | houver conferência de MÉRITO do brief por instância que não o produziu; derivação impede a gerente de inventar, não impede o agente de errar coerentemente |
+| 4 | o próprio Departamento | o anti-julgamento deixar de ser por lista de vocabulário — nota afirmada em paráfrase continua passando |
+| 5 | o próprio Departamento | `mode`, permissões e alvo forem conferidos contra o que a ação de fato atingiu, e não contra o que ela declarou |
+| 6 | o próprio Departamento | a prova externa for REEXECUTADA, e não apenas autenticada por produtor e digest |
+| 7 | o próprio Departamento | houver âncora externa ao pacote que prove a emissão — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo. Depende das tarefas 50 e 57 |
+| 8 | o próprio Departamento | a saturação for medida contra o domínio, e não contra o escopo procurado — `declared: true` fala da busca, nunca da existência |
+
+
 Esta seção existe porque a rodada 2 mostrou que um placar só de verdes mente.
 Nada abaixo é acusação de descuido: é o teto do que este pacote consegue
 demonstrar hoje.
 
-1. **Acionamento espontâneo — `SKIP`.** Nenhuma bateria provou que a skill
-   dispara sozinha a partir do gatilho, sem carga por caminho. Só fecha depois
-   da instalação no runtime, com nova rodada de forward.
-2. **O corpus adversarial compartilha o motor do validador.** Ele prova que as
-   45 mutações conhecidas são rejeitadas; não prova ausência de uma 46ª classe.
-   Risco residual **R4** do protocolo.
-3. **Comportamento de modelo não é schema.** As travas validam artefatos e
-   cadeias. Um agente que produz um brief internamente coerente e falso passa
+> **Ajuste de 2026-07-28.** Dois itens desta seção não citavam identificador de
+> risco residual. O de comportamento de modelo era rótulo faltando — é matéria do
+> **R4**. O de acionamento espontâneo não tinha `R` porque **nenhum existia** para
+> o vetor dele: a Estrutura instala porta única, este Departamento não vira skill
+> invocável, e portanto acionamento espontâneo não é mensurável aqui. O protocolo
+> ganhou o **R9** para declarar esse limite, e o item passou a citá-lo.
+>
+> A ligação item↔`R` deixou de ser prosa: `placar_errors` a confere, lendo o
+> conjunto válido do §12 do protocolo.
+
+1. **Acionamento espontâneo — `SKIP` (**R9**).** Nenhuma bateria provou que
+   **este pacote** dispara sozinho a partir do gatilho. Ele só é alcançado por
+   **delegação explícita**, que é outra coisa: a Estrutura instala porta única, e
+   os 15 gerentes não viram skills invocáveis. Não fecha enquanto a instalação
+   for essa.
+2. **O corpus adversarial compartilha o motor do validador (**R4**).** Ele prova
+   que as 45 mutações conhecidas são rejeitadas; não prova ausência de uma 46ª
+   classe.
+3. **Comportamento de modelo não é schema (**R4**).** As travas validam artefatos
+   e cadeias. Um agente que produz um brief internamente coerente e falso passa
    pelo gate derivado — a derivação impede a gerente de inventar, não o agente.
+   É o vetor literal do R4: o gate deriva do insumo declarado, e o insumo é
+   escrito pelo agente.
 4. **Anti-julgamento é por vocabulário (**R7**).** Nota, ranking ou veredito
    afirmados em paráfrase, fora da lista de padrões, continuam passando.
 5. **`mode`, permissões e alvo são conferidos como declaração (**R2**).** Nada
@@ -90,10 +142,23 @@ demonstrar hoje.
 8. **Saturação prova busca, não existência (**R6**).** `declared: true` fala do
    escopo procurado, nunca do domínio.
 
-## Decisão
+**Contagem:** **8 limites, os oito com identificador** — `R9`, `R4`, `R4`, `R7`,
+`R2`, `R3`, `R5`, `R6`. O `R1` e o `R8`, de bypass, não incidem nesta rodada e
+por isso não aparecem: limite que não incide não vira linha para engordar a
+lista. **A ligação item↔`R` agora é conferida em código** (`placar_errors`), com
+o conjunto válido lido do §12 do protocolo — não de uma lista no validador.
 
-`APROVADO PARA PROMOÇÃO`, com os oito limites acima declarados e nenhum
-bloqueador P0/P1/P2 aberto.
+## Estado do pacote
 
-O item 1 é a única pendência acionável: reabrir o forward para medir
-acionamento espontâneo depois que o pacote estiver instalado no runtime.
+**Mecânica executada, oito limites residuais declarados acima, nenhum bloqueador
+P0/P1/P2 aberto.**
+
+Este placar **não emite veredito sobre o próprio pacote** — nem positivo. Quem
+julga é o `departamento-juizes`, e o ADR-002 proíbe autojulgamento; um pacote que
+se declara aprovado está fazendo exatamente isso, ainda que com outra palavra. O
+placar declara **estado observável**; o veredito é de quem tem contrato para
+emiti-lo.
+
+O `R9` não é pendência acionável: enquanto a Estrutura instalar **porta única**,
+acionamento espontâneo deste Departamento não é mensurável. Fecha se a instalação
+mudar — decisão de runtime, fora do alcance deste pacote.

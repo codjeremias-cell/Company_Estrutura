@@ -1,0 +1,56 @@
+{
+  "artifact_type": "EXCEPTION_REQUEST",
+  "request_id": "EXREQ-T13-R6-R3",
+  "causal": {
+    "work_item_id": "TASK-13",
+    "front_id": "FRONT-DADOS7-GATES-R3",
+    "handoff_id": "HANDOFF-T13-CEO-JEREMIAS-EXCEPTION-R3",
+    "message_id": "MSG-T13-CEO-JEREMIAS-EXCEPTION-R3-01",
+    "causation_message_ids": [
+      "MSG-T13-DIRECTOR-CEO-LIMIT-VERIFIED-R3-01"
+    ],
+    "contract_id": "CONTRACT-T13-EVOL-DADOS7-20260729",
+    "contract_version": 1,
+    "contract_digest": "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+    "candidate_digest": "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+    "round": 3,
+    "attempt": 1,
+    "producer": "ceo-maestro",
+    "producer_version": "1",
+    "producer_digest": "sha256:5fe11a01b225690c56c87a7fd617425d087c86f74c7693f141c7dfc9877076ff",
+    "created_at": "2026-07-30T17:17:55-03:00"
+  },
+  "candidate_digest": "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+  "score_snapshot_digest": "sha256:2bae089119427b638b659757b41e05cf4a7879e79138e178c3a5e29ce2397427",
+  "judge_report_ref": "JUDGE-T13-CANDG-R3",
+  "limitation_report_ref": "LIMIT-T13-R6-R3",
+  "actual_minimum_score": 9,
+  "cutoff_score": 10,
+  "required_level": "PRODUCAO",
+  "requested_scope": [
+    "Autorizar uso único para promover cand-G exclusivamente sobre evals.json, forward-proveniencia.json, FORWARD-TEST.md, PLACAR.md e validate_workflow.py do pacote canônico de Arquitetura de Dados.",
+    "Após a promoção, executar as regressões canônicas, confirmar paridade dos runtimes Claude e Codex e atualizar o estado da tarefa 13.",
+    "Não alterar ADR-014, ADR-015, RO-W8, o corte de PRODUCAO ou qualquer gate inegociável."
+  ],
+  "residual_risks": [
+    "R6: registros locais internamente coerentes não autenticam externamente que cada JUDGE_ASSIGNMENT foi realmente emitida.",
+    "A verificação do processo permanece no mesmo domínio local e, portanto, só encarece uma fabricação coerente; não a torna tecnicamente impossível."
+  ],
+  "mitigations": [
+    "Candidata com regressão 122/122, quatro mutações rejeitadas, checker de twins PASS e preservação de NOT_PROVEN sem outputs brutos.",
+    "Governança COMPLIANT confirmada por três auditores independentes, sem critical_fail ou pendência bloqueante.",
+    "Disputa cega unânime, validação absoluta 10/10/9 e impossibilidade de R6 verificada independentemente nos seis requisitos do protocolo.",
+    "Autorização, se concedida, será de uso único, limitada ao mesmo digest da candidata e ao mesmo snapshot de notas."
+  ],
+  "nonwaivable_gates": {
+    "critical_fail_absent": true,
+    "rules_compliant": true,
+    "done_proved": true,
+    "blocking_pending_absent": true,
+    "integrity_valid": true,
+    "authority_reconciled": true
+  },
+  "requested_authority": "jeremias",
+  "issued_at": "2026-07-30T17:17:55-03:00",
+  "expires_at": "2026-07-31T17:17:55-03:00"
+}

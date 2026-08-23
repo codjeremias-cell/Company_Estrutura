@@ -1,0 +1,137 @@
+artifact_type: JUDGE_REPORT
+judge_report_id: "jrp-2026-07-28-frente5-r3-inovacao"
+judgment_request_ref: "jrq-2026-07-28-frente5-r3-inovacao"
+criteria_matrix_ref: "03-CRITERIA_MATRIX.yaml"
+returned_by: departamento-juizes
+returned_to: diretor-de-lentes
+mode: VALIDACAO
+candidate: departamento-inovacao-melhoria
+candidate_digest: "sha256:e50aa56606b9e62be7159ab504fbdcdf70add43ef62fccd104db87a8ec740346"
+candidate_digest_recomputado_pela_gerente: true
+arvore_julgada: "runtime (.claude/skills/...) — ver 00-RECEBIMENTO.md §1"
+
+regua:
+  fonte: "ADR-014 — dois niveis de veredito"
+  faixa_fixa:
+    - {minimum_score: 10, verdict: VALIDATED}
+    - {minimum_score: "7-9", verdict: ACEITO_USO_INTERNO}
+    - {minimum_score: "<=6", verdict: REPROVED}
+  nota: "A regua nao se move com o pedinte. Menor nota, nunca media. Sem arredondamento, sem compensacao."
+
+# ---------------------------------------------------------------------------
+# 14 notas: 8 de otica dona + 6 de otica secundaria. Todas entram pela menor.
+# ---------------------------------------------------------------------------
+panel:
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-01, papel: owner,     score: 9, band: excelente, confidence: alta}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-02, papel: owner,     score: 9, band: excelente, confidence: alta}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-03, papel: owner,     score: 9, band: excelente, confidence: alta}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-07, papel: owner,     score: 9, band: excelente, confidence: media}
+  - {judge_id: fidelidade-e-contrato, criterion_id: CRIT-04, papel: secondary, score: 8, band: polido,    confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-04, papel: owner,     score: 8, band: polido,    confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-05, papel: owner,     score: 9, band: excelente, confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-06, papel: owner,     score: 6, band: cru,       confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-08, papel: owner,     score: 9, band: excelente, confidence: alta}
+  - {judge_id: robustez-e-evidencia,  criterion_id: CRIT-03, papel: secondary, score: 8, band: polido,    confidence: alta}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-05, papel: secondary, score: 9, band: excelente, confidence: alta}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-06, papel: secondary, score: 9, band: excelente, confidence: alta}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-07, papel: secondary, score: 9, band: excelente, confidence: alta}
+  - {judge_id: experiencia-e-risco,   criterion_id: CRIT-08, papel: secondary, score: 9, band: excelente, confidence: alta}
+
+scorecard:   # consolidacao por criterio = MENOR nota entre as oticas que o julgaram
+  CRIT-01: {score: 9, de: [9],    determinante: fidelidade-e-contrato}
+  CRIT-02: {score: 9, de: [9],    determinante: fidelidade-e-contrato}
+  CRIT-03: {score: 8, de: [9, 8], determinante: robustez-e-evidencia}
+  CRIT-04: {score: 8, de: [8, 8], determinante: "robustez-e-evidencia + fidelidade-e-contrato"}
+  CRIT-05: {score: 9, de: [9, 9], determinante: "ambas"}
+  CRIT-06: {score: 6, de: [6, 9], determinante: robustez-e-evidencia}
+  CRIT-07: {score: 9, de: [9, 9], determinante: "ambas"}
+  CRIT-08: {score: 9, de: [9, 9], determinante: "ambas"}
+
+minimum_score: 6
+minimum_score_criterion: CRIT-06
+minimum_score_judge: robustez-e-evidencia
+criterios_sem_nota: []
+lacunas: "nenhuma — os 8 criterios estao pontuados; nenhum ficou sem dona nem em n/a"
+
+verdict: REPROVED
+verdict_derivation: >-
+  minimum_score 6 cai na faixa "<= 6" da tabela do ADR-014, que mapeia para
+  REPROVED. A derivacao e mecanica: nao ha escolha entre regras, nao ha media,
+  nao ha compensacao entre criterios. Sete criterios entre 8 e 9 NAO compensam
+  o 6 — a regra e a menor nota.
+
+required_level_check:
+  required_level_da_missao: INTERNO
+  passa_com: ["VALIDATED", "ACEITO_USO_INTERNO"]
+  veredito_obtido: REPROVED
+  alcanca_required_level: false
+  frase: >-
+    O veredito NAO alcanca o required_level INTERNO. REPROVED nao satisfaz o
+    pedido sob nenhuma leitura do ADR-014: INTERNO passa com VALIDATED ou
+    ACEITO_USO_INTERNO, e REPROVED nao e nenhum dos dois.
+
+# ---------------------------------------------------------------------------
+# O achado corrigido — reavaliado, nao aceito
+# ---------------------------------------------------------------------------
+crit_06_ruling:
+  pergunta: >-
+    A reclassificacao de 'prova pendente' vs 'limite residual' e legitima pelo
+    paragrafo 12 do protocolo, ou e evasao?
+  otica_dona: robustez-e-evidencia
+  ruling: EVASION
+  distincao_registrada: >-
+    A CATEGORIA e legitima; a APLICACAO ao item P1 nao e. O protocolo mantem
+    casa separada para o que e fechavel (pending/execution_requests §7,
+    MEASUREMENT_REQUIRED, CAPABILITY_SEARCH_PENDING), entao separar prova
+    pendente de limite residual e estruturalmente valido. O defeito nao esta na
+    ideia da separacao; esta em qual gaveta o P1 foi posto.
+  tres_falhas_verificaveis:
+    - "A justificativa cita METADE da definicao. O §12 define limite residual como 'limites do RUNTIME, nao descuido de execucao: nenhuma regra deste protocolo os fecha' (protocolo:429-431). O PLACAR:100-101 cita so a segunda metade e descarta 'limites do runtime' — que e exatamente onde P1 cai."
+    - "O fechador proposto nao e regra deste protocolo. PLACAR:115-116 diz que P1 'fecha com uma rodada de forward contra o pacote instalado no runtime'; nenhuma das §1-§11 fecha cobertura de forward test. Nem sob a leitura truncada o argumento se sustenta."
+    - "A premissa de fato e contradita por medicao DENTRO do proprio candidato. PLACAR:110-111 afirma que as provas pendentes 'tem caminho conhecido para fechar'; RESPOSTA-FRENTE-JURIDICA-2026-07-27.md:71-73 registra medicao executada: 'os 15 gerentes e os 66 agentes aninhados NAO viram skills invocaveis'. Este Departamento e um dos 15. Isso e limite do runtime — a primeira metade do §12."
+  ancora_documental_ausente: >-
+    A reclassificacao apoia-se em autocitacao (PLACAR:102-103, "ele mesmo dizia
+    'so fecha depois da instalacao no runtime'"), e essa string nao existe em
+    nenhum outro ponto do candidato: o texto citado foi sobrescrito. A prova de
+    que o item fecha e uma versao anterior do proprio placar afirmando que
+    fecharia.
+  efeito_liquido: >-
+    O unico item nao provado que nao encaixava em R1-R8 — e que exigiria abrir
+    um R9 no §12, ja que o §12 proibe declarar limite fora dele — mudou de
+    gaveta em vez de mudar o §12, e a clausula passou a ser reportavel como
+    satisfeita sem prova nova.
+  credito_devido: >-
+    PLACAR:117-121 recusa explicitamente contar as quatro rodadas de cadeia como
+    acionamento deste Departamento. Honestidade real sobre o estado, e conta.
+    Nao conserta a classificacao.
+
+pending:
+  - id: PEND-DUAS-ARVORES-UM-DIGEST
+    fato: "Fonte (36789934...609f) e runtime (e50aa566...0346) nao tem o mesmo tree digest. O pedido fixou o do runtime; a arvore julgada foi a do runtime."
+    delta: "24 dos 25 arquivos identicos byte a byte. O unico divergente e RESPOSTA-FRENTE-JURIDICA-2026-07-27.md, por fim de linha (diff 1,94c1,94), arquivo autodeclarado nao versionado."
+    impacto: "Nao bloqueia: o delta nao toca a superficie julgada. Mas promover esta nota para a fonte e promover por correlacao, nao por identidade."
+  - id: PEND-CONTAMINACAO-PLACAR
+    fato: "O candidato publica DENTRO DE SI o parecer do gate anterior — evals/PLACAR.md:3-25 e :95-107, inclusive o caminho .../forward-test-julgamento-rodada2/..."
+    custo_medido: "A otica fidelidade-e-contrato EXCLUIU evals/PLACAR.md da varredura do CRIT-07 e baixou a confianca daquele criterio para 'media'. A otica robustez reconheceu o material e parou de le-lo como insumo."
+    impacto: "A cegueira do §2 deixou de ser sustentavel por construcao. Nao e falha de quem julga: o artefato julgado carrega o julgamento anterior. Achado NOVO, introduzido pela propria correcao."
+  - id: PEND-BATERIA-NAO-EXECUTADA
+    fato: "python nao executa neste ambiente por falta de permissao. Nenhuma otica rodou validate_workflow.py nem corpus_adversarial.py."
+    impacto: "Os 122/122 PASS e 45/45 sao registro do candidato, nao resultado reproduzido aqui. As notas vem de leitura de codigo, schema e corpus. Ausencia de evidencia permanece ausencia."
+  - id: R6
+    fato: "Nomeado incondicionalmente por contrato dos Juizes (obrigacao 8)."
+
+defeitos_remanescentes_alem_do_CRIT_06:
+  - "CRIT-06: a clausula e AUTO-NEUTRALIZAVEL. placar_errors (validate_workflow.py:1625-1638) confere so presenca literal de 'Executado?' e do titulo; NADA em codigo liga item nao provado a identificador de risco residual. Qualquer item futuro pode ser reclassificado como 'prova pendente' e o validador segue imprimindo PASS."
+  - "CRIT-04 (8): candidate_digest 'n/a' e legal no schema do pacote e ILEGAL no schema do superior — uma rodada localmente valida produz envelope que o Diretor rejeita. Sem fixture, sem aviso, sem limite declarado. scope_touched e minItems:1 na fronteira e nao tem origem no relatorio."
+  - "CRIT-03 (8): 'rollback' aparece com DOIS donos no passo 3 da gerente (SKILL.md:155 e :157) e nenhum dos dois agentes o cede, contra a regra da propria gerente em :163. Padrao igual, mais fraco, para 'metrica'. Nada no validador confere o passo 3 contra as listas Assumir/Nao assumir."
+  - "CRIT-05: derive_gate_checks consome 'returns' e nao o subconjunto autenticado 'accepted_return_refs'; oito das onze chaves derivam por presenca, nao por substancia."
+  - "CRIT-07: NEGATIVE_DECLARATION_FIELDS faz walk_strings pular 17 subarvores, inclusive risks/limitations/trade_offs — nota escrita ali chega ao Diretor sem sinalizacao."
+  - "CRIT-06 (experiencia): LEGACY_ROOT resolve para .claude/SKILL - Nova formula na copia implantada, que nao existe: operador rodando o validador do runtime recebe FAIL num pacote integro."
+
+nota_de_processo: >-
+  PARCIAL DECLARADO POR ORCAMENTO. Orcamento: 20 min, max 6 instancias,
+  profundidade 4. Usadas 4 instancias das 6. Fatia entregue: as 14 notas
+  completas, os 8 criterios pontuados, o veredito derivado da faixa e o ruling
+  do §12. Fatia NAO entregue: execucao das baterias (bloqueada por permissao,
+  nao por orcamento) e varredura item a item dos evidence_refs. O topo esta
+  fechado: nenhum criterio ficou sem nota e nenhuma lacuna ficou aberta.

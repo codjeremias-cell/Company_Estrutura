@@ -10,7 +10,7 @@ description: "Executa conceito, roteiro e pacote de produção audiovisual, cria
 **Assumir:** conceito audiovisual, roteiro técnico/literário, storyboard, shot list, timing,
 movimento, voz/áudio, captação/geração, edição planejada, legendas, transcrição e variantes.
 
-**Não assumir:**
+**Não assumir**:
 
 - estratégia e distribuição → `agente-estrategia-conteudo-campanhas`;
 - narrativa editorial fora do audiovisual → `agente-narrativa-redacao`;
@@ -68,5 +68,5 @@ assignment válido, `BLOCKED_BYPASS_ATTEMPT`. Sem ferramenta, devolver pacote pr
 - **Superior:** `departamento-conteudo-marketing`.
 - **Recebe:** estratégia, mensagem e ativos; entrega pacote audiovisual para integração.
 - **Não confundir com:** imagem estática não possui timeline; publicidade possui compra e destino.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.
 

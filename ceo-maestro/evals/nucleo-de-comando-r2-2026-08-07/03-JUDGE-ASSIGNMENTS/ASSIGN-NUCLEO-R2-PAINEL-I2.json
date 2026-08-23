@@ -1,0 +1,59 @@
+{
+  "artifact_type": "JUDGE_ASSIGNMENT",
+  "assignment_id": "ASSIGN-NUCLEO-R2-PAINEL-I2",
+  "judge_id": "painel-externo",
+  "lens": "painel-externo",
+  "instance": 2,
+  "write_path": "pareceres/painel-externo/i2/",
+  "custody_copy": {
+    "path": "evals/nucleo-de-comando-r2-2026-08-07/saida-crua",
+    "sha256": "sha256:0c592c799f991d7252321af7d45f458721a9b75273093126047b7a590d1e5d2a",
+    "bytes": 44838,
+    "taken_at": "2026-08-07T01:30:00-03:00",
+    "arquivos": 5
+  },
+  "mode": "VALIDACAO",
+  "contract_id": "CONTRATO-NUCLEO-R2-20260807",
+  "contract_version": 1,
+  "contract_digest": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+  "required_level": "INTERNO",
+  "pacotes": [
+    "departamento-juizes"
+  ],
+  "criteria": [
+    {
+      "criterion_id": "C01",
+      "criterion_text": "Contrato e fronteira: o pacote declara o que faz, o que não faz e com quem fala; a fronteira é respeitada na prática, não só no texto.",
+      "role": "owner"
+    },
+    {
+      "criterion_id": "C02",
+      "criterion_text": "Schema e envelope: as saídas validam contra o schema declarado, e o envelope de fronteira é o que o vizinho consome.",
+      "role": "owner"
+    },
+    {
+      "criterion_id": "C03",
+      "criterion_text": "Trava com prova: cada trava tem caso executado que a faz reprovar; nada passa por presença de string; morte por exceção não conta como pega.",
+      "role": "owner"
+    },
+    {
+      "criterion_id": "C04",
+      "criterion_text": "Evidência e rastreabilidade: todo número publicado vem com receita, raiz e critério; digest reproduz; ausência vira estado nomeado.",
+      "role": "owner"
+    },
+    {
+      "criterion_id": "C05",
+      "criterion_text": "Uso pela cadeia: o pacote é realmente acionado pelo protocolo que declara — quem chama, com que envelope, e existe prova de trânsito.",
+      "role": "owner"
+    },
+    {
+      "criterion_id": "C06",
+      "criterion_text": "Limites declarados: o pacote diz o que não faz, onde falha e o que não sabe, de forma nomeada e verificável.",
+      "role": "owner"
+    }
+  ],
+  "rubric_ref": "rubrica-corte-v2",
+  "issued_at": "2026-08-07T01:35:00-03:00",
+  "issued_by": "diretor-de-lentes (painel externo; os agentes do proprio pacote nao podem julga-lo)",
+  "return_to": "diretor-de-lentes"
+}

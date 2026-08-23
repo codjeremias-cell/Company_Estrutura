@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://skill-crowd.local/schemas/ceo-maestro.schema.json",
   "title": "Contratos do CEO Maestro",
-  "description": "Artefatos executivos, gate mínimo 9,5 e exceção autorizada exclusivamente por Jeremias.",
+  "description": "Artefatos executivos com veredito externo inteiro, nível PRODUCAO ou INTERNO e exceção autorizada exclusivamente por Jeremias.",
   "oneOf": [
     {
       "$ref": "#/$defs/executiveMission"
@@ -27,6 +27,9 @@
     },
     {
       "$ref": "#/$defs/capabilityGap"
+    },
+    {
+      "$ref": "#/$defs/analysisReturn"
     }
   ],
   "$defs": {
@@ -98,6 +101,7 @@
         "producer",
         "producer_version",
         "producer_digest",
+        "producer_digest_recipe",
         "created_at"
       ],
       "properties": {
@@ -165,8 +169,65 @@
         "producer_digest": {
           "$ref": "#/$defs/digest"
         },
+        "producer_digest_recipe": {
+          "description": "RODADA 8 — A RECEITA DO producer_digest PASSA A SER NORMATIVA. Ela so existia em prosa nao normativa, e por isso alcancou 17 envelopes em 7 rodadas sem que nenhum leitor conseguisse reproduzi-la: na rodada 7 um leitor diligente concluiu 'bate com NENHUM' e a acusacao de forjadura saiu plausivel e falsa. O campo diz QUE OBJETO o numero ao lado hasheia, na forma `caminho::funcao sobre <objeto>`. Familia recomputacao: a forma e conferida por pattern, e vocabulario novo nao precisa de edicao do schema.",
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9_./-]+::[A-Za-z0-9_]+ sobre .{6,}$"
+        },
         "created_at": {
           "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "aggregationMethod": {
+      "$comment": "ADR-016: regra de combinacao entre instancias da MESMA lente, fixada no JUDGMENT_REQUEST antes de qualquer parecer existir.",
+      "enum": [
+        "MENOR",
+        "MEDIANA",
+        "EMPATE_DECLARADO"
+      ]
+    },
+    "aggregationRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "declared_at",
+        "rationale"
+      ],
+      "properties": {
+        "method": {
+          "$ref": "#/$defs/aggregationMethod"
+        },
+        "declared_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "scoreRange": {
+      "$comment": "ADR-016: faixa entre as consolidacoes por instancia. Com uma instancia, lo == hi.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lo",
+        "hi"
+      ],
+      "properties": {
+        "lo": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "hi": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
         }
       }
     },
@@ -187,7 +248,7 @@
           "type": "boolean"
         },
         "score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
           "maximum": 10
         },
@@ -273,7 +334,11 @@
         "verdict",
         "violations",
         "evidence_refs",
-        "issued_at"
+        "issued_at",
+        "pending",
+        "candidate_digest_source",
+        "compliance_claim",
+        "candidate_manifest_status"
       ],
       "properties": {
         "report_id": {
@@ -287,6 +352,13 @@
         },
         "candidate_digest": {
           "$ref": "#/$defs/digest"
+        },
+        "candidate_identity_status": {
+          "description": "Se a identidade do candidato foi CONFERIDA — candidate_digest recomputado sobre a árvore aberta pela receita _compartilhado/verificacoes_pacote.py::digest_de_arvore — ou NAO_CONFERIDA. O campo existe porque, sem ele, os dois casos chegavam à barreira do CEO com o mesmo aspecto: candidate_digest preenchido, nada em pending, nenhum sinal. Um COMPLIANT exige CONFERIDO; um NONCOMPLIANT pode declarar NAO_CONFERIDO, e é assim que ausência de conferência permanece ausência em vez de virar campo preenchido.",
+          "enum": [
+            "CONFERIDO",
+            "NAO_CONFERIDO"
+          ]
         },
         "contract_digest": {
           "$ref": "#/$defs/digest"
@@ -313,6 +385,97 @@
         },
         "issued_at": {
           "$ref": "#/$defs/timestamp"
+        },
+        "pending": {
+          "description": "Os limites residuais viajam COM o envelope que a barreira le. Ate a rodada 3 a SKILL.md afirmava que quem le na barreira le os tres limites 'no proprio artefato', e o artefato era este: sem `pending`, e com additionalProperties false proibindo o campo. Duas oticas independentes dos Juizes acusaram a contradicao. Ou o limite alcanca o envelope, ou a frase sai; escolhemos o limite. R6 (o painel auditor nao e verificavel pelo runtime), R9 (a ancora nao liga a dimensao ao artefato) e R10 (nada assina este envelope) sao obrigatorios em toda emissao, sem condicao. R11 entra na rodada 5 e e de outra natureza: R6, R9 e R10 sao limites de ALCANCE de travas que existem; R11 e o TETO DO METODO — forjar a evidencia e chamar as mesmas funcoes que a verificam, medido em OI-04 a 80 linhas e 0,031 s. E por causa dele que a alegacao de COMPLIANT foi reduzida, e por isso ele e obrigatorio em toda emissao.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "minItems": 4,
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R6 ",
+                "const": "R6 — a existência do painel auditor não é verificável pelo runtime; sob porta única a inspeção é executada em papel pela gerente. A âncora NÃO impede a fabricação, e o custo dela está medido: recibos íntegros que reabrem foram forjados em 80 linhas e 0,031 s, com 1 tentativa (OI-04, 2026-08-02)."
+              },
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R9 ",
+                "const": "R9 — a âncora prova que UM arquivo da raiz auditada foi reaberto na versão declarada; ela NÃO liga a dimensão ao artefato que deveria sustentá-la. Pertinência de evidência é mérito, e mérito é dos Juízes (R5). (Este limite viajava como R8 até a rodada 3, e colidia com o R8 do §7, bypass para fora.)"
+              },
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R10 ",
+                "const": "R10 — nada assina este envelope. Edição do arquivo posterior à gravação é invisível ao emissor E ao validador, e o consumidor pode ler um veredito que o emissor não produziu. A defesa correspondente é o CONSUMIDOR recomputar o envelope a partir do ledger e do candidato, e ela mora fora deste pacote. Medido pela sonda S14-ENVELOPE-EDITADO."
+              },
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R11 ",
+                "const": "R11 — TETO DO MÉTODO: forjar a evidência é chamar as mesmas funções que a verificam. Derivar da evidência protege contra valor DIGITADO; não protege contra quem CHAMA o derivador, porque atacante e verificador compartilham o código, o processo e a árvore. Medido por origem independente em 2026-08-02 (OI-04): 80 linhas, 0,031 s, 1 tentativa, 4 arquivos lidos, zero conhecimento do conteúdo auditado. Fechar isto exige âncora externa ao pacote — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo — e não cabe no runtime atual. Este envelope NÃO carrega defesa contra isto e não obriga nenhuma: a origem independente dos casos foi retirada do envelope na rodada 8, e o limite permanece ABERTO."
+              },
+              "minContains": 1
+            }
+          ]
+        },
+        "candidate_digest_source": {
+          "description": "De onde veio o candidate_digest deste envelope: RECOMPUTADO sobre a arvore aberta, ou DECLARADO_NAO_CONFERIDO. O campo existe porque os dois casos escreviam a mesma string e chegavam a barreira indistinguiveis.",
+          "enum": [
+            "RECOMPUTADO",
+            "DECLARADO_NAO_CONFERIDO"
+          ]
+        },
+        "compliance_claim": {
+          "description": "O que COMPLIANT certifica, e o que ele NAO certifica, no proprio envelope que a barreira le. Rodada 5: as quatro rodadas anteriores perseguiram defeitos e cada correcao reabriu o mesmo padrao um nivel abaixo; OI-04 mediu o teto — forjar a evidencia e chamar as mesmas funcoes que a verificam, a 80 linhas e 0,031 s. A alegacao foi REDUZIDA ao que o mecanismo faz. Os dois textos sao `const` aqui e constantes em scripts/inspecao_executada.py: alargar a alegacao exige DUAS edicoes, em dois arquivos, e uma so derruba a emissao.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "certifies",
+            "does_not_certify",
+            "ceiling_ref",
+            "source"
+          ],
+          "properties": {
+            "certifies": {
+              "const": "COMPLIANT certifica exatamente isto: nenhum valor deste envelope foi aceito como digitado quando divergia da evidência reaberta. Toda âncora declarada foi reaberta contra a raiz auditada, cada citação foi conferida no byte, cada total foi recontado dos recibos em disco e cada estado da matriz foi rederivado dos mesmos recibos."
+            },
+            "does_not_certify": {
+              "const": "COMPLIANT NÃO certifica que a evidência não foi forjada. Forjar a evidência é chamar as mesmas funções que a verificam: medido por origem independente em 2026-08-02 (OI-04) a 80 linhas, 0,031 s, 1 tentativa, 4 arquivos lidos e zero conhecimento do conteúdo auditado. Atacante e verificador compartilham o código, o processo e a árvore; fechar isto exige âncora externa ao pacote, que não cabe no runtime atual."
+            },
+            "ceiling_ref": {
+              "const": "R11"
+            },
+            "source": {
+              "const": "scripts/inspecao_executada.py::ALEGACAO_DO_COMPLIANT"
+            }
+          }
+        },
+        "candidate_manifest_status": {
+          "description": "RODADA 8 — o estado da conferencia do manifesto do candidato, saida de _compartilhado/verificacoes_pacote.py::conferir_manifesto_do_candidato. C07 da rodada 7 mediu que a arvore do candidato REPRODUZ com o manifesto mentiroso dentro dela: digest de arvore autentica a declaracao falsa junto com o resto. SEM_MANIFESTO NAO e conformidade — e a raiz que nao e pacote entregue, e o limite esta declarado em prosa do pacote.",
+          "enum": [
+            "CONFERIDO",
+            "SEM_MANIFESTO",
+            "DIVERGENTE"
+          ]
+        },
+        "panel_independence_status": {
+          "description": "T71 — o estado da INDEPENDENCIA do painel de inspetores, projetado do AUDIT_LEDGER para o envelope que a barreira le. INDEPENDENTE somente quando TODO item de `panel` foi medido `independent: true`; painel VAZIO e NAO_INDEPENDENTE, porque `all([])` e verdadeiro e ausencia de inspetor nao e independencia — ausencia de evidencia permanece ausencia. O campo existe porque o painel NAO cabe aqui: `governanceReport` nao o carrega e `additionalProperties: false` o proibe. Entao o que atravessa a fronteira e o escalar derivado, no mesmo par de duas camadas que `candidate_identity_status` ja usa — o emissor pode ser corrigido; o schema do CEO e o contrato que sobrevive a ele.",
+          "enum": [
+            "INDEPENDENTE",
+            "NAO_INDEPENDENTE"
+          ]
         }
       },
       "allOf": [
@@ -338,6 +501,100 @@
             "properties": {
               "violations": {
                 "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "COMPLIANT"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "required": [
+              "candidate_identity_status"
+            ],
+            "properties": {
+              "candidate_identity_status": {
+                "const": "CONFERIDO"
+              }
+            }
+          }
+        },
+        {
+          "description": "COMPLIANT exige que o digest publicado seja o recomputado. Identidade conferida que publica o numero declarado e conferencia que nao chega ao consumidor.",
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "COMPLIANT"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "required": [
+              "candidate_digest_source"
+            ],
+            "properties": {
+              "candidate_digest_source": {
+                "const": "RECOMPUTADO"
+              }
+            }
+          }
+        },
+        {
+          "description": "RODADA 8 — COMPLIANT exige que o manifesto do candidato, quando existe, descreva O PROPRIO candidato. DIVERGENTE e estado nomeado e nao coexiste com COMPLIANT. Substitui o gate de origem independente, aposentado nesta rodada porque defendia alegacao que o emissor nao precisa fazer; este defende alegacao que o pacote AINDA faz — a propria identidade. T83 (2026-08-08): esta clausula nasceu chaveada em `governance_verdict` — copia da irma do `auditLedger`, onde aquele nome existe. Aqui o objeto nao tem o campo e `additionalProperties: false` o PROIBE, entao o `if` nunca casava: COMPLIANT com `candidate_manifest_status: DIVERGENTE` passava, medido. Corrigida para `verdict` no mesmo ato que criou a trava que exige a chave do `if` existir em `properties`.",
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "COMPLIANT"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "required": [
+              "candidate_manifest_status"
+            ],
+            "properties": {
+              "candidate_manifest_status": {
+                "enum": [
+                  "CONFERIDO",
+                  "SEM_MANIFESTO"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "T71 — COMPLIANT exige painel INDEPENDENTE. Espelha a clausula da identidade, e e chaveada em `verdict` DE PROPOSITO: `governance_verdict` e o nome do veredito no AUDIT_LEDGER, nao neste objeto, e clausula chaveada nele nunca dispara aqui — foi assim que a clausula do manifesto nasceu morta (T83).",
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "COMPLIANT"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "required": [
+              "panel_independence_status"
+            ],
+            "properties": {
+              "panel_independence_status": {
+                "const": "INDEPENDENTE"
               }
             }
           }
@@ -418,6 +675,7 @@
         "recipients",
         "objective",
         "deliverable_type",
+        "required_level",
         "scope_in",
         "scope_out",
         "constraints",
@@ -451,6 +709,15 @@
           "maxItems": 3,
           "uniqueItems": true
         },
+        "forbidden_actors": {
+          "$comentario": "T96 — atores que esta missao PROIBE acionar. OPCIONAL: envelope anterior a 2026-08-22 nao o traz e continua valido. Existe porque na missao 46 a proibicao vivia so em prosa (stop_when e um allowed_tools que restringia spawn_agent ao proprio Departamento), e prosa nao e conferivel: a emissao aceitou uma missao que proibia os donos de judge_report e governance_report enquanto o executiveSubmission exige os dois nao nulos. Nenhuma execucao podia satisfazer as duas clausulas, e o resultado foi o CAPABILITY_GAP 16 — correto e inevitavel.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
         "objective": {
           "type": "string",
           "minLength": 10
@@ -460,6 +727,12 @@
             "analysis",
             "product",
             "proposal"
+          ]
+        },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
           ]
         },
         "scope_in": {
@@ -704,7 +977,11 @@
         "judge_capability_digest",
         "scorecard",
         "minimum_score",
+        "minimum_score_range",
+        "instances_per_lens",
+        "aggregation_rule",
         "verdict",
+        "required_level",
         "critical_fail",
         "blocking_pending_refs",
         "evidence_refs",
@@ -738,14 +1015,34 @@
           "minItems": 1
         },
         "minimum_score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
           "maximum": 10
         },
+        "minimum_score_range": {
+          "$ref": "#/$defs/scoreRange"
+        },
+        "instances_per_lens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "aggregation_rule": {
+          "$ref": "#/$defs/aggregationRule"
+        },
         "verdict": {
+          "$comment": "ADR-016: NAO_DISCRIMINADO entra como veredito legitimo na fronteira e nao alcanca nenhum required_level.",
           "enum": [
             "VALIDATED",
-            "REPROVED"
+            "ACEITO_USO_INTERNO",
+            "REPROVED",
+            "NAO_DISCRIMINADO"
+          ]
+        },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
           ]
         },
         "critical_fail": {
@@ -790,7 +1087,17 @@
           "then": {
             "properties": {
               "minimum_score": {
-                "minimum": 9.5
+                "const": 10
+              },
+              "minimum_score_range": {
+                "properties": {
+                  "lo": {
+                    "const": 10
+                  },
+                  "hi": {
+                    "const": 10
+                  }
+                }
               },
               "critical_fail": {
                 "const": false
@@ -799,6 +1106,136 @@
                 "maxItems": 0
               }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "ACEITO_USO_INTERNO"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "minimum": 7,
+                "maximum": 9
+              },
+              "minimum_score_range": {
+                "properties": {
+                  "lo": {
+                    "minimum": 7
+                  },
+                  "hi": {
+                    "maximum": 9
+                  }
+                }
+              },
+              "critical_fail": {
+                "const": false
+              },
+              "blocking_pending_refs": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "$comment": "ADR-016: faixa que atravessa o corte sai como NAO_DISCRIMINADO, que exige 2 ou mais instancias por lente e nao autoriza producao, publicacao nem uso interno.",
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "NAO_DISCRIMINADO"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "instances_per_lens": {
+                "minimum": 2
+              },
+              "critical_fail": {
+                "const": false
+              },
+              "blocking_pending_refs": {
+                "maxItems": 0
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "minimum_score_range": {
+                    "properties": {
+                      "lo": {
+                        "maximum": 6
+                      },
+                      "hi": {
+                        "minimum": 7
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "minimum_score_range": {
+                    "properties": {
+                      "lo": {
+                        "minimum": 7,
+                        "maximum": 9
+                      },
+                      "hi": {
+                        "const": 10
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "REPROVED"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "minimum_score": {
+                    "maximum": 6
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "critical_fail": {
+                    "const": true
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "blocking_pending_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            ]
           }
         }
       ]
@@ -883,14 +1320,14 @@
           "$ref": "#/$defs/digest"
         },
         "current_minimum_score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
-          "exclusiveMaximum": 9.5
+          "exclusiveMaximum": 10
         },
         "best_attainable_score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
-          "exclusiveMaximum": 9.5
+          "exclusiveMaximum": 10
         },
         "below_cutoff_evaluations": {
           "type": "array",
@@ -957,6 +1394,7 @@
         "limitation_report_ref",
         "actual_minimum_score",
         "cutoff_score",
+        "required_level",
         "requested_scope",
         "residual_risks",
         "mitigations",
@@ -988,12 +1426,21 @@
           "$ref": "#/$defs/artifactRef"
         },
         "actual_minimum_score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
-          "exclusiveMaximum": 9.5
+          "exclusiveMaximum": 10
         },
         "cutoff_score": {
-          "const": 9.5
+          "enum": [
+            7,
+            10
+          ]
+        },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
+          ]
         },
         "requested_scope": {
           "$ref": "#/$defs/nonEmptyStrings"
@@ -1025,6 +1472,47 @@
                 "producer": {
                   "const": "ceo-maestro"
                 }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "required_level": {
+                "const": "PRODUCAO"
+              }
+            },
+            "required": [
+              "required_level"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cutoff_score": {
+                "const": 10
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "required_level": {
+                "const": "INTERNO"
+              }
+            },
+            "required": [
+              "required_level"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cutoff_score": {
+                "const": 7
+              },
+              "actual_minimum_score": {
+                "maximum": 6
               }
             }
           }
@@ -1085,9 +1573,9 @@
           "$ref": "#/$defs/digest"
         },
         "actual_minimum_score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
-          "exclusiveMaximum": 9.5
+          "exclusiveMaximum": 10
         },
         "scope": {
           "$ref": "#/$defs/nonEmptyStrings"
@@ -1284,6 +1772,7 @@
         "submission_ref",
         "candidate_digest",
         "minimum_score",
+        "required_level",
         "judge_report_ref",
         "limitation_report_ref",
         "exception_authorization_ref",
@@ -1310,9 +1799,15 @@
           "$ref": "#/$defs/digest"
         },
         "minimum_score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
           "maximum": 10
+        },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
+          ]
         },
         "judge_report_ref": {
           "$ref": "#/$defs/artifactRef"
@@ -1340,6 +1835,7 @@
         "decision": {
           "enum": [
             "VALIDATED",
+            "ACEITO_USO_INTERNO",
             "REWORK",
             "AWAITING_HUMAN_EXCEPTION",
             "VALIDATED_BY_EXCEPTION",
@@ -1391,7 +1887,42 @@
           "then": {
             "properties": {
               "minimum_score": {
-                "minimum": 9.5
+                "const": 10
+              },
+              "limitation_report_ref": {
+                "type": "null"
+              },
+              "exception_authorization_ref": {
+                "type": "null"
+              },
+              "acceptance_basis": {
+                "const": "quality_gate"
+              },
+              "nonwaivable_gates": {
+                "$ref": "#/$defs/nonWaivablePassed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "ACEITO_USO_INTERNO"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "minimum": 7,
+                "maximum": 9
+              },
+              "required_level": {
+                "const": "INTERNO"
               },
               "limitation_report_ref": {
                 "type": "null"
@@ -1422,7 +1953,7 @@
           "then": {
             "properties": {
               "minimum_score": {
-                "exclusiveMaximum": 9.5
+                "exclusiveMaximum": 10
               },
               "limitation_report_ref": {
                 "$ref": "#/$defs/artifactRef"
@@ -1453,7 +1984,7 @@
           "then": {
             "properties": {
               "minimum_score": {
-                "exclusiveMaximum": 9.5
+                "exclusiveMaximum": 10
               },
               "limitation_report_ref": {
                 "$ref": "#/$defs/artifactRef"
@@ -1466,6 +1997,32 @@
               },
               "nonwaivable_gates": {
                 "$ref": "#/$defs/nonWaivablePassed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "required_level": {
+                "const": "INTERNO"
+              },
+              "decision": {
+                "enum": [
+                  "AWAITING_HUMAN_EXCEPTION",
+                  "VALIDATED_BY_EXCEPTION"
+                ]
+              }
+            },
+            "required": [
+              "required_level",
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "maximum": 6
               }
             }
           }
@@ -1549,6 +2106,122 @@
               "properties": {
                 "producer": {
                   "const": "ceo-maestro"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "analysisReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Retorno NÃO FINAL, ao lado de PROGRESS, BLOCKED_RETURN e CAPABILITY_GAP. Transporta análise informativa ao CEO e jamais alcança o gate de qualidade: não carrega veredito, não exige JUDGE_REPORT e não exige GOVERNANCE_REPORT porque análise informativa não emite status de validação — e não porque seja um caminho mais barato para entregar produto. Produto e proposta continuam saindo apenas por EXECUTIVE_SUBMISSION, com todos os gates de sempre. As quatro travas que impedem a porta dos fundos: (1) content_type é const analysis; (2) additionalProperties false proíbe deliverable_type, judge_report, governance_report, candidate_digest, test_summary, limitation_report e exception_authorization; (3) causal.candidate_digest é obrigatoriamente n/a, porque análise não tem candidato; (4) a missão que o autoriza precisa ter pedido deliverable_type analysis.",
+      "required": [
+        "artifact_type",
+        "return_id",
+        "causal",
+        "submitted_by",
+        "content_type",
+        "executive_mission",
+        "scope_touched",
+        "findings",
+        "artifact_refs",
+        "evidence_refs",
+        "open_questions",
+        "recommended_next_step",
+        "blocking_pending_refs",
+        "round",
+        "returned_to",
+        "returned_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "ANALYSIS_RETURN"
+        },
+        "return_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "submitted_by": {
+          "$ref": "#/$defs/directExecutive"
+        },
+        "content_type": {
+          "const": "analysis"
+        },
+        "executive_mission": {
+          "$ref": "#/$defs/executiveMission"
+        },
+        "scope_touched": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "findings": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "artifact_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/artifactRefs"
+        },
+        "open_questions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "recommended_next_step": {
+          "type": "string",
+          "minLength": 10
+        },
+        "blocking_pending_refs": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "returned_to": {
+          "const": "ceo-maestro"
+        },
+        "returned_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "producer": {
+                  "$ref": "#/$defs/directExecutive"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "causal": {
+              "properties": {
+                "candidate_digest": {
+                  "const": "n/a"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "executive_mission": {
+              "properties": {
+                "deliverable_type": {
+                  "const": "analysis"
                 }
               }
             }

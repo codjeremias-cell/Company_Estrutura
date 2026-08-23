@@ -22,7 +22,8 @@ Leia, nesta ordem:
 4. `references/protocolo-de-handoff.md`;
 5. `references/regua-de-avaliacao.md`;
 6. `references/comunicacao-matricial-cto.md`;
-7. `references/adr-001-rota-vigente-aos-juizes.md`.
+7. `references/adr-001-rota-vigente-aos-juizes.md`;
+8. [`ADR-014 — dois níveis de veredito`](../../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md).
 
 Carregue `references/origem-sintese.md` apenas para auditoria de proveniência, nunca para buscar executor.
 
@@ -62,6 +63,7 @@ Antes de qualquer delegação, confira:
 
 - produtor `ceo-maestro`;
 - `departamento-negocios` entre destinatários;
+- `required_level: PRODUCAO|INTERNO` explícito;
 - identidade causal completa;
 - artefatos e evidências acessíveis;
 - critérios observáveis;
@@ -69,6 +71,8 @@ Antes de qualquer delegação, confira:
 - permissões de leitura, escrita e efeitos externos.
 
 Conversa informal ou proposta avulsa não substitui `EXECUTIVE_MISSION`.
+Nível ausente falha fechado: bloqueie e peça missão revisada; nunca reduza silenciosamente a
+exigência para `INTERNO`.
 
 ## 6. Falha fechada
 

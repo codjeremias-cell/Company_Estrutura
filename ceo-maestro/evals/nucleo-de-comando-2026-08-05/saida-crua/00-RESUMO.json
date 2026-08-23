@@ -1,0 +1,139 @@
+{
+  "commit": "ee916c6",
+  "executado_por": "ceo-maestro no papel de executor - E UM DOS QUATRO JULGADOS. Conflito declarado no contrato.",
+  "receita": "python evals/validate_workflow.py, cwd no pacote, PYTHONDONTWRITEBYTECODE=1; sumario = ULTIMO da saida",
+  "nota": "O FAIL da serie de ADR (020 duplicado por copias de laboratorio) e alheio aos quatro. O inventario acompanha porque varios criterios se leem NO PACOTE.",
+  "pacotes": {
+    "ceo-maestro": {
+      "sumario_proprio": "95/96",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": false,
+        "references": [
+          "adr-001-hierarquia-executiva.md",
+          "bootstrap.md",
+          "comunicacao.md",
+          "gate-qualidade-e-excecao.md",
+          "protocolo-de-handoff.md",
+          "workflow-executivo.md"
+        ],
+        "agentes": [],
+        "schemas": [
+          "ceo-maestro.schema.json"
+        ],
+        "subordinados_diretos": [
+          "departamento-evolucao-skills",
+          "departamento-negocios",
+          "diretor-de-lentes",
+          "departamento-juizes"
+        ]
+      }
+    },
+    "diretor-de-lentes": {
+      "sumario_proprio": "99/100",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": false,
+        "references": [
+          "adr-001-diretoria-e-camada-de-juizes.md",
+          "bootstrap.md",
+          "comunicacao-matricial-negocios.md",
+          "gate-juizes-e-retrabalho.md",
+          "origem-migracao.md",
+          "protocolo-de-handoff.md",
+          "workflow-operacional.md"
+        ],
+        "agentes": [],
+        "schemas": [
+          "diretor-de-lentes.schema.json"
+        ],
+        "subordinados_diretos": [
+          "departamento-juizes",
+          "departamento-arquitetura-dados",
+          "departamento-arquitetura-software",
+          "departamento-auditoria-responsabilidades",
+          "departamento-conteudo-marketing",
+          "departamento-desenvolvimento",
+          "departamento-design-ux-ui",
+          "departamento-inovacao-melhoria",
+          "departamento-qa-usabilidade",
+          "departamento-registros",
+          "departamento-seguranca"
+        ]
+      }
+    },
+    "departamento-juizes": {
+      "sumario_proprio": "153/154",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": false,
+        "references": [
+          "adr-002-nota-absoluta-e-modo-duplo.md",
+          "adr-014-dois-niveis-de-veredito.md",
+          "adr-016-agregacao-entre-instancias.md",
+          "adr-022-criterio-de-efeito.md",
+          "modo-disputa-cega.md",
+          "origem-migracao.md",
+          "protocolo-de-julgamento.md",
+          "rubrica-e-corte.md"
+        ],
+        "agentes": [
+          "agente-julgar-experiencia-e-risco",
+          "agente-julgar-fidelidade-e-contrato",
+          "agente-julgar-robustez-e-evidencia"
+        ],
+        "schemas": [
+          "departamento-juizes.schema.json"
+        ],
+        "subordinados_diretos": []
+      }
+    },
+    "departamento-negocios": {
+      "sumario_proprio": "99/100",
+      "exit": 1,
+      "fails": [
+        "[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura: sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md",
+        "[FAIL] regressÃ£o passa: ceo-maestro: eitado",
+        "[FAIL] regressÃ£o passa: diretor-de-lentes: vÃ¡lido"
+      ],
+      "traceback": false,
+      "inventario": {
+        "PLACAR.md": true,
+        "adendo_de_contagem": false,
+        "references": [
+          "adr-001-rota-vigente-aos-juizes.md",
+          "bootstrap.md",
+          "comunicacao-matricial-cto.md",
+          "origem-sintese.md",
+          "protocolo-de-handoff.md",
+          "regua-de-avaliacao.md",
+          "workflow-avaliacao-proposta.md"
+        ],
+        "agentes": [
+          "agente-estrategia-de-produto",
+          "agente-mercado-e-cliente",
+          "agente-viabilidade-e-monetizacao"
+        ],
+        "schemas": [
+          "departamento-negocios.schema.json"
+        ],
+        "subordinados_diretos": []
+      }
+    }
+  }
+}

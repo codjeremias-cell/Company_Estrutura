@@ -22,7 +22,7 @@ o conteúdo esperados; nunca corrigir, redesenhar, pontuar ou ampliar o escopo.
 - regras, progressão, save/load e resultado funcional de jogos;
 - regressão, smoke, valores-limite e caminhos de erro funcionais.
 
-**Não assumir:**
+**Não assumir**:
 
 - latência, throughput, estabilidade, concorrência, consumo, instalação,
   recuperação ou compatibilidade → `agente-testes-nao-funcionais`;

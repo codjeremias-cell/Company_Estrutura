@@ -94,8 +94,14 @@ Após as correções, o validador mecânico passou em **59/59** verificações.
 
 ## Limites honestos
 
-- Acionamento espontâneo pela `description` não foi medido em runtime porque a
-  skill ainda estava em staging. Deve ser rechecado após instalação/runtime.
+- Acionamento espontâneo pela `description` **não é mensurável neste pacote** —
+  risco residual **R9** do protocolo. A premissa original desta linha ("ainda em
+  staging, rechecar após instalação") **caducou em 2026-07-28**: a Estrutura foi
+  instalada e a medição mostrou que ela entra como **porta única** — `ceo-maestro`
+  registra como skill, os 15 gerentes e 66 agentes aninhados não
+  (`departamento=0 ; agente=0`). Este Departamento só é alcançado por delegação
+  explícita, que é outra coisa. Não há rechecagem a fazer enquanto a instalação
+  for essa.
 - O baseline histórico do legado não é comparável: seu manifesto está
   desatualizado em dois arquivos e os placares provam outra versão.
 - Nenhuma PoC, benchmark ou mudança de produto foi executada — corretamente,

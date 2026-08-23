@@ -1,6 +1,6 @@
 ---
 name: departamento-juizes
-description: "Departamento gerente-orquestrador de julgamento, sob o diretor-de-lentes e em camada paralela aos Departamentos operacionais: recebe cada entrega, reparte os critérios entre seus três agentes de óticas distintas — fidelidade e contrato, robustez e evidência, experiência e risco —, consolida pela menor nota e emite VALIDADO ou REPROVADO com scorecard, críticas e mudanças exigidas. Acione para “julga essa entrega”, “passou no gate?”, “a nota bate 9,5?”, “valida antes de integrar”, “compara esses candidatos às cegas” ou “atesta essa impossibilidade”, inclusive sem citar Juízes. Acione também se pedirem para pular o gate por ser entrega pequena, arredondar 9,49, usar média, aceitar sem parecer ou corrigir a entrega: deve recusar e devolver ao Diretor. NÃO acione para executar, corrigir ou reescrever entrega, para provar conformidade com as regras (Auditoria) nem para atender pedido de origem diferente de diretor-de-lentes."
+description: "Departamento gerente-orquestrador de julgamento, sob o diretor-de-lentes e em camada paralela aos Departamentos operacionais: recebe cada entrega, reparte os critérios entre seus três agentes de óticas distintas — fidelidade e contrato, robustez e evidência, experiência e risco —, consolida pela menor nota e emite VALIDATED, ACEITO_USO_INTERNO ou REPROVED com scorecard, críticas e mudanças exigidas. Acione para “julga essa entrega”, “passou no gate?”, “serve para produção ou só uso interno?”, “valida antes de integrar”, “compara esses candidatos às cegas” ou “atesta essa impossibilidade”, inclusive sem citar Juízes. Acione também se pedirem para pular o gate, tratar nota 9 como produção, usar nota fracionária ou média, aceitar sem parecer ou corrigir a entrega: deve recusar e devolver ao Diretor. NÃO acione para executar, corrigir ou reescrever entrega, para provar conformidade com as regras (Auditoria) nem para atender pedido de origem diferente de diretor-de-lentes."
 ---
 
 # Departamento de Juízes
@@ -52,6 +52,9 @@ com as Regras de Ouro bloqueia a operação e volta ao Diretor.
   trouxer **2 ou mais candidatos**.
 - Ler [references/adr-002-nota-absoluta-e-modo-duplo.md](references/adr-002-nota-absoluta-e-modo-duplo.md)
   ao questionar por que os Juízes emitem nota absoluta ou por que existem dois modos.
+- Ler [references/adr-016-agregacao-entre-instancias.md](references/adr-016-agregacao-entre-instancias.md)
+  sempre que o pedido trouxer `instances_per_lens` maior que 1, ao declarar `NAO_DISCRIMINADO` e
+  antes de concluir qualquer coisa sobre executor que não devolveu arquivo.
 - Ler [references/origem-migracao.md](references/origem-migracao.md) ao verificar proveniência,
   recorte migrado ou política de rollback do pacote legado.
 - Validar artefatos internos contra
@@ -64,7 +67,8 @@ com as Regras de Ouro bloqueia a operação e volta ao Diretor.
 ## Entradas aceitas
 
 Aceitar somente `JUDGMENT_REQUEST` íntegra do `diretor-de-lentes`, com candidato, contrato,
-digests, critérios aplicáveis observáveis, artefatos, evidências e `return_to: diretor-de-lentes`.
+digests, `required_level`, critérios aplicáveis observáveis, artefatos, evidências e
+`return_to: diretor-de-lentes`.
 
 Campos, tipos e condições de rejeição vivem no protocolo (§1.1), fonte única — nunca relistados nem
 adaptados aqui. Percorrer aquela tabela **no recebimento**, antes de qualquer higienização; casando
@@ -119,8 +123,8 @@ condição observada.
 
 Montar a `CRITERIA_MATRIX` (§1.2): cada `criterion_id` recebe **exatamente uma ótica dona**, com
 `owner_reason` amarrado ao texto literal do critério, e `secondary_lens` quando outra ótica também
-o alcança. Critério que nenhuma das três alcança vai para `uncovered`, abre lacuna e **proíbe**
-`VALIDATED`.
+o alcança. Critério que nenhuma das três alcança vai para `uncovered`, abre lacuna e **proíbe
+qualquer veredito positivo** — `VALIDATED` e `ACEITO_USO_INTERNO`.
 
 A gerente **não cria, não remove, não reordena e não reescreve critério** — antes ou depois de ver
 o candidato. Critério faltante exige novo pedido do Diretor.
@@ -149,12 +153,26 @@ Uma atribuição por ótica com critério na matriz. Copiar os critérios **lite
 `forbidden_context` e fixar `return_to: departamento-juizes`. Ótica sem critério na matriz não
 recebe atribuição e **não** abre lacuna: redução declarada não é ausência de cobertura.
 
+Com `instances_per_lens` maior que 1, sai **uma atribuição por (ótica × instância)**, cada uma com
+seu `instance` e seu próprio `write_path`.
+
+Três travas de orquestração, em código e não em conselho (ADR-016):
+
+- **`write_path` exclusivo por emissão**, no formato `julgamento/<handoff_id>/a<attempt>/<assignment_id>/`.
+  Duas emissões nunca compartilham caminho — nem entre óticas, nem entre instâncias da mesma ótica,
+  nem entre attempts.
+- **`custody_copy` antes do despacho**, com `path`, `sha256`, `bytes` e `taken_at` estritamente
+  anterior a `issued_at`. Emissão sem custódia é inválida.
+- **Arquivo ausente não é morte de executor.** Sem sinal de runtime, o estado é `AGUARDANDO` e
+  **não há redespacho**; `SEM_RETORNO` e `FALHO` exigem `EXECUTOR_ERROR` ou `TIMEOUT_DECLARADO` em
+  `no_return_evidence`, com pelo menos duas conferências em disco.
+
 Nunca antecipar nota desejada, veredito esperado, rodada anterior ou preferência da gerente.
-Registrar a emissão — `assignment_id`, horário e destino: sem esse registro o veredito **não pode**
-ser `VALIDATED` (protocolo, §7, R6).
+Registrar a emissão — `assignment_id`, horário, destino e custódia: sem esse registro fica proibido
+**qualquer veredito positivo** — `VALIDATED` e `ACEITO_USO_INTERNO` (protocolo, §7, R6).
 
 **Concluído quando:** cada ótica acionada tem atribuição registrada, com identidade, critérios
-literais, a mesma rubrica e destino conferível.
+literais, a mesma rubrica, destino exclusivo conferível e cópia de custódia com digest.
 
 ### 5. Aceitar pareceres válidos
 
@@ -175,24 +193,39 @@ Montar o `scorecard` transcrevendo os `scores[]` válidos — uma linha por (cri
 razão, `evidence_ref` e `artifact_ref` preservados. Critério com dona e secundária vale a **menor**
 das duas notas, com a maior registrada como linha própria e a divergência preservada.
 
-`minimum_score` é a **menor nota do `scorecard` aplicável**. Proibido média, mediana, ponderação
-por `confidence`, arredondamento e compensação entre critérios: `9,49` permanece abaixo de `9,5`.
+`minimum_score` é a **menor nota inteira do `scorecard` aplicável**. Proibido média, mediana,
+ponderação por `confidence`, nota fracionária, arredondamento e compensação entre critérios.
 Critério sem nota não recebe nota estimada.
 
-**Concluído quando:** `minimum_score` é recalculável por terceiro a partir do `scorecard`, da
-matriz e do `panel[]`, e todo critério está pontuado, declarado `n/a` com motivo, ou em lacuna.
+Com `instances_per_lens` maior que 1, cada instância consolida sozinha e só então as consolidações
+são combinadas pelo `aggregation_rule` **recebido no pedido** — `MENOR`, `MEDIANA` ou
+`EMPATE_DECLARADO`, declarado antes de qualquer parecer existir (ADR-016). A gerente copia a regra;
+não a escolhe, não a troca e não a completa quando ausente. `minimum_score_range` (`lo`, `hi`) sai no
+relatório; com uma instância, `lo == hi`.
+
+**Concluído quando:** `minimum_score` e `minimum_score_range` são recalculáveis por terceiro a partir
+do `scorecard`, da matriz e do `panel[]`, e todo critério está pontuado, declarado `n/a` com motivo,
+ou em lacuna.
 
 ### 7. Emitir o veredito
 
-`VALIDATED` exige as seis condições da §4.1, todas juntas: três óticas com parecer válido;
-`uncovered` vazio; todo critério com nota ou `n/a` verificável; `minimum_score >= 9.5`;
-`critical_fail: false`; `blocking_pending_refs` vazio. Faltando qualquer uma, o veredito é
-`REPROVED`. Não existe validação parcial, condicional ou "aprovado se depois corrigirem".
+Qualquer veredito positivo exige as sete condições da §4.1, todas juntas: óticas acionadas com
+parecer válido; `uncovered` vazio; todo critério com nota ou `n/a` verificável; `minimum_score`
+inteiro; `critical_fail: false`; `blocking_pending_refs` vazio; `minimum_score_range` declarado. Com
+os gates íntegros, a faixa manda: `lo = hi = 10 → VALIDATED`; `lo ≥ 7` e `hi ≤ 9` →
+`ACEITO_USO_INTERNO`; `hi ≤ 6 → REPROVED`; faixa que **atravessa** um corte →
+`NAO_DISCRIMINADO`. Faltando qualquer gate, o veredito é `REPROVED`, qualquer que seja a nota. O
+Departamento registra o `required_level` recebido, mas não move a régua nem escolhe o nível.
 
-Toda reprovação carrega `criticisms` e `required_changes` não vazios, ligados a `criterion_id` com
-nota, razão e evidência. **Reprovação por lacuna de cobertura é nomeada como tal na primeira
-frase** — para não mandar um Departamento reescrever entrega sadia por defeito que ninguém
-observou.
+**`NAO_DISCRIMINADO` não autoriza nada** — não alcança `PRODUCAO` nem `INTERNO`. Exige
+`instances_per_lens >= 2` e os mesmos gates de integridade de um veredito positivo: falha crítica,
+lacuna ou pendência bloqueante mandam `REPROVED`, não empate técnico.
+
+`ACEITO_USO_INTERNO`, `NAO_DISCRIMINADO` e `REPROVED` carregam `criticisms` e `required_changes` não
+vazios, ligados a `criterion_id` com nota, razão e evidência. **Reprovação por lacuna de cobertura é
+nomeada como tal na primeira frase** — para não mandar um Departamento reescrever entrega sadia por
+defeito que ninguém observou. O não discriminado nomeia a faixa e pede **mais medida**, nunca
+mudança no candidato.
 
 **Concluído quando:** o veredito casa exatamente uma das condições, e `minimum_score` e `verdict`
 são recalculáveis por terceiro.
@@ -233,8 +266,17 @@ blocos, evidências e a cadeia completa até artefato real.
 - Nunca usar média, mediana, arredondamento, ponderação por confiança ou compensação entre
   critérios.
 - Nunca converter ausência de cobertura em nota neutra, nem lacuna em defeito do candidato.
-- Nunca emitir `VALIDATED` sem as seis condições, sem registro de emissão das atribuições ou com
-  lacuna aberta — nem por entrega pequena, prazo, insistência ou nota alta nos demais critérios.
+- Nunca emitir veredito positivo sem as sete condições, sem registro de emissão das atribuições
+  ou com lacuna aberta — nem por entrega pequena, prazo, insistência ou nota alta nos demais
+  critérios.
+- Nunca emitir duas atribuições no mesmo `write_path`, nem despachar sem `custody_copy` com digest
+  tomada antes do `issued_at`.
+- Nunca concluir morte de executor por ausência de arquivo: sem sinal de runtime o estado é
+  `AGUARDANDO`, e redespachar cria segunda instância e colisão de escrita.
+- Nunca ler `NAO_DISCRIMINADO` como aceite, aprovação pendente ou "quase passou": ele não alcança
+  `PRODUCAO` nem `INTERNO`, e não autoriza produção, publicação nem uso interno.
+- Nunca escolher, trocar ou completar a `aggregation_rule`: ela chega declarada no pedido, antes de
+  qualquer parecer existir, e a gerente apenas a copia.
 - Nunca tratar falha crítica como compensável ou elegível a exceção.
 - Nunca aceitar pedido fora do `diretor-de-lentes`, nem invocação direta de agente do `agentes/`.
 - Nunca enviar mensagem paralela ao Departamento produtor, ao CEO, a Jeremias ou a outro
@@ -254,18 +296,21 @@ fecha volta ao passo apontado.
 - [ ] Pedido reconciliado, modo fixado e digest recomputado — passo 1 (§1.0, §1.1).
 - [ ] `CRITERIA_MATRIX` cobrindo todo `criterion_id`, com `uncovered` explícito — passo 2 (§1.2).
 - [ ] Higienização, varredura nas duas frentes, fingerprint e independência — passo 3 (§2).
-- [ ] Uma `JUDGE_ASSIGNMENT` por ótica acionada, com registro de emissão que resolve — passo 4 (§1.3).
-- [ ] Todo parecer aceito, devolvido uma vez, `FALHO` ou em lacuna — passo 5 (§1.6, §3).
-- [ ] `scorecard` e `minimum_score` recalculáveis por terceiro — passo 6 (§3).
-- [ ] Veredito casando exatamente uma condição, com crítica e mudança quando `REPROVED` — passo 7 (§4).
+- [ ] Uma `JUDGE_ASSIGNMENT` por (ótica × instância) acionada, com registro de emissão que resolve,
+  `write_path` exclusivo e `custody_copy` com digest anterior ao despacho — passo 4 (§1.3).
+- [ ] Todo parecer aceito, devolvido uma vez, `FALHO`, `AGUARDANDO` com `no_return_evidence` ou em
+  lacuna — passo 5 (§1.6, §3).
+- [ ] `scorecard`, `minimum_score` e `minimum_score_range` recalculáveis por terceiro — passo 6 (§3).
+- [ ] Veredito casando exatamente uma condição, com crítica e mudança quando
+  `ACEITO_USO_INTERNO` ou `REPROVED` — e também quando `NAO_DISCRIMINADO` — passo 7 (§4).
 - [ ] Saída única ao Diretor, com lacunas em blocos e **R6** nomeado em `pending` — passo 8 (§7).
 
 ## Formato de devolução
 
 O relatório abre pelo que o Diretor lê antes do YAML:
 
-1. **Veredito:** `VALIDADO` ou `REPROVADO`, em uma frase, com a `minimum_score` e o critério que a
-   fixou.
+1. **Veredito:** `VALIDATED`, `ACEITO_USO_INTERNO` ou `REPROVED`, em uma frase, com a
+   `minimum_score`, o `required_level` recebido e o critério que a fixou.
 2. **Por quê:** a razão mais forte, com o `evidence_ref` que a sustenta.
 3. **O que corrigir:** as mudanças exigidas, ligadas a critério — ou "nenhuma".
 4. **Lacunas:** o que ficou sem cobertura nesta rodada — ou "nenhuma".
@@ -282,10 +327,10 @@ candidato, quatro critérios aplicáveis e o relatório de testes como evidênci
 experiência e risco, este último com robustez como secundária —, higieniza o candidato removendo o
 nome do Departamento produtor e emite três atribuições. Fidelidade devolve `10` e `10`; robustez
 devolve `10` no seu critério e `9` como secundária no de experiência; experiência devolve `10`. A
-menor nota do `scorecard` é `9`, no critério com dois avaliadores. Veredito **`REPROVED`**, com
-`minimum_score: 9`, a crítica literal do agente de robustez e a mudança exigida ligada àquele
-critério. A gerente não arredonda para `9,5`, não tira a média `9,8` e não descarta a nota da
-ótica secundária.
+menor nota do `scorecard` é `9`, no critério com dois avaliadores. Veredito
+**`ACEITO_USO_INTERNO`**, com `minimum_score: 9`, a crítica literal do agente de robustez e a
+mudança exigida ligada àquele critério. O parecer alcança `INTERNO`, não `PRODUCAO`; a gerente não
+move a faixa, não tira a média e não descarta a nota da ótica secundária.
 
 ## Evidência de conclusão da própria skill
 
@@ -295,9 +340,9 @@ Esta migração só está pronta quando:
   [references/origem-migracao.md](references/origem-migracao.md);
 - nome, pasta e metadata usam `departamento-juizes`, e os agentes usam o prefixo `agente-`;
 - links locais e caminhos hierárquicos resolvem;
-- contrato e schema rejeitam: pedido fora do Diretor, invocação direta de agente, `9,49` como
-  aprovado, média, `VALIDATED` com lacuna aberta, `VALIDATED` sem registro de emissão, nota
-  fracionária e reprovação sem mudança exigida;
+- contrato e schema rejeitam: pedido fora do Diretor, invocação direta de agente, nota
+  fracionária, média, veredito positivo com lacuna aberta, veredito positivo sem registro de
+  emissão, faixa incompatível e reprovação sem mudança exigida;
 - o `DEPARTMENT_JUDGE_REPORT` e o `JUDGE_REPORT` produzidos são aceitos pelos schemas do
   `diretor-de-lentes` e do `ceo-maestro`, executados como regressão;
 - os mesmos casos passam em teste independente registrado em

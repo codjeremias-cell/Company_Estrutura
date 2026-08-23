@@ -10,7 +10,7 @@ description: "Executa estratégia de conteúdo e campanha: traduz briefing de ne
 **Assumir:** segmentação baseada no contexto recebido, jornada, objetivo por etapa, papel dos
 canais, pilares editoriais, arquitetura de campanha, calendário, dependências e contrato de ativos.
 
-**Não assumir:**
+**Não assumir**:
 
 - narrativa e texto final → `agente-narrativa-redacao`;
 - peça visual → `agente-direcao-arte-imagem`;
@@ -68,5 +68,5 @@ Jeremias, CEO ou Diretor, não autoriza execução.
 - **Superior:** `departamento-conteudo-marketing`.
 - **Entrega prepara:** narrativa, formatos, mensuração e conformidade.
 - **Não confundir com:** gerente decide roteamento; este agente produz a estratégia contratada.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.
 

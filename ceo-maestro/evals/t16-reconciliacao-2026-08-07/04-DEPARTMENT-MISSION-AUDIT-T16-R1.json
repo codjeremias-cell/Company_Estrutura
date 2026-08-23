@@ -1,0 +1,87 @@
+{
+  "artifact_type": "DEPARTMENT_MISSION",
+  "department_mission_id": "DMSN-T16-AUDIT-R1",
+  "causal": {
+    "work_item_id": "T16",
+    "front_id": "FRONT-T16-RECONCILIACAO-BLOCKERS",
+    "handoff_id": "HANDOFF-T16-DIRETOR-AUDIT-R1-01",
+    "message_id": "MSG-T16-DIRETOR-AUDIT-R1",
+    "causation_message_ids": ["MSG-T16-DIRETOR-PLAN-R1"],
+    "contract_id": "CTR-T16-RECONCILIACAO-BLOCKERS-2026-08-07",
+    "contract_version": 1,
+    "contract_digest": "sha256:ce4135b4da3c800536cdfbe0df7ccd91407b724e9567fac1a8c22d23ee641694",
+    "candidate_digest": "sha256:c3559c652c4842025852115cac15c1eea50a9afb8be74504ee2a32724c9420dc",
+    "round": 1,
+    "attempt": 1,
+    "producer": "diretor-de-lentes",
+    "producer_version": "2026-08-07",
+    "producer_digest": "sha256:684050450d2dbb58e853b2c03a32b5838eada76fc76a4438e637a1432f707e11",
+    "created_at": "2026-08-07T19:15:00-03:00"
+  },
+  "recipient": "departamento-auditoria-responsabilidades",
+  "mode": "ATUA",
+  "objective": "Conferir a conformidade do candidato T16 e dos dois blockers reconciliados, sem pontuar e sem alterar a campanha histórica.",
+  "scope_in": [
+    "ceo-maestro/evals/t16-reconciliacao-2026-08-07",
+    "ceo-maestro/evals/barreiras-em-prosa-2026-08-03/validacao/02-GOVERNANCE-REPORT.json",
+    "ceo-maestro/diretor-de-lentes/schemas",
+    "_compartilhado/verificacoes_pacote.py"
+  ],
+  "scope_out": [
+    "ceo-maestro/evals/barreiras-em-prosa-2026-08-03",
+    "23 contratos canônicos",
+    "T38",
+    "T39",
+    "promoção, nota ou escolha de vencedor"
+  ],
+  "inputs": [
+    "03-DIRECTOR-PLAN-T16-R1.json produzido pelo diretor-de-lentes",
+    "04-DEPARTMENT-MISSION-AUDIT-T16-R1.json",
+    "candidato-isolado/manifest.json",
+    "52-PROOF-SCOREBOARD-T16-R1.json",
+    "02-HISTORICAL-SNAPSHOT-T16.json"
+  ],
+  "deliverables": [
+    "GOVERNANCE_REPORT correlacionado ao candidate_digest da árvore",
+    "achados residuais AUD-T16-01/04/05/06 preservados",
+    "retorno de Auditoria com independência e limites explícitos"
+  ],
+  "done": [
+    "recalcular candidate_digest sobre candidato-isolado/overlay",
+    "recalcular manifest_digest separadamente",
+    "confirmar preservação da campanha histórica pelo snapshot",
+    "não emitir conformidade se a identidade do auditor não for observável"
+  ],
+  "required_evidence": [
+    "prova independente de fidelidade das 23 barreiras e 126 itens",
+    "casos red/green de digest e mutação",
+    "registro de capacidade e independência do runtime",
+    "evidência dos quatro limites residuais"
+  ],
+  "depends_on": [
+    "prova local executada; worker independente ainda não exposto",
+    "candidate_digest e manifest_digest reproduzidos"
+  ],
+  "handoff_to": ["diretor-de-lentes", "departamento-juizes somente após governance_report elegível"],
+  "decision_authority": [
+    "Auditoria pode declarar conformidade, não conformidade ou pendência",
+    "Auditoria não pode pontuar, promover ou escolher vencedor"
+  ],
+  "permissions": {
+    "default_policy": "deny",
+    "allowed_tools": ["read-only repository inspection", "local validation"],
+    "allowed_resources": [
+      "ceo-maestro/evals/t16-reconciliacao-2026-08-07",
+      "ceo-maestro/evals/barreiras-em-prosa-2026-08-03"
+    ],
+    "expires_at": "2026-08-14T23:59:59-03:00"
+  },
+  "stop_when": [
+    "candidate_digest não reproduzir a árvore overlay",
+    "manifest_digest for usado como candidate_digest",
+    "worker independente não tiver identidade observável",
+    "qualquer escrita for tentada na campanha histórica"
+  ],
+  "return_to": "diretor-de-lentes",
+  "issued_at": "2026-08-07T19:15:00-03:00"
+}

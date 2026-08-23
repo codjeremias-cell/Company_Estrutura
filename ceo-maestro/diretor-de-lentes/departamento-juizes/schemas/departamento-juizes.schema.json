@@ -4,13 +4,27 @@
   "title": "Contratos internos do Departamento de Juízes",
   "description": "Repartição de critérios, atribuição aos agentes, parecer por ótica, consolidação pela menor nota, lacuna de cobertura e handoff do modo DISPUTA. Os envelopes de fronteira (JUDGMENT_REQUEST, DEPARTMENT_JUDGE_REPORT, JUDGE_REPORT) pertencem aos schemas do diretor-de-lentes e do ceo-maestro e não são redefinidos aqui.",
   "oneOf": [
-    { "$ref": "#/$defs/criteriaMatrix" },
-    { "$ref": "#/$defs/judgeAssignment" },
-    { "$ref": "#/$defs/judgeOpinion" },
-    { "$ref": "#/$defs/judgeCapabilityGap" },
-    { "$ref": "#/$defs/panelRecord" },
-    { "$ref": "#/$defs/panelHandoff" },
-    { "$ref": "#/$defs/independentVerificationRecord" }
+    {
+      "$ref": "#/$defs/criteriaMatrix"
+    },
+    {
+      "$ref": "#/$defs/judgeAssignment"
+    },
+    {
+      "$ref": "#/$defs/judgeOpinion"
+    },
+    {
+      "$ref": "#/$defs/judgeCapabilityGap"
+    },
+    {
+      "$ref": "#/$defs/panelRecord"
+    },
+    {
+      "$ref": "#/$defs/panelHandoff"
+    },
+    {
+      "$ref": "#/$defs/independentVerificationRecord"
+    }
   ],
   "$defs": {
     "identifier": {
@@ -34,24 +48,34 @@
     },
     "requiredRefs": {
       "type": "array",
-      "items": { "$ref": "#/$defs/artifactRef" },
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "optionalRefs": {
       "type": "array",
-      "items": { "$ref": "#/$defs/artifactRef" },
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
       "uniqueItems": true
     },
     "requiredStrings": {
       "type": "array",
-      "items": { "type": "string", "minLength": 3 },
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "optionalStrings": {
       "type": "array",
-      "items": { "type": "string", "minLength": 3 },
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
       "uniqueItems": true
     },
     "lens": {
@@ -69,22 +93,242 @@
       ]
     },
     "mode": {
-      "enum": [ "VALIDACAO", "DISPUTA", "VERIFICACAO" ]
+      "enum": [
+        "VALIDACAO",
+        "DISPUTA",
+        "VERIFICACAO"
+      ]
     },
     "score": {
       "oneOf": [
-        { "type": "integer", "minimum": 0, "maximum": 10 },
-        { "type": "string", "pattern": "^n/a:.{5,}$" }
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        {
+          "type": "string",
+          "pattern": "^n/a:.{5,}$"
+        }
       ]
     },
     "banda": {
-      "enum": [ "quebrado", "cru", "polido", "excelente", "n/a" ]
+      "enum": [
+        "quebrado",
+        "cru",
+        "polido",
+        "excelente",
+        "n/a"
+      ]
     },
     "judgeStatus": {
-      "enum": [ "COMPLETED", "BLOCKED", "SEM_RETORNO", "FALHO" ]
+      "$comment": "AGUARDANDO (ADR-016) e o unico estado compativel com arquivo ainda ausente. SEM_RETORNO e FALHO passam a exigir sinal de runtime; ausencia de arquivo nunca prova morte de executor.",
+      "enum": [
+        "COMPLETED",
+        "BLOCKED",
+        "SEM_RETORNO",
+        "FALHO",
+        "AGUARDANDO"
+      ]
     },
     "confidence": {
-      "enum": [ "alta", "media", "baixa", "n/a" ]
+      "enum": [
+        "alta",
+        "media",
+        "baixa",
+        "n/a"
+      ]
+    },
+    "aggregationMethod": {
+      "$comment": "ADR-016: a regra de combinacao entre instancias da MESMA lente. Nao substitui a menor nota entre criterios (§3, regra 4), que continua proibindo media.",
+      "enum": [
+        "MENOR",
+        "MEDIANA",
+        "EMPATE_DECLARADO"
+      ]
+    },
+    "aggregationRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "declared_at",
+        "rationale"
+      ],
+      "properties": {
+        "method": {
+          "$ref": "#/$defs/aggregationMethod"
+        },
+        "declared_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 10
+        },
+        "evidence_symmetry": {
+          "$comment": "ADR-023 — a divergencia entre instancias de 2026-08-04 (60% em 40 pares, 7 NAO_DISCRIMINADO de 9) NAO era discordancia: era evidencia assimetrica. Uma instancia rodou um experimento que a outra nao rodou e por isso enxergou defeito que a outra nao podia ver. Mais instancias sobre evidencia desigual so produz mais indeterminacao. Declarar simetria aqui obriga a bateria a rodar UMA vez antes do despacho e o mesmo digest a viajar em toda emissao da rodada. OPCIONAL de proposito: as rodadas congeladas nao a declaram, e reescrever registro passado para ficar verde e falsificar evidencia.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "battery",
+            "evidence_digest",
+            "declared_at"
+          ],
+          "properties": {
+            "battery": {
+              "$comment": "O que TODA instancia recebe ja executado. Lista fechada e declarada antes do despacho: instancia que rodar alem dela declara o extra, e esse extra costuma ser o achado da rodada.",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 3
+              }
+            },
+            "evidence_digest": {
+              "$ref": "#/$defs/digest"
+            },
+            "declared_at": {
+              "$ref": "#/$defs/timestamp"
+            }
+          }
+        }
+      }
+    },
+    "isolation": {
+      "$comment": "ADR-024 — em 2026-08-04, seis instancias foram despachadas em pasta compartilhada e UMA declarou ter encontrado o gerador de parecer da outra e NAO o ter aberto. A independencia dependeu da recusa do agente, nao do runtime. A trava T3 do ADR-016 exige write_path exclusivo, que impede COLISAO DE ESCRITA e nao impede LEITURA - e o que foi medido foi leitura. OPCIONAL de proposito: as rodadas congeladas nao declaram isolamento, e reescrever registro passado para ficar verde e falsificar evidencia.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "root"
+      ],
+      "properties": {
+        "mode": {
+          "$comment": "`worktree` e o unico modo que isola de fato. `pasta-compartilhada` existe para que uma rodada possa DECLARAR que nao isolou, em vez de omitir - ausencia de evidencia permanece ausencia, mas declaracao de ausencia e auditavel.",
+          "type": "string",
+          "enum": [
+            "worktree",
+            "pasta-compartilhada"
+          ]
+        },
+        "root": {
+          "$comment": "A raiz exclusiva desta instancia. A trava confere que as raizes da rodada sao duas a duas disjuntas - nem iguais, nem uma dentro da outra - e que o write_path da emissao vive dentro da propria raiz.",
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 400
+        }
+      }
+    },
+    "scoreRange": {
+      "$comment": "ADR-016: a faixa entre as consolidacoes por instancia. Com uma instancia, lo == hi. Com mais de uma, lo < hi torna a leitura de ponto unico indefensavel.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lo",
+        "hi"
+      ],
+      "properties": {
+        "lo": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "hi": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        }
+      }
+    },
+    "custodyCopy": {
+      "$comment": "ADR-016, trava 3: copia de custodia com digest, tomada ANTES do despacho. taken_at anterior a issued_at e conferido em codigo. TAREFA 42 — A RECEITA PASSA A SER NORMATIVA, e ate 2026-08-08 ela nao existia em lugar nenhum: nem aqui, nem na designacao, nem no contrato, nem no protocolo 1.3. O custo foi medido: tres juizes reproduziram o digest em 16, 438 e 1440 tentativas e um NAO CONSEGUIU. Mesmo esqueleto de producer_digest_recipe no schema do CEO, onde a receita so em prosa produziu uma acusacao de forjadura plausivel e falsa. A RECEITA, provada contra as duas instancias reais em disco: quando o path e ARQUIVO, sha256 sobre o conteudo e bytes igual ao tamanho desse mesmo conteudo; quando o path e DIRETORIO, sha256 sobre a concatenacao de (caminho relativo em POSIX + conteudo) de cada arquivo, na ordem crescente do caminho relativo, e bytes igual a SOMA APENAS DOS CONTEUDOS. ARMADILHA DECLARADA no caso diretorio: bytes e sha256 medem OBJETOS DIFERENTES — o hash inclui os nomes e o bytes nao. Conferir tamanho contra o blob hasheado da divergencia sem que nada esteja errado; foi o que consumiu as 1440 tentativas. SEGUNDA ARMADILHA, e ela explica o juiz que nao conseguiu: o conteudo e lido em LF. A instancia de arquivo reproduz 83782d15... com 2453 bytes normalizados e da outro numero com os 2522 bytes CRLF do checkout Windows — em arvore com autocrlf o digest nao reproduz por motivo nenhum ligado a conteudo. Ver a licao digest-de-arquivo-nao-e-identidade do cofre.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "taken_at"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "taken_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "digest_recipe": {
+          "description": "TAREFA 42 — diz QUE OBJETO o sha256 ao lado hasheia, na forma `caminho::funcao sobre <objeto>`, o mesmo molde de producer_digest_recipe no schema do CEO. OPCIONAL de proposito: exigi-lo invalidaria as 53 instancias ja congeladas em evidencia de campanha, e reescrever registro de rodada passada para ficar verde e falsificar evidencia. Custodia nova declara; custodia antiga fica coberta pela receita normativa do $comment, que e conferida por execucao no validador deste pacote.",
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9_./-]+::[A-Za-z0-9_]+ sobre .{6,}$"
+        }
+      }
+    },
+    "noReturnCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at",
+        "path",
+        "exists"
+      ],
+      "properties": {
+        "at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "path": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "exists": {
+          "type": "boolean"
+        }
+      }
+    },
+    "noReturnEvidence": {
+      "$comment": "ADR-016, trava 2: nenhum estado terminal de executor sai de arquivo ausente. runtime_signal NENHUM so admite AGUARDANDO.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checked_paths",
+        "checks",
+        "runtime_signal",
+        "waited_seconds"
+      ],
+      "properties": {
+        "checked_paths": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/noReturnCheck"
+          },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "runtime_signal": {
+          "enum": [
+            "EXECUTOR_ERROR",
+            "TIMEOUT_DECLARADO",
+            "NENHUM"
+          ]
+        },
+        "waited_seconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     },
     "causalHeader": {
       "type": "object",
@@ -104,28 +348,72 @@
         "producer",
         "producer_version",
         "producer_digest",
+        "producer_digest_recipe",
         "created_at"
       ],
       "properties": {
-        "work_item_id": { "$ref": "#/$defs/identifier" },
-        "front_id": { "$ref": "#/$defs/identifier" },
-        "handoff_id": { "$ref": "#/$defs/identifier" },
-        "message_id": { "$ref": "#/$defs/identifier" },
+        "work_item_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "front_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "message_id": {
+          "$ref": "#/$defs/identifier"
+        },
         "causation_message_ids": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "contract_id": { "$ref": "#/$defs/identifier" },
-        "contract_version": { "type": "integer", "minimum": 1 },
-        "contract_digest": { "$ref": "#/$defs/digest" },
-        "candidate_digest": { "$ref": "#/$defs/digest" },
-        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
-        "attempt": { "type": "integer", "minimum": 1 },
-        "producer": { "const": "departamento-juizes" },
-        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
-        "producer_digest": { "$ref": "#/$defs/digest" },
-        "created_at": { "$ref": "#/$defs/timestamp" }
+        "contract_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": {
+          "const": "departamento-juizes"
+        },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "producer_digest_recipe": {
+          "description": "RODADA 8 — A RECEITA DO producer_digest PASSA A SER NORMATIVA. Ela so existia em prosa nao normativa, e por isso alcancou 17 envelopes em 7 rodadas sem que nenhum leitor conseguisse reproduzi-la: na rodada 7 um leitor diligente concluiu 'bate com NENHUM' e a acusacao de forjadura saiu plausivel e falsa. O campo diz QUE OBJETO o numero ao lado hasheia, na forma `caminho::funcao sobre <objeto>`. Familia recomputacao: a forma e conferida por pattern, e vocabulario novo nao precisa de edicao do schema.",
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9_./-]+::[A-Za-z0-9_]+ sobre .{6,}$"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "contractExcerpt": {
@@ -141,13 +429,28 @@
         "not_applicable"
       ],
       "properties": {
-        "intent": { "type": "string", "minLength": 3 },
-        "done": { "$ref": "#/$defs/optionalStrings" },
-        "scope_in": { "$ref": "#/$defs/optionalStrings" },
-        "scope_out": { "$ref": "#/$defs/optionalStrings" },
-        "constraints": { "$ref": "#/$defs/optionalStrings" },
-        "decisions": { "$ref": "#/$defs/optionalStrings" },
-        "not_applicable": { "$ref": "#/$defs/optionalStrings" }
+        "intent": {
+          "type": "string",
+          "minLength": 3
+        },
+        "done": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "scope_in": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "scope_out": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "constraints": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "decisions": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "not_applicable": {
+          "$ref": "#/$defs/optionalStrings"
+        }
       }
     },
     "matrixItem": {
@@ -161,14 +464,28 @@
         "secondary_lens"
       ],
       "properties": {
-        "criterion_id": { "$ref": "#/$defs/identifier" },
-        "criterion_text": { "type": "string", "minLength": 10 },
-        "owner_lens": { "$ref": "#/$defs/lens" },
-        "owner_reason": { "type": "string", "minLength": 10 },
+        "criterion_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "criterion_text": {
+          "type": "string",
+          "minLength": 10
+        },
+        "owner_lens": {
+          "$ref": "#/$defs/lens"
+        },
+        "owner_reason": {
+          "type": "string",
+          "minLength": 10
+        },
         "secondary_lens": {
           "oneOf": [
-            { "$ref": "#/$defs/lens" },
-            { "const": "n/a" }
+            {
+              "$ref": "#/$defs/lens"
+            },
+            {
+              "const": "n/a"
+            }
           ]
         }
       }
@@ -187,33 +504,63 @@
         "created_at"
       ],
       "properties": {
-        "artifact_type": { "const": "CRITERIA_MATRIX" },
-        "criteria_matrix_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "judgment_request_ref": { "$ref": "#/$defs/identifier" },
-        "mode": { "$ref": "#/$defs/mode" },
+        "artifact_type": {
+          "const": "CRITERIA_MATRIX"
+        },
+        "criteria_matrix_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "judgment_request_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mode": {
+          "$ref": "#/$defs/mode"
+        },
         "items": {
           "type": "array",
-          "items": { "$ref": "#/$defs/matrixItem" },
+          "items": {
+            "$ref": "#/$defs/matrixItem"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
         "uncovered": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "created_at": { "$ref": "#/$defs/timestamp" }
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "assignmentCriterion": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "criterion_id", "criterion_text", "role" ],
+      "required": [
+        "criterion_id",
+        "criterion_text",
+        "role"
+      ],
       "properties": {
-        "criterion_id": { "$ref": "#/$defs/identifier" },
-        "criterion_text": { "type": "string", "minLength": 10 },
-        "role": { "enum": [ "owner", "secondary" ] }
+        "criterion_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "criterion_text": {
+          "type": "string",
+          "minLength": 10
+        },
+        "role": {
+          "enum": [
+            "owner",
+            "secondary"
+          ]
+        }
       }
     },
     "judgeAssignment": {
@@ -233,64 +580,156 @@
         "contract_excerpt",
         "evidence_index",
         "forbidden_context",
+        "instance",
+        "write_path",
+        "custody_copy",
         "return_to",
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "JUDGE_ASSIGNMENT" },
-        "assignment_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "judge_id": { "$ref": "#/$defs/judgeId" },
-        "lens": { "$ref": "#/$defs/lens" },
-        "mode": { "enum": [ "VALIDACAO", "VERIFICACAO" ] },
-        "candidate_digest": { "$ref": "#/$defs/digest" },
-        "anonymized_candidate": { "$ref": "#/$defs/artifactRef" },
+        "artifact_type": {
+          "const": "JUDGE_ASSIGNMENT"
+        },
+        "assignment_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "judge_id": {
+          "$ref": "#/$defs/judgeId"
+        },
+        "lens": {
+          "$ref": "#/$defs/lens"
+        },
+        "instance": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "write_path": {
+          "$comment": "ADR-016, trava 1: caminho de escrita exclusivo por emissao. O formato amarra handoff, attempt e assignment_id; a exclusividade entre emissoes e conferida em codigo.",
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 512,
+          "pattern": "^julgamento/[A-Za-z0-9._-]+/a[0-9]+/[A-Za-z0-9._-]+/$"
+        },
+        "custody_copy": {
+          "$ref": "#/$defs/custodyCopy"
+        },
+        "mode": {
+          "enum": [
+            "VALIDACAO",
+            "VERIFICACAO"
+          ]
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "anonymized_candidate": {
+          "$ref": "#/$defs/artifactRef"
+        },
         "criteria": {
           "type": "array",
-          "items": { "$ref": "#/$defs/assignmentCriterion" },
+          "items": {
+            "$ref": "#/$defs/assignmentCriterion"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "rubric_ref": { "const": "rubrica-corte-v1" },
-        "contract_excerpt": { "$ref": "#/$defs/contractExcerpt" },
-        "evidence_index": { "$ref": "#/$defs/optionalRefs" },
+        "rubric_ref": {
+          "const": "rubrica-corte-v2"
+        },
+        "contract_excerpt": {
+          "$ref": "#/$defs/contractExcerpt"
+        },
+        "evidence_index": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "evidence_digest": {
+          "$comment": "ADR-023 — o digest da evidencia executada que ESTA emissao carrega. Quando a rodada declara evidence_symmetry, este campo tem de existir e bater com o declarado na regra, em TODA emissao da rodada; a trava confere. Fica no envelope, e nao so na regra, porque quem le o envelope nao le a regra - foi assim que a receita de custodia custou oito tentativas a um juiz em 2026-08-08.",
+          "$ref": "#/$defs/digest"
+        },
+        "isolation": {
+          "$ref": "#/$defs/isolation"
+        },
         "forbidden_context": {
           "type": "array",
-          "items": { "type": "string", "minLength": 3 },
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
           "minItems": 4,
           "uniqueItems": true,
-          "contains": { "type": "string", "pattern": "autoria" },
+          "contains": {
+            "type": "string",
+            "pattern": "autoria"
+          },
           "minContains": 1
         },
-        "return_to": { "const": "departamento-juizes" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "return_to": {
+          "const": "departamento-juizes"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "judge_id": { "const": "agente-julgar-fidelidade-e-contrato" } },
-            "required": [ "judge_id" ]
+            "properties": {
+              "judge_id": {
+                "const": "agente-julgar-fidelidade-e-contrato"
+              }
+            },
+            "required": [
+              "judge_id"
+            ]
           },
           "then": {
-            "properties": { "lens": { "const": "fidelidade-e-contrato" } }
+            "properties": {
+              "lens": {
+                "const": "fidelidade-e-contrato"
+              }
+            }
           }
         },
         {
           "if": {
-            "properties": { "judge_id": { "const": "agente-julgar-robustez-e-evidencia" } },
-            "required": [ "judge_id" ]
+            "properties": {
+              "judge_id": {
+                "const": "agente-julgar-robustez-e-evidencia"
+              }
+            },
+            "required": [
+              "judge_id"
+            ]
           },
           "then": {
-            "properties": { "lens": { "const": "robustez-e-evidencia" } }
+            "properties": {
+              "lens": {
+                "const": "robustez-e-evidencia"
+              }
+            }
           }
         },
         {
           "if": {
-            "properties": { "judge_id": { "const": "agente-julgar-experiencia-e-risco" } },
-            "required": [ "judge_id" ]
+            "properties": {
+              "judge_id": {
+                "const": "agente-julgar-experiencia-e-risco"
+              }
+            },
+            "required": [
+              "judge_id"
+            ]
           },
           "then": {
-            "properties": { "lens": { "const": "experiencia-e-risco" } }
+            "properties": {
+              "lens": {
+                "const": "experiencia-e-risco"
+              }
+            }
           }
         }
       ]
@@ -307,12 +746,25 @@
         "artifact_ref"
       ],
       "properties": {
-        "criterion_id": { "$ref": "#/$defs/identifier" },
-        "score": { "$ref": "#/$defs/score" },
-        "banda": { "$ref": "#/$defs/banda" },
-        "razao": { "type": "string", "minLength": 10 },
-        "evidence_ref": { "$ref": "#/$defs/identifier" },
-        "artifact_ref": { "$ref": "#/$defs/artifactRef" }
+        "criterion_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "score": {
+          "$ref": "#/$defs/score"
+        },
+        "banda": {
+          "$ref": "#/$defs/banda"
+        },
+        "razao": {
+          "type": "string",
+          "minLength": 10
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "artifact_ref": {
+          "$ref": "#/$defs/artifactRef"
+        }
       }
     },
     "criticalFinding": {
@@ -328,8 +780,12 @@
       "properties": {
         "criterion_id": {
           "oneOf": [
-            { "$ref": "#/$defs/identifier" },
-            { "const": "n/a" }
+            {
+              "$ref": "#/$defs/identifier"
+            },
+            {
+              "const": "n/a"
+            }
           ]
         },
         "tipo": {
@@ -341,9 +797,16 @@
             "DONE-nao-provado"
           ]
         },
-        "descricao": { "type": "string", "minLength": 10 },
-        "evidence_ref": { "$ref": "#/$defs/identifier" },
-        "artifact_ref": { "$ref": "#/$defs/artifactRef" }
+        "descricao": {
+          "type": "string",
+          "minLength": 10
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "artifact_ref": {
+          "$ref": "#/$defs/artifactRef"
+        }
       }
     },
     "judgeOpinion": {
@@ -365,54 +828,104 @@
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "JUDGE_OPINION" },
-        "assignment_id": { "$ref": "#/$defs/identifier" },
-        "judge_id": { "$ref": "#/$defs/judgeId" },
-        "lens": { "$ref": "#/$defs/lens" },
-        "candidate_digest": { "$ref": "#/$defs/digest" },
-        "contract_digest": { "$ref": "#/$defs/digest" },
+        "artifact_type": {
+          "const": "JUDGE_OPINION"
+        },
+        "assignment_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "judge_id": {
+          "$ref": "#/$defs/judgeId"
+        },
+        "lens": {
+          "$ref": "#/$defs/lens"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
         "scores": {
           "type": "array",
-          "items": { "$ref": "#/$defs/opinionScore" },
+          "items": {
+            "$ref": "#/$defs/opinionScore"
+          },
           "uniqueItems": true
         },
         "critical_findings": {
           "type": "array",
-          "items": { "$ref": "#/$defs/criticalFinding" },
+          "items": {
+            "$ref": "#/$defs/criticalFinding"
+          },
           "uniqueItems": true
         },
-        "required_changes": { "$ref": "#/$defs/optionalStrings" },
-        "confidence": { "$ref": "#/$defs/confidence" },
+        "required_changes": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
         "abstencao": {
           "type": "object",
           "additionalProperties": false,
-          "required": [ "motivo" ],
+          "required": [
+            "motivo"
+          ],
           "properties": {
-            "motivo": { "type": "string", "minLength": 10 }
+            "motivo": {
+              "type": "string",
+              "minLength": 10
+            }
           }
         },
-        "status": { "enum": [ "COMPLETED", "BLOCKED" ] },
-        "return_to": { "const": "departamento-juizes" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "BLOCKED"
+          ]
+        },
+        "return_to": {
+          "const": "departamento-juizes"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "status": { "const": "COMPLETED" } },
-            "required": [ "status" ]
+            "properties": {
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "status"
+            ]
           },
           "then": {
             "properties": {
-              "scores": { "minItems": 1 },
+              "scores": {
+                "minItems": 1
+              },
               "confidence": {
-                "enum": [ "alta", "media", "baixa" ]
+                "enum": [
+                  "alta",
+                  "media",
+                  "baixa"
+                ]
               }
             }
           },
           "else": {
-            "required": [ "abstencao" ],
+            "required": [
+              "abstencao"
+            ],
             "properties": {
-              "scores": { "maxItems": 0 }
+              "scores": {
+                "maxItems": 0
+              }
             }
           }
         }
@@ -433,36 +946,90 @@
         "owner"
       ],
       "properties": {
-        "artifact_type": { "const": "JUDGE_CAPABILITY_GAP" },
-        "capability": { "type": "string", "minLength": 10 },
+        "artifact_type": {
+          "const": "JUDGE_CAPABILITY_GAP"
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 10
+        },
         "judge_id": {
           "oneOf": [
-            { "$ref": "#/$defs/judgeId" },
-            { "const": "n/a" }
+            {
+              "$ref": "#/$defs/judgeId"
+            },
+            {
+              "const": "n/a"
+            }
           ]
         },
         "criterion_ids": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "expected_contract": { "type": "string", "minLength": 10 },
-        "discovery_evidence": { "type": "string", "minLength": 10 },
-        "impact": { "type": "string", "minLength": 10 },
-        "status": { "const": "OPEN" },
-        "owner": { "const": "diretor-de-lentes" }
+        "expected_contract": {
+          "type": "string",
+          "minLength": 10
+        },
+        "discovery_evidence": {
+          "type": "string",
+          "minLength": 10
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "status": {
+          "const": "OPEN"
+        },
+        "owner": {
+          "const": "diretor-de-lentes"
+        }
       }
     },
     "assignmentRecord": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "assignment_id", "judge_id", "lens", "issued_at", "destination" ],
+      "required": [
+        "assignment_id",
+        "judge_id",
+        "lens",
+        "instance",
+        "issued_at",
+        "destination",
+        "custody_copy"
+      ],
       "properties": {
-        "assignment_id": { "$ref": "#/$defs/identifier" },
-        "judge_id": { "$ref": "#/$defs/judgeId" },
-        "lens": { "$ref": "#/$defs/lens" },
-        "issued_at": { "$ref": "#/$defs/timestamp" },
-        "destination": { "$ref": "#/$defs/artifactRef" }
+        "assignment_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "judge_id": {
+          "$ref": "#/$defs/judgeId"
+        },
+        "lens": {
+          "$ref": "#/$defs/lens"
+        },
+        "instance": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "destination": {
+          "$comment": "ADR-016, trava 1: o mesmo write_path da emissao, repetido no registro para que a exclusividade seja recalculavel por terceiro.",
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 512,
+          "pattern": "^julgamento/[A-Za-z0-9._-]+/a[0-9]+/[A-Za-z0-9._-]+/$"
+        },
+        "custody_copy": {
+          "$ref": "#/$defs/custodyCopy"
+        }
       }
     },
     "panelItem": {
@@ -471,19 +1038,96 @@
       "required": [
         "judge_id",
         "lens",
+        "instance",
         "status",
         "confidence",
         "substrate",
         "tier"
       ],
       "properties": {
-        "judge_id": { "$ref": "#/$defs/judgeId" },
-        "lens": { "$ref": "#/$defs/lens" },
-        "status": { "$ref": "#/$defs/judgeStatus" },
-        "confidence": { "$ref": "#/$defs/confidence" },
-        "substrate": { "type": "string", "minLength": 3 },
-        "tier": { "type": "string", "minLength": 3 }
-      }
+        "judge_id": {
+          "$ref": "#/$defs/judgeId"
+        },
+        "lens": {
+          "$ref": "#/$defs/lens"
+        },
+        "instance": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "status": {
+          "$ref": "#/$defs/judgeStatus"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "substrate": {
+          "type": "string",
+          "minLength": 3
+        },
+        "tier": {
+          "type": "string",
+          "minLength": 3
+        },
+        "no_return_evidence": {
+          "$ref": "#/$defs/noReturnEvidence"
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "ADR-016, trava 2: todo estado de nao-entrega carrega a evidencia da conferencia em disco.",
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "SEM_RETORNO",
+                  "FALHO",
+                  "AGUARDANDO"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "no_return_evidence"
+            ]
+          }
+        },
+        {
+          "$comment": "ADR-016, trava 2: SEM_RETORNO e FALHO exigem sinal de runtime. runtime_signal NENHUM -- so o arquivo nao apareceu -- nunca autoriza estado terminal.",
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "SEM_RETORNO",
+                  "FALHO"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "no_return_evidence": {
+                "properties": {
+                  "runtime_signal": {
+                    "enum": [
+                      "EXECUTOR_ERROR",
+                      "TIMEOUT_DECLARADO"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "scorecardLine": {
       "type": "object",
@@ -499,14 +1143,34 @@
         "artifact_ref"
       ],
       "properties": {
-        "criterion_id": { "$ref": "#/$defs/identifier" },
-        "judge_id": { "$ref": "#/$defs/judgeId" },
-        "lens": { "$ref": "#/$defs/lens" },
-        "role": { "enum": [ "owner", "secondary" ] },
-        "score": { "$ref": "#/$defs/score" },
-        "razao": { "type": "string", "minLength": 10 },
-        "evidence_ref": { "$ref": "#/$defs/identifier" },
-        "artifact_ref": { "$ref": "#/$defs/artifactRef" }
+        "criterion_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "judge_id": {
+          "$ref": "#/$defs/judgeId"
+        },
+        "lens": {
+          "$ref": "#/$defs/lens"
+        },
+        "role": {
+          "enum": [
+            "owner",
+            "secondary"
+          ]
+        },
+        "score": {
+          "$ref": "#/$defs/score"
+        },
+        "razao": {
+          "type": "string",
+          "minLength": 10
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "artifact_ref": {
+          "$ref": "#/$defs/artifactRef"
+        }
       }
     },
     "panelRecord": {
@@ -521,9 +1185,13 @@
         "criteria_matrix",
         "assignments",
         "panel",
+        "instances_per_lens",
+        "aggregation_rule",
         "scorecard",
         "minimum_score",
+        "minimum_score_range",
         "verdict",
+        "required_level",
         "critical_fail",
         "blocking_pending_refs",
         "criticisms",
@@ -536,80 +1204,377 @@
         "recorded_at"
       ],
       "properties": {
-        "artifact_type": { "const": "PANEL_RECORD" },
-        "panel_record_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "judgment_request_ref": { "$ref": "#/$defs/identifier" },
-        "mode": { "enum": [ "VALIDACAO", "VERIFICACAO" ] },
-        "criteria_matrix": { "$ref": "#/$defs/criteriaMatrix" },
+        "artifact_type": {
+          "const": "PANEL_RECORD"
+        },
+        "panel_record_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "judgment_request_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mode": {
+          "enum": [
+            "VALIDACAO",
+            "VERIFICACAO"
+          ]
+        },
+        "criteria_matrix": {
+          "$ref": "#/$defs/criteriaMatrix"
+        },
         "assignments": {
           "type": "array",
-          "items": { "$ref": "#/$defs/assignmentRecord" },
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
           "uniqueItems": true
         },
         "panel": {
+          "$comment": "ADR-016: o teto de 3 saiu porque painel de mais de uma instancia por lente tem ate 3x5 linhas. O que substitui o teto e mais forte e vive em codigo: no maximo 3 lentes distintas, e cada lente com exatamente instances_per_lens entradas, numeradas 1..N sem repetir.",
           "type": "array",
-          "items": { "$ref": "#/$defs/panelItem" },
+          "items": {
+            "$ref": "#/$defs/panelItem"
+          },
           "minItems": 1,
-          "maxItems": 3,
+          "maxItems": 15,
           "uniqueItems": true
+        },
+        "instances_per_lens": {
+          "$comment": "ADR-016: quantas instancias independentes da MESMA lente rodaram. 1 mantem o desenho anterior; 2 ou mais tornam a regra de agregacao operante.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "aggregation_rule": {
+          "$ref": "#/$defs/aggregationRule"
         },
         "scorecard": {
           "type": "array",
-          "items": { "$ref": "#/$defs/scorecardLine" },
+          "items": {
+            "$ref": "#/$defs/scorecardLine"
+          },
           "uniqueItems": true
         },
         "minimum_score": {
           "oneOf": [
-            { "type": "number", "minimum": 0, "maximum": 10 },
-            { "const": "n/a" }
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            {
+              "const": "n/a"
+            }
           ]
         },
-        "verdict": { "enum": [ "VALIDATED", "REPROVED" ] },
-        "critical_fail": { "type": "boolean" },
-        "blocking_pending_refs": { "$ref": "#/$defs/optionalRefs" },
-        "criticisms": { "$ref": "#/$defs/optionalStrings" },
-        "required_changes": { "$ref": "#/$defs/optionalStrings" },
+        "minimum_score_range": {
+          "$ref": "#/$defs/scoreRange"
+        },
+        "verdict": {
+          "enum": [
+            "VALIDATED",
+            "ACEITO_USO_INTERNO",
+            "REPROVED",
+            "NAO_DISCRIMINADO"
+          ]
+        },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
+          ]
+        },
+        "critical_fail": {
+          "type": "boolean"
+        },
+        "blocking_pending_refs": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "criticisms": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "required_changes": {
+          "$ref": "#/$defs/optionalStrings"
+        },
         "capability_gaps": {
           "type": "array",
-          "items": { "$ref": "#/$defs/judgeCapabilityGap" }
+          "items": {
+            "$ref": "#/$defs/judgeCapabilityGap"
+          }
         },
-        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
-        "rubric_ref": { "const": "rubrica-corte-v1" },
+        "evidence_refs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "rubric_ref": {
+          "const": "rubrica-corte-v2"
+        },
         "pending": {
           "type": "array",
-          "items": { "type": "string", "minLength": 3 },
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
           "minItems": 1,
           "uniqueItems": true,
-          "contains": { "type": "string", "pattern": "R6" },
+          "contains": {
+            "type": "string",
+            "pattern": "R6"
+          },
           "minContains": 1
         },
-        "return_to": { "const": "diretor-de-lentes" },
-        "recorded_at": { "$ref": "#/$defs/timestamp" }
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "recorded_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "verdict": { "const": "VALIDATED" } },
-            "required": [ "verdict" ]
+            "properties": {
+              "verdict": {
+                "const": "VALIDATED"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
           },
           "then": {
             "properties": {
-              "minimum_score": { "type": "number", "minimum": 9.5 },
-              "critical_fail": { "const": false },
-              "blocking_pending_refs": { "maxItems": 0 },
-              "capability_gaps": { "maxItems": 0 },
-              "criteria_matrix": {
-                "properties": { "uncovered": { "maxItems": 0 } }
+              "minimum_score": {
+                "const": 10
               },
-              "scorecard": { "minItems": 1 },
-              "assignments": { "minItems": 1 }
+              "minimum_score_range": {
+                "$comment": "ADR-016: faixa que atravessa o corte nunca vira veredito positivo. Aqui, as duas pontas em 10.",
+                "properties": {
+                  "lo": {
+                    "const": 10
+                  },
+                  "hi": {
+                    "const": 10
+                  }
+                }
+              },
+              "critical_fail": {
+                "const": false
+              },
+              "blocking_pending_refs": {
+                "maxItems": 0
+              },
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "criteria_matrix": {
+                "properties": {
+                  "uncovered": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "scorecard": {
+                "minItems": 1
+              },
+              "assignments": {
+                "minItems": 1
+              }
             }
           },
           "else": {
             "properties": {
-              "criticisms": { "minItems": 1 },
-              "required_changes": { "minItems": 1 }
+              "criticisms": {
+                "minItems": 1
+              },
+              "required_changes": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "$comment": "ADR-014: a faixa 7-9 e o unico lugar de ACEITO_USO_INTERNO. Criterio sem dona, falha critica ou pendencia bloqueante proibem veredito positivo tambem aqui -- as mesmas condicoes de VALIDATED, menos a nota. ADR-016 acrescenta: as duas pontas da faixa medida tem de caber na banda.",
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "ACEITO_USO_INTERNO"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "type": "integer",
+                "minimum": 7,
+                "maximum": 9
+              },
+              "minimum_score_range": {
+                "properties": {
+                  "lo": {
+                    "type": "integer",
+                    "minimum": 7
+                  },
+                  "hi": {
+                    "type": "integer",
+                    "maximum": 9
+                  }
+                }
+              },
+              "critical_fail": {
+                "const": false
+              },
+              "blocking_pending_refs": {
+                "maxItems": 0
+              },
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "criteria_matrix": {
+                "properties": {
+                  "uncovered": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "scorecard": {
+                "minItems": 1
+              },
+              "assignments": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "$comment": "ADR-016: NAO_DISCRIMINADO e o unico veredito legitimo quando a faixa entre instancias atravessa o corte. Nao autoriza producao, publicacao nem uso interno -- ver o gate do required_level, que nao o alcanca em nenhum nivel. Exige 2 ou mais instancias por lente e os mesmos gates de integridade de um veredito positivo, porque falha critica, lacuna ou pendencia bloqueante mandam REPROVED e nao empate tecnico.",
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "NAO_DISCRIMINADO"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "properties": {
+              "instances_per_lens": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "critical_fail": {
+                "const": false
+              },
+              "blocking_pending_refs": {
+                "maxItems": 0
+              },
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "criteria_matrix": {
+                "properties": {
+                  "uncovered": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "scorecard": {
+                "minItems": 1
+              },
+              "assignments": {
+                "minItems": 1
+              },
+              "criticisms": {
+                "minItems": 1
+              },
+              "required_changes": {
+                "minItems": 1
+              }
+            },
+            "oneOf": [
+              {
+                "$comment": "faixa atravessa o corte 6/7 do ADR-014",
+                "properties": {
+                  "minimum_score_range": {
+                    "properties": {
+                      "lo": {
+                        "type": "integer",
+                        "maximum": 6
+                      },
+                      "hi": {
+                        "type": "integer",
+                        "minimum": 7
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "$comment": "faixa atravessa o corte 9/10 do ADR-014",
+                "properties": {
+                  "minimum_score_range": {
+                    "properties": {
+                      "lo": {
+                        "type": "integer",
+                        "minimum": 7,
+                        "maximum": 9
+                      },
+                      "hi": {
+                        "const": 10
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "$comment": "ADR-014: REPROVED cobre a faixa <= 6 e tambem qualquer falha critica, lacuna, bloqueio ou ausencia do registro de emissao, mesmo com nota numerica maior.",
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "REPROVED"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
+          },
+          "then": {
+            "not": {
+              "properties": {
+                "minimum_score": {
+                  "type": "integer",
+                  "minimum": 7
+                },
+                "critical_fail": {
+                  "const": false
+                },
+                "blocking_pending_refs": {
+                  "maxItems": 0
+                },
+                "capability_gaps": {
+                  "maxItems": 0
+                },
+                "criteria_matrix": {
+                  "properties": {
+                    "uncovered": {
+                      "maxItems": 0
+                    }
+                  }
+                },
+                "assignments": {
+                  "minItems": 1
+                }
+              }
             }
           }
         }
@@ -644,10 +1609,18 @@
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "PANEL_HANDOFF" },
-        "panel_handoff_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "judgment_request_ref": { "$ref": "#/$defs/identifier" },
+        "artifact_type": {
+          "const": "PANEL_HANDOFF"
+        },
+        "panel_handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "judgment_request_ref": {
+          "$ref": "#/$defs/identifier"
+        },
         "resumo": {
           "type": "object",
           "additionalProperties": false,
@@ -658,14 +1631,34 @@
             "enxertos"
           ],
           "properties": {
-            "recomendacao": { "type": "string", "minLength": 10 },
-            "razao_mais_forte": { "type": "string", "minLength": 10 },
-            "divergencia": { "type": "string", "minLength": 3 },
-            "enxertos": { "type": "string", "minLength": 3 }
+            "recomendacao": {
+              "type": "string",
+              "minLength": 10
+            },
+            "razao_mais_forte": {
+              "type": "string",
+              "minLength": 10
+            },
+            "divergencia": {
+              "type": "string",
+              "minLength": 3
+            },
+            "enxertos": {
+              "type": "string",
+              "minLength": 3
+            }
           }
         },
-        "rubric_ref": { "const": "rubrica-corte-v1" },
-        "status": { "enum": [ "COMPLETED", "PARTIAL", "BLOCKED" ] },
+        "rubric_ref": {
+          "const": "rubrica-corte-v2"
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "PARTIAL",
+            "BLOCKED"
+          ]
+        },
         "decision_mode": {
           "enum": [
             "CONSENSO_UNANIME",
@@ -675,23 +1668,38 @@
           ]
         },
         "leadership_reason": {
-          "enum": [ "SEM_CONSENSO", "SEM_RETORNO", "QUORUM_DEGRADADO", "n/a" ]
+          "enum": [
+            "SEM_CONSENSO",
+            "SEM_RETORNO",
+            "QUORUM_DEGRADADO",
+            "n/a"
+          ]
         },
         "winner": {
           "oneOf": [
-            { "$ref": "#/$defs/identifier" },
-            { "type": "null" }
+            {
+              "$ref": "#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "champion_kept": {
           "oneOf": [
-            { "type": "boolean" },
-            { "const": "n/a" }
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "n/a"
+            }
           ]
         },
         "panel": {
           "type": "array",
-          "items": { "$ref": "#/$defs/panelItem" },
+          "items": {
+            "$ref": "#/$defs/panelItem"
+          },
           "minItems": 1,
           "maxItems": 3,
           "uniqueItems": true
@@ -709,35 +1717,73 @@
               "score"
             ],
             "properties": {
-              "judge_id": { "$ref": "#/$defs/judgeId" },
-              "label": { "type": "string", "pattern": "^[A-Z]$" },
-              "candidate_ref": { "$ref": "#/$defs/identifier" },
-              "criterion_id": { "$ref": "#/$defs/identifier" },
-              "score": { "$ref": "#/$defs/score" }
+              "judge_id": {
+                "$ref": "#/$defs/judgeId"
+              },
+              "label": {
+                "type": "string",
+                "pattern": "^[A-Z]$"
+              },
+              "candidate_ref": {
+                "$ref": "#/$defs/identifier"
+              },
+              "criterion_id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "score": {
+                "$ref": "#/$defs/score"
+              }
             }
           },
           "uniqueItems": true
         },
-        "divergences": { "$ref": "#/$defs/optionalStrings" },
-        "enxertos": { "$ref": "#/$defs/optionalStrings" },
-        "evidence_refs": { "$ref": "#/$defs/optionalRefs" },
-        "label_map_ref": { "$ref": "#/$defs/artifactRef" },
+        "divergences": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "enxertos": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "label_map_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
         "capability_gaps": {
           "type": "array",
-          "items": { "$ref": "#/$defs/judgeCapabilityGap" }
+          "items": {
+            "$ref": "#/$defs/judgeCapabilityGap"
+          }
         },
-        "valid_opinions": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "valid_opinions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
         "pending": {
           "type": "array",
-          "items": { "type": "string", "minLength": 3 },
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
           "minItems": 1,
           "uniqueItems": true,
-          "contains": { "type": "string", "pattern": "R6" },
+          "contains": {
+            "type": "string",
+            "pattern": "R6"
+          },
           "minContains": 1
         },
-        "recommended_next_step": { "type": "string", "minLength": 10 },
-        "return_to": { "const": "diretor-de-lentes" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "recommended_next_step": {
+          "type": "string",
+          "minLength": 10
+        },
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
@@ -751,28 +1797,48 @@
                 ]
               }
             },
-            "required": [ "decision_mode" ]
+            "required": [
+              "decision_mode"
+            ]
           },
           "then": {
-            "properties": { "leadership_reason": { "const": "n/a" } }
+            "properties": {
+              "leadership_reason": {
+                "const": "n/a"
+              }
+            }
           },
           "else": {
             "properties": {
               "leadership_reason": {
-                "enum": [ "SEM_CONSENSO", "SEM_RETORNO", "QUORUM_DEGRADADO" ]
+                "enum": [
+                  "SEM_CONSENSO",
+                  "SEM_RETORNO",
+                  "QUORUM_DEGRADADO"
+                ]
               }
             }
           }
         },
         {
           "if": {
-            "properties": { "status": { "const": "COMPLETED" } },
-            "required": [ "status" ]
+            "properties": {
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "status"
+            ]
           },
           "then": {
             "properties": {
-              "capability_gaps": { "maxItems": 0 },
-              "valid_opinions": { "minimum": 2 }
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "valid_opinions": {
+                "minimum": 2
+              }
             }
           }
         }
@@ -798,12 +1864,24 @@
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "INDEPENDENT_VERIFICATION" },
-        "verification_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "limitation_report_ref": { "$ref": "#/$defs/identifier" },
-        "candidate_digest": { "$ref": "#/$defs/digest" },
-        "score_snapshot_digest": { "$ref": "#/$defs/digest" },
+        "artifact_type": {
+          "const": "INDEPENDENT_VERIFICATION"
+        },
+        "verification_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "limitation_report_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "score_snapshot_digest": {
+          "$ref": "#/$defs/digest"
+        },
         "checks": {
           "type": "object",
           "additionalProperties": false,
@@ -816,42 +1894,91 @@
             "nonwaivable_gates_intact"
           ],
           "properties": {
-            "correlation_verified": { "type": "boolean" },
-            "all_below_cutoff_criteria_covered": { "type": "boolean" },
-            "attempts_executed": { "type": "boolean" },
-            "alternatives_discarded": { "type": "boolean" },
-            "best_attainable_consistent": { "type": "boolean" },
-            "nonwaivable_gates_intact": { "type": "boolean" }
+            "correlation_verified": {
+              "type": "boolean"
+            },
+            "all_below_cutoff_criteria_covered": {
+              "type": "boolean"
+            },
+            "attempts_executed": {
+              "type": "boolean"
+            },
+            "alternatives_discarded": {
+              "type": "boolean"
+            },
+            "best_attainable_consistent": {
+              "type": "boolean"
+            },
+            "nonwaivable_gates_intact": {
+              "type": "boolean"
+            }
           }
         },
         "verdict": {
-          "enum": [ "VERIFIED_IMPOSSIBILITY", "NOT_VERIFIED" ]
+          "enum": [
+            "VERIFIED_IMPOSSIBILITY",
+            "NOT_VERIFIED"
+          ]
         },
-        "independence_confirmed": { "type": "boolean" },
-        "all_below_cutoff_criteria_covered": { "type": "boolean" },
-        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
-        "dissent_refs": { "$ref": "#/$defs/optionalRefs" },
-        "return_to": { "const": "diretor-de-lentes" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "independence_confirmed": {
+          "type": "boolean"
+        },
+        "all_below_cutoff_criteria_covered": {
+          "type": "boolean"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "dissent_refs": {
+          "$ref": "#/$defs/optionalRefs"
+        },
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "verdict": { "const": "VERIFIED_IMPOSSIBILITY" } },
-            "required": [ "verdict" ]
+            "properties": {
+              "verdict": {
+                "const": "VERIFIED_IMPOSSIBILITY"
+              }
+            },
+            "required": [
+              "verdict"
+            ]
           },
           "then": {
             "properties": {
-              "independence_confirmed": { "const": true },
-              "all_below_cutoff_criteria_covered": { "const": true },
+              "independence_confirmed": {
+                "const": true
+              },
+              "all_below_cutoff_criteria_covered": {
+                "const": true
+              },
               "checks": {
                 "properties": {
-                  "correlation_verified": { "const": true },
-                  "all_below_cutoff_criteria_covered": { "const": true },
-                  "attempts_executed": { "const": true },
-                  "alternatives_discarded": { "const": true },
-                  "best_attainable_consistent": { "const": true },
-                  "nonwaivable_gates_intact": { "const": true }
+                  "correlation_verified": {
+                    "const": true
+                  },
+                  "all_below_cutoff_criteria_covered": {
+                    "const": true
+                  },
+                  "attempts_executed": {
+                    "const": true
+                  },
+                  "alternatives_discarded": {
+                    "const": true
+                  },
+                  "best_attainable_consistent": {
+                    "const": true
+                  },
+                  "nonwaivable_gates_intact": {
+                    "const": true
+                  }
                 }
               }
             }

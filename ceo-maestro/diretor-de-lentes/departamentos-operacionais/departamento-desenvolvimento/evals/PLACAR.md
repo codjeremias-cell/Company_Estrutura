@@ -1,6 +1,23 @@
 # Placar de migração — Departamento de Desenvolvimento
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **105/105 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 123/123 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:6b986ebdbc388e8e60fa083a91e61b83adc46d920ab0d990b6a62b653c4f4fa1` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **105/105 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -89,6 +106,32 @@ o aviso em prosa não previne, e de que a única defesa que funciona é a mecân
 
 ## O que ainda não foi provado
 
+### Estado vigente das obrigações — conferido em 2026-08-08
+
+> **Duas obrigações desta seção estavam declaradas como pendentes e não estão.** A campanha [`remedicao-dos-sete-2026-08-03`](../../../../evals/remedicao-dos-sete-2026-08-03/PLACAR.md) executou as duas sobre este pacote. O texto dos itens abaixo é registro da rodada em que foi escrito e fica como está; o estado corrente é este.
+
+| obrigação | estado em 2026-08-08 | quem emitiu |
+|---|---|---|
+| Auditoria independente | **EXECUTADA** em 2026-08-03 · `governance_report` **NONCOMPLIANT** · **4 achados** nomeados, com dono e condição de correção | `departamento-auditoria-responsabilidades` |
+| Parecer dos Juízes | **EMITIDO** em 2026-08-03 · veredito **REPROVED** · `minimum_score` **6**, faixa **6–7** · **5 de 8** critérios `NAO_DISCRIMINADO` | `departamento-juizes` |
+
+> **A faixa atravessa o corte, e isso é o achado — não um detalhe.** Duas instâncias da mesma lente, sobre os mesmos bytes e com a mesma rubrica, divergiram em 54% dos pares na campanha. Onde a faixa cruza o 6/7, consertar "até passar" seria mirar num número que a régua não distingue. O aceite interno deste pacote **nunca esteve estabelecido**, e continua não estando.
+
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da mesma campanha: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | o próprio Departamento | os 16 casos forem executados contra instância nova e independente, com `FORWARD-TEST.md` registrando `acionou` e `aderiu` MEDIDOS |
+| 2 | o próprio Departamento | a `lente-dev-senior` for reproduzida com instrumento comparável, ou este item registrar a decisão de não comparar, com motivo |
+| 3 | `departamento-auditoria-responsabilidades` e `departamento-juizes` | os dois emitirem sobre este pacote sem achado bloqueante e sem `REPROVED`. Ver o estado vigente acima — nenhum dos dois está pendente |
+| 4 | o próprio Departamento | houver medida de cobertura de REQUISITO, e não só de execução |
+| 5 | o próprio Departamento | o schema recomputar se o teste exercita a borda que declara exercitar |
+| 6 | o próprio Departamento | o uso do gerador for DERIVADO da evidência em vez de autodeclarado, no molde de `contar_ancoras_declaradas` |
+| 7 | `diretor-de-lentes` | o Diretor ampliar o acervo de tracks ou registrar o corte atual como definitivo, com data |
+
+
 1. **Forward comportamental.** Os 16 casos não foram executados. Não há evidência de que a skill
    dispara nos gatilhos, nem de que segura a RO-01 sob o pedido direto de usar uma assinatura
    inventada. O catálogo já nasce com a separação portão/operação, mas nenhum dos dois foi rodado.
@@ -104,3 +147,14 @@ o aviso em prosa não previne, e de que a única defesa que funciona é a mecân
 7. **R7 — a cobertura do Departamento é a do catálogo, não a do mercado.** Cinco tracks porque o
    acervo tem cinco. Go, Python, .NET e React Native falham fechados — o que é correto, e é também
    uma limitação a declarar.
+
+## Adendo 2026-08-16 — T71 C10 entrada (cand-B)
+
+O selo de 2026-08-08 (116/116) é registro daquela data. Esta overlay acrescenta
+o `$defs/departmentMissionAdmission` e sete casos: o literal no validador, o
+`find_const` do producer de entrada, três chamadas de `mission_verdict` que
+leem o const do schema, e dois casos de schema (rejeita producer forjado /
+aceita o do Diretor).
+
+O caso de saída (`plano com produtor forjado` no `DEV_PLAN`) permanece. CRIT-06
+não entra neste adendo.

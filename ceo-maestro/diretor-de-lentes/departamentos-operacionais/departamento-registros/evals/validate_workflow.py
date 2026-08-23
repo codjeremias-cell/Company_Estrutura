@@ -160,6 +160,7 @@ RULES_LINK_AGENT = "../../../../../../regras-de-ouro/REGRAS-DE-OURO.md"
 sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
     from _compartilhado.validador_schema import (  # noqa: E402
+        conferir_digest_das_regras,
         digest,
         find_const,
         json_pointer,
@@ -167,17 +168,48 @@ try:
         validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_adr_series,
         validate_agents_folder,
+    validate_contract_sections,
+    validate_skill_tokens,
+    SECOES_CONTRATO_AGENTE,
+    TOKENS_SKILL_AGENTE,
         validate_frontmatter,
         validate_links,
         validate_openai_yaml,
         validate_required_files,
     )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        achar_cadeia_no_presente,
+        validate_placar_nao_declara_cadeia,
+        achar_corpo_neutralizado,
+        achar_pendencia_sem_dono,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
+    )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(
         "[FAIL] motor compartilhado ausente em "
         f"{STRUCTURE_ROOT}/_compartilhado: {exc}"
+    )
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
     )
     raise SystemExit(1)
 
@@ -1450,6 +1482,24 @@ def validate_structure() -> list[str]:
             f"está sob {PACKAGE_ROOT.parent.name}/"
         )
     errors.extend(validate_agents_folder(AGENTS_ROOT, AGENT_NAMES))
+    # --- Estrutura normativa dos contratos e SKILL de agente ---------------
+    # GUIA, passos 7 e 8. Ate 2026-07-27 nenhum validador olhava heading de
+    # contrato de agente, e o resultado medido foi 15 de 66 conformes, com a
+    # trava anti-bypass ausente em 30. A conferencia mora no _compartilhado; a
+    # lista do que e obrigatorio continua sendo decisao deste pacote.
+    for _agente in sorted(p for p in AGENTS_ROOT.iterdir() if p.is_dir()):
+        errors.extend(
+            validate_contract_sections(
+                _agente / "CONTRATO-DE-COMPROMISSO.md",
+                SECOES_CONTRATO_AGENTE,
+                _agente.name,
+            )
+        )
+        errors.extend(
+            validate_skill_tokens(
+                _agente / "SKILL.md", TOKENS_SKILL_AGENTE, _agente.name
+            )
+        )
     return errors
 
 
@@ -1700,6 +1750,57 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
     case("fonte normativa única e tokens de contrato", True, validate_normative_source())
     case("links internos do pacote resolvem", True, validate_links(PACKAGE_ROOT))
     case("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT))
+    case("todo pacote gerente tem validador que roda a trava global", True, validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT))
+    case("nenhuma asserção é verdadeira por construção sobre valor produzido", True, validate_sem_check_tautologico(STRUCTURE_ROOT))
+    cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
+    cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)))
+    cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)))
+    cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(STRUCTURE_ROOT)))
+    # Par NEGATIVO da trava do selo (T71), pelo mesmo motivo escrito abaixo: sem
+    # raiz para varrer, a trava tem de FALHAR FECHADO. Trava que devolve vazio
+    # quando não consegue olhar nada é verde por ausência, não por conformidade.
+    cases.append((
+        "trava do selo falha fechado quando a raiz não existe",
+        False,
+        validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT / "raiz-inexistente"),
+    ))
+    # Par NEGATIVO da trava da T84, no mesmo molde do caso da cadeia logo abaixo:
+    # planta a forma proibida — trava desligada por `return` precoce, com o corpo
+    # inteiro virando código morto — e exige que ela seja ACUSADA.
+    cases.append((
+        "trava desligada por return precoce é acusada",
+        False,
+        achar_corpo_neutralizado(
+            "def validate_de_mentira(raiz):\n"
+            "    return []\n"
+            "    if not raiz.is_dir():\n"
+            "        return ['raiz ausente']\n",
+            "fixture",
+        ),
+    ))
+    # Par NEGATIVO da trava do dono (T71): planta a forma proibida — item de
+    # pendência sem linha na tabela de donos — e exige que ela seja ACUSADA.
+    cases.append((
+        "pendência sem dono é acusada",
+        False,
+        achar_pendencia_sem_dono(
+            "# P\n\n## O que ainda não foi provado\n\n"
+            "1. **Um.** texto\n2. **Dois.** texto\n",
+            "fixture",
+        ),
+    ))
+    # Caso NEGATIVO pareado: o passo 9 exige negativos >= positivos, e o
+    # caso acima é positivo. Este exercita a MESMA trava pelo lado que
+    # precisa reprovar — sem par, acrescentar trava desequilibra a suíte.
+    cases.append((
+        "alegação de total de cadeia no presente é rejeitada",
+        False,
+        achar_cadeia_no_presente(
+            "A cadeia canônica hoje soma **1531/1531 PASS**.", "fixture"
+        ),
+    ))
+    case("a fonte normativa confere com o valor declarado em ORIGEM.md", True, validate_fonte_normativa_conferida(STRUCTURE_ROOT))
     case("schema interno, enums e referências locais", True, validate_schema_shape(schema))
     case("autoridades herdadas do schema do Diretor", True, validate_inherited_authority())
     case("catálogo de evals", True, validate_evals())
@@ -2564,10 +2665,8 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
         )
         != "closed",
     )
-    condition(
-        "digest da fonte normativa é verificável",
-        RULES_PATH.is_file() and sha256_file(RULES_PATH).startswith("sha256:"),
-    )
+    case("digest da fonte normativa confere com o declarado em ORIGEM.md", True,
+         conferir_digest_das_regras(RULES_PATH))
 
     positives = sum(1 for _, expected, _ in cases if expected)
     negatives = len(cases) - positives
@@ -2598,4 +2697,7 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

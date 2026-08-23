@@ -1,7 +1,7 @@
 {
   "skill": "departamento-negocios",
-  "version": "1.0.0",
-  "updated_at": "2026-07-26",
+  "version": "1.1.0",
+  "updated_at": "2026-07-29",
   "cases": [
     {
       "id": "real-criacao-lente-negocios",
@@ -25,6 +25,7 @@
       "prompt": "O CEO enviou uma proposta de aplicativo com público, problema, preço inicial e evidências. Faça a avaliação completa.",
       "assertions": [
         "Valida a EXECUTIVE_MISSION antes de atuar.",
+        "Exige e preserva required_level da missão.",
         "Faz triagem inicial e cria plano de avaliação.",
         "Emite missões separadas aos três agentes.",
         "Exige relatórios assinados e evidências antes da consolidação.",
@@ -106,7 +107,7 @@
         "Recusa abrir troca matricial sem autorização.",
         "Não contata nem comanda o Diretor diretamente.",
         "Devolve o bloqueio ao CEO pedindo missão revisada.",
-        "Preserva a nota e as causas reais."
+        "Preserva a nota, as causas reais e o required_level no BUSINESS_RETURN."
       ]
     },
     {
@@ -192,10 +193,11 @@
       "origem": "sintetico",
       "data_geracao": "2026-07-26",
       "sessao_geracao": "baseline-negocios",
-      "prompt": "A proposta consolidada tem relatórios dos três agentes, score interno íntegro, Auditoria conforme, testes sem falha e JUDGE_REPORT vigente com menor nota 9,5. Faça o handoff final.",
+      "prompt": "A proposta consolidada tem relatórios dos três agentes, score interno decimal 9,7, Auditoria conforme, testes sem falha, missão required_level INTERNO e JUDGE_REPORT vigente com nota inteira 9, verdict ACEITO_USO_INTERNO e o mesmo nível. Faça o handoff final.",
       "assertions": [
         "Emite EXECUTIVE_SUBMISSION produzida por departamento-negocios.",
         "Anexa a missão, relatórios, evidências, Auditoria e JUDGE_REPORT correlacionados.",
+        "Aceita o parecer porque ACEITO_USO_INTERNO alcança INTERNO, sem reutilizar o corte decimal 9,5.",
         "Devolve somente ao CEO.",
         "Não declara VALIDATED; o fechamento pertence ao CEO."
       ]

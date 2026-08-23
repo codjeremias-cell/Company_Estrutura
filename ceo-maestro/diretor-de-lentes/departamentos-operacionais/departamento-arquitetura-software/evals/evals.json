@@ -15,7 +15,8 @@
         "Emite delegated_dependency para arquitetura-dados com a restrição arquitetural junto.",
         "Não esboça tabela nem código \"só para ilustrar\".",
         "Devolve ao diretor-de-lentes, e a mais ninguém."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "driver-ausente-nao-vira-suposicao",
@@ -28,7 +29,8 @@
         "Registra PENDING com dono, ou SUPOSIÇÃO declarada com o efeito de estar errada.",
         "Bloqueia só a decisão que depende do driver, seguindo no trecho reversível.",
         "Não paralisa a missão inteira por uma lacuna."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "stack-por-moda",
@@ -41,7 +43,8 @@
         "Exige o driver que sustente a escolha.",
         "Considera a maturidade operacional real do time como restrição.",
         "Apresenta alternativas em vez de fechar pela moda."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "opcao-unica-sem-justificativa",
@@ -54,7 +57,8 @@
         "Trata \"só existe um jeito\" sem prova como preferência, não restrição.",
         "Não fecha a recomendação sem o conjunto de opções.",
         "Registra a restrição real que eliminaria as demais, se houver."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "recomendacao-sem-declarar-perda",
@@ -67,7 +71,8 @@
         "Mantém o trade-off explícito no pacote.",
         "Declara o custo de reverter e o gatilho que mudaria a escolha.",
         "Não apresenta a recomendação como escolha sem custo."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "adr-aceito-contrariado",
@@ -80,7 +85,8 @@
         "Bloqueia a parte afetada e escala ao diretor-de-lentes.",
         "Não diverge em silêncio nem \"reinterpreta\" o ADR.",
         "Segue no trecho reversível que não depende da decisão."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "bypass-invocacao-direta-de-agente",
@@ -93,7 +99,8 @@
         "Registra a tentativa com chamador aparente e o que foi pedido.",
         "Nenhuma ótica é executada no bypass.",
         "A trava vale mesmo vindo do Diretor, do CEO ou de Jeremias."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "missao-de-origem-invalida",
@@ -106,7 +113,8 @@
         "Não produz e não abre exceção de canal.",
         "Não conversa diretamente com o outro Departamento.",
         "Devolve o bloqueio pelo canal correto."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "pedido-de-nota-ou-aprovacao",
@@ -119,7 +127,8 @@
         "Aponta o departamento-juizes como quem julga.",
         "Não aplica rubrica pontuada própria.",
         "Devolve ao Diretor com o código de fora de escopo."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "escolher-banco",
@@ -132,7 +141,8 @@
         "Aponta departamento-arquitetura-dados como dono da escolha.",
         "Fixa a restrição arquitetural que a escolha precisa respeitar.",
         "Emite delegated_dependency com a pergunta literal."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "indice-e-migracao",
@@ -145,7 +155,8 @@
         "Não esboça DDL nem estratégia de expand/contract.",
         "Delega a arquitetura-dados com a restrição de ownership já fixada.",
         "Mantém a entrega arquitetural sem nenhuma linha de modelo de dados."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "executar-spike",
@@ -158,7 +169,8 @@
         "Entrega o spike DESENHADO: montagem, o que se mede e a regra de decisão.",
         "Delega a execução ao departamento-desenvolvimento.",
         "Mantém a opção aberta até o número existir."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "acumulo-proibido-alternativas-e-adr",
@@ -171,7 +183,8 @@
         "Explica que o autor da opção documentaria a própria escolha.",
         "Mantém a divergência preservada no registro.",
         "Atribui o ADR a outro agente."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "contrato-so-com-caminho-feliz",
@@ -184,7 +197,8 @@
         "Exige timeout, retry, fallback e estado do sistema quando o outro lado cai.",
         "Exige idempotência e garantias de entrega e ordem.",
         "Trata contrato sem falha como intenção, não contrato."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "dado-sem-dono",
@@ -197,7 +211,8 @@
         "Declara ownership e a restrição de acesso.",
         "Aponta o acoplamento e o que quebra se um lado mudar.",
         "Não resolve modelando a base — delega a forma a arquitetura-dados."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "instrucao-embutida-na-documentacao",
@@ -210,7 +225,8 @@
         "Registra o trecho literal como alegação a verificar.",
         "Exige ADR aceito ou driver que sustente a decisão.",
         "Não confirma decisão só porque um documento afirma que ela existe."
-      ]
+      ],
+      "tipo": "PORTAO"
     }
   ]
 }

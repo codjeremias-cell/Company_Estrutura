@@ -1,0 +1,282 @@
+{
+  "artifact_type": "INDEPENDENT_PROOF_SCOREBOARD",
+  "campaign": "T16",
+  "proof_mode": "LOCAL_PROBE_ONLY",
+  "independent_execution": false,
+  "independence_status": "NOT_PROVEN",
+  "source_historical_campaign": "ceo-maestro/evals/barreiras-em-prosa-2026-08-03",
+  "candidate": {
+    "root": "candidato-isolado/overlay",
+    "candidate_digest": "sha256:c3559c652c4842025852115cac15c1eea50a9afb8be74504ee2a32724c9420dc",
+    "manifest_digest": "sha256:a6d7ac3811502fb1fd868b897301365d65ea4c5a926d7be271a37696692926d2",
+    "overlay_files": 23
+  },
+  "red_green": {
+    "green": {
+      "overlay_file_count": true,
+      "manifest_digest_separate": true,
+      "candidate_digest_reproduces_tree": true,
+      "manifest_digest_reproduces_bytes": true,
+      "historical_campaign_preserved": true,
+      "all_23_barriers_faithful": true,
+      "barrier_count": true,
+      "item_count_126": true
+    },
+    "red": {
+      "reject_manifest_digest_as_candidate_digest": true,
+      "reject_outside_section_mutation": true,
+      "reject_barrier_text_mutation": true,
+      "reject_file_count_change": true
+    },
+    "fidelity": [
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-direcao-arte-imagem/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 5
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-email-ciclo-de-vida/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 2
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-estrategia-conteudo-campanhas/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 6
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-governanca-marca-conformidade/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 4
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-inteligencia-relatoria-marketing/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 4
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-narrativa-redacao/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 5
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-publicidade-conversao/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 2
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-roteiro-producao-video/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 1
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/agentes/agente-testes-funcionais/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 4
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/agentes/agente-testes-nao-funcionais/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 3
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/agentes/agente-usabilidade-e-acessibilidade/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 2
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-registros/agentes/agente-aprendizados-e-relatorios/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 9
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-registros/agentes/agente-documentacao-e-materiais/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 8
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-registros/agentes/agente-estado-e-handoffs/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 8
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-registros/agentes/agente-memoria-e-decisoes/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 7
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-cadeia-de-suprimentos/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 7
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-configuracao-e-hardening/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 7
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-deteccao-e-resposta/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 7
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-identidade-e-acesso/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 7
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-modelagem-de-ameacas/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 7
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-privacidade-e-dados-pessoais/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 8
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-prova-e-reteste/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 7
+      },
+      {
+        "target": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/agentes/agente-seguranca-de-aplicacao/CONTRATO-DE-COMPROMISSO.md",
+        "green": true,
+        "outside_section_unchanged": true,
+        "section_reconstructed": true,
+        "candidate_items": 6
+      }
+    ]
+  },
+  "residual_limits": [
+    {
+      "finding_id": "AUD-T16-01",
+      "dimension": "PENDING",
+      "criterion_ref": "protocolo-auditoria.md 6.3 - cada pending liga a dimensao, dono, impacto e condicao de fechamento",
+      "evidence_refs": [
+        "EV-PEND-01"
+      ],
+      "artifact_refs": [
+        "ceo-maestro/evals/barreiras-em-prosa-2026-08-03/PLACAR.md"
+      ],
+      "severity": "LOW",
+      "blocking": false,
+      "owner_role": "ceo-maestro",
+      "corrective_condition": "Decidir se GRANULARIDADE_FUNDIDA fica sem trava; fechar exigiria norma sobre quantos itens uma barreira deve ter, que nao existe hoje"
+    },
+    {
+      "finding_id": "AUD-T16-05",
+      "dimension": "ARTEFATOS_TWINS",
+      "criterion_ref": "protocolo-auditoria.md 2.5 - divergencia entre artefato e declaracao e achado, nao ajuste silencioso",
+      "evidence_refs": [
+        "EV-TW-01",
+        "EV-TW-02"
+      ],
+      "artifact_refs": [
+        "ceo-maestro/evals/barreiras-em-prosa-2026-08-03/candidatos/cand-A-barreiras-em-lista/manifest.json",
+        "ceo-maestro/evals/barreiras-em-prosa-2026-08-03/PLACAR.md"
+      ],
+      "severity": "MEDIUM",
+      "blocking": false,
+      "owner_role": "departamento-evolucao-skills",
+      "corrective_condition": "Atualizar manifest.json - git_branch para o branch real e prova_de_fidelidade para as quatro pernas efetivamente entregues - ou declarar no proprio manifesto que ele e congelado no momento da geracao e por isso descreve o estado de entao"
+    },
+    {
+      "finding_id": "AUD-T16-06",
+      "dimension": "EVIDENCIA",
+      "criterion_ref": "protocolo-auditoria.md 7 R5 - prova fresca nao e prova correta; ramo de instrumento sem caso real nao esta provado",
+      "evidence_refs": [
+        "EV-EVD-02"
+      ],
+      "artifact_refs": [
+        "ceo-maestro/evals/barreiras-em-prosa-2026-08-03/instrumentos/reconferir_digests.py"
+      ],
+      "severity": "LOW",
+      "blocking": false,
+      "owner_role": "departamento-evolucao-skills",
+      "corrective_condition": "Exercitar EOL_MUDOU_CONTEUDO_INTACTO e CONTEUDO_MUDOU com caso construido, ou declara-los como ramos nao provados do instrumento"
+    },
+    {
+      "finding_id": "AUD-T16-04",
+      "dimension": "PENDING",
+      "criterion_ref": "PLACAR.md - 'Mutacao que mata por excecao nao conta como PEGA' e '1 limite declarado'",
+      "evidence_refs": [
+        "EV-PEND-02"
+      ],
+      "artifact_refs": [
+        "ceo-maestro/evals/barreiras-em-prosa-2026-08-03/instrumentos/conferir_fidelidade.py"
+      ],
+      "severity": "MEDIUM",
+      "blocking": false,
+      "owner_role": "departamento-evolucao-skills",
+      "corrective_condition": "Declarar os DOIS escapes medidos da perna 2 - palavra migrada cujo item seguinte passa a abrir com conectivo, e palavra migrada que ja carrega terminador - ou fechar a perna; hoje o instrumento declara UM limite e tem TRES"
+    }
+  ],
+  "residual_presence_complete": true,
+  "envelope_checks": {
+    "director_plan_schema": true,
+    "audit_mission_schema": true,
+    "capability_gap_schemas": true,
+    "blocked_return_schema": true
+  },
+  "promotion": {
+    "promoted": false,
+    "scored": false,
+    "winner_selected": false
+  },
+  "dispatch": {
+    "audit": "NOT_DISPATCHED_NO_OBSERVABLE_WORKER",
+    "judges": "NOT_DISPATCHED_AUDIT_AND_INDEPENDENCE_PREREQUISITES_MISSING"
+  },
+  "cost": {
+    "subagentes": 0,
+    "tokens_de_subagente": "NAO_MEDIDO — nenhum worker foi despachado",
+    "rodadas": 1,
+    "relogio": "NAO_MEDIDO — runtime não expõe relógio de despacho"
+  },
+  "pass_local_probe": true
+}

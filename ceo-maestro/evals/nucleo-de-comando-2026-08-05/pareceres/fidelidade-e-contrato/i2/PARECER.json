@@ -1,0 +1,131 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-fidelidade-e-contrato#i2",
+  "lens": "fidelidade-e-contrato",
+  "instancia": 2,
+  "round": "nucleo-de-comando",
+  "created_at": "2026-08-06T00:12:00-03:00",
+  "commit_julgado": "412769f31ccb0cb636f85c41f56cf9c6f612b3c1",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C01",
+      "score": 6,
+      "razao": "O texto do contrato e dos limites e dos mais completos que li: o papel e negativo por construcao ('Governa e nao executa', CONTRATO:5-8), a proibicao de execucao aparece em tres lugares independentes (SKILL.md:9, SKILL.md:52, CONTRATO:86), os interlocutores sao exatamente tres e o fecho e explicito ('e mais ninguem', CONTRATO:20-21), os Juizes ficam de fora do canal direto (SKILL.md:49-50), e ha uma secao inteira so para nao ser confundido com o vizinho (SKILL.md:270-271). Reprovo mesmo assim, por dois achados. (1) O caso que de fato ocorreu nao esta coberto por clausula nenhuma: o CEO operando sobre a propria estrutura. O contrato desta rodada declara 'Eu executo os validadores, publico a saida crua, selo este contrato, despacho os juizes e agrego o resultado' (evals/nucleo-de-comando-2026-08-05/00-CONTRATO.md:40) e a evidencia publicada carimba 'executado_por: ceo-maestro no papel de executor' (saida-crua/00-RESUMO.json:3) — enquanto SKILL.md:52 proibe, na letra, 'executar, corrigir, testar, pontuar ou fabricar evidencia'. Havia rota declarada e nao usada: SKILL.md:42 manda encaminhar toda frente tecnica ou de producao ao diretor-de-lentes; e o unico desvio previsto no pacote e a EXCEPTION_AUTHORIZATION de Jeremias (CONTRATO:30-31), que nao e citada para o papel de executor. A fronteira mais enfaticamente declarada e a que foi atravessada, contida apenas por prosa. (2) O inventario publicado pelo proprio pacote lista quatro subordinados_diretos para o CEO, incluindo departamento-juizes (saida-crua/00-RESUMO.json:29-34), contra os tres do contrato 'e mais ninguem' (CONTRATO:20-21) e contra a proibicao de acionar Juizes diretamente (SKILL.md:49-50). A receita desse campo nao esta publicada na saida crua e eu nao executo, entao registro a inconsistencia, nao a causa. Contraleitura, para quem quiser me derrubar: se C01 mede apenas o texto declarado, o achado (1) enfraquece e a nota sobe para 7 — eu julguei tambem a conduta observada, porque a conduta esta gravada dentro do proprio pacote.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/SKILL.md:52",
+        "Estrutura Final de Skills/ceo-maestro/SKILL.md:42",
+        "Estrutura Final de Skills/ceo-maestro/SKILL.md:49-50",
+        "Estrutura Final de Skills/ceo-maestro/CONTRATO-DE-COMPROMISSO.md:20-21",
+        "Estrutura Final de Skills/ceo-maestro/CONTRATO-DE-COMPROMISSO.md:30-31",
+        "Estrutura Final de Skills/ceo-maestro/CONTRATO-DE-COMPROMISSO.md:86",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/00-CONTRATO.md:40",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:3",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:29-34"
+      ]
+    },
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C02",
+      "score": 8,
+      "razao": "O schema existe e e fechado de verdade: draft 2020-12, oneOf sobre oito envelopes executivos, artifact_type const em todos os oito, e os 20 objetos materializaveis todos com additionalProperties:false (schemas/ceo-maestro.schema.json:1-8 no cabecalho e o oneOf logo abaixo; conferi a fechadura percorrendo o arquivo, ver o que declaro contra mim). E aplicado com bateria negativa larga, nao so de forma: a saida crua reprova envelope sem cada um dos quatro limites, limite com prefixo certo e texto errado, alegacao alargada e COMPLIANT com digest apenas declarado (saida-crua/ceo-maestro.stdout.txt:4-28), e reprova required_level ausente ou divergente nos tres pontos da cadeia (mesmo arquivo:62-66). O que entra e sai pela fronteira executiva e validado contra ESTE arquivo por quem esta abaixo — diretor-de-lentes/evals/validate_workflow.py:24, departamento-negocios/evals/validate_workflow.py:42, departamento-evolucao-skills/evals/validate_workflow.py:32 — com prova de uso em saida-crua/diretor-de-lentes.stdout.txt:10 e saida-crua/departamento-negocios.stdout.txt:222-228. Nao chega a 9 por dois riscos nomeados. Primeiro: o unico anyOf do schema (schemas/ceo-maestro.schema.json:1174), que exige que um veredito REPROVED se sustente em nota <= 6, falha critica ou pendencia bloqueante, usa uma palavra-chave que o motor que aplica o schema declara ignorar EM SILENCIO (_compartilhado/validador_schema.py:14-18). Essa clausula do schema do CEO nao esta em vigor pelo caminho do schema; ela sobrevive porque a camada semantica reconfere o veredito em evals/validate_workflow.py:650. Defesa em profundidade perdida, sem artefato escapando. Segundo: SKILL.md:234-256 torna obrigatoria desde 2026-08-05 a declaracao de custo da rodada com quatro campos, e nenhum envelope do schema pode carrega-los — executiveDecision tem 15 propriedades fixas e additionalProperties:false —, nem ha caso na saida crua que os mencione. Uma saida declarada obrigatoria que circula fora de qualquer envelope.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/schemas/ceo-maestro.schema.json:1174",
+        "Estrutura Final de Skills/_compartilhado/validador_schema.py:14-18",
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:650",
+        "Estrutura Final de Skills/ceo-maestro/SKILL.md:234-256",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/ceo-maestro.stdout.txt:4-28",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/ceo-maestro.stdout.txt:62-66",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:10",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:222-228"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C01",
+      "score": 8,
+      "razao": "Atende o criterio inteiro e sem defeito observado. Declara o que nao faz na primeira tela ('O Diretor orquestra; nao executa, nao julga e nao autoriza excecoes', SKILL.md:12-13) e repete a proibicao de julgar em quatro lugares independentes: SKILL.md:195 ('nao pontua, nao escolhe vencedor e nao corrige'), SKILL.md:259-260 (Guardrails, 'Nunca executar ... ou julgamento'), CONTRATO:100 ('Julgar, pontuar, votar ou reescrever JUDGE_REPORT') e CONTRATO:52 ('O Diretor nao emite nota, JUDGE_REPORT, VALIDATED...'). A fronteira e nomeada nos dois sentidos e ate contra atalhos que nao passam por ele: SKILL.md:36-37 obriga a impedir CEO->Departamento, Diretor->Agente e Negocios->Departamento. Os dez Departamentos estao enumerados por nome (SKILL.md:91-100) e a completude e obrigada com justificativa para cada NAO_SE_APLICA (CONTRATO:59). O departamento-evolucao-skills e declarado PAR e nao subordinado, com a razao (evolui as skills desta camada) e a consequencia (o Diretor nao o aciona) — SKILL.md:28-30. Negocios e par matricial com a nao-consequencia dita em voz alta: 'Isso nao subordina Negocios ao Diretor nem autoriza o Diretor a editar a proposta comercial' (SKILL.md:253-255). Dois riscos menores impedem o 9. Primeiro: o unico toque autorizado em numero — 'recalcula somente a menor nota aplicavel para detectar inconsistencia' (SKILL.md:193, CONTRATO:65 e 84) — separa-se de 'pontuar' apenas por texto; nada no envelope distingue recalculo de atribuicao, e a separacao repousa no campo de autoria do produtor. Segundo: o gate que deveria ser independente e subordinado direto de quem lhe manda o trabalho (CONTRATO:18 lista departamento-juizes entre os subordinados diretos; a pasta confirma o aninhamento). A fronteira esta nomeada, e nisso o criterio e atendido; a independencia, porem, e sustentada por proibicao e nao por linha de reporte distinta.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:12-13",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:28-30",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:36-37",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:91-100",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:193",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:253-255",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:259-260",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/CONTRATO-DE-COMPROMISSO.md:18",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/CONTRATO-DE-COMPROMISSO.md:52",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/CONTRATO-DE-COMPROMISSO.md:84",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/CONTRATO-DE-COMPROMISSO.md:100"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C02",
+      "score": 9,
+      "razao": "Supera o criterio. O schema cobre dez envelopes com artifact_type const (e enum fechado no directorReturn), e todo objeto materializavel e fechado: os unicos objetos sem additionalProperties:false sao os dez matchers 'contains' de department_matrix, que precisam ser parciais por definicao, e o item do array resolve para departmentClassification, esse sim fechado e com quatro campos obrigatorios — com minItems e maxItems em 10 e uniqueItems, de modo que a matriz nao aceita departamento faltando nem repetido. O schema nao valida so a forma: valida a aritmetica do gate, reprovando REPROVED com minimo 9, ACEITO_USO_INTERNO com minimo 10 e VALIDATED com minimo 9 (saida-crua/diretor-de-lentes.stdout.txt:46-48), exigindo minimum_score_range e aggregation_rule (:35-36) e recusando faixa invertida ou que nao bate com o minimo declarado (:44-45). E o que atravessa a fronteira e validado contra o schema de quem esta do outro lado: SKILL.md:58-62 manda validar o interno no proprio schema e EXECUTIVE_MISSION, JUDGE_REPORT, LIMITATION_REPORT e EXECUTIVE_SUBMISSION no schema do CEO, com o caso de uso provado em saida-crua/diretor-de-lentes.stdout.txt:10 ('autoridades herdadas do schema do CEO') e o caminho fixado em evals/validate_workflow.py:24. Sobra um risco menor nomeado: a tabela 'Saidas obrigatorias' do contrato lista 'D_REWORK' na coluna de saida (CONTRATO:46, repetido em :85), onde todas as outras linhas nomeiam um artifact_type; D_REWORK e valor do enum directorState (schemas/diretor-de-lentes.schema.json:139) e o envelope correspondente chama-se REWORK_ORDER. Estado e envelope compartilham a mesma celula, e so o FORWARD-TEST desfaz a ambiguidade. Registro tambem, como contexto e nao como risco deste pacote, que o motor que aplica o schema cobre um subconjunto do draft 2020-12 e ignora em silencio o que nao suporta (_compartilhado/validador_schema.py:14-18): varri este schema e ele nao usa nenhuma das palavras-chave nao suportadas, entao a limitacao nao esta viva aqui.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/schemas/diretor-de-lentes.schema.json:139",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/SKILL.md:58-62",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/CONTRATO-DE-COMPROMISSO.md:46",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/CONTRATO-DE-COMPROMISSO.md:85",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/validate_workflow.py:24",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/FORWARD-TEST.md:144",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:10",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:35-36",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/diretor-de-lentes.stdout.txt:44-48",
+        "Estrutura Final de Skills/_compartilhado/validador_schema.py:14-18"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C01",
+      "score": 6,
+      "razao": "Descontei o FAIL da serie de ADR (numero 020 duplicado em copias de laboratorio sob ceo-maestro/evals/producao-honesta-2026-08-04/): e alheio a este pacote e nao pesa em nada aqui. Dito isso: o contrato operacional deste Departamento e excelente. A regua propria e declarada E cercada — o corte interno decimal de 9,5 (SKILL.md:133, CONTRATO:131-139) vem sempre acompanhado da regua externa inteira que ele nao pode tocar (SKILL.md:164-165, CONTRATO:165-167) e da frase 'Esse score mede prontidao interna de negocio; nao e veredito independente' (SKILL.md:135). A nao-subordinacao matricial e dita nos dois sentidos, com a proibicao de 'transformar troca matricial em cadeia de comando' (CONTRATO:119). Gerente e executor sao separados por caso vermelho, nao por promessa: SKILL.md:85 proibe score sem relatorio-fonte do agente proprietario, e a saida crua reprova 'gerente fabricando relatorio' (departamento-negocios.stdout.txt:126) e 'score sem relatorio-fonte real' (:150). Ate os artefatos que o pacote nao pode produzir sao reprovados por caso (:138-140). Reprovo por uma fronteira nao declarada, e ela e a que a saida crua expoe. O validador do proprio pacote executa, por subprocess, os validadores do ceo-maestro e do diretor-de-lentes (evals/validate_workflow.py:2317-2334) e converte o codigo de saida deles em FAIL proprio (:2349-2353). Efeito medido nesta rodada: dois dos tres FAIL deste pacote sao o status dos vizinhos, nao defeito de artefato dele — saida-crua/departamento-negocios.stdout.txt:232 e :243. Nenhuma linha do contrato declara essa dependencia: as tabelas de Entradas aceitas e Saidas obrigatorias (CONTRATO:42-71) nao a mencionam, e o pacote declara em sentido oposto 'Nao comando Juizes, Departamentos do CTO nem seus agentes' (CONTRATO:33) e exige autorizacao matricial ate para falar com o CTO (CONTRATO:118, 145-152). Um pacote cujo verde depende do codigo de saida de dois vizinhos tem fronteira presumida, nao nomeada — que e exatamente o modo de falha que C01 nomeia. Contraleitura, para o registro: ler isso como disciplina de regressao, e nao como travessia, e defensavel — o docstring do validador declara 'regressoes do CEO/Diretor' (evals/validate_workflow.py:4), logo e deliberado. Se essa leitura prevalecer, a nota sobe para 7 ou 8. Mantenho 6 porque deliberado-e-nao-declarado ainda e nao declarado, e porque o efeito apareceu na medicao.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2317-2334",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:2349-2353",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:4",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/CONTRATO-DE-COMPROMISSO.md:33",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/CONTRATO-DE-COMPROMISSO.md:42-71",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/CONTRATO-DE-COMPROMISSO.md:118",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/SKILL.md:85",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/SKILL.md:164-165",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:232",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:243",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:126"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C02",
+      "score": 8,
+      "razao": "Descontei o FAIL da serie de ADR, alheio ao pacote. Cobrei a sub-execucao uma vez so, em C01, e NAO a recobro aqui — o leitor pode conferir a contabilidade e discordar dela. Pelos meritos proprios de schema e envelope: doze artifact_type com const, draft 2020-12 conferido por caso (saida-crua/departamento-negocios.stdout.txt:104), e os 19 objetos materializaveis todos com additionalProperties:false. E aplicado com a bateria negativa mais larga dos tres que li — recusa dois agentes, quarto agente e agente duplicado (:121-123), plano sem cobrir BIZ-01..08 (:124), scorecard sem os oito criterios (:128), 9,49 como pronto (:129), refs forjadas entre intake, plano, atribuicao e missao (:153), digest divergente (:147) e evidencia de scorecard ausente dos relatorios (:159). Mais forte ainda: o schema recusa localmente os artefatos que o contrato proibe o pacote de produzir — JUDGE_REPORT, EXECUTIVE_DECISION e EXCEPTION_REQUEST (:138-140) —, o que faz a proibicao do contrato virar regra de envelope. E a fronteira e validada contra o schema do vizinho, nao so contra o proprio: MATRIX_EXCHANGE_MESSAGE contra o schema e a semantica do Diretor, EXECUTIVE_SUBMISSION e LIMITATION_REPORT contra os do CEO (:220-228), declarado em SKILL.md:229-231 e fixado em evals/validate_workflow.py:41-42. Dois riscos menores nomeados. Primeiro: MATRIX_EXCHANGE_MESSAGE tem duas definicoes, uma aqui e outra no schema do Diretor. Comparei as duas: mesmas propriedades, mesmos obrigatorios, diferindo so por required_level escrito como $ref local aqui e como enum inline la, com os mesmos dois valores — ou seja, hoje nao ha deriva. Nada obriga que continuem iguais: um estreitamento de um lado so aparece se algum fixture o violar. Segundo: a saida do proprio pacote nao e delimitada. O fluxo de resultado intercala 38 linhas dos dois vizinhos (:233-252 e :258-277) e termina com o sumario do vizinho, de modo que a ultima linha 'Resultado:' da saida dele e o 99/100 do Diretor, e nao o proprio 230/233 (:255). Sob a receita publicada 'sumario = ULTIMO da saida' (saida-crua/00-RESUMO.json:4), foi o numero do vizinho que ficou registrado como sumario_proprio deste pacote (00-RESUMO.json:107). Isso e do lado do envelope: uma saida que nenhum schema governa carregou conteudo alheio.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/SKILL.md:229-231",
+        "Estrutura Final de Skills/ceo-maestro/departamento-negocios/evals/validate_workflow.py:41-42",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:104",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:121-129",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:138-140",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:220-228",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:255",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:258-277",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:4",
+        "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:107"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 6,
+  "confidence": "media",
+  "por_que_essa_confianca": "Alta na parte de schema e envelope: os tres schemas sao arquivos que eu li inteiros por estrutura, e a fechadura, os const de artifact_type e a presenca ou ausencia de palavra-chave nao suportada sao fatos do arquivo, nao inferencia. Media no conjunto por tres razoes. (1) Nao executei nada, como o contrato manda: todo PASS e FAIL que cito e a palavra da saida crua, que foi produzida por um dos pacotes que julgo, na rodada em que ele e julgado — nao tenho medida independente dela e o contrato me proibe de fazer uma. (2) Duas das minhas seis notas dependem de um julgamento de escopo que um leitor razoavel pode inverter: se C01 mede apenas o texto declarado e nao a conduta observada, ceo-maestro C01 sobe de 6 para 7; se a sub-execucao de Negocios contar como disciplina de regressao e nao como travessia de fronteira, departamento-negocios C01 sobe de 6 para 7 ou 8. Deixei as duas contraleituras escritas dentro das respectivas razoes, de proposito. (3) Nao abri os arquivos que carregam nota, entao nao sei se algum achado meu ja foi levantado, respondido ou considerado fechado em rodada anterior.",
+  "o_que_declaro_contra_mim": [
+    "Julgar quem me despachou pesou, e nao na direcao que a pergunta sugere. Nao senti relutancia em dar nota baixa ao ceo-maestro; senti o vies espelhado — a tentacao de provar independencia sendo duro justamente com ele. Foi o unico pacote em que precisei escrever a contraleitura antes de fechar a nota, para conferir se o 6 se sustentava sem a plateia. Sustenta-se em dois achados citaveis por caminho e linha; se fosse um so, eu teria dado 7. Registro que o mecanismo que me protege nao e a minha firmeza: e o contrato selado antes de eu existir e o worktree fora do alcance de edicao dele.",
+    "Usei python para ler e contar a estrutura dos tres schemas — fechadura de objeto, const de artifact_type, varredura de palavras-chave nao suportadas, diff entre as duas definicoes de MATRIX_EXCHANGE_MESSAGE. Isso e leitura assistida de arquivo-fonte, nao execucao de validador de pacote, e nenhum PASS/FAIL meu entrou no parecer. Mas os numeros de fechadura e a existencia do anyOf sao derivacao minha e nao constam da saida crua; se a rodada considerar isso execucao, tres das minhas evidencias caem e as notas de C02 do ceo-maestro e do diretor-de-lentes ficam sem base propria.",
+    "Li o arquivo julgamento-nove-departamentos-2026-08-04/00-CONTRATO.md, que esta dentro de um diretorio que o contrato desta rodada lista como proibido. Li porque o despacho o ordenou nominalmente, para as definicoes integras de C01 e C02. Ele traz criterios, donos e regra de agregacao, e nenhuma nota; nao abri mais nada naquele diretorio. Declaro porque uma regra foi atravessada por instrucao, e quem le merece saber.",
+    "Nao abri REGISTRO-DE-VEREDITOS.md, nenhum evals/PLACAR.md, julgamento-pacotes-2026-07-29/, recoleta-c03-c05-c06-2026-08-05/ nem os vereditos da T19/T27, e nao fiz busca larga sobre julgamento, pareceres, rejulgamento ou recoleta. Topei com dois nomes de caminho — a lista de diretorios de ceo-maestro/evals/ ao mapear o pacote, e a linha de link 'evals/PLACAR.md -> ../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md' na saida crua de Negocios. Caminho, sem nota. Nao vi numero de julgamento anterior nenhum.",
+    "Julguei o ceo-maestro em C01 apoiado tambem em conduta observada nesta rodada, e nao so no texto do contrato. E uma escolha de escopo minha, discutivel, e ela e responsavel por metade do peso do 6.",
+    "Duas das seis notas sairam 6, por causas diferentes e derivadas separadamente. Nao comparei pacote com pacote em momento nenhum; mas registro que percebi a coincidencia e reabri as duas derivacoes antes de escrever, justamente para conferir se uma nao estava contaminando a outra.",
+    "Sobre o veredito final: minha lente cobre dois dos seis criterios. O minimo que declaro, 6, e o minimo dos MEUS criterios e nao o do pacote; e a agregacao entre instancias nao e minha. Nao sei o que a instancia 1 achou e nao tentei descobrir."
+  ]
+}

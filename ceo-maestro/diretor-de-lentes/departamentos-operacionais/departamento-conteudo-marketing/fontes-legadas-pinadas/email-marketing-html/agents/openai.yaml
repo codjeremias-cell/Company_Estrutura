@@ -1,0 +1,4 @@
+interface:
+  display_name: "E-mail Marketing HTML"
+  short_description: "Gere e-mails promocionais HTML bulletproof"
+  default_prompt: "Use $email-marketing-html para criar este e-mail promocional HTML com compatibilidade e lint."

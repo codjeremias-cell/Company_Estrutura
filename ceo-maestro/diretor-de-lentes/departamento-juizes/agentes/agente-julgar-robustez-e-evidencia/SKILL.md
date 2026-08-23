@@ -32,7 +32,9 @@ com as Regras de Ouro bloqueia a operação e volta à gerente.
 
 ## Fronteira exclusiva
 
-Assumir, só na ótica de robustez e evidência:
+O recorte desta capacidade é **só na ótica de robustez e evidência** — e só ele.
+
+Assumir:
 
 - corretude técnica do que o candidato afirma;
 - tratamento de bordas — dado ausente, vazio, limite, erro, concorrência;

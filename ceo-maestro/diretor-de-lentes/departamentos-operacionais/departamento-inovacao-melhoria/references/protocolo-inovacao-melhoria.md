@@ -305,6 +305,13 @@ das oportunidades e dos experimentos dos retornos aceitos; o booleano escrito
 no relatório só passa se for idêntico ao derivado. Marcar `true` sem o insumo
 correspondente reprova a rodada inteira.
 
+**Retorno aceito** é o de `status` `COMPLETED` ou `PARTIAL` — `PARTIAL` entra
+porque é entrega real com lacuna declarada. `BLOCKED`, `FAILED` e `NONCOMPLIANT`
+**não alimentam o gate**: nos três o agente não entregou conteúdo aproveitável, e
+deixar o payload deles derivar significaria que um agente em violação de contrato
+ainda move o gate. A definição vale para todo ponto deste protocolo que diga
+"retorno aceito", e está travada em `ACCEPTED_RETURN_STATUS` no validador.
+
 O estado é da iniciativa; dependências possuem estado próprio em `pending` e
 `execution_requests`. Uma dependência externa bloqueada só deriva o item
 inteiro para `BLOCKED` quando impede o próximo gate — e, nesse caso, o
@@ -440,10 +447,18 @@ aponta para cá.
 | **R6** saturação prova busca, não existência | o ledger da RO-15 mede o que foi **procurado** no escopo declarado, não o que **existe** no alvo | `declared: true` é lido como "não há mais oportunidades", e a próxima decisão trata o mapa como completo | partição obrigatória do ledger, escopo/fontes/método comparáveis nas duas rodadas finais e limitações declaradas (§6.1) | nenhuma técnica desta página prova ausência de oportunidade; a conclusão é sobre a busca executada, não sobre o domínio |
 | **R7** anti-julgamento por vocabulário | a detecção casa termos de julgamento, não a intenção; e precisa isentar os campos onde a exclusão é declarada | uma alegação de nota redigida em paráfrase, fora do vocabulário, atravessa a varredura | lista fechada de padrões, isenção explícita e nominal dos campos de declaração negativa (§11) | a trava segura o **vocabulário**, não o sentido: quem quiser afirmar julgamento em prosa livre ainda consegue |
 | **R8** bypass para fora | simétrico de R1: o §8 proíbe mensagem paralela, mas nenhum controle técnico de canal existe | recomendação, oportunidade ou disposição sai da rodada sem passar pelo retorno, e o `return_to` vira acordo de boa-fé | instrução contratual, `return_to` único por envelope, status `RECOMMENDED_NOT_SENT` e registro em `pending` de toda saída detectada | só auditável a posteriori, e apenas se a mensagem paralela deixar rastro no que a própria gerente registra |
+| **R9** acionamento espontâneo não é verificável neste pacote | a Estrutura instala **uma porta única**: `ceo-maestro` registra como skill, e os 15 gerentes e 66 agentes aninhados **não** viram skills invocáveis — medido em sessão nova, `departamento=0 ; agente=0`. Este Departamento é um dos 15 | nenhuma bateria prova que a skill dispara sozinha a partir do gatilho: ela só é alcançada por delegação explícita, que é outra coisa. O `SKIP` de acionamento **não tem caminho de fechamento** enquanto a instalação for por porta única | declarar o `SKIP` em vez de simulá-lo, e nomear delegação como delegação nos forward tests | fecha só se a instalação mudar — decisão de runtime, fora do alcance deste protocolo |
+
+> **R9, acrescentado em 2026-07-28.** O `SKIP` de acionamento espontâneo existia
+> desde a migração, sem `R` que o cobrisse — a tabela nasceu antes de a instalação
+> por **porta única** ser medida. Com a medição (`departamento=0 ; agente=0`), o
+> vetor ficou nomeável: não é descuido de execução nem prova adiável, é limite do
+> runtime. Tratá-lo como pendência fechável é erro de categoria — o fechamento não
+> está ao alcance de nenhuma regra deste protocolo.
 
 **Concluído quando:** todo retorno nomeia **R5** em `pending`
 incondicionalmente e nomeia pelo identificador cada um dos demais limites de
-que a rodada dependa (R1–R4, R6–R8), com o efeito naquela rodada — e nenhum
+que a rodada dependa (R1–R4, R6–R9), com o efeito naquela rodada — e nenhum
 deles aparece declarado em outro ponto do pacote, apenas referenciado.
 
 ---

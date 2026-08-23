@@ -1,0 +1,114 @@
+{
+  "artifact_type": "EXTERNAL_JUDGE_REPORT",
+  "report_id": "external-judge-report-t3-r1-C05",
+  "mode": "EXTERNAL",
+  "candidate_id": "C05",
+  "candidate_digest": "sha256:53dbc6347b5361684e722490f7aaef333f940bf753991f5fae3ba216b1cc6361",
+  "contract_digest": "sha256:b7ab8b49d800fe46a2d21b4b8a546f52d467d834e8e2ac6dd335b1c4d36ad431",
+  "round": 1,
+  "required_level": "INTERNO",
+  "reviewers": [
+    {
+      "assignment_id": "t3-r1-C05-EXT-FID",
+      "lens": "fidelidade-e-contrato",
+      "opinion_ref": "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/02-JUDGE-OPINIONS-FID.ndjson:5"
+    },
+    {
+      "assignment_id": "t3-r1-C05-EXT-ROB",
+      "lens": "robustez-e-evidencia",
+      "opinion_ref": "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/03-JUDGE-OPINIONS-ROB.ndjson:5"
+    },
+    {
+      "assignment_id": "t3-r1-C05-EXT-EXP",
+      "lens": "experiencia-e-risco",
+      "opinion_ref": "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/04-JUDGE-OPINIONS-EXP.ndjson:5"
+    }
+  ],
+  "scorecard": [
+    {
+      "criterion_id": "CRIT-01",
+      "score": 9,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/02-JUDGE-OPINIONS-FID.ndjson:5"
+      ]
+    },
+    {
+      "criterion_id": "CRIT-02",
+      "score": 6,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/02-JUDGE-OPINIONS-FID.ndjson:5",
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/04-JUDGE-OPINIONS-EXP.ndjson:5"
+      ]
+    },
+    {
+      "criterion_id": "CRIT-03",
+      "score": 2,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/02-JUDGE-OPINIONS-FID.ndjson:5",
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/03-JUDGE-OPINIONS-ROB.ndjson:5"
+      ]
+    },
+    {
+      "criterion_id": "CRIT-04",
+      "score": 2,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/02-JUDGE-OPINIONS-FID.ndjson:5",
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/03-JUDGE-OPINIONS-ROB.ndjson:5"
+      ]
+    },
+    {
+      "criterion_id": "CRIT-05",
+      "score": 3,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/03-JUDGE-OPINIONS-ROB.ndjson:5"
+      ]
+    },
+    {
+      "criterion_id": "CRIT-06",
+      "score": 4,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/03-JUDGE-OPINIONS-ROB.ndjson:5",
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/04-JUDGE-OPINIONS-EXP.ndjson:5"
+      ]
+    },
+    {
+      "criterion_id": "CRIT-07",
+      "score": 9,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/02-JUDGE-OPINIONS-FID.ndjson:5",
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/04-JUDGE-OPINIONS-EXP.ndjson:5"
+      ]
+    },
+    {
+      "criterion_id": "CRIT-08",
+      "score": 4,
+      "evidence_refs": [
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/03-JUDGE-OPINIONS-ROB.ndjson:5",
+        "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/04-JUDGE-OPINIONS-EXP.ndjson:5"
+      ]
+    }
+  ],
+  "minimum_score": 2,
+  "verdict": "REPROVED",
+  "critical_fail": true,
+  "criticisms": [
+    "Contrato, schema auxiliar e rubrica conhecem três faixas, mas a SKILL e o protocolo principal ainda implementam apenas duas.",
+    "O protocolo declara `rubrica-corte-v1` enquanto o schema exige v2, e `required_level` não é preservado como obrigação."
+  ],
+  "required_changes": [
+    "Migrar SKILL, protocolo, metadata, catálogo, fixtures e PLACAR integralmente para `rubrica-corte-v2`.",
+    "Exigir e preservar `required_level` e reexecutar bordas 6/7/9/10 nos dois níveis."
+  ],
+  "method_limits": [
+    "C05 foi examinado por painel externo; o candidato não emitiu opinião nem relatório sobre si próprio.",
+    "R2: substrato e tier não foram expostos de modo verificável.",
+    "R4: o fingerprint residual foi predeclarado e não pesou na nota.",
+    "R6: o registro torna a emissão auditável, mas não a torna tecnicamente impossível de fabricar."
+  ],
+  "evidence_refs": [
+    "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/00-CONTRATO-E-MANIFESTO.md",
+    "Estrutura Final de Skills/ceo-maestro/evals/julgamento-pacotes-2026-07-29/01-REGISTRO-DE-EMISSAO.md"
+  ],
+  "issued_at": "2026-07-29T12:45:00-03:00",
+  "expires_at": "2026-07-30T12:45:00-03:00"
+}

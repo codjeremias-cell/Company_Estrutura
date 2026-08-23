@@ -113,6 +113,12 @@
         "B_CANCELLED"
       ]
     },
+    "requiredLevel": {
+      "enum": [
+        "PRODUCAO",
+        "INTERNO"
+      ]
+    },
     "criterionId": {
       "enum": [
         "BIZ-01",
@@ -1001,6 +1007,7 @@
         "consolidation_ref",
         "scorecard_ref",
         "purpose",
+        "required_level",
         "business_internal_minimum_score",
         "evidence_refs",
         "dissents",
@@ -1025,6 +1032,7 @@
         "consolidation_ref": { "$ref": "#/$defs/artifactRef" },
         "scorecard_ref": { "$ref": "#/$defs/artifactRef" },
         "purpose": { "enum": ["STANDARD_JUDGMENT", "LIMITATION_VERIFICATION"] },
+        "required_level": { "$ref": "#/$defs/requiredLevel" },
         "business_internal_minimum_score": { "type": "number", "minimum": 0, "maximum": 10 },
         "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
         "dissents": { "$ref": "#/$defs/optionalStrings" },
@@ -1064,6 +1072,7 @@
         "matrix_message_id",
         "causal",
         "executive_mission_ref",
+        "required_level",
         "sender",
         "recipient",
         "topic",
@@ -1079,6 +1088,7 @@
         "matrix_message_id": { "$ref": "#/$defs/identifier" },
         "causal": { "$ref": "#/$defs/causalHeader" },
         "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "required_level": { "$ref": "#/$defs/requiredLevel" },
         "sender": { "enum": ["diretor-de-lentes", "departamento-negocios"] },
         "recipient": { "enum": ["diretor-de-lentes", "departamento-negocios"] },
         "topic": { "type": "string", "minLength": 3 },
@@ -1117,6 +1127,7 @@
         "artifact_type",
         "business_return_id",
         "causal",
+        "required_level",
         "state",
         "reason",
         "evidence_refs",
@@ -1128,6 +1139,7 @@
         "artifact_type": { "const": "BUSINESS_RETURN" },
         "business_return_id": { "$ref": "#/$defs/identifier" },
         "causal": { "$ref": "#/$defs/managerCausal" },
+        "required_level": { "$ref": "#/$defs/requiredLevel" },
         "state": { "$ref": "#/$defs/businessState" },
         "reason": { "type": "string", "minLength": 3 },
         "evidence_refs": { "$ref": "#/$defs/requiredRefs" },

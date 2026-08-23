@@ -1,0 +1,118 @@
+{
+  "artifact_type": "EXECUTIVE_MISSION",
+  "mission_id": "MISSION-T13-DIRECTOR-GATES-R3-20260730",
+  "causal": {
+    "work_item_id": "TASK-13",
+    "front_id": "FRONT-DADOS7-GATES-R3",
+    "handoff_id": "HANDOFF-T13-CEO-DIRECTOR-R3",
+    "message_id": "MSG-T13-CEO-DIRECTOR-R3-01",
+    "causation_message_ids": [
+      "MSG-T13-EVOL-CEO-R3-01"
+    ],
+    "contract_id": "CONTRACT-T13-EVOL-DADOS7-20260729",
+    "contract_version": 1,
+    "contract_digest": "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+    "candidate_digest": "n/a",
+    "round": 3,
+    "attempt": 1,
+    "producer": "ceo-maestro",
+    "producer_version": "1",
+    "producer_digest": "sha256:5fe11a01b225690c56c87a7fd617425d087c86f74c7693f141c7dfc9877076ff",
+    "created_at": "2026-07-30T15:52:00-03:00"
+  },
+  "recipients": [
+    "diretor-de-lentes"
+  ],
+  "objective": "Selecionar por disputa cega entre cand-F e cand-G, auditar integralmente o candidato recomendado e submetê-lo à validação independente exigida para PRODUCAO.",
+  "deliverable_type": "proposal",
+  "required_level": "PRODUCAO",
+  "scope_in": [
+    "Fronteira cand-F e cand-G do ledger LEDGER-T13-EVOL-R3",
+    "Provas independentes EVOL-T13-PROVA-07 e EVOL-T13-PROVA-08",
+    "Disputa cega sob o Departamento de Juízes",
+    "Auditoria das dez dimensões sobre o candidato recomendado",
+    "Registros de ciclo, aplicabilidade RI-06, owner de TETO_PROVAVEL e sequência pré-promoção",
+    "Validação final separada do candidato recomendado"
+  ],
+  "scope_out": [
+    "Editar ou promover qualquer candidato antes dos gates",
+    "Reutilizar opiniões ou recibos da rodada R2 como veredito da R3",
+    "Fabricar outputs brutos históricos",
+    "Alterar ADR-014, ADR-015 ou RO-W8",
+    "Publicar, fazer push ou entregar a terceiros",
+    "Pontuar ou auditar diretamente no papel de Diretor"
+  ],
+  "constraints": [
+    "A disputa é consultiva e não substitui a validação final",
+    "Os três Juízes recebem ordem variada e contexto isolado",
+    "A Auditoria atua somente por DEPARTMENT_MISSION do Diretor",
+    "Nota e veredito pertencem exclusivamente ao Departamento de Juízes",
+    "A promoção exige minimum_score 10, ausência de critical_fail, ausência de pendência bloqueante e governança COMPLIANT",
+    "Os digests ordinais de F e G devem permanecer idênticos aos manifests das provas",
+    "R6 e TETO_PROVAVEL permanecem visíveis nos relatórios aplicáveis"
+  ],
+  "decisions_binding": [
+    "Jeremias autorizou seguir com a tarefa 13",
+    "cand-F tem digest sha256:8481cf0d27587ea4b9f40877347e732224032e9eeb795b7710eabff929c655fb",
+    "cand-G tem digest sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+    "F e G passaram o checker de artefatos gêmeos contra baseline cand-E vermelho",
+    "TETO_PROVAVEL tem exatamente um accountable: ceo-maestro",
+    "Mineração Externa é não aplicável nesta rodada",
+    "DONE 7-10 é sequência; passos posteriores ao gate ficam bloqueados pelo gate e não exigem promoção antecipada"
+  ],
+  "dependencies": [
+    "LEDGER-T13-EVOL-R3 e 21-EVOLUTION-MANAGER-LEDGER-R3.md",
+    "Transcripts, manifests e checker das duas provas R3",
+    "Cópias anonimizadas com paridade de digest",
+    "Três capacidades independentes de julgamento",
+    "Três capacidades independentes de auditoria"
+  ],
+  "acceptance_criteria": [
+    "PANEL_HANDOFF permite recalcular o consenso e recomenda um candidato real",
+    "O candidato recomendado recebe GOVERNANCE_REPORT COMPLIANT do mesmo digest",
+    "O candidato recomendado passa por VALIDACAO separada com minimum_score 10",
+    "Nenhuma pendência bloqueante, critical_fail ou divergência de contrato permanece no gate",
+    "O Diretor devolve integração recomendada sem editar o canônico"
+  ],
+  "required_evidence": [
+    "JUDGMENT_REQUEST e três JUDGE_ASSIGNMENTs da disputa",
+    "Três JUDGE_OPINIONs isoladas e mapa de rótulos pós-rodada",
+    "PANEL_HANDOFF comparativo",
+    "DEPARTMENT_MISSION, AUDIT_TASKs e AUDIT_RECEIPTs R3",
+    "AUDIT_LEDGER e GOVERNANCE_REPORT R3",
+    "JUDGMENT_REQUEST de validação e JUDGE_REPORT do vencedor"
+  ],
+  "matrix_exchange": {
+    "allowed": false,
+    "topics": [],
+    "read_scope": [],
+    "write_scope": [],
+    "consolidation_owner": null
+  },
+  "permissions": {
+    "default_policy": "deny",
+    "allowed_tools": [
+      "filesystem_read",
+      "judgment_workspace_write",
+      "audit_workspace_write",
+      "sha256",
+      "schema_validate"
+    ],
+    "allowed_resources": [
+      "Estrutura Final de Skills/ceo-maestro/departamento-evolucao-skills/evals/regularizacao-dados7-2026-07-29",
+      "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29",
+      "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29",
+      "Estrutura Final de Skills/regras-de-ouro/REGRAS-DE-OURO.md"
+    ],
+    "expires_at": "2026-07-30T23:59:59-03:00"
+  },
+  "stop_when": [
+    "O candidato recomendado tiver PANEL_HANDOFF, GOVERNANCE_REPORT e JUDGE_REPORT correlacionados",
+    "Qualquer capacidade obrigatória estiver ausente, inválida ou conflitada",
+    "A disputa não preservar cegueira ou paridade de evidência",
+    "O candidato recomendado não alcançar o gate de PRODUCAO"
+  ],
+  "judge_gate_required": true,
+  "return_to": "ceo-maestro",
+  "issued_at": "2026-07-30T15:52:00-03:00"
+}

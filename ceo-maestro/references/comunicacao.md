@@ -20,7 +20,8 @@ menor nota e mudança exigida.
 Quando houver `LIMITATION_REPORT` elegível, apresentar:
 
 1. produto/proposta e escopo;
-2. nota mínima real e corte de 9,5;
+2. nota mínima real, `required_level` e alvo correspondente — 10 para `PRODUCAO`, 7 para
+   `INTERNO`;
 3. por que a lacuna é objetivamente intransponível;
 4. tentativas e alternativas executadas;
 5. riscos residuais e mitigações;
@@ -37,12 +38,16 @@ Entregar nesta ordem:
 1. resultado;
 2. status;
 3. menor nota;
-4. validação normal ou por exceção;
-5. riscos e pendências;
-6. próxima ação.
+4. `required_level` e se foi alcançado;
+5. `VALIDATED`, `ACEITO_USO_INTERNO` ou validação por exceção;
+6. riscos e pendências;
+7. próxima ação.
 
 Em `VALIDATED_BY_EXCEPTION`, usar literalmente “validado por exceção autorizada por Jeremias”
 e manter a nota real visível.
+
+Em `ACEITO_USO_INTERNO`, usar literalmente “aceito para uso interno; não autorizado para
+produção, publicação ou terceiros”.
 
 ## Controles humanos
 

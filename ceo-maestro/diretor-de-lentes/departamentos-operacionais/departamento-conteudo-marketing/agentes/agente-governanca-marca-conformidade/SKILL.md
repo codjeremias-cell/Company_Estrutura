@@ -10,7 +10,7 @@ description: "Executa revisão independente de marca e conformidade dos ativos d
 **Assumir:** revisão independente de voz/identidade, claims, identificação publicitária, direitos,
 licenças, proveniência/IA, acessibilidade, privacidade/consentimento e política do canal.
 
-**Não assumir:**
+**Não assumir**:
 
 - estratégia → `agente-estrategia-conteudo-campanhas`;
 - reescrita editorial → `agente-narrativa-redacao`;
@@ -70,5 +70,5 @@ assignment válido, `BLOCKED_BYPASS_ATTEMPT`. Se participou da peça, declarar c
 - **Superior:** `departamento-conteudo-marketing`.
 - **Recebe:** candidato integrado; entrega revisão independente para readiness.
 - **Não confundir com:** Auditoria prova governança da missão; este agente revisa o ativo de marketing.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.
 

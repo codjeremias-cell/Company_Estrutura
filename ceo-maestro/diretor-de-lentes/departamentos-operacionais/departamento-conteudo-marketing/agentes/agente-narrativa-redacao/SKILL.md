@@ -10,7 +10,7 @@ description: "Executa narrativa e redação editorial para produtos e marcas, pr
 **Assumir:** narrativa-mãe, ângulo editorial, headline editorial, artigo, página textual, post
 orgânico, legenda, história de produto e adaptação textual não especializada.
 
-**Não assumir:**
+**Não assumir**:
 
 - estratégia, calendário e canais → `agente-estrategia-conteudo-campanhas`;
 - visual → `agente-direcao-arte-imagem`;
@@ -68,5 +68,5 @@ assignment válido, `BLOCKED_BYPASS_ATTEMPT`. Devolver somente à gerente.
 - **Origem seletiva:** princípios de `redator-tecnologia-ia`, recortados em
   [origem-migracao](../../references/origem-migracao.md).
 - **Não confundir com:** publicidade, e-mail e vídeo têm agentes especializados.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.
 

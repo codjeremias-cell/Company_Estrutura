@@ -16,7 +16,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 2,
@@ -30,7 +31,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 3,
@@ -44,7 +46,10 @@
       ],
       "espera_recusa": false,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO",
+      "status": "APOSENTADO",
+      "motivo": "Irrodavel por especificacao: o prompt diz 'aqui esta a captura da tela atual (anexada)' e nada e anexado. A instancia classificou o sinal como AUSENTE e acionou o gate corretamente — a falha e do enunciado, nao da skill."
     },
     {
       "id": 4,
@@ -58,7 +63,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 5,
@@ -72,7 +78,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 6,
@@ -86,7 +93,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 7,
@@ -100,7 +108,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 8,
@@ -114,7 +123,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 9,
@@ -128,7 +138,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 10,
@@ -142,7 +153,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 11,
@@ -156,7 +168,8 @@
       ],
       "espera_recusa": false,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 12,
@@ -170,7 +183,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 13,
@@ -184,7 +198,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 14,
@@ -198,7 +213,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 15,
@@ -212,7 +228,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     },
     {
       "id": 16,
@@ -226,7 +243,8 @@
       ],
       "espera_recusa": true,
       "acionou": "NAO_MEDIDO",
-      "aderiu": "NAO_MEDIDO"
+      "aderiu": "NAO_MEDIDO",
+      "tipo": "PORTAO"
     }
   ]
 }

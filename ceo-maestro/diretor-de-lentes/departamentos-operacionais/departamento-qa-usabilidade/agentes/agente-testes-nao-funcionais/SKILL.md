@@ -23,7 +23,7 @@ honestos; nunca corrigir, pontuar ou substituir avaliação funcional/humana.
 - resiliência de dados e banco sob falha/concorrência;
 - disponibilidade e frescor medidos quando contratados.
 
-**Não assumir:**
+**Não assumir**:
 
 - regra, cálculo, conteúdo, CRUD ou efeito correto →
   `agente-testes-funcionais`;

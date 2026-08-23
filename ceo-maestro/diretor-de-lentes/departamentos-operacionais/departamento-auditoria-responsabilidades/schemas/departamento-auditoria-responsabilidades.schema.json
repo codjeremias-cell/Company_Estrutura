@@ -4,11 +4,21 @@
   "title": "Contratos internos do Departamento de Auditoria e Responsabilidades",
   "description": "Tarefa de auditoria, recibo por capacidade, matriz das dez dimensões, lacuna de cobertura e livro-razão da rodada. Sem nota: a pontuação do candidato pertence ao departamento-juizes (ADR-003). Os envelopes de fronteira (DEPARTMENT_MISSION, DEPARTMENT_RETURN, GOVERNANCE_REPORT) pertencem aos schemas do diretor-de-lentes e do ceo-maestro e não são redefinidos aqui.",
   "oneOf": [
-    { "$ref": "#/$defs/auditTask" },
-    { "$ref": "#/$defs/auditReceipt" },
-    { "$ref": "#/$defs/conformityMatrix" },
-    { "$ref": "#/$defs/auditCapabilityGap" },
-    { "$ref": "#/$defs/auditLedger" }
+    {
+      "$ref": "#/$defs/auditTask"
+    },
+    {
+      "$ref": "#/$defs/auditReceipt"
+    },
+    {
+      "$ref": "#/$defs/conformityMatrix"
+    },
+    {
+      "$ref": "#/$defs/auditCapabilityGap"
+    },
+    {
+      "$ref": "#/$defs/auditLedger"
+    }
   ],
   "$defs": {
     "identifier": {
@@ -23,32 +33,54 @@
     },
     "digestOrNa": {
       "oneOf": [
-        { "$ref": "#/$defs/digest" },
-        { "type": "string", "pattern": "^n/a:.{5,}$" }
+        {
+          "$ref": "#/$defs/digest"
+        },
+        {
+          "type": "string",
+          "pattern": "^n/a:.{5,}$"
+        }
       ]
     },
-    "timestamp": { "type": "string", "format": "date-time" },
-    "artifactRef": { "type": "string", "minLength": 3, "maxLength": 512 },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
     "requiredRefs": {
       "type": "array",
-      "items": { "$ref": "#/$defs/artifactRef" },
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "optionalRefs": {
       "type": "array",
-      "items": { "$ref": "#/$defs/artifactRef" },
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
       "uniqueItems": true
     },
     "requiredStrings": {
       "type": "array",
-      "items": { "type": "string", "minLength": 3 },
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "optionalStrings": {
       "type": "array",
-      "items": { "type": "string", "minLength": 3 },
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
       "uniqueItems": true
     },
     "dimension": {
@@ -89,13 +121,25 @@
       ]
     },
     "auditorStatus": {
-      "enum": [ "COMPLETED", "BLOCKED", "SEM_RETORNO", "FALHO" ]
+      "enum": [
+        "COMPLETED",
+        "BLOCKED",
+        "SEM_RETORNO",
+        "FALHO"
+      ]
     },
     "internalVerdict": {
-      "enum": [ "APROVADO", "APROVADO_COM_RESSALVAS", "REPROVADO" ]
+      "enum": [
+        "APROVADO",
+        "APROVADO_COM_RESSALVAS",
+        "REPROVADO"
+      ]
     },
     "governanceVerdict": {
-      "enum": [ "COMPLIANT", "NONCOMPLIANT" ]
+      "enum": [
+        "COMPLIANT",
+        "NONCOMPLIANT"
+      ]
     },
     "causalHeader": {
       "type": "object",
@@ -115,28 +159,72 @@
         "producer",
         "producer_version",
         "producer_digest",
+        "producer_digest_recipe",
         "created_at"
       ],
       "properties": {
-        "work_item_id": { "$ref": "#/$defs/identifier" },
-        "front_id": { "$ref": "#/$defs/identifier" },
-        "handoff_id": { "$ref": "#/$defs/identifier" },
-        "message_id": { "$ref": "#/$defs/identifier" },
+        "work_item_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "front_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "message_id": {
+          "$ref": "#/$defs/identifier"
+        },
         "causation_message_ids": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "contract_id": { "$ref": "#/$defs/identifier" },
-        "contract_version": { "type": "integer", "minimum": 1 },
-        "contract_digest": { "$ref": "#/$defs/digest" },
-        "candidate_digest": { "$ref": "#/$defs/digest" },
-        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
-        "attempt": { "type": "integer", "minimum": 1 },
-        "producer": { "const": "departamento-auditoria-responsabilidades" },
-        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
-        "producer_digest": { "$ref": "#/$defs/digest" },
-        "created_at": { "$ref": "#/$defs/timestamp" }
+        "contract_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": {
+          "const": "departamento-auditoria-responsabilidades"
+        },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "producer_digest_recipe": {
+          "description": "RODADA 8 — A RECEITA DO producer_digest PASSA A SER NORMATIVA. Ela so existia em prosa nao normativa, e por isso alcancou 17 envelopes em 7 rodadas sem que nenhum leitor conseguisse reproduzi-la: na rodada 7 um leitor diligente concluiu 'bate com NENHUM' e a acusacao de forjadura saiu plausivel e falsa. O campo diz QUE OBJETO o numero ao lado hasheia, na forma `caminho::funcao sobre <objeto>`. Familia recomputacao: a forma e conferida por pattern, e vocabulario novo nao precisa de edicao do schema.",
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9_./-]+::[A-Za-z0-9_]+ sobre .{6,}$"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "custodyEntry": {
@@ -155,16 +243,39 @@
         "access_mode"
       ],
       "properties": {
-        "evidence_ref": { "$ref": "#/$defs/identifier" },
-        "artifact_ref": { "$ref": "#/$defs/artifactRef" },
-        "source_version": { "type": "string", "minLength": 1 },
-        "artifact_digest": { "$ref": "#/$defs/digestOrNa" },
-        "collected_by": { "type": "string", "minLength": 3 },
-        "collected_at": { "$ref": "#/$defs/timestamp" },
-        "handed_from": { "type": "string", "minLength": 3 },
-        "handed_to": { "$ref": "#/$defs/auditorId" },
-        "handed_at": { "$ref": "#/$defs/timestamp" },
-        "access_mode": { "const": "read-only" }
+        "evidence_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "artifact_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "source_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_digest": {
+          "$ref": "#/$defs/digestOrNa"
+        },
+        "collected_by": {
+          "type": "string",
+          "minLength": 3
+        },
+        "collected_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "handed_from": {
+          "type": "string",
+          "minLength": 3
+        },
+        "handed_to": {
+          "$ref": "#/$defs/auditorId"
+        },
+        "handed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "access_mode": {
+          "const": "read-only"
+        }
       }
     },
     "reviewChainTask": {
@@ -180,18 +291,111 @@
         "conflict_checked_by": {
           "const": "departamento-auditoria-responsabilidades"
         },
-        "solution_participant_conflict": { "const": false },
-        "expected_conclusion_withheld": { "const": true },
-        "prior_votes_withheld": { "const": true }
-      }
+        "solution_participant_conflict": {
+          "description": "RODADA 9 — MEDIDO, não `const false`. Enquanto era const, o schema recusava a declaração honesta com `was expected` e premiava o recibo que mente.",
+          "type": "boolean"
+        },
+        "expected_conclusion_withheld": {
+          "description": "RODADA 9 — MEDIDO, não `const true`. Enquanto era const, o schema recusava a declaração honesta com `was expected` e premiava o recibo que mente.",
+          "type": "boolean"
+        },
+        "prior_votes_withheld": {
+          "description": "RODADA 9 — MEDIDO, não `const true`. Enquanto era const, o schema recusava a declaração honesta com `was expected` e premiava o recibo que mente.",
+          "type": "boolean"
+        },
+        "conflict_notes": {
+          "description": "O QUE FOI MEDIDO sobre o conflito de participação na solução. Obrigatório quando `solution_participant_conflict` é verdadeiro. Existe porque o campo era `const false`: conflito existente não tinha como ser declarado.",
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 800
+        },
+        "expected_conclusion_notes": {
+          "description": "O QUE FOI MEDIDO quando a conclusão esperada NÃO foi retida. Obrigatório quando `expected_conclusion_withheld` é falso. Existe porque o campo era `const true`: o vazamento não tinha como ser declarado.",
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 800
+        },
+        "prior_votes_notes": {
+          "description": "O QUE FOI MEDIDO quando os votos anteriores NÃO foram retidos. Obrigatório quando `prior_votes_withheld` é falso. Existe porque o campo era `const true`: o vazamento não tinha como ser declarado.",
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 800
+        }
+      },
+      "allOf": [
+        {
+          "description": "`solution_participant_conflict` no valor que incomoda exige a MEDIÇÃO ao lado. Declaração honesta passa; declaração sem medição, não.",
+          "if": {
+            "properties": {
+              "solution_participant_conflict": {
+                "const": true
+              }
+            },
+            "required": [
+              "solution_participant_conflict"
+            ]
+          },
+          "then": {
+            "required": [
+              "conflict_notes"
+            ]
+          }
+        },
+        {
+          "description": "`expected_conclusion_withheld` no valor que incomoda exige a MEDIÇÃO ao lado. Declaração honesta passa; declaração sem medição, não.",
+          "if": {
+            "properties": {
+              "expected_conclusion_withheld": {
+                "const": false
+              }
+            },
+            "required": [
+              "expected_conclusion_withheld"
+            ]
+          },
+          "then": {
+            "required": [
+              "expected_conclusion_notes"
+            ]
+          }
+        },
+        {
+          "description": "`prior_votes_withheld` no valor que incomoda exige a MEDIÇÃO ao lado. Declaração honesta passa; declaração sem medição, não.",
+          "if": {
+            "properties": {
+              "prior_votes_withheld": {
+                "const": false
+              }
+            },
+            "required": [
+              "prior_votes_withheld"
+            ]
+          },
+          "then": {
+            "required": [
+              "prior_votes_notes"
+            ]
+          }
+        }
+      ]
     },
     "taskDimension": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "dimension", "role" ],
+      "required": [
+        "dimension",
+        "role"
+      ],
       "properties": {
-        "dimension": { "$ref": "#/$defs/dimension" },
-        "role": { "enum": [ "owner", "secondary" ] }
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "role": {
+          "enum": [
+            "owner",
+            "secondary"
+          ]
+        }
       }
     },
     "auditTask": {
@@ -218,51 +422,99 @@
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "AUDIT_TASK" },
-        "task_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "auditor_id": { "$ref": "#/$defs/auditorId" },
-        "capability": { "$ref": "#/$defs/capability" },
-        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "artifact_type": {
+          "const": "AUDIT_TASK"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "auditor_id": {
+          "$ref": "#/$defs/auditorId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
         "dimensions": {
           "type": "array",
-          "items": { "$ref": "#/$defs/taskDimension" },
+          "items": {
+            "$ref": "#/$defs/taskDimension"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "scope_in": { "$ref": "#/$defs/requiredStrings" },
-        "scope_out": { "$ref": "#/$defs/optionalStrings" },
-        "inputs": { "$ref": "#/$defs/requiredRefs" },
-        "checks": { "$ref": "#/$defs/requiredStrings" },
-        "evidence_required": { "$ref": "#/$defs/requiredStrings" },
+        "scope_in": {
+          "$ref": "#/$defs/requiredStrings"
+        },
+        "scope_out": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "inputs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "checks": {
+          "$ref": "#/$defs/requiredStrings"
+        },
+        "evidence_required": {
+          "$ref": "#/$defs/requiredStrings"
+        },
         "custody_chain": {
           "type": "array",
-          "items": { "$ref": "#/$defs/custodyEntry" },
+          "items": {
+            "$ref": "#/$defs/custodyEntry"
+          },
           "uniqueItems": true
         },
-        "review_chain": { "$ref": "#/$defs/reviewChainTask" },
+        "review_chain": {
+          "$ref": "#/$defs/reviewChainTask"
+        },
         "forbidden_context": {
           "type": "array",
-          "items": { "type": "string", "minLength": 3 },
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
           "minItems": 4,
           "uniqueItems": true,
-          "contains": { "type": "string", "pattern": "conclus" },
+          "contains": {
+            "type": "string",
+            "pattern": "conclus"
+          },
           "minContains": 1
         },
-        "stop_when": { "$ref": "#/$defs/requiredStrings" },
-        "return_to": { "const": "departamento-auditoria-responsabilidades" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "stop_when": {
+          "$ref": "#/$defs/requiredStrings"
+        },
+        "return_to": {
+          "const": "departamento-auditoria-responsabilidades"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
           "if": {
             "properties": {
-              "auditor_id": { "const": "agente-reconciliar-contrato-e-autoridade" }
+              "auditor_id": {
+                "const": "agente-reconciliar-contrato-e-autoridade"
+              }
             },
-            "required": [ "auditor_id" ]
+            "required": [
+              "auditor_id"
+            ]
           },
           "then": {
-            "properties": { "capability": { "const": "contrato-e-autoridade" } }
+            "properties": {
+              "capability": {
+                "const": "contrato-e-autoridade"
+              }
+            }
           }
         },
         {
@@ -272,26 +524,116 @@
                 "const": "agente-verificar-governanca-e-responsabilidades"
               }
             },
-            "required": [ "auditor_id" ]
+            "required": [
+              "auditor_id"
+            ]
           },
           "then": {
             "properties": {
-              "capability": { "const": "governanca-e-responsabilidades" }
+              "capability": {
+                "const": "governanca-e-responsabilidades"
+              }
             }
           }
         },
         {
           "if": {
             "properties": {
-              "auditor_id": { "const": "agente-conferir-evidencias-e-artefatos" }
+              "auditor_id": {
+                "const": "agente-conferir-evidencias-e-artefatos"
+              }
             },
-            "required": [ "auditor_id" ]
+            "required": [
+              "auditor_id"
+            ]
           },
           "then": {
-            "properties": { "capability": { "const": "evidencias-e-artefatos" } }
+            "properties": {
+              "capability": {
+                "const": "evidencias-e-artefatos"
+              }
+            }
           }
         }
       ]
+    },
+    "evidenceAnchor": {
+      "description": "Evidência ABERTA: arquivo, linha, citação literal e digest do arquivo. Substitui o evidence_ref opaco, que nada reabria. Um terceiro reabre o arquivo, vai à linha e compara a citação — é o que separa inspeção executada de inspeção afirmada. Reaberta em código por scripts/inspecao_executada.py::reverificar_ancora.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_ref",
+        "artifact_ref",
+        "line",
+        "quote",
+        "file_digest"
+      ],
+      "properties": {
+        "evidence_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "artifact_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 8
+        },
+        "file_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "inspectionMethod": {
+      "description": "O contrato do agente executado como MÉTODO. Sob porta única o agente não resolve como skill invocável, e 'agente' passa a ser o papel que a gerente desempenha lendo o contrato dele. O contrato do agente não muda: muda quem o executa. As contagens declaradas são reconferidas contra o documento em conferir_metodo — quem não abriu o contrato não sabe quantas obrigações ele tem.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_of",
+        "executed_by",
+        "execution_mode",
+        "agent_contract_ref",
+        "agent_contract_digest",
+        "obrigacoes_declaradas",
+        "barreira_de_saida_declarada"
+      ],
+      "properties": {
+        "role_of": {
+          "$ref": "#/$defs/auditorId"
+        },
+        "executed_by": {
+          "enum": [
+            "departamento-auditoria-responsabilidades",
+            "agente-reconciliar-contrato-e-autoridade",
+            "agente-verificar-governanca-e-responsabilidades",
+            "agente-conferir-evidencias-e-artefatos"
+          ]
+        },
+        "execution_mode": {
+          "enum": [
+            "PAPEL_SOB_PORTA_UNICA",
+            "CAPACIDADE_INVOCAVEL"
+          ]
+        },
+        "agent_contract_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "agent_contract_digest": {
+          "$ref": "#/$defs/digestOrNa"
+        },
+        "obrigacoes_declaradas": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "barreira_de_saida_declarada": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     },
     "receiptDimensionState": {
       "type": "object",
@@ -301,43 +643,112 @@
         "state",
         "reason",
         "evidence_refs",
+        "evidence_anchors",
         "not_applicable_reason"
       ],
       "properties": {
-        "dimension": { "$ref": "#/$defs/dimension" },
-        "state": { "$ref": "#/$defs/dimensionState" },
-        "reason": { "type": "string", "minLength": 10 },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "state": {
+          "$ref": "#/$defs/dimensionState"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10
+        },
         "evidence_refs": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "not_applicable_reason": { "type": "string", "minLength": 3 }
+        "evidence_anchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceAnchor"
+          },
+          "uniqueItems": true
+        },
+        "not_applicable_reason": {
+          "type": "string",
+          "minLength": 3
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "state": { "const": "NAO_APLICAVEL" } },
-            "required": [ "state" ]
+            "properties": {
+              "state": {
+                "const": "NAO_APLICAVEL"
+              }
+            },
+            "required": [
+              "state"
+            ]
           },
           "then": {
             "properties": {
-              "not_applicable_reason": { "type": "string", "minLength": 20 }
+              "not_applicable_reason": {
+                "type": "string",
+                "minLength": 20
+              }
             }
           },
           "else": {
-            "properties": { "not_applicable_reason": { "const": "n/a" } }
+            "properties": {
+              "not_applicable_reason": {
+                "const": "n/a"
+              }
+            }
           }
         },
         {
           "if": {
             "properties": {
-              "state": { "enum": [ "CONFORME", "RESSALVA", "NAO_CONFORME" ] }
+              "state": {
+                "enum": [
+                  "CONFORME",
+                  "RESSALVA",
+                  "NAO_CONFORME"
+                ]
+              }
             },
-            "required": [ "state" ]
+            "required": [
+              "state"
+            ]
           },
           "then": {
-            "properties": { "evidence_refs": { "minItems": 1 } }
+            "properties": {
+              "evidence_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "CONFORME",
+                  "RESSALVA",
+                  "NAO_CONFORME",
+                  "NAO_APLICAVEL"
+                ]
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_anchors": {
+                "minItems": 1
+              }
+            }
           }
         }
       ]
@@ -357,29 +768,65 @@
         "corrective_condition"
       ],
       "properties": {
-        "finding_id": { "$ref": "#/$defs/identifier" },
-        "dimension": { "$ref": "#/$defs/dimension" },
-        "criterion_ref": { "type": "string", "minLength": 3 },
+        "finding_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "criterion_ref": {
+          "type": "string",
+          "minLength": 3
+        },
         "evidence_refs": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "artifact_refs": { "$ref": "#/$defs/requiredRefs" },
-        "severity": { "enum": [ "BLOCKER", "HIGH", "MEDIUM", "LOW" ] },
-        "blocking": { "type": "boolean" },
-        "owner_role": { "type": "string", "minLength": 3 },
-        "corrective_condition": { "type": "string", "minLength": 10 }
+        "artifact_refs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "severity": {
+          "enum": [
+            "BLOCKER",
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "blocking": {
+          "type": "boolean"
+        },
+        "owner_role": {
+          "type": "string",
+          "minLength": 3
+        },
+        "corrective_condition": {
+          "type": "string",
+          "minLength": 10
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "severity": { "const": "BLOCKER" } },
-            "required": [ "severity" ]
+            "properties": {
+              "severity": {
+                "const": "BLOCKER"
+              }
+            },
+            "required": [
+              "severity"
+            ]
           },
           "then": {
-            "properties": { "blocking": { "const": true } }
+            "properties": {
+              "blocking": {
+                "const": true
+              }
+            }
           }
         }
       ]
@@ -394,6 +841,7 @@
         "capability",
         "contract_digest",
         "candidate_digest",
+        "method",
         "review_chain",
         "dimension_states",
         "findings",
@@ -404,12 +852,27 @@
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "AUDIT_RECEIPT" },
-        "task_id": { "$ref": "#/$defs/identifier" },
-        "auditor_id": { "$ref": "#/$defs/auditorId" },
-        "capability": { "$ref": "#/$defs/capability" },
-        "contract_digest": { "$ref": "#/$defs/digest" },
-        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "artifact_type": {
+          "const": "AUDIT_RECEIPT"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "auditor_id": {
+          "$ref": "#/$defs/auditorId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "method": {
+          "$ref": "#/$defs/inspectionMethod"
+        },
         "review_chain": {
           "type": "object",
           "additionalProperties": false,
@@ -420,47 +883,143 @@
             "reviewed_input_refs"
           ],
           "properties": {
-            "context_clean": { "const": true },
-            "independent": { "const": true },
-            "reviewed_at": { "$ref": "#/$defs/timestamp" },
+            "context_clean": {
+              "description": "RODADA 8 — MEDIDO, nao `const true`. Enquanto era `const true`, o schema PREMIAVA O RECIBO QUE MENTE: dois inspetores relataram contexto contaminado e sairam do schema por isso.",
+              "type": "boolean"
+            },
+            "independent": {
+              "description": "RODADA 9 — MEDIDO, não `const true`. Enquanto era const, o schema recusava a declaração honesta com `was expected` e premiava o recibo que mente.",
+              "type": "boolean"
+            },
+            "reviewed_at": {
+              "$ref": "#/$defs/timestamp"
+            },
             "reviewed_input_refs": {
               "type": "array",
-              "items": { "$ref": "#/$defs/identifier" },
+              "items": {
+                "$ref": "#/$defs/identifier"
+              },
               "uniqueItems": true
+            },
+            "context_notes": {
+              "description": "O QUE FOI MEDIDO no contexto do revisor, em prosa. Existe porque `context_clean` era `const true`: dois inspetores da rodada 7 relataram contexto contaminado e SAIRAM DO SCHEMA por isso — honestidade virava violacao de formato, e o schema premiava o recibo que mente. Obrigatorio quando `context_clean` e falso.",
+              "type": "string",
+              "minLength": 40,
+              "maxLength": 800
+            },
+            "independence_notes": {
+              "description": "O QUE FOI MEDIDO sobre a independência do revisor, em prosa. Obrigatório quando `independent` é falso. Existe porque `independent` era `const true`: o inspetor que NÃO foi independente não tinha forma válida de dizê-lo, dentro do instrumento que julga a conformidade dos outros.",
+              "type": "string",
+              "minLength": 40,
+              "maxLength": 800
             }
-          }
+          },
+          "allOf": [
+            {
+              "description": "Contexto sujo DECLARADO exige o que foi medido ao lado. Recibo honesto de contexto sujo PASSA; recibo que declara contexto sujo sem medicao, nao.",
+              "if": {
+                "properties": {
+                  "context_clean": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "context_clean"
+                ]
+              },
+              "then": {
+                "required": [
+                  "context_notes"
+                ]
+              }
+            },
+            {
+              "description": "`independent` no valor que incomoda exige a MEDIÇÃO ao lado. Declaração honesta passa; declaração sem medição, não.",
+              "if": {
+                "properties": {
+                  "independent": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "independent"
+                ]
+              },
+              "then": {
+                "required": [
+                  "independence_notes"
+                ]
+              }
+            }
+          ]
         },
         "dimension_states": {
           "type": "array",
-          "items": { "$ref": "#/$defs/receiptDimensionState" },
+          "items": {
+            "$ref": "#/$defs/receiptDimensionState"
+          },
           "uniqueItems": true
         },
         "findings": {
           "type": "array",
-          "items": { "$ref": "#/$defs/finding" },
+          "items": {
+            "$ref": "#/$defs/finding"
+          },
           "uniqueItems": true
         },
-        "scope_observed": { "$ref": "#/$defs/optionalStrings" },
-        "pending": { "$ref": "#/$defs/optionalStrings" },
-        "blocked_reason": { "type": "string", "minLength": 10 },
-        "status": { "enum": [ "COMPLETED", "BLOCKED" ] },
-        "return_to": { "const": "departamento-auditoria-responsabilidades" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "scope_observed": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "blocked_reason": {
+          "type": "string",
+          "minLength": 10
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "BLOCKED"
+          ]
+        },
+        "return_to": {
+          "const": "departamento-auditoria-responsabilidades"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "status": { "const": "COMPLETED" } },
-            "required": [ "status" ]
+            "properties": {
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "status"
+            ]
           },
           "then": {
-            "properties": { "dimension_states": { "minItems": 1 } }
+            "properties": {
+              "dimension_states": {
+                "minItems": 1
+              }
+            }
           },
           "else": {
-            "required": [ "blocked_reason" ],
+            "required": [
+              "blocked_reason"
+            ],
             "properties": {
-              "dimension_states": { "maxItems": 0 },
-              "findings": { "maxItems": 0 }
+              "dimension_states": {
+                "maxItems": 0
+              },
+              "findings": {
+                "maxItems": 0
+              }
             }
           }
         }
@@ -479,24 +1038,41 @@
         "evidence_refs"
       ],
       "properties": {
-        "dimension": { "$ref": "#/$defs/dimension" },
-        "state": { "$ref": "#/$defs/dimensionState" },
-        "owner_capability": { "$ref": "#/$defs/capability" },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "state": {
+          "$ref": "#/$defs/dimensionState"
+        },
+        "owner_capability": {
+          "$ref": "#/$defs/capability"
+        },
         "secondary_capability": {
           "oneOf": [
-            { "$ref": "#/$defs/capability" },
-            { "const": "n/a" }
+            {
+              "$ref": "#/$defs/capability"
+            },
+            {
+              "const": "n/a"
+            }
           ]
         },
         "receipt_refs": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "reason": { "type": "string", "minLength": 10 },
+        "reason": {
+          "type": "string",
+          "minLength": 10
+        },
         "evidence_refs": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         }
       }
@@ -514,31 +1090,185 @@
         "created_at"
       ],
       "properties": {
-        "artifact_type": { "const": "CONFORMITY_MATRIX" },
-        "conformity_matrix_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "department_mission_ref": { "$ref": "#/$defs/identifier" },
+        "artifact_type": {
+          "const": "CONFORMITY_MATRIX"
+        },
+        "conformity_matrix_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
         "dimensions": {
           "type": "array",
-          "items": { "$ref": "#/$defs/matrixDimension" },
+          "items": {
+            "$ref": "#/$defs/matrixDimension"
+          },
           "minItems": 10,
           "maxItems": 10,
           "uniqueItems": true,
           "allOf": [
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "INTENT" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "AUTH" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "ESCOPO" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "PENDING" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "RACI" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "RI_RO" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "SURPRESAS_BYPASS" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "EVIDENCIA" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "ARTEFATOS_TWINS" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 },
-            { "contains": { "type": "object", "properties": { "dimension": { "const": "RASTREABILIDADE" } }, "required": ["dimension"] }, "minContains": 1, "maxContains": 1 }
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "INTENT"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "AUTH"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "ESCOPO"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "PENDING"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "RACI"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "RI_RO"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "SURPRESAS_BYPASS"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "EVIDENCIA"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "ARTEFATOS_TWINS"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "const": "RASTREABILIDADE"
+                  }
+                },
+                "required": [
+                  "dimension"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
           ]
         },
-        "divergences": { "$ref": "#/$defs/optionalStrings" },
-        "created_at": { "$ref": "#/$defs/timestamp" }
+        "divergences": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "auditCapabilityGap": {
@@ -556,59 +1286,384 @@
         "owner"
       ],
       "properties": {
-        "artifact_type": { "const": "AUDIT_CAPABILITY_GAP" },
-        "capability": { "type": "string", "minLength": 10 },
+        "artifact_type": {
+          "const": "AUDIT_CAPABILITY_GAP"
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 10
+        },
         "auditor_id": {
           "oneOf": [
-            { "$ref": "#/$defs/auditorId" },
-            { "const": "n/a" }
+            {
+              "$ref": "#/$defs/auditorId"
+            },
+            {
+              "const": "n/a"
+            }
           ]
         },
         "dimensions": {
           "type": "array",
-          "items": { "$ref": "#/$defs/dimension" },
+          "items": {
+            "$ref": "#/$defs/dimension"
+          },
           "uniqueItems": true
         },
-        "expected_contract": { "type": "string", "minLength": 10 },
-        "discovery_evidence": { "type": "string", "minLength": 10 },
-        "impact": { "type": "string", "minLength": 10 },
-        "status": { "const": "OPEN" },
-        "owner": { "const": "diretor-de-lentes" }
+        "expected_contract": {
+          "type": "string",
+          "minLength": 10
+        },
+        "discovery_evidence": {
+          "type": "string",
+          "minLength": 10
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "status": {
+          "const": "OPEN"
+        },
+        "owner": {
+          "const": "diretor-de-lentes"
+        }
       }
     },
     "assignmentRecord": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "task_id", "auditor_id", "capability", "issued_at", "destination" ],
+      "required": [
+        "task_id",
+        "auditor_id",
+        "capability",
+        "issued_at",
+        "destination"
+      ],
       "properties": {
-        "task_id": { "$ref": "#/$defs/identifier" },
-        "auditor_id": { "$ref": "#/$defs/auditorId" },
-        "capability": { "$ref": "#/$defs/capability" },
-        "issued_at": { "$ref": "#/$defs/timestamp" },
-        "destination": { "$ref": "#/$defs/artifactRef" }
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "auditor_id": {
+          "$ref": "#/$defs/auditorId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "destination": {
+          "$ref": "#/$defs/artifactRef"
+        }
+      }
+    },
+    "methodExecution": {
+      "description": "Registro de que o método FOI executado, e por quem. Substitui a dependência de AUDIT_TASK emitida a capacidade externa — que sob porta única nunca resolve — sem substituir o registro de emissão, que continua exigido em assignments. Os dois convivem: assignments diz que a inspeção foi encomendada, method_executions diz qual contrato foi executado e sobre qual versão dele.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "auditor_id",
+        "capability",
+        "execution_mode",
+        "agent_contract_ref",
+        "agent_contract_digest",
+        "executed_at",
+        "destination"
+      ],
+      "properties": {
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "auditor_id": {
+          "$ref": "#/$defs/auditorId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "execution_mode": {
+          "enum": [
+            "PAPEL_SOB_PORTA_UNICA",
+            "CAPACIDADE_INVOCAVEL"
+          ]
+        },
+        "agent_contract_ref": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "agent_contract_digest": {
+          "$ref": "#/$defs/digestOrNa"
+        },
+        "executed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "destination": {
+          "$ref": "#/$defs/artifactRef"
+        }
+      }
+    },
+    "candidateIdentity": {
+      "description": "Resultado da conferência de identidade do candidato, SEMPRE presente. Saída de scripts/emitir_governanca.py::conferir_identidade_do_candidato, que recomputa o candidate_digest sobre a árvore aberta pela receita _compartilhado/verificacoes_pacote.py::digest_de_arvore. Existe porque, na rodada 1 da tarefa 15, a conferência era opcional por aridade de argv e a invocação documentada a pulava em silêncio: o envelope saía indistinguível do conferido. Agora a ausência de conferência é um valor com nome — NAO_CONFERIDO —, e o ramo COMPLIANT deste ledger a proíbe. Ausência de evidência permanece ausência.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "candidate_root_ref",
+        "source",
+        "recipe",
+        "reason",
+        "checked_at",
+        "recomputed_digest",
+        "manifest_status",
+        "manifest_reason"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "CONFERIDO",
+            "NAO_CONFERIDO"
+          ]
+        },
+        "candidate_root_ref": {
+          "type": "string",
+          "minLength": 3
+        },
+        "source": {
+          "enum": [
+            "rodada.json::candidate_root",
+            "argv[3]",
+            "ausente"
+          ]
+        },
+        "recipe": {
+          "const": "_compartilhado/verificacoes_pacote.py::digest_de_arvore"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 20
+        },
+        "checked_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "recomputed_digest": {
+          "description": "O digest que a receita produziu sobre a arvore aberta, ou 'n/a' quando nao houve arvore para abrir. Existe para que o consumidor tenha O NUMERO RECOMPUTADO, e nao apenas a palavra CONFERIDO sobre o numero declarado.",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "manifest_status": {
+          "description": "RODADA 8 — o estado da conferencia do manifesto do candidato, saida de _compartilhado/verificacoes_pacote.py::conferir_manifesto_do_candidato. C07 da rodada 7 mediu que a arvore do candidato REPRODUZ com o manifesto mentiroso dentro dela: digest de arvore autentica a declaracao falsa junto com o resto. SEM_MANIFESTO NAO e conformidade — e a raiz que nao e pacote entregue, e o limite esta declarado em prosa do pacote.",
+          "enum": [
+            "CONFERIDO",
+            "SEM_MANIFESTO",
+            "DIVERGENTE"
+          ]
+        },
+        "manifest_reason": {
+          "description": "A razao medida da conferencia do manifesto, nunca um silencio.",
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 600
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "NAO_CONFERIDO"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "candidate_root_ref": {
+                "const": "n/a"
+              },
+              "source": {
+                "const": "ausente"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "source": {
+                "enum": [
+                  "rodada.json::candidate_root",
+                  "argv[3]"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "NAO_CONFERIDO nunca publica digest recomputado: nao houve recomputacao.",
+          "if": {
+            "properties": {
+              "status": {
+                "const": "NAO_CONFERIDO"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "recomputed_digest": {
+                "const": "n/a"
+              }
+            }
+          }
+        },
+        {
+          "description": "CONFERIDO exige o numero recomputado publicado; 'n/a' com status CONFERIDO seria conferencia sem medida.",
+          "if": {
+            "properties": {
+              "status": {
+                "const": "CONFERIDO"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "recomputed_digest": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "inspectionVerification": {
+      "description": "Bloco `inspection_verification` do AUDIT_LEDGER. Rodada 4: `anchors_total` e `methods_total` sao CONTADOS dos recibos em disco por scripts/inspecao_executada.py::contar_ancoras_declaradas, e nao lidos de um campo; `all_anchors_reverified` e DERIVADO das falhas, nunca copiado. `anchors_failed` e `methods_failed` vem da reabertura, que e a unica forma de saber que falhou, e o proprio bloco publica esse limite em `counted_limit`. O motivo do aperto: em 2026-08-01 os Juizes plantaram uma funcao intermediaria que devolvia numeros fabricados, e o emissor gravou COMPLIANT com anchors_total 12 sobre recibos com ZERO ancoras.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all_anchors_reverified",
+        "anchors_total",
+        "anchors_failed",
+        "methods_total",
+        "methods_failed",
+        "counted_by",
+        "counted_limit",
+        "verified_by",
+        "verified_at"
+      ],
+      "properties": {
+        "all_anchors_reverified": {
+          "type": "boolean"
+        },
+        "anchors_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "anchors_failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "methods_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "methods_failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "counted_by": {
+          "description": "Endereco unico da receita de contagem. `const` de proposito: se a contagem mudar de dono, o envelope deixa de validar e a mudanca aparece, em vez de passar como um numero diferente com a mesma etiqueta.",
+          "const": "scripts/inspecao_executada.py::contar_ancoras_declaradas"
+        },
+        "counted_limit": {
+          "description": "O que NAO e contado duas vezes, escrito dentro do envelope. anchors_failed e methods_failed tem origem unica.",
+          "type": "string",
+          "minLength": 40,
+          "pattern": "anchors_failed e methods_failed"
+        },
+        "verified_by": {
+          "const": "scripts/inspecao_executada.py::verificar_inspecao_executada"
+        },
+        "verified_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "panelItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "auditor_id", "capability", "status", "substrate", "tier" ],
+      "required": [
+        "auditor_id",
+        "capability",
+        "status",
+        "substrate",
+        "tier",
+        "context_clean",
+        "independent"
+      ],
       "properties": {
-        "auditor_id": { "$ref": "#/$defs/auditorId" },
-        "capability": { "$ref": "#/$defs/capability" },
-        "status": { "$ref": "#/$defs/auditorStatus" },
-        "substrate": { "type": "string", "minLength": 3 },
-        "tier": { "type": "string", "minLength": 3 }
+        "auditor_id": {
+          "$ref": "#/$defs/auditorId"
+        },
+        "capability": {
+          "$ref": "#/$defs/capability"
+        },
+        "status": {
+          "$ref": "#/$defs/auditorStatus"
+        },
+        "substrate": {
+          "type": "string",
+          "minLength": 3
+        },
+        "tier": {
+          "type": "string",
+          "minLength": 3
+        },
+        "context_clean": {
+          "description": "RODADA 8 — o contexto MEDIDO de cada inspetor viaja no painel.",
+          "type": "boolean"
+        },
+        "independent": {
+          "description": "RODADA 9 — a independência MEDIDA de cada inspetor viaja no painel.",
+          "type": "boolean"
+        }
       }
     },
     "ressalva": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "dimension", "owner_role", "impact", "closing_condition" ],
+      "required": [
+        "dimension",
+        "owner_role",
+        "impact",
+        "closing_condition"
+      ],
       "properties": {
-        "dimension": { "$ref": "#/$defs/dimension" },
-        "owner_role": { "type": "string", "minLength": 3 },
-        "impact": { "type": "string", "minLength": 10 },
-        "closing_condition": { "type": "string", "minLength": 10 }
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "owner_role": {
+          "type": "string",
+          "minLength": 3
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "closing_condition": {
+          "type": "string",
+          "minLength": 10
+        }
       }
     },
     "auditLedger": {
@@ -621,6 +1676,9 @@
         "department_mission_ref",
         "dossier_missing",
         "assignments",
+        "method_executions",
+        "candidate_identity",
+        "inspection_verification",
         "panel",
         "conformity_matrix",
         "findings",
@@ -633,97 +1691,320 @@
         "executive_decisions_required",
         "pending",
         "return_to",
-        "recorded_at"
+        "recorded_at",
+        "compliance_claim"
       ],
       "properties": {
-        "artifact_type": { "const": "AUDIT_LEDGER" },
-        "audit_ledger_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "department_mission_ref": { "$ref": "#/$defs/identifier" },
-        "dossier_missing": { "$ref": "#/$defs/optionalStrings" },
+        "artifact_type": {
+          "const": "AUDIT_LEDGER"
+        },
+        "audit_ledger_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "department_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "dossier_missing": {
+          "$ref": "#/$defs/optionalStrings"
+        },
         "assignments": {
           "type": "array",
-          "items": { "$ref": "#/$defs/assignmentRecord" },
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
           "uniqueItems": true
+        },
+        "method_executions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/methodExecution"
+          },
+          "uniqueItems": true
+        },
+        "candidate_identity": {
+          "$ref": "#/$defs/candidateIdentity"
+        },
+        "inspection_verification": {
+          "$ref": "#/$defs/inspectionVerification"
         },
         "panel": {
           "type": "array",
-          "items": { "$ref": "#/$defs/panelItem" },
+          "items": {
+            "$ref": "#/$defs/panelItem"
+          },
           "minItems": 1,
           "maxItems": 3,
           "uniqueItems": true
         },
-        "conformity_matrix": { "$ref": "#/$defs/conformityMatrix" },
+        "conformity_matrix": {
+          "$ref": "#/$defs/conformityMatrix"
+        },
         "findings": {
           "type": "array",
-          "items": { "$ref": "#/$defs/finding" },
+          "items": {
+            "$ref": "#/$defs/finding"
+          },
           "uniqueItems": true
         },
-        "internal_verdict": { "$ref": "#/$defs/internalVerdict" },
-        "governance_verdict": { "$ref": "#/$defs/governanceVerdict" },
-        "violations": { "$ref": "#/$defs/optionalStrings" },
+        "internal_verdict": {
+          "$ref": "#/$defs/internalVerdict"
+        },
+        "governance_verdict": {
+          "$ref": "#/$defs/governanceVerdict"
+        },
+        "violations": {
+          "$ref": "#/$defs/optionalStrings"
+        },
         "ressalvas": {
           "type": "array",
-          "items": { "$ref": "#/$defs/ressalva" },
+          "items": {
+            "$ref": "#/$defs/ressalva"
+          },
           "uniqueItems": true
         },
         "capability_gaps": {
           "type": "array",
-          "items": { "$ref": "#/$defs/auditCapabilityGap" }
+          "items": {
+            "$ref": "#/$defs/auditCapabilityGap"
+          }
         },
-        "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
-        "executive_decisions_required": { "$ref": "#/$defs/optionalStrings" },
+        "evidence_refs": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "executive_decisions_required": {
+          "$ref": "#/$defs/optionalStrings"
+        },
         "pending": {
+          "description": "Os TRES limites residuais viajam sem condicao, e o schema exige os tres. Ate a rodada 3 so R6 era exigido: remover R9 ou R10 passava sem acusacao, embora a clausula de conclusao do §7 os declarasse incondicionais. Acusado por RCJ-03. Rodada 5: R11 entra como QUARTO limite obrigatorio, e e o TETO DO METODO — forjar a evidencia e chamar as mesmas funcoes que a verificam (OI-04, 80 linhas, 0,031 s). Os outros tres limitam o alcance de travas que existem; este limita o metodo inteiro, e e a razao de a alegacao ter sido reduzida.",
           "type": "array",
-          "items": { "type": "string", "minLength": 3 },
-          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "minItems": 4,
           "uniqueItems": true,
-          "contains": { "type": "string", "pattern": "R6" },
-          "minContains": 1
+          "contains": {
+            "type": "string",
+            "pattern": "R6"
+          },
+          "minContains": 1,
+          "allOf": [
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R6 ",
+                "const": "R6 — a existência do painel auditor não é verificável pelo runtime; sob porta única a inspeção é executada em papel pela gerente. A âncora NÃO impede a fabricação, e o custo dela está medido: recibos íntegros que reabrem foram forjados em 80 linhas e 0,031 s, com 1 tentativa (OI-04, 2026-08-02)."
+              },
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R9 ",
+                "const": "R9 — a âncora prova que UM arquivo da raiz auditada foi reaberto na versão declarada; ela NÃO liga a dimensão ao artefato que deveria sustentá-la. Pertinência de evidência é mérito, e mérito é dos Juízes (R5). (Este limite viajava como R8 até a rodada 3, e colidia com o R8 do §7, bypass para fora.)"
+              },
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R10 ",
+                "const": "R10 — nada assina este envelope. Edição do arquivo posterior à gravação é invisível ao emissor E ao validador, e o consumidor pode ler um veredito que o emissor não produziu. A defesa correspondente é o CONSUMIDOR recomputar o envelope a partir do ledger e do candidato, e ela mora fora deste pacote. Medido pela sonda S14-ENVELOPE-EDITADO."
+              },
+              "minContains": 1
+            },
+            {
+              "contains": {
+                "type": "string",
+                "pattern": "^R11 ",
+                "const": "R11 — TETO DO MÉTODO: forjar a evidência é chamar as mesmas funções que a verificam. Derivar da evidência protege contra valor DIGITADO; não protege contra quem CHAMA o derivador, porque atacante e verificador compartilham o código, o processo e a árvore. Medido por origem independente em 2026-08-02 (OI-04): 80 linhas, 0,031 s, 1 tentativa, 4 arquivos lidos, zero conhecimento do conteúdo auditado. Fechar isto exige âncora externa ao pacote — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo — e não cabe no runtime atual. Este envelope NÃO carrega defesa contra isto e não obriga nenhuma: a origem independente dos casos foi retirada do envelope na rodada 8, e o limite permanece ABERTO."
+              },
+              "minContains": 1
+            }
+          ]
         },
-        "return_to": { "const": "diretor-de-lentes" },
-        "recorded_at": { "$ref": "#/$defs/timestamp" }
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "recorded_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "compliance_claim": {
+          "description": "O que COMPLIANT certifica, e o que ele NAO certifica, no proprio envelope que a barreira le. Rodada 5: as quatro rodadas anteriores perseguiram defeitos e cada correcao reabriu o mesmo padrao um nivel abaixo; OI-04 mediu o teto — forjar a evidencia e chamar as mesmas funcoes que a verificam, a 80 linhas e 0,031 s. A alegacao foi REDUZIDA ao que o mecanismo faz. Os dois textos sao `const` aqui e constantes em scripts/inspecao_executada.py: alargar a alegacao exige DUAS edicoes, em dois arquivos, e uma so derruba a emissao.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "certifies",
+            "does_not_certify",
+            "ceiling_ref",
+            "source"
+          ],
+          "properties": {
+            "certifies": {
+              "const": "COMPLIANT certifica exatamente isto: nenhum valor deste envelope foi aceito como digitado quando divergia da evidência reaberta. Toda âncora declarada foi reaberta contra a raiz auditada, cada citação foi conferida no byte, cada total foi recontado dos recibos em disco e cada estado da matriz foi rederivado dos mesmos recibos."
+            },
+            "does_not_certify": {
+              "const": "COMPLIANT NÃO certifica que a evidência não foi forjada. Forjar a evidência é chamar as mesmas funções que a verificam: medido por origem independente em 2026-08-02 (OI-04) a 80 linhas, 0,031 s, 1 tentativa, 4 arquivos lidos e zero conhecimento do conteúdo auditado. Atacante e verificador compartilham o código, o processo e a árvore; fechar isto exige âncora externa ao pacote, que não cabe no runtime atual."
+            },
+            "ceiling_ref": {
+              "const": "R11"
+            },
+            "source": {
+              "const": "scripts/inspecao_executada.py::ALEGACAO_DO_COMPLIANT"
+            }
+          }
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "internal_verdict": { "const": "REPROVADO" } },
-            "required": [ "internal_verdict" ]
+            "properties": {
+              "internal_verdict": {
+                "const": "REPROVADO"
+              }
+            },
+            "required": [
+              "internal_verdict"
+            ]
           },
           "then": {
             "properties": {
-              "governance_verdict": { "const": "NONCOMPLIANT" },
-              "violations": { "minItems": 1 }
+              "governance_verdict": {
+                "const": "NONCOMPLIANT"
+              },
+              "violations": {
+                "minItems": 1
+              }
             }
           },
           "else": {
             "properties": {
-              "governance_verdict": { "const": "COMPLIANT" },
-              "violations": { "maxItems": 0 },
-              "capability_gaps": { "maxItems": 0 },
-              "dossier_missing": { "maxItems": 0 },
-              "assignments": { "minItems": 1 }
+              "governance_verdict": {
+                "const": "COMPLIANT"
+              },
+              "violations": {
+                "maxItems": 0
+              },
+              "capability_gaps": {
+                "maxItems": 0
+              },
+              "dossier_missing": {
+                "maxItems": 0
+              },
+              "assignments": {
+                "minItems": 1
+              },
+              "method_executions": {
+                "minItems": 1
+              },
+              "candidate_identity": {
+                "properties": {
+                  "status": {
+                    "const": "CONFERIDO"
+                  }
+                }
+              },
+              "inspection_verification": {
+                "properties": {
+                  "all_anchors_reverified": {
+                    "const": true
+                  },
+                  "anchors_failed": {
+                    "const": 0
+                  },
+                  "methods_failed": {
+                    "const": 0
+                  },
+                  "anchors_total": {
+                    "minimum": 10
+                  }
+                }
+              },
+              "panel": {
+                "description": "T71 — COMPLIANT exige que TODO inspetor do painel tenha sido medido independente. A Barreira de saida do contrato promete 'cada recibo usado e valido, independente e rastreavel' como condicao de veredito positivo, e ate aqui nenhuma clausula lia `panel[].independent`: o campo era preenchido e jamais lido, entao recibo NAO independente fechava COMPLIANT do mesmo jeito (FIND-REMED7-C08-CA-01). A clausula nasce NESTA camada porque a promessa e quantificada sobre um conjunto, e o painel e o unico artefato que ve o conjunto — o recibo sozinho nao pode dizer 'todos', e o envelope do CEO nao carrega painel. No recibo o campo continua MEDIDO e a declaracao honesta continua passando: quem nao foi independente diz que nao foi, e e o VEREDITO que deixa de poder ser positivo.",
+                "items": {
+                  "properties": {
+                    "independent": {
+                      "const": true
+                    }
+                  }
+                }
+              }
             }
           }
         },
         {
           "if": {
             "properties": {
-              "internal_verdict": { "const": "APROVADO_COM_RESSALVAS" }
+              "internal_verdict": {
+                "const": "APROVADO_COM_RESSALVAS"
+              }
             },
-            "required": [ "internal_verdict" ]
+            "required": [
+              "internal_verdict"
+            ]
           },
           "then": {
-            "properties": { "ressalvas": { "minItems": 1 } }
+            "properties": {
+              "ressalvas": {
+                "minItems": 1
+              }
+            }
           }
         },
         {
           "if": {
-            "properties": { "internal_verdict": { "const": "APROVADO" } },
-            "required": [ "internal_verdict" ]
+            "properties": {
+              "internal_verdict": {
+                "const": "APROVADO"
+              }
+            },
+            "required": [
+              "internal_verdict"
+            ]
           },
           "then": {
-            "properties": { "ressalvas": { "maxItems": 0 } }
+            "properties": {
+              "ressalvas": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "description": "RODADA 8 — COMPLIANT exige que o manifesto do candidato, quando existe, descreva O PROPRIO candidato. DIVERGENTE e estado nomeado e nao coexiste com COMPLIANT. Substitui o gate de origem independente, aposentado nesta rodada porque defendia alegacao que o emissor nao precisa fazer; este defende alegacao que o pacote AINDA faz — a propria identidade.",
+          "if": {
+            "properties": {
+              "governance_verdict": {
+                "const": "COMPLIANT"
+              }
+            },
+            "required": [
+              "governance_verdict"
+            ]
+          },
+          "then": {
+            "required": [
+              "candidate_identity"
+            ],
+            "properties": {
+              "candidate_identity": {
+                "required": [
+                  "manifest_status"
+                ],
+                "properties": {
+                  "manifest_status": {
+                    "enum": [
+                      "CONFERIDO",
+                      "SEM_MANIFESTO"
+                    ]
+                  }
+                }
+              }
+            }
           }
         }
       ]

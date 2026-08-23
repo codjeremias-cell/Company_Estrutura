@@ -1,0 +1,99 @@
+[PASS] schema e refs locais â€” esperado vÃ¡lido
+[PASS] o envelope da barreira valida contra $defs/governanceReport â€” esperado vÃ¡lido
+[PASS] o envelope da barreira passa na leitura semÃ¢ntica da barreira â€” esperado vÃ¡lido
+[PASS] envelope sem o limite R6 Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] envelope sem o limite R6 Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] envelope sem o limite R9 Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] envelope sem o limite R9 Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] envelope sem o limite R10 Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] envelope sem o limite R10 Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] envelope sem o limite R11 Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] envelope sem o limite R11 Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] envelope sem pending nenhum Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] os quatro limites por prefixo com texto qualquer sÃ£o rejeitados pelo schema â€” esperado rejeitado
+[PASS] os quatro limites por prefixo com texto qualquer sÃ£o rejeitados na barreira â€” esperado rejeitado
+[PASS] R6 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] R6 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] R9 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] R9 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] R10 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] R10 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] R11 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] R11 que respeita o prefixo mas nÃ£o Ã© o texto Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] envelope sem compliance_claim Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] envelope sem compliance_claim Ã© rejeitado na barreira â€” esperado rejeitado
+[PASS] alegaÃ§Ã£o alargada no envelope Ã© rejeitada pelo schema â€” esperado rejeitado
+[PASS] alegaÃ§Ã£o alargada no envelope Ã© rejeitada na barreira â€” esperado rejeitado
+[PASS] COMPLIANT com digest apenas declarado Ã© rejeitado pelo schema â€” esperado rejeitado
+[PASS] COMPLIANT com digest apenas declarado Ã© rejeitado na barreira â€” esperado rejeitado
+[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido
+       sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md
+[PASS] todo pacote gerente tem validador que roda a trava global â€” esperado vÃ¡lido
+[PASS] a recusa de digest() dispara e ninguÃ©m tem cÃ³pia privada do motor â€” esperado vÃ¡lido
+[PASS] nenhuma asserÃ§Ã£o Ã© verdadeira por construÃ§Ã£o sobre valor produzido â€” esperado vÃ¡lido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md â€” esperado vÃ¡lido
+[PASS] contratos de gerente na anatomia canÃ´nica â€” esperado vÃ¡lido
+[PASS] fixtures seguem chaves do schema â€” esperado vÃ¡lido
+[PASS] capacidade ausente falha fechada â€” esperado vÃ¡lido
+[PASS] CAPABILITY_GAP admite EvoluÃ§Ã£o de Skills â€” esperado vÃ¡lido
+[PASS] CAPABILITY_GAP exige causalidade â€” esperado rejeitado
+[PASS] missÃ£o executiva vÃ¡lida â€” esperado vÃ¡lido
+[PASS] missÃ£o executiva admite EvoluÃ§Ã£o de Skills â€” esperado vÃ¡lido
+[PASS] missÃ£o simples inicia troca matricial negada â€” esperado vÃ¡lido
+[PASS] bypass direto ao executor â€” esperado rejeitado
+[PASS] submissÃ£o executiva admite EvoluÃ§Ã£o de Skills â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel INTERNO nota 6 â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel INTERNO nota 7 â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel INTERNO nota 9 â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel INTERNO nota 10 â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel PRODUCAO nota 6 â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel PRODUCAO nota 7 â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel PRODUCAO nota 9 â€” esperado vÃ¡lido
+[PASS] matriz ADR-014 nÃ­vel PRODUCAO nota 10 â€” esperado vÃ¡lido
+[PASS] ADR-016: faixa 6â€“8 entre instÃ¢ncias sai como NAO_DISCRIMINADO â€” esperado vÃ¡lido
+[PASS] ADR-016: NAO_DISCRIMINADO nÃ£o alcanÃ§a PRODUCAO nem INTERNO â€” esperado vÃ¡lido
+[PASS] ADR-016: faixa que atravessa carimbada como aceite interno Ã© rejeitada â€” esperado rejeitado
+[PASS] ADR-016: faixa aberta com uma Ãºnica instÃ¢ncia Ã© rejeitada â€” esperado rejeitado
+[PASS] ADR-016: faixa que nÃ£o bate com a menor nota Ã© rejeitada â€” esperado rejeitado
+[PASS] ADR-016: JUDGE_REPORT exige minimum_score_range â€” esperado rejeitado
+[PASS] ADR-016: JUDGE_REPORT exige aggregation_rule â€” esperado rejeitado
+[PASS] ADR-016: JUDGE_REPORT rejeita mÃ©todo de agregaÃ§Ã£o fora do enum â€” esperado rejeitado
+[PASS] ADR-016: EXECUTIVE_SUBMISSION com NAO_DISCRIMINADO nÃ£o fecha o gate â€” esperado rejeitado
+[PASS] required_level ausente na missÃ£o â€” esperado rejeitado
+[PASS] required_level ausente no parecer â€” esperado rejeitado
+[PASS] required_level ausente na decisÃ£o â€” esperado rejeitado
+[PASS] required_level divergente missÃ£o e parecer â€” esperado rejeitado
+[PASS] required_level divergente na decisÃ£o â€” esperado rejeitado
+[PASS] aceite interno nÃ£o alcanÃ§a produÃ§Ã£o â€” esperado rejeitado
+[PASS] produÃ§Ã£o exige nota 10 â€” esperado vÃ¡lido
+[PASS] nota externa decimal Ã© rejeitada â€” esperado rejeitado
+[PASS] relatÃ³rio vago nÃ£o prova impossibilidade â€” esperado rejeitado
+[PASS] relatÃ³rio deve cobrir todo critÃ©rio abaixo do corte â€” esperado rejeitado
+[PASS] limite verificado aguarda Jeremias â€” esperado vÃ¡lido
+[PASS] pedido de exceÃ§Ã£o exige refs exatas â€” esperado rejeitado
+[PASS] exceÃ§Ã£o autorizada por Jeremias â€” esperado vÃ¡lido
+[PASS] autoridade errada nÃ£o aprova â€” esperado rejeitado
+[PASS] autorizaÃ§Ã£o obsoleta nÃ£o aprova â€” esperado rejeitado
+[PASS] falha crÃ­tica forÃ§a REPROVED â€” esperado vÃ¡lido
+[PASS] pendÃªncia bloqueante forÃ§a REPROVED â€” esperado vÃ¡lido
+[PASS] falha crÃ­tica nÃ£o aceita veredito positivo â€” esperado rejeitado
+[PASS] gate autoafirmado nÃ£o esconde falha crÃ­tica â€” esperado rejeitado
+[PASS] pendÃªncia bloqueante impede validaÃ§Ã£o normal â€” esperado rejeitado
+[PASS] teste falho impede validaÃ§Ã£o normal â€” esperado rejeitado
+[PASS] zero testes aprovados nÃ£o prova conclusÃ£o â€” esperado rejeitado
+[PASS] SKIP sem justificativa nÃ£o prova conclusÃ£o â€” esperado rejeitado
+[PASS] escopo tocado deve caber na missÃ£o â€” esperado rejeitado
+[PASS] digest de regras autoafirmado Ã© rejeitado â€” esperado rejeitado
+[PASS] auditoria de outro candidato Ã© rejeitada â€” esperado rejeitado
+[PASS] COMPLIANT com identidade do candidato nÃ£o conferida Ã© rejeitado â€” esperado rejeitado
+[PASS] COMPLIANT sem declarar o estado da identidade Ã© rejeitado â€” esperado rejeitado
+[PASS] violaÃ§Ã£o de regra impede validaÃ§Ã£o â€” esperado rejeitado
+[PASS] parecer vencido nÃ£o sustenta decisÃ£o â€” esperado rejeitado
+[PASS] referÃªncias causais divergentes sÃ£o rejeitadas â€” esperado rejeitado
+[PASS] contrato causal divergente Ã© rejeitado â€” esperado rejeitado
+[PASS] retrabalho abaixo do corte nÃ£o exige exceÃ§Ã£o â€” esperado vÃ¡lido
+[PASS] placar forjado Ã© detectado â€” esperado rejeitado
+[PASS] autorizaÃ§Ã£o expirada nÃ£o aprova â€” esperado rejeitado
+[PASS] pedido de exceÃ§Ã£o vencido nÃ£o autoriza â€” esperado rejeitado
+
+Resultado: 95/96 casos passaram.

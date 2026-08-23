@@ -1,0 +1,115 @@
+[PASS] arquivos obrigatÃ³rios da gerente â€” esperado vÃ¡lido
+[PASS] references/ completo â€” esperado vÃ¡lido
+[PASS] agentes/ contÃ©m exatamente os oito nomes â€” esperado vÃ¡lido
+[PASS] frontmatter da gerente â€” esperado vÃ¡lido
+[PASS] frontmatter e interface dos oito agentes â€” esperado vÃ¡lido
+[PASS] estrutura normativa dos oito agentes â€” esperado vÃ¡lido
+[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido
+       sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md
+[PASS] todo pacote gerente tem validador que roda a trava global â€” esperado vÃ¡lido
+[PASS] a recusa de digest() dispara e ninguÃ©m tem cÃ³pia privada do motor â€” esperado vÃ¡lido
+[PASS] nenhuma asserÃ§Ã£o Ã© verdadeira por construÃ§Ã£o sobre valor produzido â€” esperado vÃ¡lido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md â€” esperado vÃ¡lido
+[PASS] contratos de gerente na anatomia canÃ´nica â€” esperado vÃ¡lido
+[PASS] interface da gerente â€” esperado vÃ¡lido
+[PASS] todos os links markdown internos resolvem â€” esperado vÃ¡lido
+[PASS] posiÃ§Ã£o e fonte normativa por nÃ­vel â€” esperado vÃ¡lido
+[PASS] enum workerId bate com as pastas reais â€” esperado vÃ¡lido
+[PASS] schema nÃ£o tem campo de nota â€” esperado vÃ¡lido
+[PASS] schema nÃ£o tem campo de decisÃ£o alheia â€” esperado vÃ¡lido
+[PASS] producer travado por const â€” esperado vÃ¡lido
+[PASS] test_summary NÃƒO estÃ¡ travado em zero â€” ADR-012 Â§1 â€” esperado vÃ¡lido
+[PASS] executed_by travado no agente de testes â€” esperado vÃ¡lido
+[PASS] falha_explicita do ponytail travada em true â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_PLAN com upstream presente â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_PLAN com upstream ausente e zero atribuiÃ§Ãµes â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de JAVA_SPRING â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de JAVA_SPRING â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de JAVAFX_DESKTOP â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de JAVAFX_DESKTOP â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de WEB_FRONTEND â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de WEB_FRONTEND â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de TAURI_DESKTOP â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de TAURI_DESKTOP â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de MOBILE_FLUTTER â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de MOBILE_FLUTTER â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de PERSISTENCIA_SQL â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de PERSISTENCIA_SQL â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de REVISAO_REFATORACAO â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de REVISAO_REFATORACAO â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_TASK de TESTES_DEPURACAO â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_RETURN de TESTES_DEPURACAO â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_CAPABILITY_GAP â€” esperado vÃ¡lido
+[PASS] schema aceita DEV_LEDGER com o gate fechado â€” esperado vÃ¡lido
+[PASS] upstream ausente mas com atribuiÃ§Ã£o emitida â€” esperado rejeitado
+[PASS] upstream ausente sem nomear o que falta â€” esperado rejeitado
+[PASS] plano com produtor forjado â€” esperado rejeitado
+[PASS] tarefa com capacidade trocada para o agente â€” esperado rejeitado
+[PASS] verificaÃ§Ã£o independente emitida fora da onda 3 â€” esperado rejeitado
+[PASS] forbidden_context sem a proibiÃ§Ã£o de decidir ou inventar â€” esperado rejeitado
+[PASS] tarefa endereÃ§ada a agente de outro Departamento â€” esperado rejeitado
+[PASS] implementaÃ§Ã£o concluÃ­da sem declarar o degrau da escada â€” esperado rejeitado
+[PASS] implementaÃ§Ã£o concluÃ­da sem artefato â€” esperado rejeitado
+[PASS] inegociÃ¡vel VALIDACAO_FRONTEIRA marcado como simplificado â€” esperado rejeitado
+[PASS] inegociÃ¡vel ERRO_PERDA_DADO marcado como simplificado â€” esperado rejeitado
+[PASS] inegociÃ¡vel SEGURANCA marcado como simplificado â€” esperado rejeitado
+[PASS] inegociÃ¡vel ACESSIBILIDADE marcado como simplificado â€” esperado rejeitado
+[PASS] inegociÃ¡vel REQUISITO_EXPLICITO marcado como simplificado â€” esperado rejeitado
+[PASS] inegociÃ¡vel nÃ£o simplificado (aceito) â€” esperado vÃ¡lido
+[PASS] quem implementa produzindo a prÃ³pria evidÃªncia â€” ADR-012 Â§5 â€” esperado rejeitado
+[PASS] revisor revisando a prÃ³pria saÃ­da â€” esperado rejeitado
+[PASS] testes concluÃ­dos sem evidÃªncia de execuÃ§Ã£o â€” esperado rejeitado
+[PASS] testes concluÃ­dos sem cobertura de borda â€” esperado rejeitado
+[PASS] evidÃªncia produzida por quem nÃ£o Ã© o agente de testes â€” esperado rejeitado
+[PASS] SKIP sem motivo â€” esperado rejeitado
+[PASS] SKIP com motivo (aceito) â€” esperado vÃ¡lido
+[PASS] borda ausente sem justificativa â€” esperado rejeitado
+[PASS] borda ausente com justificativa (aceita) â€” esperado vÃ¡lido
+[PASS] ponytail sem teto e sem gatilho â€” esperado rejeitado
+[PASS] ponytail completo (aceito) â€” esperado vÃ¡lido
+[PASS] SUPOSIÃ‡ÃƒO sem dizer por que nÃ£o foi confirmada â€” esperado rejeitado
+[PASS] SUPOSIÃ‡ÃƒO completa (aceita) â€” esperado vÃ¡lido
+[PASS] quarta tentativa de correÃ§Ã£o â€” Regra dos TrÃªs â€” esperado rejeitado
+[PASS] terceira tentativa sem causa raiz declarada â€” esperado rejeitado
+[PASS] terceira tentativa com causa raiz e pendÃªncia (aceita) â€” esperado vÃ¡lido
+[PASS] retorno BLOCKED sem motivo â€” esperado rejeitado
+[PASS] ENTREGUE com a borda vazio descoberta â€” esperado rejeitado
+[PASS] ENTREGUE com a borda limite descoberta â€” esperado rejeitado
+[PASS] ENTREGUE com a borda erro descoberta â€” esperado rejeitado
+[PASS] ENTREGUE com FAIL na bateria â€” esperado rejeitado
+[PASS] ENTREGUE sem revisÃ£o independente â€” esperado rejeitado
+[PASS] ENTREGUE sem registro de emissÃ£o â€” esperado rejeitado
+[PASS] ENTREGUE com pendÃªncia pendurada â€” esperado rejeitado
+[PASS] lacuna aberta sem bloquear a entrega â€” esperado rejeitado
+[PASS] lacuna aberta com entrega BLOQUEADA (aceito) â€” esperado vÃ¡lido
+[PASS] entrega INCOMPLETA com borda aberta (aceita) â€” esperado vÃ¡lido
+[PASS] livro-razÃ£o devolvido para fora do Diretor â€” esperado rejeitado
+[PASS] Diretor aceita o DEPARTMENT_RETURN com nÃºmero real de teste â€” esperado vÃ¡lido
+[PASS] Diretor rejeita autor divergente do produtor â€” esperado rejeitado
+[PASS] Diretor reconhece este Departamento como operacional â€” esperado vÃ¡lido
+[PASS] Diretor reconhece este Departamento como produtor causal â€” esperado vÃ¡lido
+[PASS] departamento-arquitetura-dados delega para cÃ¡ â€” esperado vÃ¡lido
+[PASS] departamento-arquitetura-software delega para cÃ¡ â€” esperado vÃ¡lido
+[PASS] gate fecha com bordas cobertas, bateria verde e revisÃ£o feita â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com a borda vazio descoberta â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com a borda limite descoberta â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com a borda erro descoberta â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com FAIL â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha sem revisÃ£o â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha sem registro de emissÃ£o â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com lacuna aberta â€” esperado vÃ¡lido
+[PASS] prova de outra versÃ£o nÃ£o Ã© fresca â€” esperado vÃ¡lido
+[PASS] prova contra o candidato entregue Ã© fresca â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha com prova de outra versÃ£o â€” esperado vÃ¡lido
+[PASS] gate nÃ£o fecha se quem executou nÃ£o Ã© o agente de testes â€” esperado vÃ¡lido
+[PASS] seis capacidades implementam e duas verificam â€” esperado vÃ¡lido
+[PASS] os cinco inegociÃ¡veis estÃ£o no enum do schema â€” esperado vÃ¡lido
+[PASS] os cinco tracks estÃ£o no enum do schema â€” esperado vÃ¡lido
+[PASS] catÃ¡logo tem ao menos 12 casos â€” esperado vÃ¡lido
+[PASS] todo caso declara acionou e aderiu â€” esperado vÃ¡lido
+[PASS] catÃ¡logo separa casos de PORTÃƒO e de OPERAÃ‡ÃƒO â€” esperado vÃ¡lido
+[PASS] hÃ¡ ao menos quatro casos de operaÃ§Ã£o â€” esperado vÃ¡lido
+[PASS] digest da fonte normativa confere com o declarado em ORIGEM.md â€” esperado vÃ¡lido
+[PASS] digest do prÃ³prio schema confere com o declarado â€” esperado vÃ¡lido
+
+Resultado: 111/112 casos passaram.

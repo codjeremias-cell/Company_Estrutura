@@ -78,6 +78,39 @@
         "FALHO"
       ]
     },
+
+    "departmentMissionAdmission": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "artifact_type",
+        "causal",
+        "recipient",
+        "return_to"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DEPARTMENT_MISSION"
+        },
+        "causal": {
+          "type": "object",
+          "required": [
+            "producer"
+          ],
+          "properties": {
+            "producer": {
+              "const": "diretor-de-lentes"
+            }
+          }
+        },
+        "recipient": {
+          "const": "departamento-desenvolvimento"
+        },
+        "return_to": {
+          "const": "diretor-de-lentes"
+        }
+      }
+    },
     "track": {
       "enum": [
         "JAVA_SPRING",

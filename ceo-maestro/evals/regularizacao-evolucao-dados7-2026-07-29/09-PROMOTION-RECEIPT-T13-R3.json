@@ -1,0 +1,84 @@
+{
+    "artifact_type":  "PROMOTION_RECEIPT",
+    "receipt_id":  "PROMOTION-T13-CANDG-R3",
+    "exception_request_id":  "EXREQ-T13-R6-R3",
+    "authorization_id":  "EXAUTH-T13-R6-R3",
+    "authorization_status_at_start":  "AUTHORIZED",
+    "authorization_status_after_success":  "CONSUMED",
+    "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+    "source":  "Estrutura Final de Skills/ceo-maestro/departamento-evolucao-skills/evals/regularizacao-dados7-2026-07-29/candidatos/cand-G/evals",
+    "target":  "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals",
+    "files":  [
+                  {
+                      "path":  "FORWARD-TEST.md",
+                      "before_sha256":  "sha256:9bc60a206e53820ad76ea2d723f44867cbaa22bedc088dc57e09863cc1cfae1d",
+                      "promoted_sha256":  "sha256:af76e1bd08abee7ac1cf9c060144d3cd8bad5e4276ea1a76c9b9665bca565b00"
+                  },
+                  {
+                      "path":  "PLACAR.md",
+                      "before_sha256":  "sha256:a99ddcf5e1a8a9e585dfb0ed7e69d90fb104e5445d09af4ab32554721364df81",
+                      "promoted_sha256":  "sha256:02700e712b076793b2152c2579e4a73c8680002ce705fa13e6420e1715bec8d2"
+                  },
+                  {
+                      "path":  "evals.json",
+                      "before_sha256":  "sha256:8581417aa33fa556750948a3bbce82a47534394f9827a14d10e70570dbecdb17",
+                      "promoted_sha256":  "sha256:8ccbf7b7e166397ed34fb88e620100cc4b128a791d1327c5504f807820efbf7c"
+                  },
+                  {
+                      "path":  "forward-proveniencia.json",
+                      "before_sha256":  "sha256:6f6a5202c4d9c19b0d49c1addd5490db9647f22a9b68e1f54504b7dbecc012c3",
+                      "promoted_sha256":  "sha256:2eeb03aa71be657f15975a7fde3d316315acdebbbf48ed894ade550b9cc3e734"
+                  },
+                  {
+                      "path":  "validate_workflow.py",
+                      "before_sha256":  "sha256:ac21b4319738fea69330d752473aea0c3cfec2548d63c08d67513da6bf9f9ee5",
+                      "promoted_sha256":  "sha256:2a5063dd58c110453e21d45dc8e000692991d9cb2ff72c8554bc9055f45eb197"
+                  }
+              ],
+    "aggregate_rule":  "task-7-canonical",
+    "promoted_aggregate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+    "verification":  {
+                         "canonical_matches_candidate":  true,
+                         "package_regression":  {
+                                                    "pass":  122,
+                                                    "fail":  0,
+                                                    "total":  122
+                                                },
+                         "canonical_predeploy":  {
+                                                     "executables":  16,
+                                                     "fail":  0
+                                                 },
+                         "runtime_parity":  {
+                                                "claude":  "OK",
+                                                "codex":  "OK"
+                                             }
+                      },
+    "supporting_changes":  [
+                               {
+                                   "path":  "Estrutura Final de Skills/deploy-estrutura.ps1",
+                                   "purpose":  "Select only canonical manager validators, fail closed when a manager lacks its immediate validator, and bound robocopy retries so locked files fail visibly."
+                               },
+                               {
+                                   "path":  "Estrutura Final de Skills/ceo-maestro/departamento-evolucao-skills/evals/validate_workflow.py",
+                                   "purpose":  "Exclude this immutable regularization dossier from the package link scan."
+                               },
+                               {
+                                   "path":  "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/validate_workflow.py",
+                                   "purpose":  "Exclude this immutable regularization dossier from the Director link scan."
+                               },
+                               {
+                                   "path":  "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29/06-EXCEPTION-REQUEST-T13-R3.json",
+                                   "purpose":  "Normalize report references from file paths to the semantic IDs required by the CEO validator.",
+                                   "before_sha256":  "sha256:8a6b66cad717f7cca52e11e928f65e0b835426885480fdb72ccdaa3712b3360c",
+                                   "after_sha256":  "sha256:261ed052a1780651d51bfda6a67a2efb4eb8f99d6992bd9092d2d75150b645db",
+                                   "materiality":  "Non-material referential correction: authorized scope, candidate digest, snapshot digest, score, residual risks and non-waivable gates remain unchanged."
+                               }
+                           ],
+    "diagnostic_attempts":  [
+                                "A first package run was contaminated by an ignored raw proof export; no canonical defect was found and the export was moved intact to .tmp.",
+                                "Two pre-deploy attempts stopped before copying: recursive discovery included archived validators, then byte-exact legacy checks exposed CRLF checkout drift.",
+                                "The final pre-deploy selected all 15 canonical managers plus the shared engine, rejected missing manager validators, and finished 16/16 with zero failures."
+                            ],
+    "residual_risk":  "R6 remains visible and accepted only for this single promotion.",
+    "completed_at":  "2026-07-30T21:53:06-03:00"
+}

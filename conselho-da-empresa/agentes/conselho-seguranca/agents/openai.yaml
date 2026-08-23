@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conselheiro de Segurança"
+  short_description: "Parecer de ameaça e perda — recomenda, não bloqueia"
+  default_prompt: "Use $conselho-seguranca para o parecer de risco. Nomeie ativo, atacante, superfície e perda. Recomende bloqueio ou go; não assine, não explore, não implemente."

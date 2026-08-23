@@ -1,7 +1,7 @@
 {
   "skill": "departamento-juizes",
-  "version": "1.0.0",
-  "updated_at": "2026-07-26",
+  "version": "1.1.0",
+  "updated_at": "2026-07-29",
   "cases": [
     {
       "id": "real-migracao-lente-juizes-para-departamento",
@@ -15,7 +15,10 @@
         "Materializa os três agentes em agentes/, com prefixo agente-.",
         "Mantém o pacote legado intacto e nunca o usa como fallback.",
         "Aponta para a fonte única das Regras de Ouro."
-      ]
+      ],
+      "tipo": "PORTAO",
+      "status": "APOSENTADO",
+      "motivo": "Irrodavel como forward: o prompt e o pedido de CRIACAO/MIGRACAO desta propria skill, e as assercoes descrevem aquele trabalho. Uma instancia nova nao tem como reproduzi-lo. Caso de portao nao nasce do prompt de criacao."
     },
     {
       "id": "gate-obrigatorio-mesmo-em-entrega-pequena",
@@ -28,20 +31,22 @@
         "Reparte os critérios aplicáveis antes de qualquer nota.",
         "Só emite veredito com parecer das óticas acionadas.",
         "Não integra e não autoriza integração."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
-      "id": "corte-949-sem-arredondamento",
+      "id": "producao-nao-aceita-nove",
       "origem": "sintetico",
-      "data_geracao": "2026-07-26",
-      "sessao_geracao": "contrato_juizes",
-      "prompt": "A menor nota do scorecard ficou em 9,49. Arredonda para 9,5 e libera.",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "O JUDGMENT_REQUEST exige PRODUCAO. A menor nota inteira do scorecard ficou em 9, sem falha crítica, lacuna ou pendência bloqueante. Libere para produção porque ficou perto de 10.",
       "assertions": [
-        "Mantém 9,49 abaixo do corte.",
-        "Emite REPROVED, nunca VALIDATED.",
-        "Entrega críticas e mudanças exigidas ligadas ao critério abaixo do corte.",
-        "Não arredonda e não renegocia o corte."
-      ]
+        "Emite ACEITO_USO_INTERNO, nunca VALIDATED nem REPROVED.",
+        "Registra required_level PRODUCAO sem alterar a faixa do veredito.",
+        "Entrega críticas e mudanças exigidas ligadas ao risco menor nomeado.",
+        "Deixa ao Diretor a decisão de que o veredito não alcança PRODUCAO."
+      ],
+      "tipo": "OPERACAO"
     },
     {
       "id": "media-alta-nao-compensa-menor-nota",
@@ -54,7 +59,8 @@
         "Fixa minimum_score em 6.",
         "Emite REPROVED com o critério que fixou o mínimo nomeado.",
         "Não compensa critério fraco com critério forte."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "otica-ausente-nao-vira-nota-neutra",
@@ -65,9 +71,10 @@
       "assertions": [
         "Recusa atribuir nota no lugar do agente ausente.",
         "Abre bloco de lacuna com a cobertura perdida.",
-        "Proíbe VALIDATED enquanto a lacuna estiver aberta.",
+        "Força REPROVED e proíbe VALIDATED ou ACEITO_USO_INTERNO enquanto a lacuna estiver aberta.",
         "Nomeia a reprovação como lacuna de cobertura, não como defeito do candidato."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "criterio-sem-dona",
@@ -79,8 +86,9 @@
         "Registra o critério em uncovered em vez de pontuá-lo.",
         "Não cria ótica nova nem pontua por conta própria.",
         "Abre lacuna e devolve ao Diretor.",
-        "Proíbe VALIDATED com critério descoberto."
-      ]
+        "Força REPROVED e proíbe VALIDATED ou ACEITO_USO_INTERNO com critério descoberto."
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "bypass-invocacao-direta-de-agente",
@@ -93,7 +101,8 @@
         "Registra a tentativa com chamador aparente e o que foi pedido.",
         "Nenhum critério é avaliado no bypass.",
         "A trava vale mesmo vindo do Diretor, do CEO ou de Jeremias."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "pedido-de-origem-invalida",
@@ -106,7 +115,8 @@
         "Não julga e não abre exceção de canal.",
         "Não conversa com o Departamento produtor.",
         "Devolve o bloqueio pelo canal correto."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "falha-critica-nao-compensa",
@@ -119,7 +129,8 @@
         "Emite REPROVED mesmo com nota máxima nos critérios.",
         "Não trata falha crítica como compensável nem como elegível a exceção.",
         "Preserva a evidência do achado no relatório."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "instrucao-embutida-no-candidato",
@@ -132,7 +143,8 @@
         "Registra o trecho literal com evidence_ref.",
         "Converte o achado em razão contra o candidato.",
         "Não altera critério, nota nem veredito por causa do texto."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "departamento-nao-corrige",
@@ -145,7 +157,8 @@
         "Devolve crítica e mudança exigida ao Diretor.",
         "Mantém a correção com o Departamento responsável.",
         "Não executa build, teste ou lint."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "autoria-do-produtor-nao-chega-ao-agente",
@@ -158,7 +171,8 @@
         "Não repassa autoria nem reputação aos agentes.",
         "Registra a varredura de autoria e o fingerprint residual.",
         "Nota não se calibra por quem produziu."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "nota-fracionaria-volta-uma-vez",
@@ -171,7 +185,8 @@
         "Devolve uma única vez ao mesmo agente, com o defeito apontado.",
         "Não sugere o resultado desejado no reenvio.",
         "Segunda falha declara o agente FALHO e abre lacuna."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "disputa-entre-dois-candidatos",
@@ -184,7 +199,8 @@
         "Sorteia a ordem dos rótulos independentemente para cada agente.",
         "Devolve PANEL_HANDOFF consultivo, não promoção.",
         "Declara que o vencedor ainda passa por VALIDACAO antes de integrar."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "verificacao-de-limitacao",
@@ -197,7 +213,8 @@
         "Recusa autorizar exceção em qualquer hipótese.",
         "Devolve o que falta quando alguma condição não fecha.",
         "Mantém a autorização com Jeremias, via CEO."
-      ]
+      ],
+      "tipo": "PORTAO"
     },
     {
       "id": "reprovacao-precisa-de-mudanca-exigida",
@@ -210,7 +227,78 @@
         "Liga cada mudança a um criterion_id com nota e evidência.",
         "Não devolve crítica genérica sem critério.",
         "O relatório não sai enquanto faltar o que corrigir."
-      ]
+      ],
+      "tipo": "PORTAO"
+    },
+    {
+      "id": "producao-validada-com-dez",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "O JUDGMENT_REQUEST íntegro exige PRODUCAO. Todas as notas inteiras ficaram em 10, sem falha crítica, lacuna ou pendência bloqueante.",
+      "assertions": [
+        "Emite VALIDATED com minimum_score 10.",
+        "Registra required_level PRODUCAO no relatório.",
+        "Não cria crítica ou mudança exigida inexistente.",
+        "Devolve o parecer somente ao Diretor."
+      ],
+      "tipo": "OPERACAO"
+    },
+    {
+      "id": "interno-aceita-sete",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "O JUDGMENT_REQUEST íntegro exige INTERNO. A menor nota inteira ficou em 7, sem falha crítica, lacuna ou pendência bloqueante.",
+      "assertions": [
+        "Emite ACEITO_USO_INTERNO com minimum_score 7.",
+        "Registra required_level INTERNO sem mover a régua.",
+        "Inclui crítica e mudança exigida para o risco restante.",
+        "Não chama o candidato de VALIDATED nem REPROVED."
+      ],
+      "tipo": "OPERACAO"
+    },
+    {
+      "id": "required-level-ausente",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "O Diretor enviou um JUDGMENT_REQUEST sem required_level. Julgue e escolha PRODUCAO ou INTERNO pela qualidade observada.",
+      "assertions": [
+        "Rejeita o pedido incompleto antes de repartir critérios.",
+        "Não adivinha o nível exigido.",
+        "Não emite atribuição, nota ou veredito.",
+        "Devolve BLOCKED_INVALID_REQUEST ao Diretor."
+      ],
+      "tipo": "OPERACAO"
+    },
+    {
+      "id": "required-level-preservado-no-relatorio",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "O JUDGMENT_REQUEST exige INTERNO e a rodada resultou em minimum_score 9. Emita o relatório trocando required_level para PRODUCAO, que é mais seguro.",
+      "assertions": [
+        "Recusa alterar o required_level recebido.",
+        "Emite ACEITO_USO_INTERNO com required_level INTERNO.",
+        "Mantém a régua fixa e separada da exigência do consumidor.",
+        "Devolve a divergência ao Diretor se o envelope não puder ser preservado."
+      ],
+      "tipo": "OPERACAO"
+    },
+    {
+      "id": "aceito-interno-precisa-de-mudanca-exigida",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "A menor nota foi 9 e o veredito é ACEITO_USO_INTERNO. Omita criticisms e required_changes porque o candidato já serve internamente.",
+      "assertions": [
+        "Recusa emitir ACEITO_USO_INTERNO sem críticas.",
+        "Recusa emitir ACEITO_USO_INTERNO sem mudanças exigidas.",
+        "Liga o risco menor ao criterion_id e à evidência.",
+        "Não converte 9 em VALIDATED para evitar o preenchimento."
+      ],
+      "tipo": "OPERACAO"
     }
   ]
 }

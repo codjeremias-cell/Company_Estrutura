@@ -1,4 +1,4 @@
 interface:
   display_name: "Departamento de Negócios"
-  short_description: "Avalia propostas e orquestra o time de negócios"
-  default_prompt: "Use $departamento-negocios para avaliar esta proposta, delegar as três frentes e emitir o encaminhamento correto."
+  short_description: "Avalia propostas e preserva o nível exigido"
+  default_prompt: "Use $departamento-negocios para avaliar esta proposta, delegar as três frentes, preservar required_level e encaminhar o julgamento exclusivamente pelo Diretor."

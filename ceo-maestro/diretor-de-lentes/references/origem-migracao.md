@@ -62,7 +62,8 @@ novamente.
 - dez Departamentos operacionais substituem as lentes nomeadas;
 - Juízes deixam de ser opcionais e passam a avaliar toda entrega;
 - Auditoria fornece prova; Juízes emite veredito;
-- o corte operacional passa a ser a menor nota aplicável `>= 9,5`;
+- a régua operacional, atualizada pelo ADR-014, usa `10 → VALIDATED`,
+  `7–9 → ACEITO_USO_INTERNO` e `0–6 → REPROVED`, com `required_level` no envelope;
 - somente o CEO pede a Jeremias uma exceção verificável.
 
 ## Política de rollback

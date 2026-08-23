@@ -26,6 +26,14 @@ SKILL_PATH = PACKAGE_ROOT / "SKILL.md"
 CONTRACT_PATH = PACKAGE_ROOT / "CONTRATO-DE-COMPROMISSO.md"
 OPENAI_PATH = PACKAGE_ROOT / "agents" / "openai.yaml"
 SCHEMA_PATH = PACKAGE_ROOT / "schemas" / "departamento-design-ux-ui.schema.json"
+# Valor DECLARADO do schema deste pacote, conferido a cada execucao por
+# conferir_digest_declarado(). Receita: sha256 do conteudo com CRLF->LF e sem
+# BOM (validador_schema.py::sha256_texto_normalizado) — a mesma da fonte
+# normativa, para que a conferencia sobreviva a um clone com outro EOL.
+# Quem alterar o schema atualiza esta linha no MESMO commit; sem isso, reprova.
+SCHEMA_DIGEST_DECLARADO = (
+    "sha256:f7dd08987916c2b2db2391adb66f42a8a8c547990eb02ce6230d3446ba0695d4"
+)
 EVALS_PATH = PACKAGE_ROOT / "evals" / "evals.json"
 AGENTS_ROOT = PACKAGE_ROOT / "agentes"
 REFERENCES_ROOT = PACKAGE_ROOT / "references"
@@ -42,16 +50,49 @@ RULES_PATH = STRUCTURE_ROOT / "regras-de-ouro" / "REGRAS-DE-OURO.md"
 sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
     from _compartilhado.validador_schema import (  # noqa: E402
-        collect_property_names, digest, find_const, sha256_file, validate_schema,
+        collect_property_names,
+        conferir_digest_das_regras,
+        conferir_digest_declarado,
+        digest,
+        find_const,
+        sha256_file,
+        validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
+        validate_agents_folder, validate_contract_sections,
+        validate_frontmatter,
+        validate_links, validate_openai_yaml, validate_required_files,
+        validate_skill_tokens, SECOES_CONTRATO_AGENTE, TOKENS_SKILL_AGENTE,
+    )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
         validate_adr_series,
-        validate_agents_folder, validate_frontmatter, validate_links,
-        validate_openai_yaml, validate_required_files,
+        validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
     )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print("[FAIL] motor compartilhado ausente em "
           f"{STRUCTURE_ROOT}/_compartilhado: {exc}")
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
+    )
     raise SystemExit(1)
 
 
@@ -382,10 +423,36 @@ def run() -> int:
             AGENTS_ROOT / name / "agents" / "openai.yaml", display, f"${name}")
     case("frontmatter e interface dos sete agentes", True, agent_errors)
 
+    # --- Estrutura normativa dos contratos e SKILL de agente ------------------
+    # GUIA, passos 7 e 8. Até 2026-07-27 este validador não olhava heading de
+    # contrato nem token de SKILL, e os sete agentes deste pacote usavam uma
+    # anatomia própria: zero dos seis tokens, trava anti-bypass ausente. A
+    # conferência mora no _compartilhado; a lista do que é obrigatório continua
+    # sendo decisão deste pacote.
+    agent_errors = []
+    for name in AGENT_CAPABILITY:
+        agent_errors += validate_contract_sections(
+            AGENTS_ROOT / name / "CONTRATO-DE-COMPROMISSO.md",
+            SECOES_CONTRATO_AGENTE, name)
+        agent_errors += validate_skill_tokens(
+            AGENTS_ROOT / name / "SKILL.md", TOKENS_SKILL_AGENTE, name)
+    case("estrutura normativa dos sete agentes", True, agent_errors)
+
     case("interface da gerente", True, validate_openai_yaml(
         OPENAI_PATH, "Departamento de Design UX/UI", f"${DEPARTMENT}"))
     case("todos os links markdown internos resolvem", True, validate_links(PACKAGE_ROOT))
     case("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT))
+    case("todo pacote gerente tem validador que roda a trava global", True, validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT))
+    case("nenhuma asserção é verdadeira por construção sobre valor produzido", True, validate_sem_check_tautologico(STRUCTURE_ROOT))
+    cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
+    cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)))
+    cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)))
+    cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(STRUCTURE_ROOT)))
+    case("a fonte normativa confere com o valor declarado em ORIGEM.md", True, validate_fonte_normativa_conferida(STRUCTURE_ROOT))
+    # GUIA, passo 7: as 12 seções do contrato de gerente, em toda a estrutura.
+    case("contratos de gerente na anatomia canônica", True,
+         validate_contratos_de_gerente(STRUCTURE_ROOT))
 
     posicao: list[str] = []
     if PACKAGE_ROOT.parent.name != "departamentos-operacionais":
@@ -656,19 +723,38 @@ def run() -> int:
 
     # --- Coerência do catálogo ----------------------------------------------
     catalogo = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
-    check("catálogo de evals tem ao menos 12 casos",
-          len(catalogo.get("cases", [])) >= 12,
-          f"catálogo com {len(catalogo.get('cases', []))} casos")
+    # A trava do instrumento (frente 2, 2026-07-27): `tipo` separa o que o caso
+    # mede — PORTAO é pedido cru, mede recusa e roteamento; OPERACAO traz o
+    # envelope no prompt e mede o que a skill faz depois de autorizada. Sem essa
+    # separação o catálogo mede a recusa com precisão e a execução por hipótese.
+    # Caso irrodável é APOSENTADO com motivo e **sai do denominador** — foi assim
+    # que "15 de 16" continuou sendo contado como 16.
+    _casos = catalogo.get("cases", [])
+    _validos = [c for c in _casos if c.get("status") != "APOSENTADO"]
+    check("catálogo de evals tem ao menos 12 casos válidos",
+          len(_validos) >= 12,
+          f"catálogo com {len(_validos)} válidos de {len(_casos)} casos")
+    check("todo caso do catálogo declara tipo PORTAO ou OPERACAO",
+          all(c.get("tipo") in {"PORTAO", "OPERACAO"} for c in _casos),
+          "; ".join(
+              f"caso {c.get('id')} sem tipo"
+              for c in _casos
+              if c.get("tipo") not in {"PORTAO", "OPERACAO"}
+          ))
+    check("caso aposentado declara motivo",
+          all(c.get("motivo") for c in _casos if c.get("status") == "APOSENTADO"),
+          "aposentado sem motivo")
     check("todo caso do catálogo declara acionamento e aderência",
           all({"acionou", "aderiu"} <= set(c) for c in catalogo.get("cases", [])),
           "caso sem acionou/aderiu")
     check("catálogo tem ao menos um caso de recusa por fronteira",
           any(c.get("espera_recusa") for c in catalogo.get("cases", [])),
           "nenhum caso de recusa")
-    check("digest das regras de ouro é verificável",
-          RULES_PATH.is_file() and sha256_file(RULES_PATH).startswith("sha256:"))
-    check("digest do próprio schema é verificável",
-          digest(SCHEMA_PATH.read_text(encoding="utf-8")).startswith("sha256:"))
+    case("digest da fonte normativa confere com o declarado em ORIGEM.md", True,
+         conferir_digest_das_regras(RULES_PATH))
+    case("digest do próprio schema confere com o declarado", True,
+         conferir_digest_declarado(SCHEMA_PATH, SCHEMA_DIGEST_DECLARADO,
+                                   "schema do pacote"))
 
     failures = 0
     for name, expected_valid, errors in cases:
@@ -690,4 +776,7 @@ def run() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

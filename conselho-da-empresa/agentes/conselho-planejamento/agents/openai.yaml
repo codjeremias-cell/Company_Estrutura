@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conselheiro de Planejamento"
+  short_description: "Parecer de custo, prazo e dono — carrega especialista-planejador"
+  default_prompt: "Use $conselho-planejamento. Carregue a skill especialista-planejador; não a copie. Devolva custo (moeda, data, fonte), prazo, dono provisório e reserva. Você recomenda; não grava o ledger."

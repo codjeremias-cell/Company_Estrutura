@@ -1,0 +1,125 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-robustez-e-evidencia",
+  "lens": "robustez-e-evidencia",
+  "instancia": 1,
+  "round": "nucleo-de-comando-r2",
+  "assignment_id": "ASSIGN-NUCLEO-R2-ROB-I1",
+  "created_at": "2026-08-07T02:40:00-03:00",
+  "commit_julgado": "ed3b63f273e104f7b2e5d4a6f1af61f5b91d80e3",
+  "required_level": "INTERNO",
+  "rubrica": "rubrica-corte-v2",
+  "contract_digest_conferido": {
+    "declarado": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+    "recomputado_normalizado": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+    "estado": "BATE",
+    "receita": "bytes do 00-CONTRATO.md, BOM removido, CRLF->LF, sha256; 5453 bytes normalizados (5549 crus)"
+  },
+  "scores": [
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "A trava de despacho (T32) e o melhor exemplar de trava-com-prova que li nesta arvore: o classificador `tem_judge_assignment` e PURO, as tres armadilhas sao versoes erradas que o proprio autor ja publicou (grep, EXECUTIVE_MISSION, assignment_id citado) congeladas como caso executado, e ha controle positivo que impede o 'sempre vermelho'. 64 dos 107 casos sao `esperado rejeitado`. Mas o criterio pede caso executado para CADA trava, e tres lacunas nomeaveis ficam de pe. (1) O gate do coletor -- a trava que decide se a evidencia sai -- nao tem caso nenhum: os cinco casos de T33 exercitam `sumario_proprio`, `coerencia` e `acentos_intactos`, e nenhum exercita `coletar()`, que monta `bloqueios` e retorna 1; `inventario()`, que e a regra nascida do defeito 3 dos quatro, nao tem regressao alguma. (2) Esse gate nao pode ficar vermelho na classe de falha que esta casa ja nomeou: `coerencia` retorna [] assim que o sumario e AMBIGUO ou SEM_SUMARIO, e `proc.returncode` e gravado e nunca lido pelo gate -- validador que morre sai publicado com `problemas_do_coletor: []`, exit 0 e `OK` no console. A unica vez que o gate fechou foi falso positivo. (3) A trava de T32 nao avaliou ESTA rodada: `_houve_julgamento()` exige PARECER/VEREDITO/JUDGE-OPINION em disco, e no commit ed3b63f a pasta r2 nao tem nenhum (conferido por `git ls-tree`), entao `rodadas_em_bypass` a pula -- o verde publicado como prova de que a rodada corre pelo protocolo e silencioso sobre a rodada. O limite declarado cobre forja, nao esse descompasso de tempo.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:2649-2668 (`tem_judge_assignment`, classificador puro)",
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:2787-2884 (3 armadilhas + controle positivo, casos executados)",
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:2905-2962 (os 5 casos de T33: nenhum chama `coletar` nem `inventario`)",
+        "Estrutura Final de Skills/ceo-maestro/evals/coletar_saida_crua.py:102-121 (`coerencia` retorna [] quando `estado` in sum_)",
+        "Estrutura Final de Skills/ceo-maestro/evals/coletar_saida_crua.py:183-195 (`proc.returncode` gravado como `exit`, nunca entra em `problemas`)",
+        "Estrutura Final de Skills/ceo-maestro/evals/validate_workflow.py:2688-2694 (`_houve_julgamento`) e 2695-2707 (`rodadas_em_bypass` pula pasta sem julgamento)",
+        "git ls-tree -r --name-only ed3b63f -- nucleo-de-comando-r2-2026-08-07: 16 arquivos, zero PARECER/VEREDITO",
+        "saida-crua/ceo-maestro.stdout.txt: 64 `esperado rejeitado` / 43 `esperado valido` / 107 [PASS]"
+      ]
+    },
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C04",
+      "score": 6,
+      "razao": "A disciplina de contagem deste pacote e a melhor das tres: o adendo publica receita literal (cd + env + comando), a aritmetica FECHA exatamente (95/96 + 11 = 106/107, e T24 tira o 1 FAIL -> 107/107), os 11 casos estao itemizados um a um com o defeito que cada um impede, o 1 FAIL foi nomeado e atribuido a tarefa alheia sem creditar pacote nenhum, e a RECEITA publicada e literalmente a executada (conferi a constante contra a chamada). AMBIGUO e SEM_SUMARIO existem como estados nomeados. O que reprova a banda superior e o unico numero cuja funcao inteira e deixar terceiro conferir: o `custody_copy.sha256` NAO REPRODUZ. Tentei as duas receitas canonicas da casa -- `digest_de_arvore` e `digest_de_arvore_normalizado`, fixadas em codigo justamente porque em 2026-07-27 um digest ad-hoc fez os Juizes barrarem um candidato -- e mais 14 variantes (concatenacao crua e normalizada, concatenacao de hashes, manifesto com 1 e 2 espacos, caminho antes do hash, com e sem prefixo, sem terminador, CRLF, backslash, JSON ordenado). Nenhuma da `0c592c79...`. Nem a designacao, nem o JUDGMENT_REQUEST, nem o contrato publicam receita para ele. A favor: `bytes: 44838` bate EXATAMENTE com a soma normalizada dos 5 arquivos e `arquivos: 5` bate, entao a custodia e parcialmente conferivel por tamanho e contagem -- e isso e o que me impede de descer mais. Somam-se: o `+40` de 55/55 para 95/96 e datado mas nao itemizado nem receitado, ao contrario do `+11`; e o campo `receita` do 00-RESUMO.json cobre a invocacao do validador e o token de sumario, mas nao cobre como `subordinados_diretos` e `adendos_de_contagem` foram derivados (`pasta.glob('*/SKILL.md')`, profundidade 1, sem docstring nem criterio publicado).",
+      "evidencia": [
+        "ASSIGN-NUCLEO-R2-ROB-I1.json custody_copy.sha256 = sha256:0c592c79...; recomputado por digest_de_arvore_normalizado = 015f8ac5..., por digest_de_arvore = 1cefbbba..., +14 variantes, nenhuma bate",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_pacote.py:214-268 e :317-356 (as duas receitas canonicas, fixadas 'aqui e em nenhum outro lugar')",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_pacote.py:225-229 (o precedente identico: digest ad-hoc que os Juizes nao reproduziram)",
+        "custody_copy.bytes = 44838 == soma normalizada medida (2356+8547+12151+14419+7365); arquivos = 5 == medido",
+        "Estrutura Final de Skills/ceo-maestro/evals/PLACAR-ADENDO-2026-08-06-contagem-do-validador.md (receita literal; +11 itemizado; 106/107 -> 107/107 reconciliado)",
+        "Estrutura Final de Skills/ceo-maestro/evals/coletar_saida_crua.py:46-53 (RECEITA) vs :156-161 (chamada) — batem",
+        "Estrutura Final de Skills/ceo-maestro/evals/coletar_saida_crua.py:130-147 (`inventario` sem criterio publicado na receita)",
+        "saida-crua/ceo-maestro.stdout.txt:110 `Resultado: 107/107 casos passaram.`"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "O nucleo proprio do pacote e solido: 43 dos 101 casos sao `esperado rejeitado`, com pares positivo/negativo cobrindo required_level, notas inteiras, faixas de ADR-014 e a agregacao entre instancias de ADR-016, e as sete funcoes compartilhadas sao chamadas com efeito. A trava NOVA desta rodada e que nao sustenta o criterio. (1) Ela decide por VOCABULARIO, nao por forma: `achar_cadeia_no_presente` exige a palavra literal 'cadeia' na linha mais um de quatro adverbios ('hoje', 'atualmente', 'no momento', 'vigente'). 'A soma dos quinze validadores hoje e 1951/1951' escapa por nao dizer 'cadeia'; 'A cadeia canonica soma 1951/1951 PASS' escapa por presente simples nao ter adverbio. A docstring afirma 'o defeito e de FORMA, nao de sitio' e a implementacao e de lexico -- o criterio diz textualmente que nada passa por presenca de string, e aqui a trava E um teste de presenca de string. (2) O autoteste tem um positivo vivo e TRES negativos vazios: dois deles ('57/57' e '| vigente em 2026-08-06 | 105/106 |') nao contem 'cadeia' e morrem no primeiro regex sem tocar a logica discriminante; o terceiro ('Naquela medicao, a cadeia canonica somava 1531/1531') e filtrado pela AUSENCIA de marca de presente, nao pelas marcas de passado -- de modo que `_MARCAS_DE_PASSADO` nunca e exercitado por teste nenhum, e a alegacao do adendo ('recusa passar se acusar a forma permitida') nao esta demonstrada pelos testes que existem. (3) A funcao NAO esta em `FUNCOES_OBRIGATORIAS`, ao contrario do que a mensagem do commit T34 publica: ela caiu em `FUNCOES_DE_ESTRUTURA`, cuja exigencia e `if not (chamadas & funcoes_complementares)` -- 'chama alguma das tres' --, que e verbatim o padrao que o comentario do proprio arquivo condena como 'uma trava que nao se autoexige erode em silencio'. O Diretor a chama hoje; nada o obriga a continuar chamando.",
+      "evidencia": [
+        "Estrutura Final de Skills/_compartilhado/verificacoes_estrutura.py:144-149 (`FUNCOES_OBRIGATORIAS` = 4 nomes; `validate_placar_nao_declara_cadeia` ausente)",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_estrutura.py:123-131 (esta so em `FUNCOES_DE_ESTRUTURA`) e :718-723 (`if not (chamadas & funcoes_complementares)`)",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_estrutura.py:133-138 (o comentario que condena exatamente esse padrao)",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_estrutura.py:1373-1407 (regex exige 'cadeia' + adverbio; presente simples escapa)",
+        "Estrutura Final de Skills/_compartilhado/verificacoes_estrutura.py:1410-1433 (`_autoteste_da_cadeia`: 1 positivo vivo, 3 negativos que nao alcancam a discriminacao)",
+        "commit c11286b: 'Registrada em FUNCOES_OBRIGATORIAS e ligada nos QUINZE' — a primeira metade nao confere com o codigo",
+        "diretor-de-lentes/evals/validate_workflow.py:887-894 (as sete chamadas, com retorno alimentando `cases`)",
+        "saida-crua/diretor-de-lentes.stdout.txt: 43 `esperado rejeitado` / 58 `esperado valido`"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C04",
+      "score": 5,
+      "razao": "Duas lacunas nomeaveis, ambas no centro de 'receita, raiz e criterio'. (1) DERIVA NAO PONTEADA de +20. O `PLACAR.md` declara, sob o titulo 'Medicao ativa', `79/79 PASS` em 2026-07-29. O adendo declara `101/101` vigente e so rastreia `99/100 -> 100/101`, e o `99/100` chega sem data, sem fonte e sem receita. O salto 79 -> 99 nao esta declarado em lugar nenhum do pacote. O adendo do `ceo-maestro`, na mesma data e no mesmo molde, fez exatamente essa ponte ('55/55 (a ultima medicao no PLACAR.md) -> 95/96 (medido em 05/ago)'); este nao a fez, e nem sequer traz o paragrafo que enquadra o numero antigo. O proprio texto de abertura fixa o padrao ('Contagem que muda sem redeclarar e a deriva que... derrubou o C04 de oito pacotes') e o documento nao o cumpre. (2) O `01-JUDGMENT-REQUEST.json` desta rodada declara `producer: diretor-de-lentes` e REPROVA no schema do proprio pacote: `$defs/aggregationRule` e `additionalProperties: false` e exige `method`, `declared_at` e `rationale` -- o envelope emitido nao traz `declared_at` nem `rationale`, e traz `entre` e `nao_discriminado`, ambos proibidos. `declared_at` e precisamente o campo cuja funcao e provar que a regra de agregacao precedeu os pareceres, e a rubrica diz isso em palavras. Alem dele faltam `judgment_request_id`, `causal`, `department_return_ref`, `candidate_digest`, `applicable_criteria`, `artifact_refs`, `evidence_refs` e `issued_at`. Consequencia direta para o meu criterio: a rodada nao tem `candidate_digest` nenhum -- nenhum numero amarra veredito a estado de arvore, e o unico digest existente e o de custodia, que nao reproduz. Menor: a linha 'Validador deterministico do Departamento | 101/101 PASS | **sim**' publica um numero numa celula sem data, em tabela de duas colunas com tres celulas.",
+      "evidencia": [
+        "diretor-de-lentes/evals/PLACAR.md:10-14 ('Medicao ativa | Validador deterministico do Diretor | **79/79 PASS**')",
+        "diretor-de-lentes/evals/PLACAR-ADENDO-2026-08-06-contagem-do-validador.md:22-25 (delta parte de `99/100` sem data nem fonte; 79 -> 99 ausente)",
+        "ceo-maestro/evals/PLACAR-ADENDO-2026-08-06-contagem-do-validador.md (a ponte equivalente, feita: 55/55 -> 95/96 (05/ago) -> 106/107)",
+        "diretor-de-lentes/schemas/diretor-de-lentes.schema.json $defs/aggregationRule: additionalProperties false, required [method, declared_at, rationale]",
+        "nucleo-de-comando-r2-2026-08-07/01-JUDGMENT-REQUEST.json aggregation_rule: {method, entre, nao_discriminado} — 2 obrigatorios ausentes, 2 proibidos presentes",
+        "diretor-de-lentes/schemas/... $defs/judgmentRequest.required: 14 campos; o envelope emitido traz 4 deles",
+        "rubrica-e-corte.md:56-57 ('aggregation_rule.declared_at precede todo issued_at de parecer')",
+        "saida-crua/diretor-de-lentes.stdout.txt:1-40 (caso verde `JUDGMENT_REQUEST rejeita regra sem declared_at — esperado rejeitado`, contra fixture, nunca contra o envelope real)"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C03",
+      "score": 6,
+      "razao": "A suite negativa mais densa das tres: cerca de 69 casos de recusa em 235, cobrindo forja de referencia, colisao de `agent_mission_id` com refs coordenadas, identidade causal divergente desde o intake, reuso de `message_id`, e as oito bordas de ADR-014 em pares aceita/aplica. Isso e trava com prova de verdade. O que impede a banda superior sao duas coisas que o meu criterio nomeia por escrito. (1) MORTE POR EXCECAO. A sub-execucao dos dois vizinhos usa `subprocess.run(..., timeout=120)` e o arquivo inteiro nao tem nenhum `except subprocess.TimeoutExpired` nem `except Exception` (conferido por busca no arquivo): vizinho que estourar 120s mata o validador com traceback, sem linha `RESULTADO:` e sem FAIL nomeado. O criterio diz textualmente que morte por excecao nao conta como pega -- e aqui ela nao produz nem pega nem estado, so ausencia. Encadeada com o buraco do coletor (SEM_SUMARIO nao fecha o gate), essa morte sai publicada como evidencia limpa. (2) EXENCAO MORTA E DESATUALIZADA DENTRO DA LOGICA DA TRAVA. O ramo `elif` que rebaixa um FAIL do CEO a WARN exige `'Resultado: 31/32 casos passaram.' in combined`; o CEO hoje emite `107/107`. O ramo e inalcancavel, nao tem teste nenhum, e fixa um numero de vizinho 75 casos vencido e sem data DENTRO do codigo -- onde a regra 10.5 da casa ('numero de vizinho carrega a data da medicao, ou nao entra') nao alcanca. Se voltasse a ser alcancavel, rebaixaria silenciosamente uma reprovacao de vizinho. Some-se que `regressao passa: X` e decidido so por `returncode == 0`, sem asserção sobre o conteudo do vizinho, e herda as fraquezas da trava T34 descritas no Diretor.",
+      "evidencia": [
+        "departamento-negocios/evals/validate_workflow.py:2328-2361 (sub-execucao com timeout=120, sem try/except)",
+        "busca por `TimeoutExpired|except Exception` em departamento-negocios/evals/validate_workflow.py: zero ocorrencias",
+        "departamento-negocios/evals/validate_workflow.py:2345-2352 (elif fixando 'Resultado: 31/32 casos passaram.')",
+        "saida-crua/ceo-maestro.stdout.txt:110 (`107/107`) — o literal 31/32 e inalcancavel",
+        "departamento-negocios/evals/validate_workflow.py:2344 (`results.check(f'regressao passa: ...', True)` decidido so por returncode)",
+        "ceo-maestro/evals/coletar_saida_crua.py:102-107 e :183-195 (SEM_SUMARIO nao vira problema; exit nao e lido)",
+        "saida-crua/departamento-negocios.stdout.txt: ~69 casos de recusa em 235; linhas 150-200 amostradas"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C04",
+      "score": 5,
+      "razao": "DERIVA DE CONTAGEM DENTRO DO DOCUMENTO CRIADO PARA IMPEDIR DERIVA DE CONTAGEM, e a aritmetica nao fecha. O adendo declara tres coisas incompativeis: cabecalho 'vigente em 2026-08-06 | 235/235'; delta 'de `230/233` para `231/234`, isto e +1 caso'; e rodape 'Este pacote agora fecha em 235/235'. 233 + 1 = 234. Um caso e publicado sem receita, sem raiz e sem criterio. Achei qual e, e ele confirma o diagnostico em vez de o desfazer: a linha 63 da saida crua e `[PASS] sem placeholder: evals\\PLACAR-ADENDO-2026-08-06-contagem-do-validador.md` -- este validador emite um caso POR ARQUIVO markdown, entao a criacao do proprio adendo somou o caso que falta, e so este pacote entre os tres tem essa propriedade (conferido: nenhuma linha equivalente nas saidas do CEO e do Diretor). O documento de redeclaracao mudou a contagem escrevendo a si mesmo e nao redeclarou isso -- exatamente a licao que ele cita na primeira linha. Some-se que o `230/233` chega sem data e sem fonte; que o `PLACAR.md` do pacote nao e referenciado, entao o leitor nao tem ponte do numero antigo; e que 234 e 235 convivem no mesmo documento como a mesma medicao, sem a frase de ponte que o adendo do CEO escreveu ao enfrentar a situacao identica (106/107 -> 107/107). A favor, e o que me segura em 5 e nao abaixo: a receita e literal e o `235/235` final CONFERE com a saida crua capturada, entao o numero publicado e reproduzivel por execucao mesmo com a narrativa do delta aberta.",
+      "evidencia": [
+        "departamento-negocios/evals/PLACAR-ADENDO-2026-08-06-contagem-do-validador.md:10-13 (235/235), :24 (230/233 -> 231/234, '+1 caso'), :55 (fecha em 235/235)",
+        "saida-crua/departamento-negocios.stdout.txt:46 (o caso de T34) e :63 (`sem placeholder: evals\\PLACAR-ADENDO-...md`, o caso nao declarado)",
+        "saida-crua/ceo-maestro.stdout.txt e diretor-de-lentes.stdout.txt: nenhuma linha `sem placeholder` para o adendo — a propriedade e exclusiva de Negocios",
+        "saida-crua/departamento-negocios.stdout.txt:238 (`RESULTADO: 235/235 PASS; 0 FAIL; 0 WARN`) — o numero final confere com a receita",
+        "ceo-maestro/evals/PLACAR-ADENDO-...md (a mesma situacao 106/107 -> 107/107, com a frase de ponte que aqui falta)",
+        "commit c11286b: T34 declara +1 por validador, com +2 apenas em departamento-registros"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 5,
+  "confidence": "alta",
+  "por_que_essa_confianca": "Os achados que decidem as notas sao todos mecanicos e conferidos em disco, nao interpretativos: o `custody_copy.sha256` recomputado por 16 receitas incluindo as duas canonicas da casa; a ausencia de `validate_placar_nao_declara_cadeia` em `FUNCOES_OBRIGATORIAS` lida na tupla; a aritmetica 233+1!=235 e o caso extra localizado por linha na saida crua; a ausencia de PARECER na pasta r2 provada por `git ls-tree` no commit julgado; a ausencia de qualquer `except TimeoutExpired` provada por busca no arquivo inteiro; os campos obrigatorios de `aggregationRule` lidos do schema. Cada um e falsificavel em um comando. A confianca nao e maxima por dois limites que declaro abaixo: nao me e permitido executar, entao duas das quatro mutacoes publicadas eu so pude verificar por leitura de fluxo de controle, e outras duas nao pude verificar de forma alguma.",
+  "o_que_declaro_contra_mim": [
+    "Fui designado por uma cadeia cujo unico ator de runtime e o `ceo-maestro`, que e um dos tres pacotes que julguei. O que senti nao foi deferencia. Foi o contrario, e num ponto especifico: quando o `custody_copy.sha256` nao reproduziu na terceira tentativa, tive apetite de parar ali e enquadrar o achado do jeito mais duro possivel, porque ele batia em quem me contratou. Encarei o apetite tornando-o caro: tentei 16 receitas em vez de 3, e publiquei na razao os dois fatos que cortam a meu desfavor (bytes e contagem de arquivos batem exatamente). Nao afirmo que o vies estava ausente; afirmo que o fiz pagar.",
+    "Nao posso executar nada (SKILL.md:132). Das quatro provas de mutacao que o adendo do CEO publica, duas ('classificador sempre COMPLIANT' e 'sempre BYPASS') eu verifiquei apenas por leitura do fluxo de controle -- e por leitura elas se sustentam. As outras duas ('rodada nova em bypass e pega' e 'entrada fantasma e pega') eu NAO pude verificar de forma alguma: o ramo de entrada fantasma so pode disparar se uma das sete pastas historicas sumir, e as sete existem. Pontuei essas duas como nao-provadas-para-mim, nao como falsas. Se foram de fato executadas, o meu C03 do `ceo-maestro` subestima o pacote.",
+    "Meu argumento de que `_MARCAS_DE_PASSADO` nunca e exercitado por teste vem de tracar a mao os tres negativos do autoteste contra o regex, sem rodar o detector. Traquei cada um explicitamente e sustento a conclusao, mas ela e derivada de leitura e cai em um comando de quem puder executar.",
+    "Reprovei a banda superior do `diretor-de-lentes` em C04 citando, em parte, que o `01-JUDGMENT-REQUEST.json` desta rodada viola o schema do proprio Diretor. Esse envelope faz parte da cadeia que me autorizou a julgar. Registrei o achado mesmo assim. Se a rodada for invalidada por esse motivo, este parecer cai junto, e eu nao teria o que objetar.",
+    "A minha `JUDGE_ASSIGNMENT` nao traz a tabela literal da rubrica, que `rubrica-e-corte.md:4-5` manda copiar em cada atribuicao da rodada. Usei as bandas como vieram no despacho e as reconferi no arquivo da rubrica -- batem. Declaro porque e um desvio no envelope que me governa, e nao sou eu quem deve decidir se e inocuo.",
+    "Li as mensagens de commit de T32, T33 e T34 via `git log` para entender o que cada tarefa afirmava ter provado. Elas nao estao na lista de contexto proibido e nao continham nota nenhuma, mas sao adjacentes a historia da rodada 1 e prefiro que isso conste. Nao abri nenhum dos caminhos proibidos, nao fiz busca larga sobre os termos vedados, e nao julguei o `departamento-juizes`.",
+    "Nenhuma das minhas seis notas passou de 6, e desconfio de qualquer juiz cujo espectro colapsa. Reexaminei cada uma perguntando se havia criterio-pacote onde eu diria 'atende inteiro, sem defeito observado', e em todos os seis eu tinha um defeito lido em disco para nomear. Diferenciei dentro da banda (6 para os tres C03 e para o C04 do CEO; 5 para os C04 do Diretor e de Negocios) em vez de achatar tudo no mesmo ponto."
+  ]
+}

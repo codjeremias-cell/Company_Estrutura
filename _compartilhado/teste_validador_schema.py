@@ -9,6 +9,7 @@ Uso: python _compartilhado/teste_validador_schema.py
 
 from __future__ import annotations
 
+import hashlib
 import sys
 import tempfile
 from pathlib import Path
@@ -23,7 +24,8 @@ from _compartilhado.validador_schema import (  # noqa: E402
     json_pointer,
     validate_schema,
 )
-from _compartilhado.verificacoes_pacote import validate_adr_series  # noqa: E402
+from _compartilhado.verificacoes_pacote import digest_de_arvore  # noqa: E402
+from _compartilhado.verificacoes_estrutura import validate_adr_series  # noqa: E402
 
 
 def check(schema: dict, value: object, *, valid: bool, name: str) -> tuple[str, bool]:
@@ -37,6 +39,66 @@ def build_tree(root: Path, relative_paths: list[str]) -> None:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("# ADR sintético\n", encoding="utf-8")
+
+
+def digest_de_arvore_results() -> list[tuple[str, bool]]:
+    """A receita de identidade de árvore, travada contra as armadilhas conhecidas.
+
+    Cada caso aqui existe porque a armadilha correspondente já custou uma rodada:
+    o digest irreprodutível de 2026-07-26 em `departamento-registros`, e o
+    `candidate_tree_sha256` ad-hoc que barrou o primeiro julgamento em 2026-07-27.
+    """
+    resultados: list[tuple[str, bool]] = []
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz = Path(tmp)
+        (raiz / "b").mkdir()
+        (raiz / "a.md").write_bytes(b"alfa\n")
+        (raiz / "b" / "c.md").write_bytes(b"beta\n")
+
+        d1 = digest_de_arvore(raiz)
+        resultados.append(("digest de árvore: determinístico entre chamadas",
+                           d1 == digest_de_arvore(raiz)))
+
+        # Reprodução por implementação independente: o manifesto declarado na
+        # docstring, montado à mão, tem de dar o mesmo número.
+        manifesto = "".join(
+            f"{hashlib.sha256(conteudo).hexdigest()}  {chave}\n"
+            for chave, conteudo in sorted(
+                [("a.md", b"alfa\n"), ("b/c.md", b"beta\n")]
+            )
+        )
+        esperado = hashlib.sha256(manifesto.encode("utf-8")).hexdigest()
+        resultados.append(("digest de árvore: reproduz a receita da docstring",
+                           d1 == esperado))
+
+        # O conteúdo entra em bytes crus: mudar o fim de linha MUDA o digest.
+        (raiz / "a.md").write_bytes(b"alfa\r\n")
+        resultados.append(("digest de árvore: CRLF muda o número (deliberado)",
+                           digest_de_arvore(raiz) != d1))
+        (raiz / "a.md").write_bytes(b"alfa\n")
+
+        # `__pycache__` não entra, senão o número muda ao rodar um validador.
+        cache = raiz / "b" / "__pycache__"
+        cache.mkdir()
+        (cache / "x.pyc").write_bytes(b"lixo")
+        resultados.append(("digest de árvore: __pycache__ é ignorado",
+                           digest_de_arvore(raiz) == d1))
+
+        # A chave é o caminho POSIX: a mesma árvore em qualquer SO dá o mesmo
+        # número, e a ordem é a da chave, não a da linha formatada.
+        resultados.append(("digest de árvore: raiz ausente falha fechado",
+                           _falha_fechado(raiz / "nao-existe")))
+    return resultados
+
+
+def _falha_fechado(caminho: Path) -> bool:
+    try:
+        digest_de_arvore(caminho)
+    except NotADirectoryError:
+        return True
+    except Exception:
+        return False
+    return False
 
 
 def adr_series_results() -> list[tuple[str, bool]]:
@@ -78,6 +140,42 @@ def adr_series_results() -> list[tuple[str, bool]]:
         print(f"       colisão sintética detectada: {errors}")
         results.append(("colisão sintética de adr-005 é detectada", detectou))
         results.append(("erro de colisão aponta os dois caminhos", aponta_os_dois))
+
+        # 2b. cópia de laboratório dentro de `evals/` NÃO cunha número (2026-08-19).
+        # As campanhas guardam `references/` inteiros do pacote julgado; sem esta
+        # exclusão o original colide com a própria evidência, e a casa era reprovada
+        # por ter registro do passado — 16 dos 41 FAIL da cadeia vinham daqui.
+        com_copia = root / "com_copia_de_campanha"
+        build_tree(
+            com_copia,
+            [
+                "ceo-maestro/dep-arq/references/adr-006-decisao.md",
+                "ceo-maestro/evals/campanha-x/custodia/cand/references/adr-006-decisao.md",
+                "ceo-maestro/evals/campanha-x/isolamento/ASSIGN-1/root/candidato/references/adr-006-decisao.md",
+            ],
+        )
+        results.append(
+            ("cópia de adr dentro de evals/ não conta como duplicata",
+             not validate_adr_series(com_copia))
+        )
+
+        # 2c. e a trava CONTINUA pegando colisão real — o par da regra acima. Sem
+        # este caso, afrouxar a exclusão para "tudo" passaria despercebido.
+        real_fora = root / "colisao_real_fora_de_evals"
+        build_tree(
+            real_fora,
+            [
+                "ceo-maestro/dep-arq/references/adr-006-decisao.md",
+                "ceo-maestro/evals/campanha-x/custodia/cand/references/adr-006-decisao.md",
+                "ceo-maestro/dep-outro/references/adr-006-decisao-diferente.md",
+            ],
+        )
+        erros_reais = validate_adr_series(real_fora)
+        results.append(
+            ("colisão real fora de evals/ continua reprovando",
+             len(erros_reais) == 1 and "006" in erros_reais[0]
+             and "evals" not in erros_reais[0])
+        )
 
         # 3. os três ADR-001 históricos do guia passam nos caminhos declarados.
         historica = root / "historica"
@@ -291,6 +389,14 @@ def run() -> int:
     # --- verificações de pacote: unicidade da série global de ADR -----------
     results.extend(adr_series_results())
 
+    # --- identidade de árvore: a receita tem de ser reproduzível ------------
+    results.extend(digest_de_arvore_results())
+
+    # --- ADR-025: a allowlist do frontmatter prova que é allowlist ----------
+    results.extend(frontmatter_allowlist_results())
+    results.extend(base_do_candidato_results())
+    results.extend(sondas_e_evidencias_results())
+
     failures = 0
     for name, passed in results:
         print(f"[{'PASS' if passed else 'FAIL'}] {name}")
@@ -301,5 +407,105 @@ def run() -> int:
     return 1 if failures else 0
 
 
+def frontmatter_allowlist_results() -> list[tuple[str, bool]]:
+    """A allowlist do ADR-025 e uma ALLOWLIST -- casos, nao prosa (tarefa 86).
+
+    A assimetria que estes casos fecham foi medida em 2026-08-11 pelo proprio
+    executor da canonizacao: REVERTER o ADR-025 e auto-detectavel, porque os
+    `SKILL.md` que declaram `allowed-tools` ficariam vermelhos na hora. Mas
+    AFROUXA-LO -- passar a ignorar chave desconhecida -- nao era pego por NADA:
+    este motor devolvia o mesmo numero com o modulo canonizado e com o mutante,
+    porque nao havia UM caso sobre frontmatter aqui.
+
+    O comentario de `CHAVES_FRONTMATTER_OPCIONAIS` promete, em prosa, que "campo
+    desconhecido no frontmatter segue sendo erro". Prosa nao reprova; estes casos
+    reprovam.
+
+    Chamam `chaves_do_frontmatter_conferem`, a funcao de PRODUCAO extraida na
+    tarefa 86 -- nao uma copia da comparacao. Testar a copia mediria a
+    reimplementacao, e mutar a de producao deixaria tudo verde.
+    """
+    from _compartilhado.verificacoes_pacote import (
+        chaves_do_frontmatter_conferem as confere,
+        _AMOSTRAS_DO_FRONTMATTER,
+    )
+    resultados: list[tuple[str, bool]] = []
+    for rotulo, chaves, deve_reprovar in _AMOSTRAS_DO_FRONTMATTER:
+        passou = confere(chaves)
+        resultados.append((
+            "FRONTMATTER (ADR-025): %s -> %s" % (
+                rotulo, "reprova" if deve_reprovar else "passa"),
+            passou is not deve_reprovar,
+        ))
+    return resultados
+
+
+
+def base_do_candidato_results() -> list[tuple[str, bool]]:
+    """T103: a conferência de base do candidato sabe distinguir viva de morta.
+
+    Sem isto, `conferir_base_do_candidato` é código que ninguém executa até o
+    dia em que alguém promove um overlay de dezenove dias por cima de oito
+    travas novas — que foi exatamente o que a tarefa 46 quase fez.
+    """
+    from verificacoes_pacote import (
+        _AMOSTRAS_DA_BASE,
+        _autoteste_da_base_do_candidato,
+        promocao_e_segura,
+        travas_que_o_overlay_apagaria,
+    )
+
+    resultados: list[tuple[str, bool]] = []
+    resultados.append((
+        "base do candidato: o autoteste da produção não acusa nada",
+        not _autoteste_da_base_do_candidato(),
+    ))
+    for nome, arquivos, mapa, espera_erro in _AMOSTRAS_DA_BASE:
+        obtido = bool(promocao_e_segura(arquivos, lambda a, m=mapa: m.get(a)))
+        resultados.append(("base do candidato: %s" % nome, obtido == espera_erro))
+    resultados.append((
+        "overlay que apaga trava é nomeado, e o que acrescenta não é",
+        travas_que_o_overlay_apagaria("X Y", "X", ("X", "Y")) == ["Y"]
+        and not travas_que_o_overlay_apagaria("X", "X Y", ("X", "Y")),
+    ))
+    return resultados
+
+def sondas_e_evidencias_results() -> list[tuple[str, bool]]:
+    """T104: o detector de sonda duplicada e de evidência que não discrimina.
+
+    As amostras são SINTÉTICAS por necessidade: com os três refinos, os 16
+    pacotes vivos têm ZERO ocorrências, e árvore sem o caso não mata mutante.
+    O espécime REAL — o par antes/depois da sanação da tarefa 14 — está medido
+    no adendo, com a receita para reexecutar.
+    """
+    from verificacoes_pacote import (
+        _AMOSTRAS_DA_SONDA,
+        _autoteste_das_sondas,
+        evidencias_que_nao_discriminam,
+        sondas_duplicadas_em_casos,
+    )
+
+    resultados: list[tuple[str, bool]] = [(
+        "sondas: o autoteste da produção não acusa nada",
+        not _autoteste_das_sondas(),
+    )]
+    for nome, fonte, espera in _AMOSTRAS_DA_SONDA:
+        resultados.append(
+            ("sonda duplicada: %s" % nome,
+             bool(sondas_duplicadas_em_casos(fonte)) == espera)
+        )
+    resultados.append((
+        "evidência repetida entre casos é contada, distinta não é",
+        evidencias_que_nao_discriminam(["a", "a", "b"]) == {"a": 2}
+        and not evidencias_que_nao_discriminam(["a", "b", "c"]),
+    ))
+    resultados.append((
+        "evidência vazia não é repetição, e lista vazia não é conformidade",
+        not evidencias_que_nao_discriminam(["", "  ", ""])
+        and not evidencias_que_nao_discriminam([]),
+    ))
+    return resultados
+
 if __name__ == "__main__":
     sys.exit(run())
+

@@ -25,6 +25,9 @@ O produtor causal deve coincidir com o emissor. Digest, candidato, contrato e ro
 - os três relatórios e a consolidação cobrem `BIZ-01..BIZ-08` exatamente uma vez, conforme a propriedade canônica;
 - toda evidência do scorecard existe no relatório-fonte do critério; referência inventada bloqueia;
 - a `EXECUTIVE_MISSION` preserva `candidate_digest: n/a`, mas contrato e rodada global continuam iguais no fluxo de Negócios.
+- `required_level` é obrigatório na missão e permanece idêntico em
+  `BUSINESS_JUDGMENT_PACKAGE`, `MATRIX_EXCHANGE_MESSAGE` e `BUSINESS_RETURN`;
+- o parecer externo usa nota inteira e faixa fixa; o corte decimal `9,5` não atravessa esse handoff.
 
 ## 2. Artefatos e autoridade
 
@@ -44,7 +47,10 @@ O produtor causal deve coincidir com o emissor. Digest, candidato, contrato e ro
 | `BUSINESS_RETURN` | `departamento-negocios` | CEO |
 | `EXECUTIVE_SUBMISSION` | `departamento-negocios` | CEO |
 
-`JUDGMENT_REQUEST` pertence ao Diretor; `JUDGE_REPORT` pertence aos Juízes; `EXECUTIVE_DECISION` e `EXCEPTION_REQUEST` pertencem ao CEO. O `LIMITATION_REPORT` de Negócios usa a nota final dos Juízes, nunca o score interno.
+`JUDGMENT_REQUEST` pertence ao Diretor; `JUDGE_REPORT` pertence aos Juízes; `EXECUTIVE_DECISION` e
+`EXCEPTION_REQUEST` pertencem ao CEO. O `LIMITATION_REPORT` de Negócios usa o parecer externo
+inteiro e o alvo do `required_level`, nunca o score interno decimal. Para `PRODUCAO`, alvo 10; para
+`INTERNO`, alvo 7.
 
 Independentemente da causa, um score interno abaixo de `9.5` é primeiro comunicado ao Diretor por `MATRIX_EXCHANGE_MESSAGE` autorizada. A causa define quem corrige; não elimina esse repasse. Sem autorização matricial, o retorno vai ao CEO para revisão da missão.
 
@@ -54,12 +60,13 @@ Antes do envelope estruturado, apresente:
 
 1. estado atual;
 2. menor score interno e critério limitante, quando existir;
-3. evidência determinante;
-4. próxima ação;
-5. autoridade responsável;
-6. bloqueios e riscos.
-7. relatórios causalmente assinados e gates ainda necessários;
-8. autoria, fonte, período e contexto de alegações externas.
+3. `required_level` e, quando houver, o `verdict` externo;
+4. evidência determinante;
+5. próxima ação;
+6. autoridade responsável;
+7. bloqueios e riscos;
+8. relatórios causalmente assinados e gates ainda necessários;
+9. autoria, fonte, período e contexto de alegações externas.
 
 O resumo espelha o envelope; se houver divergência, corrija antes de enviar.
 
@@ -74,6 +81,8 @@ Bloqueie quando:
 - fonte ou número não for rastreável;
 - houver tentativa de usar skill-fonte ou pasta legada como fallback;
 - a rota ao Diretor não estiver autorizada;
+- `required_level` estiver ausente ou divergir entre missão, pacote, matriz, parecer e retorno;
+- nota externa for fracionária ou o veredito não corresponder à faixa `10/7–9/0–6`;
 - o veredito referir-se a outro candidato ou contrato;
 - pedirem `VALIDATED`, exceção ou decisão executiva ao Departamento.
 

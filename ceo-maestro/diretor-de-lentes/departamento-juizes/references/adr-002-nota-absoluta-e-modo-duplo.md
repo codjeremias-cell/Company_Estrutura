@@ -1,9 +1,15 @@
 # ADR-002 — Juízes emitem nota absoluta e operam em dois modos
 
 - **Data:** 2026-07-26
-- **Status:** aceito por decisão de Jeremias
+- **Status:** aceito por decisão de Jeremias; regra de corte emendada pelo
+  [ADR-014](adr-014-dois-niveis-de-veredito.md)
 - **Decisores:** Jeremias
 - **Contexto normativo:** [ADR-001 da diretoria e da camada de Juízes](../../references/adr-001-diretoria-e-camada-de-juizes.md)
+
+> **Emenda de 2026-07-28.** As decisões sobre nota absoluta, modos, menor nota e fail-closed
+> permanecem vigentes. O corte binário 9,5 descrito abaixo é registro histórico: o ADR-014 o
+> substituiu por `10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO` e `0–6 → REPROVED`, com
+> `required_level` no envelope.
 
 ## Contexto
 

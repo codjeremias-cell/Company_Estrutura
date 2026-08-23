@@ -1,0 +1,112 @@
+===== INICIO ceo-maestro =====
+[PASS] schema e refs locais — esperado válido
+[PASS] nenhuma rodada de julgamento nova sem JUDGE_ASSIGNMENT — esperado válido
+[PASS] armadilha 1 — citar JUDGE_ASSIGNMENT em prosa não é ter sido designado — esperado válido
+[PASS] armadilha 2 — EXECUTIVE_MISSION não substitui JUDGE_ASSIGNMENT — esperado válido
+[PASS] armadilha 3 — citar assignment_id não prova designação — esperado válido
+[PASS] designação real é reconhecida (a trava não reprova quem cumpriu) — esperado válido
+[PASS] coletor colhe o sumário PRÓPRIO, não o do vizinho ecoado — esperado válido
+[PASS] coerência interna é gate: 3 FAIL não convive com 99/100 — esperado válido
+[PASS] coerência interna não acusa número correto — esperado válido
+[PASS] ambiguidade de sumário vira estado nomeado, nunca palpite — esperado válido
+[PASS] mojibake na saída capturada é detectado — esperado válido
+[PASS] o envelope da barreira valida contra $defs/governanceReport — esperado válido
+[PASS] o envelope da barreira passa na leitura semântica da barreira — esperado válido
+[PASS] envelope sem o limite R6 é rejeitado pelo schema — esperado rejeitado
+[PASS] envelope sem o limite R6 é rejeitado na barreira — esperado rejeitado
+[PASS] envelope sem o limite R9 é rejeitado pelo schema — esperado rejeitado
+[PASS] envelope sem o limite R9 é rejeitado na barreira — esperado rejeitado
+[PASS] envelope sem o limite R10 é rejeitado pelo schema — esperado rejeitado
+[PASS] envelope sem o limite R10 é rejeitado na barreira — esperado rejeitado
+[PASS] envelope sem o limite R11 é rejeitado pelo schema — esperado rejeitado
+[PASS] envelope sem o limite R11 é rejeitado na barreira — esperado rejeitado
+[PASS] envelope sem pending nenhum é rejeitado pelo schema — esperado rejeitado
+[PASS] os quatro limites por prefixo com texto qualquer são rejeitados pelo schema — esperado rejeitado
+[PASS] os quatro limites por prefixo com texto qualquer são rejeitados na barreira — esperado rejeitado
+[PASS] R6 que respeita o prefixo mas não é o texto é rejeitado pelo schema — esperado rejeitado
+[PASS] R6 que respeita o prefixo mas não é o texto é rejeitado na barreira — esperado rejeitado
+[PASS] R9 que respeita o prefixo mas não é o texto é rejeitado pelo schema — esperado rejeitado
+[PASS] R9 que respeita o prefixo mas não é o texto é rejeitado na barreira — esperado rejeitado
+[PASS] R10 que respeita o prefixo mas não é o texto é rejeitado pelo schema — esperado rejeitado
+[PASS] R10 que respeita o prefixo mas não é o texto é rejeitado na barreira — esperado rejeitado
+[PASS] R11 que respeita o prefixo mas não é o texto é rejeitado pelo schema — esperado rejeitado
+[PASS] R11 que respeita o prefixo mas não é o texto é rejeitado na barreira — esperado rejeitado
+[PASS] envelope sem compliance_claim é rejeitado pelo schema — esperado rejeitado
+[PASS] envelope sem compliance_claim é rejeitado na barreira — esperado rejeitado
+[PASS] alegação alargada no envelope é rejeitada pelo schema — esperado rejeitado
+[PASS] alegação alargada no envelope é rejeitada na barreira — esperado rejeitado
+[PASS] COMPLIANT com digest apenas declarado é rejeitado pelo schema — esperado rejeitado
+[PASS] COMPLIANT com digest apenas declarado é rejeitado na barreira — esperado rejeitado
+[PASS] série global de ADR é única em toda a estrutura — esperado válido
+[PASS] todo pacote gerente tem validador que roda a trava global — esperado válido
+[PASS] a recusa de digest() dispara e ninguém tem cópia privada do motor — esperado válido
+[PASS] nenhuma asserção é verdadeira por construção sobre valor produzido — esperado válido
+[PASS] nenhum placar de pacote declara total de cadeia como estado corrente — esperado válido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md — esperado válido
+[PASS] contratos de gerente na anatomia canônica — esperado válido
+[PASS] fixtures seguem chaves do schema — esperado válido
+[PASS] capacidade ausente falha fechada — esperado válido
+[PASS] CAPABILITY_GAP admite Evolução de Skills — esperado válido
+[PASS] CAPABILITY_GAP exige causalidade — esperado rejeitado
+[PASS] missão executiva válida — esperado válido
+[PASS] missão executiva admite Evolução de Skills — esperado válido
+[PASS] missão simples inicia troca matricial negada — esperado válido
+[PASS] bypass direto ao executor — esperado rejeitado
+[PASS] submissão executiva admite Evolução de Skills — esperado válido
+[PASS] matriz ADR-014 nível INTERNO nota 6 — esperado válido
+[PASS] matriz ADR-014 nível INTERNO nota 7 — esperado válido
+[PASS] matriz ADR-014 nível INTERNO nota 9 — esperado válido
+[PASS] matriz ADR-014 nível INTERNO nota 10 — esperado válido
+[PASS] matriz ADR-014 nível PRODUCAO nota 6 — esperado válido
+[PASS] matriz ADR-014 nível PRODUCAO nota 7 — esperado válido
+[PASS] matriz ADR-014 nível PRODUCAO nota 9 — esperado válido
+[PASS] matriz ADR-014 nível PRODUCAO nota 10 — esperado válido
+[PASS] ADR-016: faixa 6–8 entre instâncias sai como NAO_DISCRIMINADO — esperado válido
+[PASS] ADR-016: NAO_DISCRIMINADO não alcança PRODUCAO nem INTERNO — esperado válido
+[PASS] ADR-016: faixa que atravessa carimbada como aceite interno é rejeitada — esperado rejeitado
+[PASS] ADR-016: faixa aberta com uma única instância é rejeitada — esperado rejeitado
+[PASS] ADR-016: faixa que não bate com a menor nota é rejeitada — esperado rejeitado
+[PASS] ADR-016: JUDGE_REPORT exige minimum_score_range — esperado rejeitado
+[PASS] ADR-016: JUDGE_REPORT exige aggregation_rule — esperado rejeitado
+[PASS] ADR-016: JUDGE_REPORT rejeita método de agregação fora do enum — esperado rejeitado
+[PASS] ADR-016: EXECUTIVE_SUBMISSION com NAO_DISCRIMINADO não fecha o gate — esperado rejeitado
+[PASS] required_level ausente na missão — esperado rejeitado
+[PASS] required_level ausente no parecer — esperado rejeitado
+[PASS] required_level ausente na decisão — esperado rejeitado
+[PASS] required_level divergente missão e parecer — esperado rejeitado
+[PASS] required_level divergente na decisão — esperado rejeitado
+[PASS] aceite interno não alcança produção — esperado rejeitado
+[PASS] produção exige nota 10 — esperado válido
+[PASS] nota externa decimal é rejeitada — esperado rejeitado
+[PASS] relatório vago não prova impossibilidade — esperado rejeitado
+[PASS] relatório deve cobrir todo critério abaixo do corte — esperado rejeitado
+[PASS] limite verificado aguarda Jeremias — esperado válido
+[PASS] pedido de exceção exige refs exatas — esperado rejeitado
+[PASS] exceção autorizada por Jeremias — esperado válido
+[PASS] autoridade errada não aprova — esperado rejeitado
+[PASS] autorização obsoleta não aprova — esperado rejeitado
+[PASS] falha crítica força REPROVED — esperado válido
+[PASS] pendência bloqueante força REPROVED — esperado válido
+[PASS] falha crítica não aceita veredito positivo — esperado rejeitado
+[PASS] gate autoafirmado não esconde falha crítica — esperado rejeitado
+[PASS] pendência bloqueante impede validação normal — esperado rejeitado
+[PASS] teste falho impede validação normal — esperado rejeitado
+[PASS] zero testes aprovados não prova conclusão — esperado rejeitado
+[PASS] SKIP sem justificativa não prova conclusão — esperado rejeitado
+[PASS] escopo tocado deve caber na missão — esperado rejeitado
+[PASS] digest de regras autoafirmado é rejeitado — esperado rejeitado
+[PASS] auditoria de outro candidato é rejeitada — esperado rejeitado
+[PASS] COMPLIANT com identidade do candidato não conferida é rejeitado — esperado rejeitado
+[PASS] COMPLIANT sem declarar o estado da identidade é rejeitado — esperado rejeitado
+[PASS] violação de regra impede validação — esperado rejeitado
+[PASS] parecer vencido não sustenta decisão — esperado rejeitado
+[PASS] referências causais divergentes são rejeitadas — esperado rejeitado
+[PASS] contrato causal divergente é rejeitado — esperado rejeitado
+[PASS] retrabalho abaixo do corte não exige exceção — esperado válido
+[PASS] placar forjado é detectado — esperado rejeitado
+[PASS] autorização expirada não aprova — esperado rejeitado
+[PASS] pedido de exceção vencido não autoriza — esperado rejeitado
+
+Resultado: 107/107 casos passaram.
+
+===== FIM ceo-maestro =====

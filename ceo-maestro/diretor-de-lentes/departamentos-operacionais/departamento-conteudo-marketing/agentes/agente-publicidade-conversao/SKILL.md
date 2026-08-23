@@ -10,7 +10,7 @@ description: "Executa publicidade e conversão, criando conceitos de anúncio, p
 **Assumir:** conceito publicitário, paid copy, headline/descrição, CTA, variações, combinação de
 assets, consistência oferta→anúncio→destino, checklist de política e plano de ativação.
 
-**Não assumir:**
+**Não assumir**:
 
 - estratégia macro e canais → `agente-estrategia-conteudo-campanhas`;
 - conteúdo editorial → `agente-narrativa-redacao`;
@@ -68,5 +68,5 @@ assignment válido, `BLOCKED_BYPASS_ATTEMPT`; ativação sem autorização é qu
 - **Superior:** `departamento-conteudo-marketing`.
 - **Recebe:** estratégia, oferta, narrativa e assets; entrega publicidade para conformidade.
 - **Não confundir com:** Negócios decide oferta; Inteligência mede; canal executa só com AUTH.
-- **Não aciona:** ninguém; é folha e devolve somente à gerente.
+- **Não aciona:** ninguém. É folha: devolve somente à gerente.
 

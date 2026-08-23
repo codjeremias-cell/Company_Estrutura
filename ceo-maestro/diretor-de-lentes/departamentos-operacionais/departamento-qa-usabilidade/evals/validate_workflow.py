@@ -107,16 +107,44 @@ try:
         validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_adr_series,
         validate_agents_folder,
+        validate_contract_sections,
         validate_frontmatter,
         validate_openai_yaml,
         validate_required_files,
+        validate_skill_tokens,
+        SECOES_CONTRATO_AGENTE,
+        TOKENS_SKILL_AGENTE,
+    )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
     )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(
         "[FAIL] motor compartilhado ausente em "
         f"{STRUCTURE_ROOT}/_compartilhado: {exc}"
+    )
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
     )
     raise SystemExit(1)
 
@@ -1325,6 +1353,29 @@ def validate_structure() -> None:
     errors = validate_agents_folder(AGENTS_ROOT, AGENTS)
     check("três agentes canônicos e completos", not errors, " | ".join(errors))
 
+    # Estrutura normativa dos contratos e SKILL de agente — GUIA, passos 7 e 8.
+    # Até 2026-07-27 nenhum validador olhava heading de contrato de agente, e o
+    # resultado medido foi 15 de 66 conformes, com a trava anti-bypass ausente
+    # em 30. A conferência mora no `_compartilhado`; a lista do que é
+    # obrigatório continua sendo decisão deste pacote.
+    errors = []
+    for agente in sorted(p for p in AGENTS_ROOT.iterdir() if p.is_dir()):
+        errors.extend(
+            validate_contract_sections(
+                agente / "CONTRATO-DE-COMPROMISSO.md",
+                SECOES_CONTRATO_AGENTE,
+                agente.name,
+            )
+        )
+        errors.extend(
+            validate_skill_tokens(agente / "SKILL.md", TOKENS_SKILL_AGENTE, agente.name)
+        )
+    check(
+        "contratos e SKILL dos agentes seguem a estrutura normativa",
+        not errors,
+        " | ".join(errors),
+    )
+
 
 def validate_metadata() -> None:
     errors = validate_frontmatter(SKILL_PATH, DEPARTMENT)
@@ -1407,6 +1458,54 @@ def validate_links_and_evals() -> None:
     errors = validate_adr_series(STRUCTURE_ROOT)
     check(
         "série global de ADR é única em toda a estrutura",
+        not errors,
+        " | ".join(errors),
+    )
+    errors = validate_cobertura_de_validadores(STRUCTURE_ROOT)
+    check(
+        "todo pacote gerente tem validador que roda a trava global",
+        not errors,
+        " | ".join(errors),
+    )
+    errors = validate_trava_de_digest(STRUCTURE_ROOT)
+    check(
+        "a recusa de digest() dispara e ninguém tem cópia privada do motor",
+        not errors,
+        " | ".join(errors),
+    )
+    cadeia_errors = validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)
+    check(
+        "nenhum placar de pacote declara total de cadeia como estado corrente",
+        not cadeia_errors,
+        " | ".join(cadeia_errors),
+    )
+    selo_errors = validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)
+    check(
+        "a contagem publicada aponta para o digest do instrumento vigente",
+        not selo_errors,
+        " | ".join(selo_errors),
+    )
+    travas_errors = validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)
+    check(
+        "as travas do modulo compartilhado nao estao neutralizadas",
+        not travas_errors,
+        " | ".join(travas_errors),
+    )
+    dono_errors = validate_pendencia_tem_dono(STRUCTURE_ROOT)
+    check(
+        "toda pendencia declarada nomeia quem responde por ela",
+        not dono_errors,
+        " | ".join(dono_errors),
+    )
+    errors = validate_sem_check_tautologico(STRUCTURE_ROOT)
+    check(
+        "nenhuma asserção é verdadeira por construção sobre valor produzido",
+        not errors,
+        " | ".join(errors),
+    )
+    errors = validate_fonte_normativa_conferida(STRUCTURE_ROOT)
+    check(
+        "a fonte normativa confere com o valor declarado em ORIGEM.md",
         not errors,
         " | ".join(errors),
     )
@@ -2075,4 +2174,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     raise SystemExit(main())

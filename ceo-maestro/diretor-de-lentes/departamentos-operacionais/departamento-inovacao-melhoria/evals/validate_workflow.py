@@ -84,14 +84,38 @@ try:
         validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_adr_series,
         validate_agents_folder,
         validate_frontmatter,
         validate_openai_yaml,
         validate_required_files,
     )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
+    )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(f"[FAIL] motor compartilhado ausente em {STRUCTURE_ROOT}: {exc}")
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
+    )
     raise SystemExit(1)
 
 
@@ -163,6 +187,11 @@ NEGATIVE_DECLARATION_FIELDS = {
     "refuted_when",
     "inconclusive_when",
 }
+
+# Retorno "aceito" no sentido do protocolo, §8 e §9: entregou conteúdo que
+# sustenta gate. `PARTIAL` entra — é entrega real com lacuna declarada. Os três
+# de fora não produziram conteúdo aproveitável.
+ACCEPTED_RETURN_STATUS = frozenset({"COMPLETED", "PARTIAL"})
 
 JUDGMENT_PATTERNS = (
     (r"\bnotas?\b", "nota"),
@@ -251,7 +280,16 @@ def canonical_digest(value: Any) -> str:
     return "sha256:" + hashlib.sha256(raw).hexdigest()
 
 
-def sha256_file(path: Path) -> str:
+def sha256_hex_maiusculo(path: Path) -> str:
+    """Hex MAIÚSCULO e sem prefixo — a forma do manifesto legado deste pacote.
+
+    Não se chama `sha256_file` porque não é `sha256_file`: aquela, no motor
+    compartilhado, devolve `sha256:` + 64 hex minúsculos. Duas funções com o
+    mesmo nome e contratos diferentes é a forma pela qual um conserto no
+    compartilhado deixa de alcançar um pacote — e foi assim que
+    `departamento-negocios` guardou por meses uma cópia pré-conserto de
+    `digest()`. O nome próprio é a trava mais barata que existe.
+    """
     return hashlib.sha256(path.read_bytes()).hexdigest().upper()
 
 
@@ -1318,10 +1356,28 @@ def derive_gate_checks(
     opportunity_ref: str,
     returns: list[dict[str, Any]],
 ) -> dict[str, bool]:
-    """O gate é recalculado dos retornos; o booleano declarado só confirma."""
+    """O gate é recalculado dos retornos **aceitos**; o declarado só confirma.
+
+    **Correção de 2026-07-28.** Até aqui a função derivava de **todos** os
+    retornos, enquanto o protocolo (§8) e a `SKILL.md` prometiam "retornos
+    aceitos" — divergência literal entre norma e trava, apontada no julgamento e
+    não coberta por nenhum risco residual. O efeito não era cosmético: a
+    oportunidade de um retorno `NONCOMPLIANT` ou `FAILED` podia satisfazer um
+    `gate_check`, isto é, um agente que violou o contrato ainda assim movia o
+    gate.
+
+    `PARTIAL` **entra**: é entrega real com lacuna declarada, e o protocolo a
+    trata como retorno válido com pendência. `BLOCKED`, `FAILED` e `NONCOMPLIANT`
+    **não entram**: nos três o agente não entregou conteúdo aproveitável, e o que
+    houver no payload não sustenta gate.
+    """
+    aceitos = [
+        value for value in returns
+        if value.get("status") in ACCEPTED_RETURN_STATUS
+    ]
     found_opportunity: dict[str, Any] | None = None
     found_experiment: dict[str, Any] | None = None
-    for value in returns:
+    for value in aceitos:
         payload = value.get("payload", {})
         for item in payload.get("opportunities", []):
             if item.get("opportunity_id") == opportunity_ref:
@@ -1635,6 +1691,68 @@ def placar_errors() -> list[str]:
         errors.append("placar: ainda declara bateria pendente de execução")
     if not re.search(r"\bPASS\b", text) or not re.search(r"\bSKIP\b", text):
         errors.append("placar: não declara PASS/FAIL/SKIP com honestidade")
+    errors.extend(limites_ligados_a_risco_errors(text))
+    return errors
+
+
+def limites_ligados_a_risco_errors(texto_placar: str) -> list[str]:
+    """Cada item da seção de não-provado aponta para um `R` que o protocolo declara.
+
+    **Por que existe.** Até 2026-07-28 esta checagem conferia apenas a *presença
+    literal* do título da seção e da coluna `Executado?`. O julgamento daquele dia
+    reprovou o pacote no `CRIT-06` justamente por essa ligação faltar em 2 dos 8
+    itens — e o parecer registrou que a cláusula era **auto-neutralizável**:
+    qualquer item podia ser reclassificado, ou perder o identificador, e o
+    validador seguia imprimindo `PASS`.
+
+    Foi o que aconteceu em seguida. O operador "consertou" movendo um item para
+    uma gaveta nova em vez de fechar a lacuna, e nada acusou. Aviso em prosa não
+    previne erro; esta função existe para que a próxima tentativa falhe alto.
+
+    **A derivação:** o conjunto válido de identificadores **não é lista aqui** — é
+    lido do §12 do protocolo, o único lugar onde os riscos são declarados. Assim a
+    checagem não pode divergir da fonte, e citar um `R` inexistente reprova.
+    """
+    if not PROTOCOL_PATH.is_file():
+        return ["placar: protocolo ausente — não dá para derivar os riscos válidos"]
+
+    protocolo = PROTOCOL_PATH.read_text(encoding="utf-8")
+    match = RESIDUAL_HEADING.search(protocolo)
+    if not match:
+        return ["placar: protocolo sem a seção de riscos residuais"]
+    declarados = set(re.findall(r"\*\*(R\d+)\*\*", protocolo[match.end():]))
+    if not declarados:
+        return ["placar: nenhum risco residual declarado no protocolo"]
+
+    inicio = texto_placar.find("## O que ainda não foi provado")
+    if inicio < 0:
+        return []
+    resto = texto_placar[inicio + 1:]
+    fim = resto.find("\n## ")
+    secao = resto if fim < 0 else resto[:fim]
+
+    # Um item começa em "1. **" ou "- **" no início da linha. O corpo vai até o
+    # próximo início — assim o `R` citado na segunda linha ainda conta.
+    marcas = list(re.finditer(r"^(?:\d+\.|-)\s+\*\*", secao, flags=re.MULTILINE))
+    if not marcas:
+        return ["placar: seção de não-provado sem nenhum item enumerado"]
+
+    errors: list[str] = []
+    for indice, marca in enumerate(marcas):
+        fim_item = marcas[indice + 1].start() if indice + 1 < len(marcas) else len(secao)
+        item = secao[marca.start():fim_item]
+        titulo = " ".join(item.split())[:70]
+        citados = set(re.findall(r"\bR\d+\b", item))
+        if not citados:
+            errors.append(
+                f"placar: item de não-provado sem identificador de risco — {titulo}"
+            )
+            continue
+        desconhecidos = sorted(citados - declarados)
+        if desconhecidos:
+            errors.append(
+                f"placar: item cita risco não declarado no protocolo {desconhecidos} — {titulo}"
+            )
     return errors
 
 
@@ -1725,7 +1843,7 @@ def legacy_errors() -> list[str]:
         path = LEGACY_ROOT / relative
         if not path.is_file():
             errors.append(f"legado: arquivo ausente {relative}")
-        elif sha256_file(path) != expected:
+        elif sha256_hex_maiusculo(path) != expected:
             errors.append(f"legado: hash divergente {relative}")
     total = sum(path.stat().st_size for path in LEGACY_ROOT.rglob("*") if path.is_file())
     if total != 101_022:
@@ -1863,6 +1981,54 @@ def main() -> int:
     check("links internos resolvem", not errors, " | ".join(errors))
     errors = adr_errors()
     check("ADR-013 é globalmente livre", not errors, " | ".join(errors))
+    errors = validate_cobertura_de_validadores(STRUCTURE_ROOT)
+    check(
+        "todo pacote gerente tem validador que roda a trava global",
+        not errors,
+        " | ".join(errors),
+    )
+    errors = validate_trava_de_digest(STRUCTURE_ROOT)
+    check(
+        "a recusa de digest() dispara e ninguém tem cópia privada do motor",
+        not errors,
+        " | ".join(errors),
+    )
+    cadeia_errors = validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)
+    check(
+        "nenhum placar de pacote declara total de cadeia como estado corrente",
+        not cadeia_errors,
+        " | ".join(cadeia_errors),
+    )
+    selo_errors = validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)
+    check(
+        "a contagem publicada aponta para o digest do instrumento vigente",
+        not selo_errors,
+        " | ".join(selo_errors),
+    )
+    travas_errors = validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)
+    check(
+        "as travas do modulo compartilhado nao estao neutralizadas",
+        not travas_errors,
+        " | ".join(travas_errors),
+    )
+    dono_errors = validate_pendencia_tem_dono(STRUCTURE_ROOT)
+    check(
+        "toda pendencia declarada nomeia quem responde por ela",
+        not dono_errors,
+        " | ".join(dono_errors),
+    )
+    errors = validate_sem_check_tautologico(STRUCTURE_ROOT)
+    check(
+        "nenhuma asserção é verdadeira por construção sobre valor produzido",
+        not errors,
+        " | ".join(errors),
+    )
+    errors = validate_fonte_normativa_conferida(STRUCTURE_ROOT)
+    check(
+        "a fonte normativa confere com o valor declarado em ORIGEM.md",
+        not errors,
+        " | ".join(errors),
+    )
     errors = eval_errors()
     check("evals têm 16 casos, origem e assertions", not errors, " | ".join(errors))
     errors = legacy_errors()
@@ -2345,9 +2511,81 @@ def main() -> int:
     for label, value in chain_negative:
         expect_chain_invalid(label, value)
 
+    # --- D4: retorno não aceito não move o gate derivado -------------------
+    # Testado como UNIDADE, de propósito. A primeira versão deste caso rodava em
+    # cadeia e passava pela razão errada: mudar o `status` também muda o digest
+    # do retorno, e o erro "digest forjado" disparava sozinho — com ou sem o
+    # filtro. Caso que não distingue os dois mundos não prova nada.
+    base_gate = build_bundle(with_improvement=True)
+    gate_aceito = derive_gate_checks("opportunity-001", base_gate["returns"])
+    check(
+        "gate derivado de retorno aceito marca ao menos uma verificação",
+        any(gate_aceito.values()),
+        str(gate_aceito),
+    )
+    for status_rejeitado in ("NONCOMPLIANT", "FAILED", "BLOCKED"):
+        rejeitados = copy.deepcopy(base_gate["returns"])
+        for value in rejeitados:
+            value["status"] = status_rejeitado
+        derivado = derive_gate_checks("opportunity-001", rejeitados)
+        check(
+            f"retorno {status_rejeitado} não alimenta o gate derivado",
+            not any(derivado.values()),
+            f"derivou {sorted(k for k, v in derivado.items() if v)}",
+        )
+    parciais = copy.deepcopy(base_gate["returns"])
+    for value in parciais:
+        value["status"] = "PARTIAL"
+    check(
+        "PARTIAL continua alimentando o gate (entrega real com lacuna)",
+        derive_gate_checks("opportunity-001", parciais) == gate_aceito,
+    )
+
     # ------------------------------------------------------------------
     # Contraprovas de ponte
     # ------------------------------------------------------------------
+    # D5 do julgamento de 2026-07-28: o schema LOCAL é mais permissivo que o do
+    # superior em quatro pontos. A máquina que pega isso já existia — a ponte
+    # valida contra `departmentReturn` do Diretor —, mas **nenhuma das quatro
+    # estava exercitada**, então a divergência era latente: uma rodada local
+    # válida produziria um envelope que o Diretor recusa, e nada avisaria antes.
+    #
+    # Estes casos não "consertam" o schema local. Provam que a fronteira segura
+    # cada classe, e transformam a divergência em comportamento testado. O local
+    # segue mais frouxo de propósito: `n/a` e identificador com `@` servem ao uso
+    # interno — o protocolo exige `id@sha256:<digest>` — e é na saída que a régua
+    # do consumidor manda.
+    divergencias_locais = [
+        ("candidate_digest 'n/a'",
+         lambda value: value.update({"candidate_digest": "n/a"})),
+        ("evidence_refs vazio",
+         lambda value: value.update({"evidence_refs": []})),
+        ("round acima de 10",
+         lambda value: value["causal"].update({"round": 11})),
+    ]
+    # Cada caso muta a FONTE e deriva a ponte dela, para que as duas concordem.
+    # Mutar só a ponte fazia o caso passar pela razão errada: a conferência de
+    # coerência entre fonte e ponte dispara antes de o schema do superior ser
+    # consultado, e o teste ficava verde mesmo sem a régua do consumidor. A
+    # mutação denunciou isso em dois dos quatro casos.
+    for rotulo, mutacao in divergencias_locais:
+        fonte_divergente = copy.deepcopy(report)
+        mutacao(fonte_divergente)
+        ponte_divergente = to_department_return(fonte_divergente)
+        check(
+            f"ponte rejeita {rotulo}, que o schema local admite",
+            bool(bridge_errors(fonte_divergente, ponte_divergente, DIRECTOR_SCHEMA)),
+        )
+
+    # O identificador longo nasce na ponte: `department_return_id` não existe na
+    # fonte, então não há coerência a preservar e a única objeção é do superior.
+    bad_boundary = to_department_return(report)
+    bad_boundary["department_return_id"] = "department-return-" + "x" * 130
+    check(
+        "ponte rejeita identificador acima de 128 caracteres, que o schema local admite",
+        bool(bridge_errors(report, bad_boundary, DIRECTOR_SCHEMA)),
+    )
+
     bad_boundary = to_department_return(report)
     bad_boundary["returned_by"] = "departamento-desenvolvimento"
     check(
@@ -2397,4 +2635,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     raise SystemExit(main())

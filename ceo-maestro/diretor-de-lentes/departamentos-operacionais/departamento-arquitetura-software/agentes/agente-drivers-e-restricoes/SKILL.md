@@ -11,7 +11,7 @@ objetivo, restrições e ADRs em **drivers medíveis e priorizados** — e devol
 Este agente **não escolhe solução**. Ele produz a régua com que as soluções serão julgadas. Driver
 mal formulado contamina tudo que vem depois: a opção errada parece atender.
 
-## Protocolo, escopo e trava
+## Protocolo e trava anti-bypass
 
 Ler [../../references/protocolo-de-arquitetura.md](../../references/protocolo-de-arquitetura.md)
 (envelopes §1.3 e §1.4, ondas §3, trava §5) e

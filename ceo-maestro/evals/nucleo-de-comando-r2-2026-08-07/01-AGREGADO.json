@@ -1,0 +1,184 @@
+{
+  "round": "nucleo-de-comando-r2",
+  "commit_julgado": "ed3b63f",
+  "normalizacoes_declaradas": [
+    "experiencia-e-risco/i1: chave 'pacote' -> 'package_id'",
+    "experiencia-e-risco/i2: chave 'pacote' -> 'package_id'",
+    "painel-externo/i2: sem campo de pacote -> assumido departamento-juizes (unico da designacao)",
+    "robustez-e-evidencia/i2: chave 'pacote' -> 'package_id'"
+  ],
+  "regra": "MENOR entre instancias, MENOR entre criterios; NAO_DISCRIMINADO so quando a faixa cruzada pode decidir",
+  "pacotes": {
+    "ceo-maestro": {
+      "criterios": {
+        "C01": 6,
+        "C02": 5,
+        "C03": 6,
+        "C04": 6,
+        "C05": 6,
+        "C06": 6
+      },
+      "min": 5,
+      "cruza": [],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "sem faixa cruzando",
+      "instancias": {
+        "C01": [
+          6,
+          6
+        ],
+        "C02": [
+          5,
+          5
+        ],
+        "C03": [
+          6,
+          6
+        ],
+        "C04": [
+          6,
+          6
+        ],
+        "C05": [
+          6,
+          6
+        ],
+        "C06": [
+          6,
+          6
+        ]
+      }
+    },
+    "diretor-de-lentes": {
+      "criterios": {
+        "C01": 6,
+        "C02": 5,
+        "C03": 6,
+        "C04": 5,
+        "C05": 5,
+        "C06": 4
+      },
+      "min": 4,
+      "cruza": [
+        "C01",
+        "C03",
+        "C04"
+      ],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "DOMINANCIA: dominante=4; resolver C01/C03/C04 nao levanta o minimo",
+      "instancias": {
+        "C01": [
+          6,
+          7
+        ],
+        "C02": [
+          6,
+          5
+        ],
+        "C03": [
+          6,
+          7
+        ],
+        "C04": [
+          5,
+          7
+        ],
+        "C05": [
+          6,
+          5
+        ],
+        "C06": [
+          5,
+          4
+        ]
+      }
+    },
+    "departamento-juizes": {
+      "criterios": {
+        "C01": 7,
+        "C02": 6,
+        "C03": 6,
+        "C04": 6,
+        "C05": 5,
+        "C06": 8
+      },
+      "min": 5,
+      "cruza": [
+        "C02",
+        "C03",
+        "C04"
+      ],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "DOMINANCIA: dominante=5; resolver C02/C03/C04 nao levanta o minimo",
+      "instancias": {
+        "C01": [
+          7,
+          8
+        ],
+        "C02": [
+          6,
+          8
+        ],
+        "C03": [
+          6,
+          7
+        ],
+        "C04": [
+          6,
+          7
+        ],
+        "C05": [
+          5,
+          6
+        ],
+        "C06": [
+          9,
+          8
+        ]
+      }
+    },
+    "departamento-negocios": {
+      "criterios": {
+        "C01": 6,
+        "C02": 7,
+        "C03": 6,
+        "C04": 5,
+        "C05": 3,
+        "C06": 4
+      },
+      "min": 3,
+      "cruza": [
+        "C01",
+        "C03"
+      ],
+      "verdict": "REPROVED",
+      "motivo_do_veredito": "DOMINANCIA: dominante=3; resolver C01/C03 nao levanta o minimo",
+      "instancias": {
+        "C01": [
+          6,
+          7
+        ],
+        "C02": [
+          7,
+          8
+        ],
+        "C03": [
+          6,
+          7
+        ],
+        "C04": [
+          5,
+          5
+        ],
+        "C05": [
+          5,
+          3
+        ],
+        "C06": [
+          6,
+          4
+        ]
+      }
+    }
+  }
+}

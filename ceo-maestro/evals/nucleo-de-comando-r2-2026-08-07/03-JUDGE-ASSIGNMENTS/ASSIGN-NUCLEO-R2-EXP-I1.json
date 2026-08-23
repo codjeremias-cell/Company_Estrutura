@@ -1,0 +1,41 @@
+{
+  "artifact_type": "JUDGE_ASSIGNMENT",
+  "assignment_id": "ASSIGN-NUCLEO-R2-EXP-I1",
+  "judge_id": "agente-julgar-experiencia-e-risco",
+  "lens": "experiencia-e-risco",
+  "instance": 1,
+  "write_path": "pareceres/experiencia-e-risco/i1/",
+  "custody_copy": {
+    "path": "evals/nucleo-de-comando-r2-2026-08-07/saida-crua",
+    "sha256": "sha256:0c592c799f991d7252321af7d45f458721a9b75273093126047b7a590d1e5d2a",
+    "bytes": 44838,
+    "taken_at": "2026-08-07T01:30:00-03:00",
+    "arquivos": 5
+  },
+  "mode": "VALIDACAO",
+  "contract_id": "CONTRATO-NUCLEO-R2-20260807",
+  "contract_version": 1,
+  "contract_digest": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+  "required_level": "INTERNO",
+  "pacotes": [
+    "ceo-maestro",
+    "diretor-de-lentes",
+    "departamento-negocios"
+  ],
+  "criteria": [
+    {
+      "criterion_id": "C05",
+      "criterion_text": "Uso pela cadeia: o pacote é realmente acionado pelo protocolo que declara — quem chama, com que envelope, e existe prova de trânsito.",
+      "role": "owner"
+    },
+    {
+      "criterion_id": "C06",
+      "criterion_text": "Limites declarados: o pacote diz o que não faz, onde falha e o que não sabe, de forma nomeada e verificável.",
+      "role": "owner"
+    }
+  ],
+  "rubric_ref": "rubrica-corte-v2",
+  "issued_at": "2026-08-07T01:35:00-03:00",
+  "issued_by": "departamento-juizes (papel declarado; ator unico de runtime)",
+  "return_to": "departamento-juizes"
+}

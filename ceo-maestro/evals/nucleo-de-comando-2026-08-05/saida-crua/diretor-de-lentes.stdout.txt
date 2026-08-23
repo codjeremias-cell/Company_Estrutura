@@ -1,0 +1,103 @@
+[PASS] pacote, vÃ­nculos e metadata â€” esperado vÃ¡lido
+[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido
+       sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md
+[PASS] todo pacote gerente tem validador que roda a trava global â€” esperado vÃ¡lido
+[PASS] a recusa de digest() dispara e ninguÃ©m tem cÃ³pia privada do motor â€” esperado vÃ¡lido
+[PASS] nenhuma asserÃ§Ã£o Ã© verdadeira por construÃ§Ã£o sobre valor produzido â€” esperado vÃ¡lido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md â€” esperado vÃ¡lido
+[PASS] contratos de gerente na anatomia canÃ´nica â€” esperado vÃ¡lido
+[PASS] schema e referÃªncias locais â€” esperado vÃ¡lido
+[PASS] autoridades herdadas do schema do CEO â€” esperado vÃ¡lido
+[PASS] catÃ¡logo de evals â€” esperado vÃ¡lido
+[PASS] schema aceita DIRECTOR_PLAN â€” esperado vÃ¡lido
+[PASS] schema aceita DEPARTMENT_MISSION â€” esperado vÃ¡lido
+[PASS] schema aceita DEPARTMENT_RETURN â€” esperado vÃ¡lido
+[PASS] schema aceita DEPARTMENT_RETURN de ConteÃºdo e Marketing â€” esperado vÃ¡lido
+[PASS] schema aceita JUDGMENT_REQUEST â€” esperado vÃ¡lido
+[PASS] schema aceita DEPARTMENT_JUDGE_REPORT â€” esperado vÃ¡lido
+[PASS] schema aceita DEPARTMENT_GATE_RECORD â€” esperado vÃ¡lido
+[PASS] schema aceita REWORK_ORDER â€” esperado vÃ¡lido
+[PASS] schema aceita MATRIX_EXCHANGE_MESSAGE â€” esperado vÃ¡lido
+[PASS] schema aceita DIRECTOR_CAPABILITY_GAP â€” esperado vÃ¡lido
+[PASS] schema aceita PROGRESS â€” esperado vÃ¡lido
+[PASS] schema aceita BLOCKED_RETURN â€” esperado vÃ¡lido
+[PASS] JUDGMENT_REQUEST exige required_level â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT exige required_level â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita score fracionÃ¡rio â€” esperado rejeitado
+[PASS] JUDGMENT_REQUEST rejeita required_level desconhecido â€” esperado rejeitado
+[PASS] JUDGMENT_REQUEST exige aggregation_rule â€” esperado rejeitado
+[PASS] JUDGMENT_REQUEST exige instances_per_lens â€” esperado rejeitado
+[PASS] JUDGMENT_REQUEST rejeita mÃ©todo de agregaÃ§Ã£o fora do enum â€” esperado rejeitado
+[PASS] JUDGMENT_REQUEST rejeita regra sem declared_at â€” esperado rejeitado
+[PASS] JUDGMENT_REQUEST aceita agregaÃ§Ã£o MENOR â€” esperado vÃ¡lido
+[PASS] JUDGMENT_REQUEST aceita agregaÃ§Ã£o MEDIANA â€” esperado vÃ¡lido
+[PASS] JUDGMENT_REQUEST aceita agregaÃ§Ã£o EMPATE_DECLARADO â€” esperado vÃ¡lido
+[PASS] DEPARTMENT_JUDGE_REPORT exige minimum_score_range â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT exige aggregation_rule â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT aceita NAO_DISCRIMINADO com faixa que atravessa â€” esperado vÃ¡lido
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita NAO_DISCRIMINADO sem faixa que atravessa â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita NAO_DISCRIMINADO com uma instÃ¢ncia â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita aceite interno com faixa que atravessa â€” esperado rejeitado
+[PASS] NAO_DISCRIMINADO nÃ£o alcanÃ§a PRODUCAO nem INTERNO â€” esperado vÃ¡lido
+[PASS] gate INTERNO nÃ£o integra NAO_DISCRIMINADO â€” esperado rejeitado
+[PASS] gate rejeita regra de agregaÃ§Ã£o trocada entre pedido e parecer â€” esperado rejeitado
+[PASS] gate rejeita faixa que nÃ£o bate com o minimum_score declarado â€” esperado rejeitado
+[PASS] gate rejeita faixa invertida â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita REPROVED limpo com mÃ­nimo 9 â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita ACEITO_USO_INTERNO com mÃ­nimo 10 â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita VALIDATED com mÃ­nimo 9 â€” esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT aceita REPROVED com mÃ­nimo 6 â€” esperado vÃ¡lido
+[PASS] schema rejeita bypass para agente â€” esperado rejeitado
+[PASS] plano exige dez Departamentos â€” esperado rejeitado
+[PASS] matriz nÃ£o aceita cobertura duplicada â€” esperado rejeitado
+[PASS] retorno departamental nÃ£o se autoaceita â€” esperado rejeitado
+[PASS] plano exige autoria do Diretor â€” esperado rejeitado
+[PASS] retorno exige produtor igual ao Departamento â€” esperado rejeitado
+[PASS] cadeia retorno-pedido-JuÃ­zes Ã­ntegra â€” esperado vÃ¡lido
+[PASS] gate INTERNO integra ACEITO_USO_INTERNO com mÃ­nimo 9 â€” esperado vÃ¡lido
+[PASS] gate INTERNO integra ACEITO_USO_INTERNO com mÃ­nimo 7 â€” esperado vÃ¡lido
+[PASS] gate INTERNO integra VALIDATED com mÃ­nimo 10 â€” esperado vÃ¡lido
+[PASS] gate PRODUCAO rejeita ACEITO_USO_INTERNO â€” esperado rejeitado
+[PASS] gate INTERNO rejeita REPROVED com mÃ­nimo 6 â€” esperado rejeitado
+[PASS] gate rejeita required_level divergente â€” esperado rejeitado
+[PASS] falha crÃ­tica forÃ§a REPROVED mesmo com 10 â€” esperado vÃ¡lido
+[PASS] pendÃªncia bloqueante forÃ§a REPROVED mesmo com 10 â€” esperado vÃ¡lido
+[PASS] gate rejeita candidato divergente â€” esperado rejeitado
+[PASS] gate rejeita contrato divergente â€” esperado rejeitado
+[PASS] gate rejeita versÃ£o de contrato divergente â€” esperado rejeitado
+[PASS] gate rejeita missÃ£o de outra rodada â€” esperado rejeitado
+[PASS] gate departamental nÃ£o aceita 9,49 â€” esperado rejeitado
+[PASS] gate exige parecer dos JuÃ­zes â€” esperado rejeitado
+[PASS] troca matricial correlacionada â€” esperado vÃ¡lido
+[PASS] troca matricial INTERNO preserva required_level â€” esperado vÃ¡lido
+[PASS] troca matricial exige required_level â€” esperado rejeitado
+[PASS] troca matricial rejeita required_level desconhecido â€” esperado rejeitado
+[PASS] troca matricial rejeita required_level divergente â€” esperado rejeitado
+[PASS] troca matricial rejeita tÃ³pico externo â€” esperado rejeitado
+[PASS] troca matricial rejeita remetente forjado â€” esperado rejeitado
+[PASS] troca matricial rejeita candidato divergente â€” esperado rejeitado
+[PASS] lacuna interna aceita JuÃ­zes ausentes â€” esperado vÃ¡lido
+[PASS] lacuna dirigida rejeita capacidade lateral â€” esperado rejeitado
+[PASS] PROGRESS nÃ£o mascara estado bloqueado â€” esperado rejeitado
+[PASS] 10 em tudo prepara CEO â€” esperado vÃ¡lido
+[PASS] nota fracionÃ¡ria 9,5 Ã© bloqueada â€” esperado vÃ¡lido
+[PASS] nota fracionÃ¡ria 9,49 nÃ£o arredonda â€” esperado vÃ¡lido
+[PASS] mÃ©dia alta nÃ£o compensa menor nota â€” esperado vÃ¡lido
+[PASS] INTERNO aceita mÃ­nimo 9 â€” esperado vÃ¡lido
+[PASS] PRODUCAO nÃ£o aceita mÃ­nimo 9 â€” esperado vÃ¡lido
+[PASS] INTERNO aceita mÃ­nimo 7 â€” esperado vÃ¡lido
+[PASS] INTERNO reprova mÃ­nimo 6 â€” esperado vÃ¡lido
+[PASS] veredito divergente da faixa bloqueia â€” esperado vÃ¡lido
+[PASS] required_level desconhecido bloqueia â€” esperado vÃ¡lido
+[PASS] Auditoria nÃ£o substitui JuÃ­zes ausentes â€” esperado vÃ¡lido
+[PASS] falha crÃ­tica bloqueia â€” esperado vÃ¡lido
+[PASS] RI/RO violada bloqueia â€” esperado vÃ¡lido
+[PASS] pendÃªncia bloqueante impede submissÃ£o â€” esperado vÃ¡lido
+[PASS] limite completo segue ao CEO sem validar â€” esperado vÃ¡lido
+[PASS] dÃ©cima rodada retorna limite ao CEO â€” esperado vÃ¡lido
+[PASS] troca matricial completa Ã© permitida â€” esperado vÃ¡lido
+[PASS] troca com destinatÃ¡rio Ãºnico Ã© negada â€” esperado vÃ¡lido
+[PASS] troca sem dono Ãºnico Ã© negada â€” esperado vÃ¡lido
+[PASS] digest da fonte normativa confere com o declarado em ORIGEM.md â€” esperado vÃ¡lido
+
+Resultado: 99/100 casos passaram.

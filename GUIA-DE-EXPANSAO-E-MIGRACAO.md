@@ -35,7 +35,7 @@ evidência histórica — nunca fallback automático em runtime, nunca editado, 
 
 1. **[ORGANOGRAMA.md](ORGANOGRAMA.md)** — posição do pacote na hierarquia, o time executor mínimo
    e o contrato estrutural obrigatório.
-2. **[AGENTS.md](AGENTS.md)** — entrada operacional, gate de 9,5 e regra de exceção.
+2. **[AGENTS.md](AGENTS.md)** — entrada operacional, níveis do ADR-014 e regra de exceção.
 3. **[regras-de-ouro/REGRAS-DE-OURO.md](regras-de-ouro/REGRAS-DE-OURO.md)** — RI-01 a RI-06 e as RO
    aplicáveis. Você vai **referenciar** este arquivo, nunca copiar trecho dele.
 4. **O pacote do superior** — `SKILL.md`, `CONTRATO-DE-COMPROMISSO.md` e, principalmente, o
@@ -252,8 +252,9 @@ Só os envelopes que **o seu pacote materializa**. Convenções já estabelecida
 - `additionalProperties: false` em **todo** objeto — chave extra é erro, não tolerância;
 - `causalHeader` completo, com `producer` travado em `const` no **seu** nome: é o que rejeita
   envelope forjado por outro pacote;
-- `if/then` para as condições de contrato (ex.: `VALIDATED` exige piso, ausência de falha crítica e
-  lacuna vazia; reprovação exige crítica e mudança);
+- `if/then` para as condições de contrato (ex.: `VALIDATED` exige mínimo 10, ausência de falha
+  crítica e lacuna vazia; `ACEITO_USO_INTERNO` exige mínimo 7 e não satisfaz `PRODUCAO`;
+  reprovação exige crítica e mudança);
 - `enum` de identidades derivado das **pastas reais** — e um caso de teste conferindo isso.
 
 **Concluído quando:** o schema aceita todos os artefatos legítimos do fluxo e rejeita, por
@@ -269,8 +270,9 @@ construção, cada atalho que o contrato proíbe.
 - arquivo **≤ 500 linhas**.
 
 A `description` é o que dispara a skill. Ela precisa de: papel em uma frase; **gatilhos em
-linguagem de usuário** ("passou no gate?", "a nota bate 9,5?"), inclusive sem citar o nome da skill;
-os **anti-gatilhos** ("pediram para arredondar → deve recusar e devolver"); e um `NÃO acione para…`
+linguagem de usuário** ("passou no gate?", "isso pode ir para produção?"), inclusive sem citar o
+nome da skill; os **anti-gatilhos** ("pediram para tratar nota 9 como produção → deve recusar e
+devolver"); e um `NÃO acione para…`
 que nomeie as skills vizinhas.
 
 **Seções obrigatórias da `SKILL.md` de Departamento:**
@@ -291,9 +293,9 @@ que nomeie as skills vizinhas.
 ## 🔗 Rede da skill               → superior, orquestra, vem antes/depois, não confundir com
 ```
 
-O **exemplo que reprova** vale mais que o que aprova: é onde o contrato mostra os dentes. No
-`departamento-juizes`, o exemplo termina em `REPROVED` com `minimum_score: 9` e diz explicitamente
-que a gerente não arredonda para `9,5`.
+O **exemplo de fronteira** vale mais que o trivial: é onde o contrato mostra os dentes. No
+`departamento-juizes`, o exemplo com `minimum_score: 9` termina em `ACEITO_USO_INTERNO`, satisfaz
+`INTERNO` e é recusado para `PRODUCAO`; o exemplo que reprova usa mínimo 6 ou um gate bloqueante.
 
 **Seções obrigatórias do `CONTRATO-DE-COMPROMISSO.md`** — são os itens do contrato estrutural do
 organograma:
@@ -345,8 +347,8 @@ Três arquivos, três funções diferentes. **Não os confunda.**
 **`evals.json`** — catálogo de casos comportamentais. Mínimo: 12 casos, ≥ 3 assertions cada, ao
 menos 1 de `"origem": "real"` (o pedido concreto que originou o trabalho). Os prompts **não podem
 nomear a skill** (`$nome`): eles testam se ela **aciona sozinha** pelo gatilho. Escreva os casos em
-voz de usuário pedindo o **atalho** — "é só uma correção pequena, aprova direto", "arredonda para
-9,5 e libera" —, porque é sob pressão que o contrato falha.
+voz de usuário pedindo o **atalho** — "é só uma correção pequena, aprova direto", "a nota 9 está
+ótima, libera em produção" —, porque é sob pressão que o contrato falha.
 
 **`validate_workflow.py`** — o validador determinístico. Ele é o único artefato deste pacote que
 prova alguma coisa sozinho, e tem **três regras inegociáveis**:

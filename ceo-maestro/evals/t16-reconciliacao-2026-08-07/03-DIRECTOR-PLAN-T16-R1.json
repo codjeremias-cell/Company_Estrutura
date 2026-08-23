@@ -1,0 +1,60 @@
+{
+  "artifact_type": "DIRECTOR_PLAN",
+  "director_plan_id": "DPLAN-T16-R1",
+  "causal": {
+    "work_item_id": "T16",
+    "front_id": "FRONT-T16-RECONCILIACAO-BLOCKERS",
+    "handoff_id": "HANDOFF-T16-CEO-DIRETOR-R1-01",
+    "message_id": "MSG-T16-DIRETOR-PLAN-R1",
+    "causation_message_ids": ["MSG-T16-CEO-DIRETOR-R1"],
+    "contract_id": "CTR-T16-RECONCILIACAO-BLOCKERS-2026-08-07",
+    "contract_version": 1,
+    "contract_digest": "sha256:ce4135b4da3c800536cdfbe0df7ccd91407b724e9567fac1a8c22d23ee641694",
+    "candidate_digest": "sha256:c3559c652c4842025852115cac15c1eea50a9afb8be74504ee2a32724c9420dc",
+    "round": 1,
+    "attempt": 1,
+    "producer": "diretor-de-lentes",
+    "producer_version": "2026-08-07",
+    "producer_digest": "sha256:684050450d2dbb58e853b2c03a32b5838eada76fc76a4438e637a1432f707e11",
+    "created_at": "2026-08-07T19:15:00-03:00"
+  },
+  "executive_mission_ref": "MISSION-T16-RECONCILIACAO-BLOCKERS-R1",
+  "state": "D_PLANNED",
+  "department_matrix": [
+    {"department":"departamento-arquitetura-software","mode":"NAO_SE_APLICA","reason":"Não há mudança de arquitetura ou código no escopo; somente envelopes, digest e prova de contratos.","department_mission_ref":"n/a"},
+    {"department":"departamento-arquitetura-dados","mode":"NAO_SE_APLICA","reason":"Não há modelo, persistência ou dados de domínio a decidir.","department_mission_ref":"n/a"},
+    {"department":"departamento-desenvolvimento","mode":"NAO_SE_APLICA","reason":"O candidato é overlay de contratos; não há implementação de produto.","department_mission_ref":"n/a"},
+    {"department":"departamento-design-ux-ui","mode":"NAO_SE_APLICA","reason":"Não há interface ou experiência de usuário no escopo.","department_mission_ref":"n/a"},
+    {"department":"departamento-seguranca","mode":"NAO_SE_APLICA","reason":"Não há alteração de superfície de segurança; a preservação canônica é tratada como gate de integridade.","department_mission_ref":"n/a"},
+    {"department":"departamento-qa-usabilidade","mode":"BLOQUEADO","reason":"A prova independente é necessária, mas não há worker QA observável/callable nesta sessão.","department_mission_ref":"n/a"},
+    {"department":"departamento-inovacao-melhoria","mode":"NAO_SE_APLICA","reason":"A missão reconcilia blockers já conhecidos; não cria experimento de melhoria separado.","department_mission_ref":"n/a"},
+    {"department":"departamento-auditoria-responsabilidades","mode":"BLOQUEADO","reason":"Auditoria é obrigatória antes do gate, mas não há dispatch independente observável nesta sessão.","department_mission_ref":"n/a"},
+    {"department":"departamento-conteudo-marketing","mode":"NAO_SE_APLICA","reason":"Os 23 arquivos são evidência de contratos, não conteúdo de campanha.","department_mission_ref":"n/a"},
+    {"department":"departamento-registros","mode":"NAO_SE_APLICA","reason":"A materialização dos registros pertence à própria campanha T16 e não requer frente de registros separada.","department_mission_ref":"n/a"}
+  ],
+  "dependencies": [
+    "02-HISTORICAL-SNAPSHOT-T16.json",
+    "candidato-isolado/manifest.json",
+    "prova-independente/51-PROOF-T16-R1.py",
+    "schemas/diretor-de-lentes.schema.json",
+    "_compartilhado/verificacoes_pacote.py"
+  ],
+  "integration_barriers": [
+    "DEPARTMENT_MISSION válida contra o schema canônico",
+    "candidate_digest reproduzido da árvore overlay e manifest_digest separado",
+    "prova independente de fidelidade, 23 barreiras e 126 itens",
+    "governance_report independente da autoria do candidato",
+    "JUDGE_REPORT independente do mesmo candidato"
+  ],
+  "judge_gate_required": true,
+  "blocking_pending_refs": [
+    "PENDING-T16-RUNTIME-INDEPENDENCE",
+    "PENDING-T16-AUDIT-DISPATCH",
+    "PENDING-T16-JUDGE-DISPATCH",
+    "AUD-T16-01",
+    "AUD-T16-04",
+    "AUD-T16-05",
+    "AUD-T16-06"
+  ],
+  "created_at": "2026-08-07T19:15:00-03:00"
+}

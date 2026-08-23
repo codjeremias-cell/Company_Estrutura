@@ -1,0 +1,408 @@
+{
+    "artifact_type":  "EXECUTIVE_SUBMISSION",
+    "submission_id":  "SUBMISSION-T13-CANDG-R3",
+    "causal":  {
+                   "work_item_id":  "TASK-13",
+                   "front_id":  "FRONT-DADOS7-PROMOTION-R3",
+                   "handoff_id":  "HANDOFF-T13-DIRECTOR-CEO-PROMOTION-R3",
+                   "message_id":  "MSG-T13-DIRECTOR-CEO-PROMOTION-R3-01",
+                   "causation_message_ids":  [
+                                                 "MSG-T13-DIRECTOR-CEO-LIMIT-VERIFIED-R3-01",
+                                                 "MSG-T13-CEO-JEREMIAS-EXCEPTION-R3-01"
+                                             ],
+                   "contract_id":  "CONTRACT-T13-EVOL-DADOS7-20260729",
+                   "contract_version":  1,
+                   "contract_digest":  "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+                   "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                   "round":  3,
+                   "attempt":  1,
+                   "producer":  "diretor-de-lentes",
+                   "producer_version":  "1",
+                   "producer_digest":  "sha256:cc762abce8efb77f8e3db44b8ce1b69c804a9c5637e77f3f57a759bb73beb4c3",
+                   "created_at":  "2026-07-30T21:53:07-03:00"
+               },
+    "submitted_by":  "diretor-de-lentes",
+    "deliverable_type":  "proposal",
+    "executive_mission":  {
+                              "artifact_type":  "EXECUTIVE_MISSION",
+                              "mission_id":  "MISSION-T13-DIRECTOR-GATES-R3-20260730",
+                              "causal":  {
+                                             "work_item_id":  "TASK-13",
+                                             "front_id":  "FRONT-DADOS7-GATES-R3",
+                                             "handoff_id":  "HANDOFF-T13-CEO-DIRECTOR-R3",
+                                             "message_id":  "MSG-T13-CEO-DIRECTOR-R3-01",
+                                             "causation_message_ids":  [
+                                                                           "MSG-T13-EVOL-CEO-R3-01"
+                                                                       ],
+                                             "contract_id":  "CONTRACT-T13-EVOL-DADOS7-20260729",
+                                             "contract_version":  1,
+                                             "contract_digest":  "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+                                             "candidate_digest":  "n/a",
+                                             "round":  3,
+                                             "attempt":  1,
+                                             "producer":  "ceo-maestro",
+                                             "producer_version":  "1",
+                                             "producer_digest":  "sha256:5fe11a01b225690c56c87a7fd617425d087c86f74c7693f141c7dfc9877076ff",
+                                             "created_at":  "2026-07-30T15:52:00-03:00"
+                                         },
+                              "recipients":  [
+                                                 "diretor-de-lentes"
+                                             ],
+                              "objective":  "Selecionar por disputa cega entre cand-F e cand-G, auditar integralmente o candidato recomendado e submetê-lo à validação independente exigida para PRODUCAO.",
+                              "deliverable_type":  "proposal",
+                              "required_level":  "PRODUCAO",
+                              "scope_in":  [
+                                               "Fronteira cand-F e cand-G do ledger LEDGER-T13-EVOL-R3",
+                                               "Provas independentes EVOL-T13-PROVA-07 e EVOL-T13-PROVA-08",
+                                               "Disputa cega sob o Departamento de Juízes",
+                                               "Auditoria das dez dimensões sobre o candidato recomendado",
+                                               "Registros de ciclo, aplicabilidade RI-06, owner de TETO_PROVAVEL e sequência pré-promoção",
+                                               "Validação final separada do candidato recomendado"
+                                           ],
+                              "scope_out":  [
+                                                "Editar ou promover qualquer candidato antes dos gates",
+                                                "Reutilizar opiniões ou recibos da rodada R2 como veredito da R3",
+                                                "Fabricar outputs brutos históricos",
+                                                "Alterar ADR-014, ADR-015 ou RO-W8",
+                                                "Publicar, fazer push ou entregar a terceiros",
+                                                "Pontuar ou auditar diretamente no papel de Diretor"
+                                            ],
+                              "constraints":  [
+                                                  "A disputa é consultiva e não substitui a validação final",
+                                                  "Os três Juízes recebem ordem variada e contexto isolado",
+                                                  "A Auditoria atua somente por DEPARTMENT_MISSION do Diretor",
+                                                  "Nota e veredito pertencem exclusivamente ao Departamento de Juízes",
+                                                  "A promoção exige minimum_score 10, ausência de critical_fail, ausência de pendência bloqueante e governança COMPLIANT",
+                                                  "Os digests ordinais de F e G devem permanecer idênticos aos manifests das provas",
+                                                  "R6 e TETO_PROVAVEL permanecem visíveis nos relatórios aplicáveis"
+                                              ],
+                              "decisions_binding":  [
+                                                        "Jeremias autorizou seguir com a tarefa 13",
+                                                        "cand-F tem digest sha256:8481cf0d27587ea4b9f40877347e732224032e9eeb795b7710eabff929c655fb",
+                                                        "cand-G tem digest sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                                                        "F e G passaram o checker de artefatos gêmeos contra baseline cand-E vermelho",
+                                                        "TETO_PROVAVEL tem exatamente um accountable: ceo-maestro",
+                                                        "Mineração Externa é não aplicável nesta rodada",
+                                                        "DONE 7-10 é sequência; passos posteriores ao gate ficam bloqueados pelo gate e não exigem promoção antecipada"
+                                                    ],
+                              "dependencies":  [
+                                                   "LEDGER-T13-EVOL-R3 e 21-EVOLUTION-MANAGER-LEDGER-R3.md",
+                                                   "Transcripts, manifests e checker das duas provas R3",
+                                                   "Cópias anonimizadas com paridade de digest",
+                                                   "Três capacidades independentes de julgamento",
+                                                   "Três capacidades independentes de auditoria"
+                                               ],
+                              "acceptance_criteria":  [
+                                                          "PANEL_HANDOFF permite recalcular o consenso e recomenda um candidato real",
+                                                          "O candidato recomendado recebe GOVERNANCE_REPORT COMPLIANT do mesmo digest",
+                                                          "O candidato recomendado passa por VALIDACAO separada com minimum_score 10",
+                                                          "Nenhuma pendência bloqueante, critical_fail ou divergência de contrato permanece no gate",
+                                                          "O Diretor devolve integração recomendada sem editar o canônico"
+                                                      ],
+                              "required_evidence":  [
+                                                        "JUDGMENT_REQUEST e três JUDGE_ASSIGNMENTs da disputa",
+                                                        "Três JUDGE_OPINIONs isoladas e mapa de rótulos pós-rodada",
+                                                        "PANEL_HANDOFF comparativo",
+                                                        "DEPARTMENT_MISSION, AUDIT_TASKs e AUDIT_RECEIPTs R3",
+                                                        "AUDIT_LEDGER e GOVERNANCE_REPORT R3",
+                                                        "JUDGMENT_REQUEST de validação e JUDGE_REPORT do vencedor"
+                                                    ],
+                              "matrix_exchange":  {
+                                                      "allowed":  false,
+                                                      "topics":  [
+
+                                                                 ],
+                                                      "read_scope":  [
+
+                                                                     ],
+                                                      "write_scope":  [
+
+                                                                      ],
+                                                      "consolidation_owner":  null
+                                                  },
+                              "permissions":  {
+                                                  "default_policy":  "deny",
+                                                  "allowed_tools":  [
+                                                                        "filesystem_read",
+                                                                        "judgment_workspace_write",
+                                                                        "audit_workspace_write",
+                                                                        "sha256",
+                                                                        "schema_validate"
+                                                                    ],
+                                                  "allowed_resources":  [
+                                                                            "Estrutura Final de Skills/ceo-maestro/departamento-evolucao-skills/evals/regularizacao-dados7-2026-07-29",
+                                                                            "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29",
+                                                                            "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29",
+                                                                            "Estrutura Final de Skills/regras-de-ouro/REGRAS-DE-OURO.md"
+                                                                        ],
+                                                  "expires_at":  "2026-07-30T23:59:59-03:00"
+                                              },
+                              "stop_when":  [
+                                                "O candidato recomendado tiver PANEL_HANDOFF, GOVERNANCE_REPORT e JUDGE_REPORT correlacionados",
+                                                "Qualquer capacidade obrigatória estiver ausente, inválida ou conflitada",
+                                                "A disputa não preservar cegueira ou paridade de evidência",
+                                                "O candidato recomendado não alcançar o gate de PRODUCAO"
+                                            ],
+                              "judge_gate_required":  true,
+                              "return_to":  "ceo-maestro",
+                              "issued_at":  "2026-07-30T15:52:00-03:00"
+                          },
+    "scope_touched":  [
+                          "Fronteira cand-F e cand-G do ledger LEDGER-T13-EVOL-R3",
+                          "Provas independentes EVOL-T13-PROVA-07 e EVOL-T13-PROVA-08",
+                          "Disputa cega sob o Departamento de Juízes",
+                          "Auditoria das dez dimensões sobre o candidato recomendado",
+                          "Registros de ciclo, aplicabilidade RI-06, owner de TETO_PROVAVEL e sequência pré-promoção",
+                          "Validação final separada do candidato recomendado"
+                      ],
+    "artifact_refs":  [
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/FORWARD-TEST.md",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/PLACAR.md",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/evals.json",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/forward-proveniencia.json",
+                          "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/validate_workflow.py"
+                      ],
+    "evidence_refs":  [
+                          "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29/09-PROMOTION-RECEIPT-T13-R3.json",
+                          "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29/10-REGRESSION-AND-PARITY-TRANSCRIPT-T13-R3.md",
+                          "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29/07-JEREMIAS-APPROVAL-EVIDENCE.md"
+                      ],
+    "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+    "test_summary":  {
+                         "pass":  122,
+                         "fail":  0,
+                         "skip":  0,
+                         "skip_reasons":  [
+
+                                          ],
+                         "critical_fail":  false
+                     },
+    "audit_refs":  [
+                       "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/auditoria-r3/04-GOVERNANCE-REPORT-R3.json"
+                   ],
+    "governance_report":  {
+                              "report_id":  "GOV-T13-CANDG-R3",
+                              "auditor_ref":  "departamento-auditoria-responsabilidades",
+                              "auditor_digest":  "sha256:ea22092e99b6ff30b0bf873841357d08c836e5b9411404b10f12b3ff7a88e8c9",
+                              "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                              "contract_digest":  "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+                              "rules_digest":  "sha256:e307c4e784cfa29525b038504bc7ea6c598087e2527c07e33d3897958197eff6",
+                              "verdict":  "COMPLIANT",
+                              "violations":  [
+
+                                             ],
+                              "evidence_refs":  [
+                                                    "auditoria-r3/02-CONFORMITY-MATRIX-R3.json",
+                                                    "auditoria-r3/03-AUDIT-LEDGER-R3.json",
+                                                    "auditoria-r3/AUDIT-T13-R3-CONTRACT/RECEIPT.json",
+                                                    "auditoria-r3/AUDIT-T13-R3-GOV/RECEIPT.json",
+                                                    "auditoria-r3/AUDIT-T13-R3-EVIDENCE/RECEIPT.json"
+                                                ],
+                              "issued_at":  "2026-07-30T16:35:39-03:00"
+                          },
+    "judge_report":  {
+                         "artifact_type":  "JUDGE_REPORT",
+                         "report_id":  "JUDGE-T13-CANDG-R3",
+                         "causal":  {
+                                        "work_item_id":  "TASK-13",
+                                        "front_id":  "FRONT-DADOS7-AUDIT-REWORK",
+                                        "handoff_id":  "HANDOFF-T13-JUDGES-DIRECTOR-VALID-R3",
+                                        "message_id":  "MSG-T13-JUDGES-DIRECTOR-VALID-R3-01",
+                                        "causation_message_ids":  [
+                                                                      "MSG-T13-DIRECTOR-JUDGES-VALID-R3-01"
+                                                                  ],
+                                        "contract_id":  "CONTRACT-T13-EVOL-DADOS7-20260729",
+                                        "contract_version":  1,
+                                        "contract_digest":  "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+                                        "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                                        "round":  3,
+                                        "attempt":  1,
+                                        "producer":  "departamento-juizes",
+                                        "producer_version":  "1",
+                                        "producer_digest":  "sha256:a63511167a86d36fa240f124a8e23824fc868597c49af1be33157d72a5660b7a",
+                                        "created_at":  "2026-07-30T16:54:31-03:00"
+                                    },
+                         "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                         "judge_capability_ref":  "departamento-juizes",
+                         "judge_capability_digest":  "sha256:a63511167a86d36fa240f124a8e23824fc868597c49af1be33157d72a5660b7a",
+                         "scorecard":  [
+                                           {
+                                               "criterion_id":  "C1-FIDELIDADE",
+                                               "applicable":  true,
+                                               "score":  10,
+                                               "evidence_refs":  [
+                                                                     "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-FID/OPINION.md"
+                                                                 ]
+                                           },
+                                           {
+                                               "criterion_id":  "C2-ROBUSTEZ",
+                                               "applicable":  true,
+                                               "score":  10,
+                                               "evidence_refs":  [
+                                                                     "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-ROB/OPINION.md"
+                                                                 ]
+                                           },
+                                           {
+                                               "criterion_id":  "C3-MANUTENCAO",
+                                               "applicable":  true,
+                                               "score":  9,
+                                               "evidence_refs":  [
+                                                                     "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-RISK/OPINION.md"
+                                                                 ]
+                                           }
+                                       ],
+                         "minimum_score":  9,
+                         "verdict":  "ACEITO_USO_INTERNO",
+                         "required_level":  "PRODUCAO",
+                         "critical_fail":  false,
+                         "blocking_pending_refs":  [
+
+                                                   ],
+                         "evidence_refs":  [
+                                               "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-FID/OPINION.md",
+                                               "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-ROB/OPINION.md",
+                                               "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-RISK/OPINION.md",
+                                               "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/25-VALIDATION-MANAGER-LEDGER-R3.md",
+                                               "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/auditoria-r3/04-GOVERNANCE-REPORT-R3.json"
+                                           ],
+                         "issued_at":  "2026-07-30T16:54:31-03:00",
+                         "expires_at":  "2026-07-31T16:54:31-03:00"
+                     },
+    "limitation_report":  {
+                              "artifact_type":  "LIMITATION_REPORT",
+                              "report_id":  "LIMIT-T13-R6-R3",
+                              "causal":  {
+                                             "work_item_id":  "TASK-13",
+                                             "front_id":  "FRONT-DADOS7-AUDIT-REWORK",
+                                             "handoff_id":  "HANDOFF-T13-DIRECTOR-CEO-LIMIT-VERIFIED-R3",
+                                             "message_id":  "MSG-T13-DIRECTOR-CEO-LIMIT-VERIFIED-R3-01",
+                                             "causation_message_ids":  [
+                                                                           "MSG-T13-JUDGES-DIRECTOR-VALID-R3-01",
+                                                                           "MSG-T13-AUDIT-DIRECTOR-R3-01",
+                                                                           "MSG-T13-JUDGES-DIRECTOR-LIMIT-VERIFY-R3-01"
+                                                                       ],
+                                             "contract_id":  "CONTRACT-T13-EVOL-DADOS7-20260729",
+                                             "contract_version":  1,
+                                             "contract_digest":  "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+                                             "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                                             "round":  3,
+                                             "attempt":  1,
+                                             "producer":  "diretor-de-lentes",
+                                             "producer_version":  "1",
+                                             "producer_digest":  "sha256:cc762abce8efb77f8e3db44b8ce1b69c804a9c5637e77f3f57a759bb73beb4c3",
+                                             "created_at":  "2026-07-30T17:15:21-03:00"
+                                         },
+                              "submitted_by":  "diretor-de-lentes",
+                              "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                              "score_snapshot_digest":  "sha256:2bae089119427b638b659757b41e05cf4a7879e79138e178c3a5e29ce2397427",
+                              "current_minimum_score":  9,
+                              "best_attainable_score":  9,
+                              "below_cutoff_evaluations":  [
+                                                               {
+                                                                   "criterion_id":  "C3-MANUTENCAO",
+                                                                   "applicable":  true,
+                                                                   "score":  9,
+                                                                   "evidence_refs":  [
+                                                                                         "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/26-DEPARTMENT-JUDGE-REPORT-VALIDATION-R3.json",
+                                                                                         "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/validacao-r3/JUDGE-T13-VALID-R3-RISK/OPINION.md"
+                                                                                     ]
+                                                               }
+                                                           ],
+                              "objective_factors":  [
+                                                        "O runtime local não oferece assinatura, recibo de terceiro ou canal externo autenticado que prove que cada JUDGE_ASSIGNMENT foi de fato emitida.",
+                                                        "Assignments, opiniões, ledger e digests resolvem no mesmo domínio autorrelatado; eles detectam divergência e encarecem fabricação, mas não autenticam externamente a existência do processo.",
+                                                        "R6 é declarado pelo protocolo do Departamento de Juízes como limite do runtime e deve permanecer visível mesmo em relatório positivo."
+                                                    ],
+                              "attempted_remediations":  [
+                                                             "A R2 materializou atribuições, opiniões, provas e recibos como arquivos com digest.",
+                                                             "A R3 criou tarefas canônicas antes da emissão, attempt 1, cópias custodiadas e SHA-256 para cada entrada.",
+                                                             "Três auditores independentes verificaram contrato, governança e evidência, produzindo governança COMPLIANT.",
+                                                             "Três juízes independentes validaram a candidata; fidelidade e robustez obtiveram 10 e risco manteve 9 exclusivamente por R6."
+                                                         ],
+                              "alternatives_assessed":  [
+                                                            "Adicionar mais hashes ou outro ledger local foi descartado porque permanece no mesmo domínio autorrelatado.",
+                                                            "Alterar os cinco arquivos da candidata foi descartado porque não cria autenticação no runtime e ampliaria o escopo sem atacar a causa.",
+                                                            "Repetir prova ou validação foi descartado porque reproduz evidência técnica, mas não cria canal externo de emissão.",
+                                                            "Aceitar somente uso interno é compatível com a nota 9, mas não atende ao nível requerido PRODUCAO.",
+                                                            "Integrar serviço externo de assinatura foi descartado nesta rodada porque exige infraestrutura, credenciais, autorização externa e expansão material fora do contrato."
+                                                        ],
+                              "why_gap_cannot_close":  [
+                                                           "Nenhuma mudança legítima nos cinco arquivos do candidato pode provar um evento de emissão por uma autoridade externa ao runtime.",
+                                                           "Eliminar R6 exige capacidade externa de autenticação que não está disponível no ambiente nem autorizada no escopo vigente.",
+                                                           "O scorecard vigente isola R6 em C3-MANUTENCAO; os demais critérios já atingiram 10 e nenhum retrabalho técnico adicional fecha essa diferença."
+                                                       ],
+                              "residual_risks":  [
+                                                     "Um conjunto local internamente coerente ainda pode alegar emissão de atribuições que não ocorreu.",
+                                                     "A autenticidade do processo permanece auditável apenas a posteriori e dentro do mesmo domínio de registro."
+                                                 ],
+                              "mitigations":  [
+                                                  "Identidades de execução separadas para produção, Auditoria, disputa, validação e verificação da limitação.",
+                                                  "Envelopes isolados, cópias custodiadas, SHA-256, schemas e referências recalculáveis por terceiro.",
+                                                  "Promoção bloqueada até decisão explícita e exclusiva de Jeremias, com autorização de uso único se aprovada."
+                                              ],
+                              "requested_scope":  [
+                                                      "Permitir que o CEO solicite a Jeremias uma exceção única para promover exclusivamente cand-G nos cinco arquivos canônicos da tarefa 7.",
+                                                      "Condicionar qualquer uso da exceção às regressões canônicas, à paridade dos dois runtimes e ao fechamento rastreável do estado.",
+                                                      "Manter R6 declarado como risco residual; a exceção não altera ADR-014, ADR-015, RO-W8 nem os gates inegociáveis."
+                                                  ],
+                              "independent_verification":  {
+                                                               "reviewer":  "departamento-juizes",
+                                                               "reviewer_digest":  "sha256:a63511167a86d36fa240f124a8e23824fc868597c49af1be33157d72a5660b7a",
+                                                               "verdict":  "VERIFIED_IMPOSSIBILITY",
+                                                               "independence_confirmed":  true,
+                                                               "all_below_cutoff_criteria_covered":  true,
+                                                               "evidence_refs":  [
+                                                                                     "INPUTS/28-LIMITATION-DOSSIER-R3.md",
+                                                                                     "INPUTS/26-DEPARTMENT-JUDGE-REPORT-VALIDATION-R3.json",
+                                                                                     "INPUTS/04-GOVERNANCE-REPORT-R3.json",
+                                                                                     "INPUTS/OPINION-RISK-R3.md",
+                                                                                     "candidato/"
+                                                                                 ],
+                                                               "dissent_refs":  [
+
+                                                                                ]
+                                                           },
+                              "evidence_refs":  [
+                                                    "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/28-LIMITATION-DOSSIER-R3.md",
+                                                    "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/30-LIMITATION-MANAGER-LEDGER-R3.md",
+                                                    "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/limitacao-r3/JUDGE-T13-LIMIT-R3-RISK/VERIFICATION.md",
+                                                    "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/26-DEPARTMENT-JUDGE-REPORT-VALIDATION-R3.json",
+                                                    "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/auditoria-r3/04-GOVERNANCE-REPORT-R3.json"
+                                                ],
+                              "issued_at":  "2026-07-30T17:15:21-03:00"
+                          },
+    "exception_authorization":  {
+                                    "artifact_type":  "EXCEPTION_AUTHORIZATION",
+                                    "authorization_id":  "EXAUTH-T13-R6-R3",
+                                    "exception_request_id":  "EXREQ-T13-R6-R3",
+                                    "decision":  "APPROVED",
+                                    "authorized_by":  "jeremias",
+                                    "identity_evidence_ref":  "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29/07-JEREMIAS-APPROVAL-EVIDENCE.md",
+                                    "citation_exact":  "“Aprovo a exceção de uso único EXREQ-T13-R6-R3",
+                                    "candidate_digest":  "sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5",
+                                    "score_snapshot_digest":  "sha256:2bae089119427b638b659757b41e05cf4a7879e79138e178c3a5e29ce2397427",
+                                    "actual_minimum_score":  9,
+                                    "scope":  [
+                                                  "Autorizar uso único para promover cand-G exclusivamente sobre evals.json, forward-proveniencia.json, FORWARD-TEST.md, PLACAR.md e validate_workflow.py do pacote canônico de Arquitetura de Dados.",
+                                                  "Após a promoção, executar as regressões canônicas, confirmar paridade dos runtimes Claude e Codex e atualizar o estado da tarefa 13.",
+                                                  "Não alterar ADR-014, ADR-015, RO-W8, o corte de PRODUCAO ou qualquer gate inegociável."
+                                              ],
+                                    "conditions":  [
+                                                       "Usar exclusivamente o candidate_digest sha256:f3f8bdd0a284c349cb77488909b14e67ace8f2912e914d89f4e17a28987c73c5.",
+                                                       "Usar exclusivamente o score_snapshot_digest sha256:2bae089119427b638b659757b41e05cf4a7879e79138e178c3a5e29ce2397427.",
+                                                       "Manter R6 declarado como risco residual aceito apenas para esta promoção.",
+                                                       "Interromper sem promoção final se digest, regressão, paridade ou gate inegociável divergir.",
+                                                       "Marcar esta autorização como CONSUMED após o primeiro uso bem-sucedido; reutilização é proibida."
+                                                   ],
+                                    "issued_at":  "2026-07-30T17:29:51-03:00",
+                                    "expires_at":  "2026-07-31T17:17:55-03:00",
+                                    "usage_policy":  "single_use",
+                                    "status":  "CONSUMED"
+                                },
+    "blocking_pending_refs":  [
+
+                              ],
+    "round":  3,
+    "returned_to":  "ceo-maestro",
+    "submitted_at":  "2026-07-30T21:53:07-03:00"
+}

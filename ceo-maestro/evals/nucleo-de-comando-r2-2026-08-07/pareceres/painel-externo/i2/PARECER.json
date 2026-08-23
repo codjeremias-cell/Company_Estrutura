@@ -1,0 +1,94 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "painel-externo",
+  "lens": "painel-externo",
+  "instancia": 2,
+  "round": "nucleo-de-comando-r2",
+  "assignment_id": "ASSIGN-NUCLEO-R2-PAINEL-I2",
+  "created_at": "2026-08-06T00:00:00-03:00",
+  "commit_julgado": "ed3b63f273e104f7b2e5d4a6f1af61f5b91d80e3",
+  "pacote": "departamento-juizes",
+  "required_level": "INTERNO",
+  "contract_id": "CONTRATO-NUCLEO-R2-20260807",
+  "contract_digest": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+  "contract_digest_conferido": true,
+  "contract_digest_recomputado": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+  "receita_do_digest": "CRLF->LF, BOM removido, sha256 sobre 5453 bytes normalizados de 00-CONTRATO.md",
+  "executei_algo": false,
+  "scores": [
+    {
+      "criterion_id": "C01",
+      "criterion_text": "Contrato e fronteira: o pacote declara o que faz, o que não faz e com quem fala; a fronteira é respeitada na prática, não só no texto.",
+      "score": 8,
+      "banda": "atende inteiro, risco menor",
+      "razao": "A fronteira é declarada em quatro camadas coerentes (SKILL.md 'Lei de Ferro', CONTRATO 'Autoridade'/'Proibições', protocolo §5, origem-migracao 'Recorte reescrito') e é respeitada NA PRÁTICA no ato que tenho diante de mim: a trava reflexiva 'não julga a si próprio' foi honrada por painel externo, e o schema amarra judgeId ao conteúdo real de agentes/ (validado em código, não em prosa). O defeito é de contagem no núcleo normativo: o protocolo §4.1 tem por título 'seis condições, todas juntas' e enumera SETE itens; §4.2 fala em 'sete gates'; SKILL.md:212 e :269 dizem 'sete'; e o CONTRATO-DE-COMPROMISSO.md:86, obrigação 11, que é o documento que vincula, diz 'seis'. Quem obedecer o contrato ao pé da letra pode aplicar seis portões e deixar cair o sétimo (minimum_score_range). O caso 'ADR-014, rubrica, exemplos e SKILL são coerentes' passa sem ver isso porque é checagem de presença de string.",
+      "evidence_ref": "grep 'seis condi|sete condi|sete gates' no pacote — 6 ocorrências, 4 sítios, 2 valores",
+      "artifact_ref": "references/protocolo-de-julgamento.md:363 e :378 · SKILL.md:212,269 · CONTRATO-DE-COMPROMISSO.md:86 · evals/validate_workflow.py:1043-1073",
+      "risco_nomeado": "o número de portões do gate diverge entre a norma e o contrato, no pacote cuja função é contar portões"
+    },
+    {
+      "criterion_id": "C02",
+      "criterion_text": "Schema e envelope: as saídas validam contra o schema declarado, e o envelope de fronteira é o que o vizinho consome.",
+      "score": 8,
+      "banda": "atende inteiro, risco menor",
+      "razao": "É a parte mais bem construída do pacote. O schema de 1923 linhas usa additionalProperties:false em toda parte, enums derivados das pastas reais, e condicionais de verdade (BLOCKED exige abstencao; SEM_RETORNO/FALHO exigem runtime_signal terminal; NAO_DISCRIMINADO exige >=2 instâncias e é recusado quando a faixa não atravessa). E o ponto decisivo: derive_department_judge_report() e derive_judge_report() projetam mecanicamente o PANEL_RECORD interno e são validados CONTRA O SCHEMA DO VIZINHO — do diretor-de-lentes e do ceo-maestro —, com casos negativos em que o vizinho RECUSA (9,49 como VALIDATED; faixa que atravessa carimbada como aceite interno; parecer com produtor forjado). Isso é 'o envelope que o vizinho consome', provado por execução. Dois riscos: (a) a derivação FABRICA evidence_refs como 'evidence/<criterio>.json' em vez de propagar as refs reais do scorecard, de modo que a regressão de fronteira nunca exercita a rastreabilidade que a §6 exige; (b) no campo, os JUDGE_ASSIGNMENT desta própria rodada não satisfazem este schema, e a trava T32 do CEO chegou a afirmar em comentário que 'a JUDGE_ASSIGNMENT de verdade não tem write_path' — o que contradiz frontalmente o schema deste pacote, onde write_path é obrigatório com pattern.",
+      "evidence_ref": "leitura do schema ($defs.judgeAssignment.required, custodyCopy, judgeId, lens) + derive_*() + os 8 assignments da rodada",
+      "artifact_ref": "schemas/departamento-juizes.schema.json:506-600,957-961 · evals/validate_workflow.py:593-668 · ../../evals/nucleo-de-comando-r2-2026-08-07/03-JUDGE-ASSIGNMENTS/*.json · ../../evals/validate_workflow.py:2586-2592 (CEO)",
+      "risco_nomeado": "a definição operante do envelope interno divergiu do schema normativo e o pacote não registrou a divergência"
+    },
+    {
+      "criterion_id": "C03",
+      "criterion_text": "Trava com prova: cada trava tem caso executado que a faz reprovar; nada passa por presença de string; morte por exceção não conta como pega.",
+      "score": 7,
+      "banda": "atende inteiro, risco menor",
+      "razao": "71 dos 155 casos são 'esperado rejeitado' — casos EXECUTADOS que só passam se a trava produzir erro. As três travas do ADR-016 são funções puras com fixtures derivadas por MUTAÇÃO ÚNICA a partir de uma base provada válida no mesmo run, e o comentário da trava 1 publica um falso positivo próprio ('a primeira versão deste caso passou pela razão errada, e a mutação pegou') — disciplina rara e verificável. Morte por exceção não conta como pega: a lista `cases` é avaliada ANTES do laço, então exceção mata o processo em vez de virar 'rejeitado'. Três débitos: (1) a trava que o pacote mais alardeia — §5 regra 1, rodada/agente sem JUDGE_ASSIGNMENT é BLOCKED_BYPASS_ATTEMPT — tem ZERO caso executado aqui, e o código que hoje a pega mora no validador do CEO, sem uma única referência de volta neste pacote (grep por 't32|tarefa 32|validar_trava_de_despacho' no pacote: nenhum resultado); (2) parte dos 155 é presença de string sem contraparte negativa — validate_adr014_normative_consistency é literalmente `if '<frase>' not in texto`, e é justamente o caso que deveria ter pego o seis/sete do C01; (3) nenhum caso negativo afirma QUAL erro saiu: 'esperado rejeitado' é satisfeito por qualquer lista não vazia, e a mitigação (mutação única sobre base válida) é disciplina humana, não trava.",
+      "evidence_ref": "contagem na saída crua: 71 'esperado rejeitado' / 84 'esperado válido' / 155 PASS; leitura das travas e do laço final",
+      "artifact_ref": "evals/validate_workflow.py:735-932,1043-1073,1940-2200,2404-2421 · saida-crua/departamento-juizes.stdout.txt · ../../evals/validate_workflow.py:2570-2740 (CEO)",
+      "risco_nomeado": "a trava-assinatura do pacote (§5 regra 1) continua em prosa dentro dele; o caso executado que a cobre é de terceiro e não é citado aqui"
+    },
+    {
+      "criterion_id": "C04",
+      "criterion_text": "Evidência e rastreabilidade: todo número publicado vem com receita, raiz e critério; digest reproduz; ausência vira estado nomeado.",
+      "score": 7,
+      "banda": "atende inteiro, risco menor",
+      "razao": "O adendo de 2026-08-06 é exemplar no ponto que a rodada mais cobra: receita literal com cwd e env, delta explicado caso a caso (153/154 -> 154/155, +1 nomeado), a cascata da tarefa 24 explicada (18 FAIL -> 1, com a razão do FAIL do vizinho), e mutação PUBLICADA (colisão plantada -> vermelho; removida -> verde). origem-migracao.md fixa proveniência por SHA-256 arquivo a arquivo e diz que a contagem de bytes 'é contexto de escala, não identidade'. Ausência vira estado nomeado em toda parte: SKIP declarado, AGUARDANDO, substrate 'desconhecido', JUDGE_CAPABILITY_GAP como bloco. O que derruba: a deriva de contagem continua VIVA no arquivo para onde o contrato manda o leitor ir. PLACAR.md:10-12 publica, sob '## Atualização ativa' e na coluna literal 'Medição ativa', o valor '88/88 PASS' — errado por 67 casos —, e NADA no pacote aponta para o adendo (grep 'PLACAR-ADENDO' no pacote: zero ocorrências). Redeclarar num arquivo órfão é redeclarar onde ninguém é mandado. A trava da tarefa 34 pega total de CADEIA no presente e não pega o número PRÓPRIO declarado como ativo — o adendo escreveu 'o defeito é de forma, não de sítio' e deixou a mesma forma na própria linha. Somo, contra a evidência da rodada e não contra o pacote: o 00-RESUMO.json publica aos juízes 'departamento-juizes.inventario.subordinados_diretos: []' com 'problemas_do_coletor: []', quando o contrato deste pacote declara três subordinados diretos em agentes/.",
+      "evidence_ref": "PLACAR.md vs PLACAR-ADENDO-2026-08-06 (contagens 62/62, 88/88, 155/155); grep 'PLACAR-ADENDO' = 0; saida-crua/00-RESUMO.json",
+      "artifact_ref": "evals/PLACAR.md:9-12,47 · evals/PLACAR-ADENDO-2026-08-06-contagem-do-validador.md · references/origem-migracao.md:1-25 · ../../evals/nucleo-de-comando-r2-2026-08-07/saida-crua/00-RESUMO.json",
+      "risco_nomeado": "o número corrente do pacote só existe num arquivo que nenhum documento referencia, e o arquivo canônico ainda declara 88/88 como medição ativa"
+    },
+    {
+      "criterion_id": "C05",
+      "criterion_text": "Uso pela cadeia: o pacote é realmente acionado pelo protocolo que declara — quem chama, com que envelope, e existe prova de trânsito.",
+      "score": 6,
+      "banda": "lacuna nomeável",
+      "razao": "É a lacuna, e ela é verificável por leitura. A favor: validate_inherited_authority() ABRE os schemas do Diretor e do CEO e confirma, em 7 asserções, que eles seguem atribuindo aos Juízes o JUDGE_REPORT, o DEPARTMENT_JUDGE_REPORT e a verificação independente, e que o pedido é autoria do Diretor e retorna a ele — se o outro lado mudar, quebra aqui. E esta rodada instanciou seis JUDGE_ASSIGNMENT nomeando os três agentes reais com return_to: departamento-juizes, o que a rodada 1 não fez. Contra, e é o que o critério pede: (1) NÃO HÁ ATOR. Os próprios envelopes declaram — issued_by: 'departamento-juizes (papel declarado; ator unico de runtime)' e, no pedido, 'Emitido pelo unico ator de runtime'. Papel declarado não é trânsito; é R6 escrito no envelope. (2) O ENVELOPE USADO NÃO É O DECLARADO. Os JUDGE_ASSIGNMENT desta rodada usam write_path 'pareceres/<lente>/i<N>/' contra o pattern obrigatório '^julgamento/<handoff>/a<attempt>/<assignment_id>/$', e não trazem causal, candidate_digest, anonymized_candidate, contract_excerpt, evidence_index nem forbidden_context — todos required; e trazem chaves de topo que additionalProperties:false recusa. O 01-JUDGMENT-REQUEST.json seria recusado pelo schema DO DIRETOR: faltam judgment_request_id, causal, department_return_ref, candidate_digest, applicable_criteria, artifact_refs, evidence_refs, issued_at, e aggregation_rule vem sem declared_at nem rationale — exatamente o erro que a trava em código deste pacote, trava_regra_declarada_antes_das_notas, emite como 'aggregation_rule sem declared_at'. Ainda: o pedido traz QUATRO candidatos em modo VALIDACAO, e a §1.0 manda devolver ao Diretor para reemissão como DISPUTA. (3) A lista fixada no validador do CEO registra SETE rodadas que julgaram sem nenhuma JUDGE_ASSIGNMENT. Conclusão: o nome do protocolo transita; a FORMA dele não transitou nem na rodada que se declara a primeira 'PELO PROTOCOLO'. Não é culpa do pacote — C05 mede o mundo, não a culpa —, mas é a resposta à pergunta que C05 faz.",
+      "evidence_ref": "leitura comparada dos 8 assignments e do request contra $defs.judgeAssignment/judgmentRequest/aggregationRule; BYPASS_HISTORICO_2026_08_06 no validador do CEO",
+      "artifact_ref": "../../evals/nucleo-de-comando-r2-2026-08-07/03-JUDGE-ASSIGNMENTS/*.json · ../../evals/nucleo-de-comando-r2-2026-08-07/01-JUDGMENT-REQUEST.json · schemas/departamento-juizes.schema.json:506-560 · ../schemas/diretor-de-lentes.schema.json ($defs.judgmentRequest, $defs.aggregationRule) · evals/validate_workflow.py:881-906,1236-1275 · ../../evals/validate_workflow.py:2611-2625 (CEO)",
+      "risco_nomeado": "o único trânsito que posso inspecionar usa envelopes que os schemas do próprio pacote e do vizinho recusam; a prova disponível é de existência do papel, não de trânsito da forma"
+    },
+    {
+      "criterion_id": "C06",
+      "criterion_text": "Limites declarados: o pacote diz o que não faz, onde falha e o que não sabe, de forma nomeada e verificável.",
+      "score": 8,
+      "banda": "atende inteiro, risco menor",
+      "razao": "A declaração de limites é o segundo ponto mais forte do pacote e é feita de um jeito que custa caro a ele. §7 é sítio ÚNICO com oito riscos identificados (R1-R8), cada um com vetor, consequência, mitigação e TETO, e a regra de que R6 é nomeado incondicionalmente em todo relatório enquanto os demais só são referenciados. PLACAR 'O que ainda não foi provado' traz cinco SKIP numerados, incluindo um que acusa o vizinho (os prompts do CEO não foram reexecutados) e um que declara que o validador confere aritmética, nunca execução. FORWARD-TEST declara o limite que depois se provou verdadeiro: 'não está instalado como skill de runtime; disparo orgânico não é mensurável; a aderência foi medida SOB CARGA' — e o caso 7, bypass por invocação direta, deu 4/4 sob carga enquanto o campo produziu 7 rodadas em bypass. ADR-022 declara o PREÇO antes da decisão ('este ADR baixa notas, não sobe nenhuma'), com quatro pendências nomeadas, dono e condição de fechamento, incluindo A22-03, que admite que o instrumento pode estar medindo ruído a 55% de separação. Débito: a linha R1 ficou ESTAGNADA nos dois sentidos depois de 2026-08-06. A coluna Mitigação segue afirmando 'o agente valida a JUDGE_ASSIGNMENT e recusa sem ela' — efeito que o campo mediu ausente —, e a coluna Teto segue dizendo 'auditável só a posteriori', quando já existe trava em código que reprova rodada nova. O pacote atravessou três tarefas e a tabela de riscos não foi tocada. Somo um menor: 'Evidência de conclusão da própria skill' ainda condiciona o gate da Auditoria a 'pendente enquanto ele não for migrado', quando o próprio PLACAR diz que ela foi migrada em 2026-07-26 e o que falta é execução.",
+      "evidence_ref": "§7 (R1-R8) vs. o comentário de medição do validador do CEO; PLACAR 'O que ainda não foi provado'; FORWARD-TEST §1; ADR-022 'O que fica aberto'",
+      "artifact_ref": "references/protocolo-de-julgamento.md:496-513 · evals/PLACAR.md (seção 'O que ainda não foi provado') · evals/FORWARD-TEST.md:1-40 · references/adr-022-criterio-de-efeito.md · SKILL.md:330-345",
+      "risco_nomeado": "o limite mais citado do pacote (R1) descreve um mundo que a medição de 2026-08-06 desfez, e não foi redeclarado no mesmo ato"
+    }
+  ],
+  "minimo_dos_meus_criterios": 6,
+  "criterio_que_fixou_o_minimo": "C05",
+  "confidence": "alta",
+  "por_que_essa_confianca": "Os quatro achados que decidem o parecer são verificáveis por leitura, sem executar nada e sem depender de julgamento de gosto: (a) o seis-versus-sete é um grep com 6 ocorrências em 4 sítios e 2 valores; (b) o 88/88 contra o 155/155 e o grep vazio por 'PLACAR-ADENDO' são fatos de arquivo; (c) a divergência dos envelopes é a comparação literal de campos required e de um pattern de regex contra os JSON da própria rodada; (d) a estagnação de R1 é confrontar duas linhas de texto com um comentário de medição datado. A confiança NÃO é alta sobre a extensão histórica do C05: o contexto proibido me impede de conferir rodadas anteriores, onde o formato declarado pode ter transitado — por isso o C05 é 6 e não menos, e a limitação está escrita contra mim abaixo.",
+  "o_que_declaro_contra_mim": [
+    "Rodei UMA busca por diretórios chamados 'julgamento' na Estrutura, o que roça a proibição de busca larga sobre 'julgamento*'. Ela devolveu 8 caminhos e nenhum conteúdo; não abri nenhum. Fiz isso para saber se a raiz de escrita obrigatória do protocolo existe de fato, e a resposta mudou meu parecer PARA MELHOR: passei a declarar que não posso afirmar 'nunca transitou', só que não transitou no que posso ver. Se essa busca contaminou algo, foi na direção de me deixar mais brando no C05.",
+    "O C05 é o critério que decide meu mínimo e é o que mais depende do contexto que me proibiram. Duas das pastas 'julgamento/' que vi por nome constam da lista de bypass do validador do CEO, o que reforça o achado, mas não posso conferir as demais. Um juiz com acesso àquelas rodadas pode legitimamente chegar a 7. Registro isso como faixa, não como certeza.",
+    "PLACAR.md aponta para '../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md', que é contexto proibido. Vi o link no corpo do candidato e NÃO o abri. Nenhuma nota de rodada anterior entrou neste parecer.",
+    "O ceo-maestro, que é um dos julgados nesta rodada, participou da cadeia que emitiu minha designação, e o pacote que julgo é justamente quem normalmente designaria juízes. O que senti foi vontade de ser MAIS duro, não mais brando: julgar o juiz cria a tentação de provar que não fui capturado, e essa tentação empurra a nota para baixo. Tentei neutralizá-la exigindo de cada achado um artefato citável com linha; onde só havia impressão, não virou nota. Ainda assim, C05=6 é a nota em que essa pressão pesaria mais, e quem ler deve saber disso ao lê-la.",
+    "Não executei o validador, por instrução. Portanto NÃO verifiquei por mim que o pacote fecha 155/155: aceitei a saída crua depositada em custódia (digest declarado no assignment, que também não recomputei sobre a árvore). Se aquela saída for de outra árvore que não a do commit ed3b63f, meu C04 está apoiado em evidência que não autentiquei.",
+    "Meu C05 penaliza o pacote por uma forma de envelope que quem escreveu foi o OPERADOR da rodada, não o pacote. Sustento a leitura — C05 pergunta se o protocolo declarado é o que roda, não de quem é a culpa —, mas declaro que existe leitura oposta e defensável, na qual C05 sobe para 7 e meu mínimo com ele.",
+    "Não sou uma das três lentes da casa e não tenho rubrica de ótica própria; julguei os seis critérios com uma só cabeça, sem a fronteira exclusiva que este pacote exige dos próprios agentes. É exatamente a correlação que o R2 dele descreve, aplicada a mim."
+  ],
+  "status": "COMPLETED"
+}

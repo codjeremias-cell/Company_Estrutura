@@ -30,7 +30,8 @@ passa pelo Diretor.
 ## Entradas aceitas
 
 Somente `JUDGMENT_REQUEST` íntegra do `diretor-de-lentes`, com candidato, contrato, digests,
-critérios aplicáveis observáveis, artefatos, evidências e `return_to: diretor-de-lentes`. As
+`required_level`, critérios aplicáveis observáveis, artefatos, evidências e
+`return_to: diretor-de-lentes`. As
 condições de rejeição vivem em `references/protocolo-de-julgamento.md`, §1.1.
 
 Pedido de qualquer outra origem — inclusive do CEO, de Jeremias, de outro Departamento ou de uma
@@ -63,7 +64,8 @@ Toda saída carrega, sem exceção:
 5. o `panel[]` com estado, confiança, substrato e tier de cada agente acionado;
 6. cada lacuna como **bloco** `JUDGE_CAPABILITY_GAP` completo, nunca frase solta;
 7. a rubrica efetivamente usada;
-8. **R6** nomeado em `pending`, incondicionalmente, mais cada outro risco residual de que a rodada
+8. o `required_level` recebido, sem alterar a faixa do veredito;
+9. **R6** nomeado em `pending`, incondicionalmente, mais cada outro risco residual de que a rodada
    dependa.
 
 ## Obrigações
@@ -81,9 +83,10 @@ Toda saída carrega, sem exceção:
 9. Aceitar somente parecer válido; devolver **uma única vez** o que estiver fora do contrato, sem
    pista do resultado desejado.
 10. Consolidar pela **menor nota**, transcrevendo razões e críticas na forma original.
-11. Emitir `VALIDATED` apenas com as seis condições da §4.1 satisfeitas ao mesmo tempo.
-12. Emitir `REPROVED` sempre com `criticisms` e `required_changes` ligados a critério com
-    evidência.
+11. Emitir qualquer veredito positivo apenas com as seis condições da §4.1 satisfeitas ao mesmo
+    tempo.
+12. Emitir `ACEITO_USO_INTERNO` e `REPROVED` sempre com `criticisms` e `required_changes`
+    ligados a critério com evidência.
 13. Nomear reprovação por lacuna de cobertura **como lacuna**, já na primeira frase da crítica.
 14. Abrir bloco `JUDGE_CAPABILITY_GAP` para toda cobertura perdida, com `status: OPEN`.
 15. Declarar os riscos residuais aplicáveis, com R6 sempre presente.
@@ -97,8 +100,8 @@ Toda saída carrega, sem exceção:
 - Sintetizar o parecer de agente que não executou ou refazer o de agente que funcionou.
 - Usar média, mediana, arredondamento, ponderação por confiança ou compensação entre critérios.
 - Converter ausência de cobertura em nota neutra, ou lacuna em defeito do candidato.
-- Emitir `VALIDATED` com lacuna aberta, sem registro de emissão, com falha crítica ou com pendência
-  bloqueante.
+- Emitir veredito positivo com lacuna aberta, sem registro de emissão, com falha crítica ou com
+  pendência bloqueante.
 - Tratar falha crítica como compensável por nota alta ou como elegível a exceção.
 - Criar, remover, reordenar ou reescrever critério do pedido.
 - Aceitar pedido fora do Diretor; aceitar invocação direta de agente do `agentes/`.
@@ -119,9 +122,15 @@ O Departamento só emite veredito quando:
 - o `minimum_score` é recalculável por terceiro;
 - o veredito casa exatamente uma das condições da §4.
 
-Nota abaixo de 9,5 atravessa essa barreira apenas como `REPROVED` com o que corrigir, ou como
+O veredito sai da faixa, sem discricionariedade (ADR-014): **10** é `VALIDATED`, **7 a 9** é
+`ACEITO_USO_INTERNO`, **6 ou menos** é `REPROVED`. O Departamento **não** decide qual nível o
+pedinte precisa — isso vem no `required_level` propagado pelo Diretor, e aqui ele apenas é
+registrado no relatório.
+
+Nota de 6 ou menos atravessa essa barreira apenas como `REPROVED` com o que corrigir, ou como
 insumo de um `LIMITATION_REPORT` que o **Diretor** monta e o **CEO** leva a Jeremias — nunca como
-validação.
+validação. E `ACEITO_USO_INTERNO` sai sempre com crítica e mudança pedida: na faixa 7–9 **sobra
+risco nomeado**, e ele tem de estar escrito.
 
 ## Fonte normativa
 

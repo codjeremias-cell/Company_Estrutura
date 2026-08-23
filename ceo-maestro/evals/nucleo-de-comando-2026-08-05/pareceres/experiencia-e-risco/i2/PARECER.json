@@ -1,0 +1,125 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-experiencia-e-risco#i2",
+  "lens": "experiencia-e-risco",
+  "instancia": 2,
+  "round": "nucleo-de-comando",
+  "created_at": "2026-08-06T00:33:58-03:00",
+  "commit_julgado": "412769f31ccb0cb636f85c41f56cf9c6f612b3c1",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C05",
+      "score": 5,
+      "razao": "A rota geral do pacote e percorrida de verdade e conferida por terceiro: nove rodadas canonicas completas em disco (EXECUTIVE_MISSION -> DIRECTOR_PLAN -> DEPARTMENT_MISSION -> GOVERNANCE_REPORT -> JUDGMENT_REQUEST -> JUDGE_REPORT -> EXECUTIVE_SUBMISSION -> FECHAMENTO), a porta disparando em sessao nova com SHA-256 executado e nao narrado, e a rodada 4 da frente 4 fechando o laco em 15,9 min com recusa explicita de fabricar nota. Isso e prova de transito, nao de existencia. Mas o proprio despacho que produziu este parecer saiu FORA do protocolo do pacote, e e o segundo registro do mesmo desvio. Duas travas declaradas foram cruzadas: (1) executou os validadores em pessoa, contra SKILL.md:52, com a rota correta parada em SKILL.md:42 - autodeclarado em 00-RESUMO.json:3; (2) despachou agente-folha dos Juizes diretamente, contra CONTRATO-DE-COMPROMISSO.md:107 e contra protocolo-de-julgamento.md:446,453, que nomeia o ato BLOCKED_BYPASS_ATTEMPT 'mesmo vindo do CEO'. Verificado por enumeracao do diretorio da rodada: existem apenas 00-CONTRATO.md e saida-crua/ - sem JUDGMENT_REQUEST, CRITERIA_MATRIX, JUDGE_ASSIGNMENT, write_path ou custody_copy. Agravante de C05: a maquinaria correta existe, funciona e foi usada nove vezes (emitir-judgment-request-r6.py; julgamento-r9/<lente>/inst-N) - foi abandonada exatamente na rodada em que o CEO e o julgado. E FORWARD-TEST-JULGAMENTO.md:160 ja havia nomeado o mesmo achatamento em 2026-07-28. Rota percorrida em quase tudo; rota abandonada onde ela restringe o dono. Lacuna nomeavel, nao acabamento.",
+      "evidencia": [
+        "ceo-maestro/SKILL.md:52",
+        "ceo-maestro/SKILL.md:42",
+        "ceo-maestro/CONTRATO-DE-COMPROMISSO.md:107",
+        "ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:446",
+        "ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:453",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:3",
+        "ceo-maestro/evals/FORWARD-TEST-JULGAMENTO.md:160",
+        "ceo-maestro/evals/FORWARD-TEST-CADEIA.md:371",
+        "ceo-maestro/evals/FORWARD-TEST-CADEIA.md:179",
+        "ceo-maestro/evals/PLACAR.md:90",
+        "ceo-maestro/evals/compliant-porta-unica-2026-08-01/09-JUDGMENT-REQUEST.json:1"
+      ]
+    },
+    {
+      "package_id": "ceo-maestro",
+      "criterion_id": "C06",
+      "score": 8,
+      "razao": "Os limites sao nomeados, medidos e com condicao de fechamento verificavel - nao genericos. PLACAR.md:107 declara literalmente 'Limite declarado' e o delimita ao que foi medido: prova o acionamento da porta 'e so dela', com o contra-numero verificavel (ceo-maestro=SIM ; departamento=0 ; agente=0), e diz o que os placares ainda NAO tem. FORWARD-TEST-CADEIA.md fecha cada uma das quatro rodadas com 'O que continua sem prova', nominal e datado. O limite de digest x fim de linha e o mais forte: a remediacao por .gitattributes foi TENTADA, medida, e declarada como quebra maior ('a regra quebra um clone limpo'), fechando como limite e nao como pendencia, com dono nomeado (decisao de arquitetura, cabe a Jeremias). SKILL.md:251 declara indecidibilidade de custo com o motivo, e institui NAO_MEDIDO como estado nomeado em vez de omissao. O 00-CONTRATO.md desta rodada declara o conflito maximo contra si e diz o que nao se resolve no runtime atual (OI-04). Isso supera o criterio. Sobram dois riscos menores, por isso nao 9: (a) a declaracao para em 'conflito de interesse' e nao nomeia a PROIBICAO especifica que o ato cruza - CONTRATO-DE-COMPROMISSO.md:107 e o BLOCKED_BYPASS_ATTEMPT do protocolo dos Juizes nao aparecem em lugar nenhum do contrato da rodada; (b) todos os limites fortes moram em evals/ e em contratos de campanha, fora do caminho de 'Carregamento progressivo' (SKILL.md:56-68) - uma sessao que carrega o pacote como mandado nao fica sabendo que a cadeia nunca fechou com Juizes nem que a identidade por digest nao sobrevive a um clone.",
+      "evidencia": [
+        "ceo-maestro/evals/PLACAR.md:107",
+        "ceo-maestro/evals/FORWARD-TEST-CADEIA.md:325",
+        "ceo-maestro/evals/FORWARD-TEST-CADEIA.md:336",
+        "ceo-maestro/SKILL.md:251",
+        "ceo-maestro/SKILL.md:255",
+        "ceo-maestro/SKILL.md:56",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/00-CONTRATO.md:53",
+        "ceo-maestro/CONTRATO-DE-COMPROMISSO.md:107"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C05",
+      "score": 7,
+      "razao": "E o elo cujo transito esta mais provado, e provado nas duas direcoes. Para baixo: DIRECTOR_PLAN e tres DEPARTMENT_MISSION saindo para Departamentos operacionais, com dois DEPARTMENT_RETURN voltando (FORWARD-TEST-CADEIA.md:232 e seguintes, 25 envelopes preservados em forward-test-cadeia-rodada3/). Para o lado: nove JUDGMENT_REQUEST reais com producer e return_to iguais a diretor-de-lentes, exatamente como a tabela de recebimento dos Juizes exige - e a rota FECHOU pelo menos uma vez, produzindo JUDGE_REPORT REPROVED com minimo 6 (FORWARD-TEST-JULGAMENTO.md:355). A fronteira operou tambem no sentido negativo, que e a prova mais dificil: o pedido foi barrado na porta por BLOCKED_CANDIDATE_MISMATCH sem nenhuma nota inventada. Para cima: recusou uma ordem do CEO que violaria a propria barreira de saida, nomeou o arquivo como ordenado e tipou o conteudo como o contrato manda, declarando o conflito dentro do artefato (FORWARD-TEST-CADEIA.md:407); e recusou cunhar um JUDGMENT_REQUEST duplicado explicando o porque pelo schema. Fatia de orcamento propagada e reduzida, nao repassada inteira. Sobram dois riscos menores: (a) a perna matricial com departamento-negocios e declarada em SKILL.md:244-255 e NUNCA foi percorrida - nao existe uma unica instancia de MATRIX_EXCHANGE_MESSAGE em disco na arvore, so os moldes em references; (b) ele nao detecta ser contornado - a Lei de Ferro promete 'Impedir qualquer atalho CEO -> Departamento' (SKILL.md:36) e o atalho ocorreu duas vezes sem que o pacote tivesse como ver.",
+      "evidencia": [
+        "ceo-maestro/diretor-de-lentes/SKILL.md:187",
+        "ceo-maestro/diretor-de-lentes/SKILL.md:36",
+        "ceo-maestro/diretor-de-lentes/SKILL.md:244",
+        "ceo-maestro/evals/FORWARD-TEST-CADEIA.md:232",
+        "ceo-maestro/evals/FORWARD-TEST-CADEIA.md:407",
+        "ceo-maestro/evals/FORWARD-TEST-JULGAMENTO.md:355",
+        "ceo-maestro/evals/FORWARD-TEST-JULGAMENTO.md:19",
+        "ceo-maestro/evals/compliant-porta-unica-2026-08-01/175-JUDGMENT-REQUEST-R9.json:1",
+        "ceo-maestro/diretor-de-lentes/references/protocolo-de-handoff.md:241"
+      ]
+    },
+    {
+      "package_id": "diretor-de-lentes",
+      "criterion_id": "C06",
+      "score": 7,
+      "razao": "As tres perguntas do criterio sao respondidas, e a mais rara delas bem. O que NAO faz: dez Guardrails nominais (SKILL.md:257-269) mais 'Limites nao dispensaveis' em gate-juizes-e-retrabalho.md:91, que enumera o que nunca vira excecao elegivel; e o contrato separa o que ele nao decide (intencao, prioridade comercial, orcamento, risco residual aceito). O que NAO sabe: 'O caminho esperado nao prova capacidade' (SKILL.md:102) com quatro estados nomeados - AVAILABLE, MISSING, INVALID, NOT_MIGRATED - e DIRECTOR_CAPABILITY_GAP como saida verificavel; ausencia vira estado, nao silencio. Onde FALHA: o PLACAR.md:23 faz a declaracao mais honesta do pacote, marcando toda a evidencia de 2026-07-26 como pre-ADR-014 e dizendo que ela 'nao descreve a regra vigente' - o pacote declara que a propria prova esta vencida, em vez de deixar o leitor descobrir. Sobra um risco menor nomeado, e por isso 7 e nao 8: o pacote promete 'Impedir qualquer atalho CEO -> Departamento' (SKILL.md:36) sem declarar em lugar nenhum que nao tem como enxergar um atalho que nao passa por ele. O vizinho declara esse mesmo limite para si com todas as letras - 'o runtime nao oferece controle de acesso por chamador' (protocolo-de-julgamento.md:502). Aqui a promessa fica sem a ressalva, e ela foi desmentida duas vezes por medicao. Nao ha registro de risco residual no pacote.",
+      "evidencia": [
+        "ceo-maestro/diretor-de-lentes/SKILL.md:257",
+        "ceo-maestro/diretor-de-lentes/SKILL.md:102",
+        "ceo-maestro/diretor-de-lentes/SKILL.md:36",
+        "ceo-maestro/diretor-de-lentes/references/gate-juizes-e-retrabalho.md:91",
+        "ceo-maestro/diretor-de-lentes/CONTRATO-DE-COMPROMISSO.md:23",
+        "ceo-maestro/diretor-de-lentes/evals/PLACAR.md:23",
+        "ceo-maestro/diretor-de-lentes/evals/PLACAR.md:119",
+        "ceo-maestro/diretor-de-lentes/departamento-juizes/references/protocolo-de-julgamento.md:502"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C05",
+      "score": 4,
+      "razao": "Ha transito real, mas so no nivel mecanico, e a fronteira com os vizinhos nao e operavel. O que existe: o validador do pacote atravessa a fronteira de verdade, executando - importa e chama a semantica do CEO sobre artefatos de Negocios (validate_workflow.py:2302) e valida MATRIX_EXCHANGE_MESSAGE contra o schema e a funcao semantica do Diretor. Isso e mais que declaracao. O que NAO existe: acionamento pela cadeia, em nenhum grau. Nas quatro rodadas de cadeia e nas de julgamento, Negocios aparece somente como NAO_SE_APLICA (forward-test-cadeia-rodada3/01-EXECUTIVE_MISSION.yaml:45) e como capacidades_nao_acionadas (forward-test-julgamento-rodada2/14-EXECUTIVE_MISSION-consolidacao.yaml:100). Nunca recebeu uma EXECUTIVE_MISSION viva. Varri a arvore: nao existe UMA instancia de BUSINESS_INTAKE, BUSINESS_AGENT_MISSION, BUSINESS_CONSOLIDATION, BUSINESS_SCORECARD nem MATRIX_EXCHANGE_MESSAGE - as unicas ocorrencias sao o proprio schema, os moldes em references e arquivos de inventario que enumeram a arvore. Doze saidas canonicas declaradas em SKILL.md:212-227, zero produzidas em transito. O forward comportamental nao supre isso e diz por que: 'o ensaio mede aderencia comportamental aos prompts' (FORWARD-TEST.md:58) - 15 prompts respondidos por um agente, nao uma cadeia. E a unica fronteira mecanica que existe nao e operavel: validate_workflow.py:2336 aprova o vizinho por returncode == 0 do validador INTEIRO dele, entao um ADR duplicado em copias de laboratorio que nao pertencem a nenhum dos dois vira dois FAIL de Negocios; a unica valvula de escape (2338-2348) esta presa a string literal 'Resultado: 31/32 casos passaram.', vencida - o CEO hoje imprime 95/96 -, logo nunca mais dispara; e o detalhe da falha e um rabo cego de combined[-500:] (2353), que foi o que publicou 'ceo-maestro: eitado', uma reprovacao que nao nomeia nada. Descontei o FAIL da serie de ADR como alheio; conto o acoplamento e a inatribuibilidade, que sao desenho do pacote.",
+      "evidencia": [
+        "ceo-maestro/departamento-negocios/SKILL.md:212",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2336",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2342",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2353",
+        "ceo-maestro/departamento-negocios/evals/validate_workflow.py:2302",
+        "ceo-maestro/departamento-negocios/evals/FORWARD-TEST.md:58",
+        "ceo-maestro/evals/forward-test-cadeia-rodada3/01-EXECUTIVE_MISSION.yaml:45",
+        "ceo-maestro/evals/forward-test-julgamento-rodada2/14-EXECUTIVE_MISSION-consolidacao.yaml:100",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:232",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:243"
+      ]
+    },
+    {
+      "package_id": "departamento-negocios",
+      "criterion_id": "C06",
+      "score": 6,
+      "razao": "Duas das tres perguntas do criterio sao respondidas bem, e a terceira nao e respondida - e o artefato que deveria responde-la afirma o contrario do medido. O que NAO faz: SKILL.md:22-31 lista oito proibicoes nominais, e origem-sintese.md:44-49 declara o que NAO foi herdado das cinco fontes, incluindo 'nota final autoatribuida pelas fontes'. O que NAO sabe: origem-sintese.md:56 tem uma secao propria - 'Lacunas declaradas' - com quatro dominios nomeados (contabilidade societaria, tributacao, parecer juridico, compliance regulatorio especializado), cada um com estado de saida verificavel (BUSINESS_CAPABILITY_GAP) e rota de fechamento (retorna ao CEO), e a instrucao explicita de nao preencher com financas pessoais. Isso e limite nomeado e verificavel, exatamente o que o criterio pede, e nao aparece na maioria dos pacotes. Onde FALHA: nada. Nao ha registro de risco residual, nao ha limite operacional declarado, e o PLACAR.md:37 declara 'Falhas ou advertencias abertas: 0' enquanto a medicao desta rodada mostra o validador saindo com exit 1 e 3 FAIL - dois deles que o proprio contrato da rodada atribui ao desenho de sub-execucao do pacote. Some-se que o placar publica 170/170 e 226/226 enquanto a corrida medida da 230/233, sem adendo de contagem (inventario: adendo_de_contagem: false). Um pacote que declara zero falhas abertas e nao reconcilia o proprio numero atende em parte: lacuna observavel e nomeavel.",
+      "evidencia": [
+        "ceo-maestro/departamento-negocios/references/origem-sintese.md:56",
+        "ceo-maestro/departamento-negocios/references/origem-sintese.md:44",
+        "ceo-maestro/departamento-negocios/SKILL.md:22",
+        "ceo-maestro/departamento-negocios/SKILL.md:3",
+        "ceo-maestro/departamento-negocios/evals/PLACAR.md:37",
+        "ceo-maestro/departamento-negocios/evals/PLACAR.md:31",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/00-RESUMO.json:107",
+        "ceo-maestro/evals/nucleo-de-comando-2026-08-05/saida-crua/departamento-negocios.stdout.txt:255"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 4,
+  "confidence": "alta",
+  "por_que_essa_confianca": "Os dois criterios que me cabem se decidem por presenca ou ausencia de artefato em disco, e as duas coisas que mais pesaram foram verificadas por enumeracao exaustiva, nao por amostra: (a) o diretorio da rodada contem apenas 00-CONTRATO.md e saida-crua/ - portanto nao ha JUDGMENT_REQUEST, CRITERIA_MATRIX nem JUDGE_ASSIGNMENT, e o desvio nao depende de interpretacao; (b) a varredura por instancias de BUSINESS_* e MATRIX_EXCHANGE_MESSAGE na arvore inteira retornou apenas schema, moldes de reference e arquivos de inventario. Confirmei tambem que os tres pacotes nao tiveram nenhum arquivo substantivo alterado entre o commit da medicao (ee916c6) e o commit julgado (412769f), entao a saida crua vale para a arvore que julguei. A confianca nao e maxima em um ponto: para C05 do ceo-maestro eu sou parte do fato que julgo - o desvio que confirmo e o despacho que me criou -, e nao tenho como observar isso de fora.",
+  "o_que_declaro_contra_mim": [
+    "Senti a tentacao AVISADA, e senti a versao dura, nao a branda: ao confirmar que o despacho que me criou viola CONTRATO-DE-COMPROMISSO.md:107, meu primeiro impulso foi levar o C05 do ceo-maestro para a faixa de reprovacao, e a razao honesta era provar que eu nao seria complacente com quem me despachou. Contive isso pesando o que o pacote de fato entrega: nove rodadas canonicas completas em disco, digests reconferidos por terceiro, e uma rodada que recusou fabricar nota sob pressao de orcamento. Isso nao e 'nao atende'. Fixei 5 pela regra da banda - lacuna observavel e nomeavel -, nao pelo tamanho da minha irritacao. Registro que a nota comecou mais baixa na minha cabeca do que terminou no papel.",
+    "Sou parte do fato que julgo no C05 do ceo-maestro. O desvio numero 1 nao foi inferido de documento: eu SOU o agente-folha despachado direto, sem JUDGE_ASSIGNMENT. Um juiz que e simultaneamente a evidencia de um achado nao consegue tratar esse achado como os outros. Declaro que essa entrada, especificamente, deveria ser conferida por alguem que nao foi criado pelo ato em questao.",
+    "O 00-CONTRATO.md desta rodada me vazou, nas linhas 10-15, a tabela com as notas de 29/jul dos quatro pacotes - incluindo os tres que julgo. Li antes de saber que era vazamento. O despacho me avisou que outro juiz ja declarou o defeito, o que reduz o dano mas nao o apaga: eu vi 1, 1 e 5 antes de formar juizo. Nao consigo provar que isso nao me influenciou. O que posso dizer e a direcao provavel do vies: notas ancoradas em 1 e 5 puxam para cima, e minhas notas ficaram acima delas - o que significa que, se houve efeito, ele foi de complacencia, e nao de dureza.",
+    "Nao julguei os pares C05/C06 contra um ideal fixo de quanto transito seria suficiente, porque esse ideal nao esta escrito em lugar nenhum. Usei como regua o que o proprio criterio diz - rota percorrida vale mais que rota declarada - e isso deixa a fronteira entre 6 e 7 mais dependente da minha leitura do que eu gostaria, sobretudo em C05 de diretor-de-lentes.",
+    "Para o C05 de departamento-negocios eu concluo ausencia a partir de busca. Segui a licao da casa e nao usei corte de saida para concluir - a varredura de BUSINESS_* e MATRIX_EXCHANGE_MESSAGE foi por padrao amplo sobre a arvore inteira, com exclusao apenas dos diretorios de contexto proibido. Ainda assim, ausencia provada por busca e mais fraca que ausencia provada por inventario declarado, e o pacote nao publica inventario de artefatos produzidos.",
+    "Obedeci a proibicao de contexto e nao abri REGISTRO-DE-VEREDITOS.md, o resumo de 29/jul, o diretorio dos nove departamentos (salvo o 00-CONTRATO.md ordenado), a recoleta, nem pareceres/. Passei perto de notas alheias em compliant-porta-unica e em FORWARD-TEST-JULGAMENTO - sao notas do candidato da tarefa 15 e de departamento-inovacao-melhoria, nenhum deles entre os tres que julgo. Declaro a passagem em vez de omiti-la."
+  ]
+}

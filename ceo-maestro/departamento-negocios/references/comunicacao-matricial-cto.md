@@ -40,6 +40,7 @@ causal:
   producer_digest: "sha256:<64 hex>"
   created_at: "2026-07-26T12:00:00Z"
 executive_mission_ref: mission-...
+required_level: INTERNO
 sender: departamento-negocios
 recipient: diretor-de-lentes
 topic: "..."
@@ -52,7 +53,9 @@ evidence_refs:
 sent_at: "2026-07-26T12:00:00Z"
 ```
 
-O emissor deve ser o produtor causal. `sender` e `recipient` precisam ser opostos. Os escopos e o dono da consolidação devem coincidir com a missão.
+O emissor deve ser o produtor causal. `sender` e `recipient` precisam ser opostos. Os escopos, o
+dono da consolidação e o `required_level` precisam coincidir com a missão. Nível ausente ou
+divergente bloqueia.
 
 O cabeçalho causal da mensagem preserva o contrato da `EXECUTIVE_MISSION`, inclusive `candidate_digest: n/a`. O digest real do candidato fica no `BUSINESS_JUDGMENT_PACKAGE` e nas evidências referenciadas; não substitui o digest causal da missão na mensagem matricial.
 
@@ -64,7 +67,7 @@ O cabeçalho causal da mensagem preserva o contrato da `EXECUTIVE_MISSION`, incl
 - informar restrições, custo-alvo e critério de aceite;
 - pedir tratamento de dependência técnica que reduziu o score;
 - entregar `BUSINESS_JUDGMENT_PACKAGE` para o Diretor abrir o julgamento vigente;
-- receber o veredito ou o estado técnico correlacionado.
+- receber o veredito ou o estado técnico correlacionado, preservando o mesmo `required_level`.
 
 ## 5. Usos proibidos
 

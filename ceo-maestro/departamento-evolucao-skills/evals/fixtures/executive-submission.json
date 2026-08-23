@@ -1,0 +1,211 @@
+{
+  "artifact_type": "EXECUTIVE_SUBMISSION",
+  "submission_id": "submission-fixture-001",
+  "causal": {
+    "work_item_id": "work-002",
+    "front_id": "front-evolucao",
+    "handoff_id": "handoff-002",
+    "message_id": "message-sub-001",
+    "causation_message_ids": [
+      "message-ceo-002"
+    ],
+    "contract_id": "contract-002",
+    "contract_version": 1,
+    "contract_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "candidate_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "round": 1,
+    "attempt": 1,
+    "producer": "departamento-evolucao-skills",
+    "producer_version": "1.0.0",
+    "producer_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "producer_digest_recipe": "hashlib::sha256 sobre SKILL.md do produtor em bytes LF",
+    "created_at": "2026-07-26T22:00:00-03:00"
+  },
+  "submitted_by": "departamento-evolucao-skills",
+  "deliverable_type": "proposal",
+  "executive_mission": {
+    "artifact_type": "EXECUTIVE_MISSION",
+    "mission_id": "mission-002",
+    "causal": {
+      "work_item_id": "work-002",
+      "front_id": "front-evolucao",
+      "handoff_id": "handoff-002",
+      "message_id": "message-missao-001",
+      "causation_message_ids": [
+        "message-ceo-002"
+      ],
+      "contract_id": "contract-002",
+      "contract_version": 1,
+      "contract_digest": "sha256:abababababababababababababababababababababababababababababababab",
+      "candidate_digest": "n/a",
+      "round": 1,
+      "attempt": 1,
+      "producer": "ceo-maestro",
+      "producer_version": "1.0.0",
+      "producer_digest": "sha256:abababababababababababababababababababababababababababababababab",
+      "producer_digest_recipe": "hashlib::sha256 sobre SKILL.md do produtor em bytes LF",
+      "created_at": "2026-07-26T22:00:00-03:00"
+    },
+    "recipients": [
+      "departamento-evolucao-skills"
+    ],
+    "objective": "Provar o envelope de fronteira do schema do CEO.",
+    "deliverable_type": "proposal",
+    "required_level": "INTERNO",
+    "scope_in": [
+      "alvo unico do departamento de evolucao"
+    ],
+    "scope_out": [
+      "editar a arvore viva do pacote"
+    ],
+    "constraints": [
+      "nao promover e nao pontuar"
+    ],
+    "decisions_binding": [
+      "oficial e LF nesta rodada"
+    ],
+    "dependencies": [
+      "schema do ceo-maestro"
+    ],
+    "acceptance_criteria": [
+      "ceo_schema exercitado sobre o envelope"
+    ],
+    "required_evidence": [
+      "saida crua do caso de fronteira"
+    ],
+    "matrix_exchange": {
+      "allowed": false,
+      "topics": [],
+      "read_scope": [],
+      "write_scope": [],
+      "consolidation_owner": null
+    },
+    "permissions": {
+      "default_policy": "deny",
+      "allowed_tools": [],
+      "allowed_resources": [
+        "ceo-maestro/departamento-evolucao-skills"
+      ],
+      "expires_at": "2026-08-28T23:59:59-03:00"
+    },
+    "stop_when": [
+      "fronteira devolvida ao CEO"
+    ],
+    "judge_gate_required": true,
+    "return_to": "ceo-maestro",
+    "issued_at": "2026-07-26T22:00:00-03:00"
+  },
+  "scope_touched": [
+    "evals/validate_workflow.py"
+  ],
+  "artifact_refs": [
+    "evals/fixtures/nao-e-submissao-real.json"
+  ],
+  "evidence_refs": [
+    "evals/saida-crua/fronteira.txt"
+  ],
+  "candidate_digest": "sha256:abababababababababababababababababababababababababababababababab",
+  "test_summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "skip_reasons": [],
+    "critical_fail": false
+  },
+  "audit_refs": [
+    "auditoria/fixture-nao-emitida.json"
+  ],
+  "governance_report": {
+    "report_id": "gov-fixture-001",
+    "auditor_ref": "departamento-auditoria-responsabilidades",
+    "auditor_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "candidate_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "contract_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "rules_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "verdict": "NONCOMPLIANT",
+    "violations": [
+      "fixture de fronteira, nao e auditoria real"
+    ],
+    "evidence_refs": [
+      "auditoria/fixture-nao-emitida.json"
+    ],
+    "issued_at": "2026-07-26T22:00:00-03:00",
+    "pending": [
+      "R6 — a existência do painel auditor não é verificável pelo runtime; sob porta única a inspeção é executada em papel pela gerente. A âncora NÃO impede a fabricação, e o custo dela está medido: recibos íntegros que reabrem foram forjados em 80 linhas e 0,031 s, com 1 tentativa (OI-04, 2026-08-02).",
+      "R9 — a âncora prova que UM arquivo da raiz auditada foi reaberto na versão declarada; ela NÃO liga a dimensão ao artefato que deveria sustentá-la. Pertinência de evidência é mérito, e mérito é dos Juízes (R5). (Este limite viajava como R8 até a rodada 3, e colidia com o R8 do §7, bypass para fora.)",
+      "R10 — nada assina este envelope. Edição do arquivo posterior à gravação é invisível ao emissor E ao validador, e o consumidor pode ler um veredito que o emissor não produziu. A defesa correspondente é o CONSUMIDOR recomputar o envelope a partir do ledger e do candidato, e ela mora fora deste pacote. Medido pela sonda S14-ENVELOPE-EDITADO.",
+      "R11 — TETO DO MÉTODO: forjar a evidência é chamar as mesmas funções que a verificam. Derivar da evidência protege contra valor DIGITADO; não protege contra quem CHAMA o derivador, porque atacante e verificador compartilham o código, o processo e a árvore. Medido por origem independente em 2026-08-02 (OI-04): 80 linhas, 0,031 s, 1 tentativa, 4 arquivos lidos, zero conhecimento do conteúdo auditado. Fechar isto exige âncora externa ao pacote — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo — e não cabe no runtime atual. Este envelope NÃO carrega defesa contra isto e não obriga nenhuma: a origem independente dos casos foi retirada do envelope na rodada 8, e o limite permanece ABERTO."
+    ],
+    "candidate_digest_source": "DECLARADO_NAO_CONFERIDO",
+    "compliance_claim": {
+      "certifies": "COMPLIANT certifica exatamente isto: nenhum valor deste envelope foi aceito como digitado quando divergia da evidência reaberta. Toda âncora declarada foi reaberta contra a raiz auditada, cada citação foi conferida no byte, cada total foi recontado dos recibos em disco e cada estado da matriz foi rederivado dos mesmos recibos.",
+      "does_not_certify": "COMPLIANT NÃO certifica que a evidência não foi forjada. Forjar a evidência é chamar as mesmas funções que a verificam: medido por origem independente em 2026-08-02 (OI-04) a 80 linhas, 0,031 s, 1 tentativa, 4 arquivos lidos e zero conhecimento do conteúdo auditado. Atacante e verificador compartilham o código, o processo e a árvore; fechar isto exige âncora externa ao pacote, que não cabe no runtime atual.",
+      "ceiling_ref": "R11",
+      "source": "scripts/inspecao_executada.py::ALEGACAO_DO_COMPLIANT"
+    },
+    "candidate_manifest_status": "SEM_MANIFESTO"
+  },
+  "judge_report": {
+    "artifact_type": "JUDGE_REPORT",
+    "report_id": "judge-fixture-001",
+    "causal": {
+      "work_item_id": "work-002",
+      "front_id": "front-evolucao",
+      "handoff_id": "handoff-002",
+      "message_id": "message-judge-001",
+      "causation_message_ids": [
+        "message-ceo-002"
+      ],
+      "contract_id": "contract-002",
+      "contract_version": 1,
+      "contract_digest": "sha256:abababababababababababababababababababababababababababababababab",
+      "candidate_digest": "sha256:abababababababababababababababababababababababababababababababab",
+      "round": 1,
+      "attempt": 1,
+      "producer": "departamento-juizes",
+      "producer_version": "1.0.0",
+      "producer_digest": "sha256:abababababababababababababababababababababababababababababababab",
+      "producer_digest_recipe": "hashlib::sha256 sobre SKILL.md do produtor em bytes LF",
+      "created_at": "2026-07-26T22:00:00-03:00"
+    },
+    "candidate_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "judge_capability_ref": "departamento-juizes",
+    "judge_capability_digest": "sha256:abababababababababababababababababababababababababababababababab",
+    "scorecard": [
+      {
+        "criterion_id": "crit-fixture-01",
+        "applicable": true,
+        "score": 5,
+        "evidence_refs": [
+          "juizes/fixture-nao-emitida.json"
+        ]
+      }
+    ],
+    "minimum_score": 5,
+    "minimum_score_range": {
+      "lo": 5,
+      "hi": 5
+    },
+    "instances_per_lens": 1,
+    "aggregation_rule": {
+      "method": "MENOR",
+      "declared_at": "2026-07-26T22:00:00-03:00",
+      "rationale": "fixture de schema, nao e julgamento real"
+    },
+    "verdict": "REPROVED",
+    "required_level": "INTERNO",
+    "critical_fail": true,
+    "blocking_pending_refs": [],
+    "evidence_refs": [
+      "juizes/fixture-nao-emitida.json"
+    ],
+    "issued_at": "2026-07-26T22:00:00-03:00",
+    "expires_at": "2026-08-28T23:59:59-03:00"
+  },
+  "limitation_report": null,
+  "exception_authorization": null,
+  "blocking_pending_refs": [],
+  "round": 1,
+  "returned_to": "ceo-maestro",
+  "submitted_at": "2026-07-26T22:00:00-03:00"
+}

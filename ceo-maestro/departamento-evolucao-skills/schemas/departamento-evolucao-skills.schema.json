@@ -4,12 +4,24 @@
   "title": "Contratos internos do Departamento de Evolução de Skills",
   "description": "Plano de frentes, tarefa por capacidade, retorno por kind, fronteira de Pareto, lacuna e livro-razão da rodada. Sem promoção, sem nota e sem vencedor: selecionar é do departamento-juizes e promover é do ceo-maestro com Jeremias (ADR-004). Os envelopes de fronteira (EXECUTIVE_MISSION, EXECUTIVE_SUBMISSION) pertencem ao schema do ceo-maestro e não são redefinidos aqui.",
   "oneOf": [
-    { "$ref": "#/$defs/evolutionPlan" },
-    { "$ref": "#/$defs/evolutionTask" },
-    { "$ref": "#/$defs/evolutionReturn" },
-    { "$ref": "#/$defs/candidateSet" },
-    { "$ref": "#/$defs/evolutionCapabilityGap" },
-    { "$ref": "#/$defs/evolutionLedger" }
+    {
+      "$ref": "#/$defs/evolutionPlan"
+    },
+    {
+      "$ref": "#/$defs/evolutionTask"
+    },
+    {
+      "$ref": "#/$defs/evolutionReturn"
+    },
+    {
+      "$ref": "#/$defs/candidateSet"
+    },
+    {
+      "$ref": "#/$defs/evolutionCapabilityGap"
+    },
+    {
+      "$ref": "#/$defs/evolutionLedger"
+    }
   ],
   "$defs": {
     "identifier": {
@@ -18,33 +30,66 @@
       "maxLength": 128,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
     },
-    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-    "timestamp": { "type": "string", "format": "date-time" },
-    "artifactRef": { "type": "string", "minLength": 3, "maxLength": 512 },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifactRef": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 512
+    },
     "requiredRefs": {
       "type": "array",
-      "items": { "$ref": "#/$defs/artifactRef" },
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "optionalRefs": {
       "type": "array",
-      "items": { "$ref": "#/$defs/artifactRef" },
+      "items": {
+        "$ref": "#/$defs/artifactRef"
+      },
       "uniqueItems": true
     },
     "requiredStrings": {
       "type": "array",
-      "items": { "type": "string", "minLength": 3 },
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "optionalStrings": {
       "type": "array",
-      "items": { "type": "string", "minLength": 3 },
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
       "uniqueItems": true
     },
-    "mode": { "enum": [ "AVALIACAO", "EVOLUCAO", "MINERACAO" ] },
-    "kind": { "enum": [ "DIAGNOSTICO", "GEM", "CANDIDATO", "PROVA" ] },
+    "mode": {
+      "enum": [
+        "AVALIACAO",
+        "EVOLUCAO",
+        "MINERACAO"
+      ]
+    },
+    "kind": {
+      "enum": [
+        "DIAGNOSTICO",
+        "GEM",
+        "CANDIDATO",
+        "PROVA"
+      ]
+    },
     "workerId": {
       "enum": [
         "agente-colheita-e-diagnostico",
@@ -54,9 +99,17 @@
       ]
     },
     "workerStatus": {
-      "enum": [ "COMPLETED", "BLOCKED", "SEM_RETORNO", "FALHO" ]
+      "enum": [
+        "COMPLETED",
+        "BLOCKED",
+        "SEM_RETORNO",
+        "FALHO"
+      ]
     },
-    "candidateLabel": { "type": "string", "pattern": "^cand-[A-Z]$" },
+    "candidateLabel": {
+      "type": "string",
+      "pattern": "^cand-[A-Z]$"
+    },
     "causalHeader": {
       "type": "object",
       "additionalProperties": false,
@@ -75,45 +128,123 @@
         "producer",
         "producer_version",
         "producer_digest",
+        "producer_digest_recipe",
         "created_at"
       ],
       "properties": {
-        "work_item_id": { "$ref": "#/$defs/identifier" },
-        "front_id": { "$ref": "#/$defs/identifier" },
-        "handoff_id": { "$ref": "#/$defs/identifier" },
-        "message_id": { "$ref": "#/$defs/identifier" },
+        "work_item_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "front_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "handoff_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "message_id": {
+          "$ref": "#/$defs/identifier"
+        },
         "causation_message_ids": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "contract_id": { "$ref": "#/$defs/identifier" },
-        "contract_version": { "type": "integer", "minimum": 1 },
-        "contract_digest": { "$ref": "#/$defs/digest" },
-        "candidate_digest": {
-          "oneOf": [ { "$ref": "#/$defs/digest" }, { "const": "n/a" } ]
+        "contract_id": {
+          "$ref": "#/$defs/identifier"
         },
-        "round": { "type": "integer", "minimum": 1, "maximum": 10 },
-        "attempt": { "type": "integer", "minimum": 1 },
-        "producer": { "const": "departamento-evolucao-skills" },
-        "producer_version": { "type": "string", "minLength": 1, "maxLength": 64 },
-        "producer_digest": { "$ref": "#/$defs/digest" },
-        "created_at": { "$ref": "#/$defs/timestamp" }
+        "contract_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "producer": {
+          "const": "departamento-evolucao-skills"
+        },
+        "producer_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "producer_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "producer_digest_recipe": {
+          "description": "RODADA 8 — A RECEITA DO producer_digest PASSA A SER NORMATIVA. Ela so existia em prosa nao normativa, e por isso alcancou 17 envelopes em 7 rodadas sem que nenhum leitor conseguisse reproduzi-la: na rodada 7 um leitor diligente concluiu 'bate com NENHUM' e a acusacao de forjadura saiu plausivel e falsa. O campo diz QUE OBJETO o numero ao lado hasheia, na forma `caminho::funcao sobre <objeto>`. Familia recomputacao: a forma e conferida por pattern, e vocabulario novo nao precisa de edicao do schema.",
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9_./-]+::[A-Za-z0-9_]+ sobre .{6,}$"
+        },
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "front": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "front_ref", "gap", "evidence_excerpt", "targets", "reach", "denominator", "material" ],
+      "required": [
+        "front_ref",
+        "gap",
+        "evidence_excerpt",
+        "targets",
+        "reach",
+        "denominator",
+        "material"
+      ],
       "properties": {
-        "front_ref": { "$ref": "#/$defs/identifier" },
-        "gap": { "type": "string", "minLength": 20 },
-        "evidence_excerpt": { "type": "string", "minLength": 20 },
-        "targets": { "$ref": "#/$defs/requiredRefs" },
-        "reach": { "type": "integer", "minimum": 1 },
-        "denominator": { "type": "integer", "minimum": 1 },
+        "front_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "gap": {
+          "type": "string",
+          "minLength": 20
+        },
+        "evidence_excerpt": {
+          "type": "string",
+          "minLength": 20
+        },
+        "targets": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "reach": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "denominator": {
+          "type": "integer",
+          "minimum": 1
+        },
         "material": {
-          "enum": [ "colheita", "mineracao", "ambos", "nenhum" ]
+          "enum": [
+            "colheita",
+            "mineracao",
+            "ambos",
+            "nenhum"
+          ]
         }
       }
     },
@@ -130,18 +261,32 @@
         "created_at"
       ],
       "properties": {
-        "artifact_type": { "const": "EVOLUTION_PLAN" },
-        "evolution_plan_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
-        "mode": { "$ref": "#/$defs/mode" },
+        "artifact_type": {
+          "const": "EVOLUTION_PLAN"
+        },
+        "evolution_plan_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "executive_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mode": {
+          "$ref": "#/$defs/mode"
+        },
         "fronts": {
           "type": "array",
-          "items": { "$ref": "#/$defs/front" },
+          "items": {
+            "$ref": "#/$defs/front"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "created_at": { "$ref": "#/$defs/timestamp" }
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "evolutionTask": {
@@ -163,59 +308,156 @@
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "EVOLUTION_TASK" },
-        "task_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "worker_id": { "$ref": "#/$defs/workerId" },
-        "kind": { "$ref": "#/$defs/kind" },
-        "front_ref": { "$ref": "#/$defs/identifier" },
-        "gap": {
-          "oneOf": [ { "type": "string", "minLength": 20 }, { "const": "n/a" } ]
+        "artifact_type": {
+          "const": "EVOLUTION_TASK"
         },
-        "targets": { "$ref": "#/$defs/requiredRefs" },
-        "inputs": { "$ref": "#/$defs/optionalRefs" },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
+        "front_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "gap": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 20
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "targets": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "inputs": {
+          "$ref": "#/$defs/optionalRefs"
+        },
         "candidate_labels": {
           "type": "array",
-          "items": { "$ref": "#/$defs/candidateLabel" },
+          "items": {
+            "$ref": "#/$defs/candidateLabel"
+          },
           "uniqueItems": true
         },
         "forbidden_context": {
           "type": "array",
-          "items": { "type": "string", "minLength": 3 },
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
           "minItems": 4,
           "uniqueItems": true,
-          "contains": { "type": "string", "pattern": "identidade" },
+          "contains": {
+            "type": "string",
+            "pattern": "identidade"
+          },
           "minContains": 1
         },
-        "stop_when": { "$ref": "#/$defs/requiredStrings" },
-        "return_to": { "const": "departamento-evolucao-skills" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "stop_when": {
+          "$ref": "#/$defs/requiredStrings"
+        },
+        "return_to": {
+          "const": "departamento-evolucao-skills"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "kind": { "const": "DIAGNOSTICO" } }, "required": [ "kind" ] },
-          "then": { "properties": { "worker_id": { "const": "agente-colheita-e-diagnostico" } } }
-        },
-        {
-          "if": { "properties": { "kind": { "const": "GEM" } }, "required": [ "kind" ] },
-          "then": { "properties": { "worker_id": { "const": "agente-mineracao-externa" } } }
-        },
-        {
-          "if": { "properties": { "kind": { "const": "CANDIDATO" } }, "required": [ "kind" ] },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "DIAGNOSTICO"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
           "then": {
             "properties": {
-              "worker_id": { "const": "agente-curador-de-candidatos" },
-              "gap": { "type": "string", "minLength": 20 }
+              "worker_id": {
+                "const": "agente-colheita-e-diagnostico"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "PROVA" } }, "required": [ "kind" ] },
-          "then": {
-            "required": [ "candidate_labels" ],
+          "if": {
             "properties": {
-              "worker_id": { "const": "agente-prova-de-evolucao" },
-              "candidate_labels": { "minItems": 2 }
+              "kind": {
+                "const": "GEM"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-mineracao-externa"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "CANDIDATO"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "worker_id": {
+                "const": "agente-curador-de-candidatos"
+              },
+              "gap": {
+                "type": "string",
+                "minLength": 20
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "PROVA"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "candidate_labels"
+            ],
+            "properties": {
+              "worker_id": {
+                "const": "agente-prova-de-evolucao"
+              },
+              "candidate_labels": {
+                "minItems": 2
+              }
             }
           }
         }
@@ -233,27 +475,75 @@
         "denominator"
       ],
       "properties": {
-        "gap": { "type": "string", "minLength": 20 },
-        "evidence_excerpt": { "type": "string", "minLength": 20 },
+        "gap": {
+          "type": "string",
+          "minLength": 20
+        },
+        "evidence_excerpt": {
+          "type": "string",
+          "minLength": 20
+        },
         "signals": {
           "type": "object",
           "additionalProperties": false,
-          "required": [ "acionou", "aderiu", "contorno" ],
+          "required": [
+            "acionou",
+            "aderiu",
+            "contorno"
+          ],
           "properties": {
-            "acionou": { "enum": [ "S", "N" ] },
-            "aderiu": { "enum": [ "S", "parcial", "N", "—" ] },
-            "contorno": { "type": "string", "minLength": 3 }
+            "acionou": {
+              "enum": [
+                "S",
+                "N"
+              ]
+            },
+            "aderiu": {
+              "enum": [
+                "S",
+                "parcial",
+                "N",
+                "—"
+              ]
+            },
+            "contorno": {
+              "type": "string",
+              "minLength": 3
+            }
           },
           "allOf": [
             {
-              "if": { "properties": { "acionou": { "const": "N" } }, "required": [ "acionou" ] },
-              "then": { "properties": { "aderiu": { "const": "—" } } }
+              "if": {
+                "properties": {
+                  "acionou": {
+                    "const": "N"
+                  }
+                },
+                "required": [
+                  "acionou"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "aderiu": {
+                    "const": "—"
+                  }
+                }
+              }
             }
           ]
         },
-        "targets_affected": { "$ref": "#/$defs/requiredRefs" },
-        "reach": { "type": "integer", "minimum": 1 },
-        "denominator": { "type": "integer", "minimum": 1 }
+        "targets_affected": {
+          "$ref": "#/$defs/requiredRefs"
+        },
+        "reach": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "denominator": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     },
     "gemItem": {
@@ -273,25 +563,69 @@
         "adaptacao"
       ],
       "properties": {
-        "gem_id": { "$ref": "#/$defs/identifier" },
-        "gap_alvo": { "type": "string", "minLength": 10 },
-        "fonte_url": { "type": "string", "minLength": 10 },
-        "fonte_titulo": { "type": "string", "minLength": 3 },
-        "fonte_versao": { "type": "string", "minLength": 1 },
-        "acessado_em": { "$ref": "#/$defs/timestamp" },
-        "licenca": { "type": "string", "minLength": 3 },
-        "o_que_e": { "type": "string", "minLength": 20 },
-        "limite_declarado": { "type": "string", "minLength": 3 },
-        "degrau_proposto": { "type": "integer", "minimum": 0, "maximum": 4 },
-        "adaptacao": { "type": "string", "minLength": 10 }
+        "gem_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "gap_alvo": {
+          "type": "string",
+          "minLength": 10
+        },
+        "fonte_url": {
+          "type": "string",
+          "minLength": 10
+        },
+        "fonte_titulo": {
+          "type": "string",
+          "minLength": 3
+        },
+        "fonte_versao": {
+          "type": "string",
+          "minLength": 1
+        },
+        "acessado_em": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "licenca": {
+          "type": "string",
+          "minLength": 3
+        },
+        "o_que_e": {
+          "type": "string",
+          "minLength": 20
+        },
+        "limite_declarado": {
+          "type": "string",
+          "minLength": 3
+        },
+        "degrau_proposto": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "adaptacao": {
+          "type": "string",
+          "minLength": 10
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "licenca": { "const": "desconhecida" } },
-            "required": [ "licenca" ]
+            "properties": {
+              "licenca": {
+                "const": "desconhecida"
+              }
+            },
+            "required": [
+              "licenca"
+            ]
           },
-          "then": { "properties": { "degrau_proposto": { "maximum": 1 } } }
+          "then": {
+            "properties": {
+              "degrau_proposto": {
+                "maximum": 1
+              }
+            }
+          }
         }
       ]
     },
@@ -307,20 +641,48 @@
         "delta_lines"
       ],
       "properties": {
-        "candidate_id": { "$ref": "#/$defs/identifier" },
-        "gap_ref": { "type": "string", "minLength": 20 },
-        "abordagem": { "type": "string", "minLength": 10 },
-        "change_summary": { "type": "string", "minLength": 20 },
-        "removed_text": { "type": "string", "minLength": 3 },
-        "delta_lines": { "type": "integer" }
+        "candidate_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "gap_ref": {
+          "type": "string",
+          "minLength": 20
+        },
+        "abordagem": {
+          "type": "string",
+          "minLength": 10
+        },
+        "change_summary": {
+          "type": "string",
+          "minLength": 20
+        },
+        "removed_text": {
+          "type": "string",
+          "minLength": 3
+        },
+        "delta_lines": {
+          "type": "integer"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "delta_lines": { "minimum": 1 } },
-            "required": [ "delta_lines" ]
+            "properties": {
+              "delta_lines": {
+                "minimum": 1
+              }
+            },
+            "required": [
+              "delta_lines"
+            ]
           },
-          "then": { "properties": { "removed_text": { "minLength": 20 } } }
+          "then": {
+            "properties": {
+              "removed_text": {
+                "minLength": 20
+              }
+            }
+          }
         }
       ]
     },
@@ -338,24 +700,77 @@
         "excerpt"
       ],
       "properties": {
-        "candidate_label": { "$ref": "#/$defs/candidateLabel" },
-        "case_id": { "$ref": "#/$defs/identifier" },
-        "origem": { "enum": [ "real", "sintetico" ] },
-        "baseline": { "enum": [ "falhou", "passou" ] },
-        "pos": {
-          "oneOf": [
-            { "enum": [ "falhou", "passou" ] },
-            { "type": "string", "pattern": "^skip:.{5,}$" }
+        "candidate_label": {
+          "$ref": "#/$defs/candidateLabel"
+        },
+        "case_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "origem": {
+          "enum": [
+            "real",
+            "sintetico"
           ]
         },
-        "acionou": { "enum": [ "S", "N", "—" ] },
-        "aderiu": { "enum": [ "S", "parcial", "N", "—" ] },
-        "excerpt": { "type": "string", "minLength": 10 }
+        "baseline": {
+          "enum": [
+            "falhou",
+            "passou"
+          ]
+        },
+        "pos": {
+          "oneOf": [
+            {
+              "enum": [
+                "falhou",
+                "passou"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^skip:.{5,}$"
+            }
+          ]
+        },
+        "acionou": {
+          "enum": [
+            "S",
+            "N",
+            "—"
+          ]
+        },
+        "aderiu": {
+          "enum": [
+            "S",
+            "parcial",
+            "N",
+            "—"
+          ]
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 10
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "acionou": { "const": "N" } }, "required": [ "acionou" ] },
-          "then": { "properties": { "aderiu": { "const": "—" } } }
+          "if": {
+            "properties": {
+              "acionou": {
+                "const": "N"
+              }
+            },
+            "required": [
+              "acionou"
+            ]
+          },
+          "then": {
+            "properties": {
+              "aderiu": {
+                "const": "—"
+              }
+            }
+          }
         }
       ]
     },
@@ -377,86 +792,192 @@
         "issued_at"
       ],
       "properties": {
-        "artifact_type": { "const": "EVOLUTION_RETURN" },
-        "task_id": { "$ref": "#/$defs/identifier" },
-        "worker_id": { "$ref": "#/$defs/workerId" },
-        "kind": { "$ref": "#/$defs/kind" },
+        "artifact_type": {
+          "const": "EVOLUTION_RETURN"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
         "gaps": {
           "type": "array",
-          "items": { "$ref": "#/$defs/gapItem" },
+          "items": {
+            "$ref": "#/$defs/gapItem"
+          },
           "uniqueItems": true
         },
         "gems": {
           "type": "array",
-          "items": { "$ref": "#/$defs/gemItem" },
+          "items": {
+            "$ref": "#/$defs/gemItem"
+          },
           "uniqueItems": true
         },
         "candidates": {
           "type": "array",
-          "items": { "$ref": "#/$defs/candidateItem" },
+          "items": {
+            "$ref": "#/$defs/candidateItem"
+          },
           "uniqueItems": true
         },
         "scoreboard": {
           "type": "array",
-          "items": { "$ref": "#/$defs/scoreboardLine" },
+          "items": {
+            "$ref": "#/$defs/scoreboardLine"
+          },
           "uniqueItems": true
         },
-        "saturation": { "type": "string", "minLength": 10 },
-        "blocked_reason": { "type": "string", "minLength": 10 },
-        "pending": { "$ref": "#/$defs/optionalStrings" },
-        "status": { "enum": [ "COMPLETED", "BLOCKED" ] },
-        "return_to": { "const": "departamento-evolucao-skills" },
-        "issued_at": { "$ref": "#/$defs/timestamp" }
+        "saturation": {
+          "type": "string",
+          "minLength": 10
+        },
+        "blocked_reason": {
+          "type": "string",
+          "minLength": 10
+        },
+        "pending": {
+          "$ref": "#/$defs/optionalStrings"
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "BLOCKED"
+          ]
+        },
+        "return_to": {
+          "const": "departamento-evolucao-skills"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "status": { "const": "BLOCKED" } }, "required": [ "status" ] },
-          "then": {
-            "required": [ "blocked_reason" ],
+          "if": {
             "properties": {
-              "gaps": { "maxItems": 0 },
-              "gems": { "maxItems": 0 },
-              "candidates": { "maxItems": 0 },
-              "scoreboard": { "maxItems": 0 }
+              "status": {
+                "const": "BLOCKED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "blocked_reason"
+            ],
+            "properties": {
+              "gaps": {
+                "maxItems": 0
+              },
+              "gems": {
+                "maxItems": 0
+              },
+              "candidates": {
+                "maxItems": 0
+              },
+              "scoreboard": {
+                "maxItems": 0
+              }
             }
           }
         },
         {
           "if": {
             "properties": {
-              "kind": { "const": "DIAGNOSTICO" },
-              "status": { "const": "COMPLETED" }
+              "kind": {
+                "const": "DIAGNOSTICO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
             },
-            "required": [ "kind", "status" ]
-          },
-          "then": { "properties": { "gaps": { "minItems": 1 } } }
-        },
-        {
-          "if": {
-            "properties": { "kind": { "const": "GEM" }, "status": { "const": "COMPLETED" } },
-            "required": [ "kind", "status" ]
-          },
-          "then": { "required": [ "saturation" ] }
-        },
-        {
-          "if": {
-            "properties": {
-              "kind": { "const": "CANDIDATO" },
-              "status": { "const": "COMPLETED" }
-            },
-            "required": [ "kind", "status" ]
-          },
-          "then": { "properties": { "candidates": { "minItems": 2 } } }
-        },
-        {
-          "if": {
-            "properties": { "kind": { "const": "PROVA" }, "status": { "const": "COMPLETED" } },
-            "required": [ "kind", "status" ]
+            "required": [
+              "kind",
+              "status"
+            ]
           },
           "then": {
             "properties": {
-              "scoreboard": { "minItems": 1 },
-              "candidates": { "maxItems": 0 }
+              "gaps": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "GEM"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "kind",
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "saturation"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "CANDIDATO"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "kind",
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "candidates": {
+                "minItems": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "PROVA"
+              },
+              "status": {
+                "const": "COMPLETED"
+              }
+            },
+            "required": [
+              "kind",
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "scoreboard": {
+                "minItems": 1
+              },
+              "candidates": {
+                "maxItems": 0
+              }
             }
           }
         }
@@ -465,26 +986,72 @@
     "frontierItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "candidate_id", "candidate_label", "status", "dominated_by", "diversidade" ],
+      "required": [
+        "candidate_id",
+        "candidate_label",
+        "status",
+        "dominated_by",
+        "diversidade"
+      ],
       "properties": {
-        "candidate_id": { "$ref": "#/$defs/identifier" },
-        "candidate_label": { "$ref": "#/$defs/candidateLabel" },
-        "status": { "enum": [ "FRONTEIRA", "DOMINADO", "NAO_PROVADO" ] },
-        "dominated_by": {
-          "oneOf": [ { "$ref": "#/$defs/identifier" }, { "const": "n/a" } ]
+        "candidate_id": {
+          "$ref": "#/$defs/identifier"
         },
-        "diversidade": { "type": "boolean" }
+        "candidate_label": {
+          "$ref": "#/$defs/candidateLabel"
+        },
+        "status": {
+          "enum": [
+            "FRONTEIRA",
+            "DOMINADO",
+            "NAO_PROVADO"
+          ]
+        },
+        "dominated_by": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/identifier"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "diversidade": {
+          "type": "boolean"
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "status": { "const": "DOMINADO" } }, "required": [ "status" ] },
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DOMINADO"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
           "then": {
             "properties": {
-              "dominated_by": { "not": { "const": "n/a" } },
-              "diversidade": { "const": false }
+              "dominated_by": {
+                "not": {
+                  "const": "n/a"
+                }
+              },
+              "diversidade": {
+                "const": false
+              }
             }
           },
-          "else": { "properties": { "dominated_by": { "const": "n/a" } } }
+          "else": {
+            "properties": {
+              "dominated_by": {
+                "const": "n/a"
+              }
+            }
+          }
         }
       ]
     },
@@ -500,17 +1067,29 @@
         "created_at"
       ],
       "properties": {
-        "artifact_type": { "const": "CANDIDATE_SET" },
-        "candidate_set_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "front_ref": { "$ref": "#/$defs/identifier" },
+        "artifact_type": {
+          "const": "CANDIDATE_SET"
+        },
+        "candidate_set_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "front_ref": {
+          "$ref": "#/$defs/identifier"
+        },
         "items": {
           "type": "array",
-          "items": { "$ref": "#/$defs/frontierItem" },
+          "items": {
+            "$ref": "#/$defs/frontierItem"
+          },
           "minItems": 2,
           "uniqueItems": true
         },
-        "created_at": { "$ref": "#/$defs/timestamp" }
+        "created_at": {
+          "$ref": "#/$defs/timestamp"
+        }
       }
     },
     "evolutionCapabilityGap": {
@@ -528,45 +1107,106 @@
         "owner"
       ],
       "properties": {
-        "artifact_type": { "const": "EVOLUTION_CAPABILITY_GAP" },
-        "capability": { "type": "string", "minLength": 10 },
+        "artifact_type": {
+          "const": "EVOLUTION_CAPABILITY_GAP"
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 10
+        },
         "worker_id": {
-          "oneOf": [ { "$ref": "#/$defs/workerId" }, { "const": "n/a" } ]
+          "oneOf": [
+            {
+              "$ref": "#/$defs/workerId"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
         },
         "fronts": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
-        "expected_contract": { "type": "string", "minLength": 10 },
-        "discovery_evidence": { "type": "string", "minLength": 10 },
-        "impact": { "type": "string", "minLength": 10 },
-        "status": { "const": "OPEN" },
-        "owner": { "const": "ceo-maestro" }
+        "expected_contract": {
+          "type": "string",
+          "minLength": 10
+        },
+        "discovery_evidence": {
+          "type": "string",
+          "minLength": 10
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 10
+        },
+        "status": {
+          "const": "OPEN"
+        },
+        "owner": {
+          "const": "ceo-maestro"
+        }
       }
     },
     "assignmentRecord": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "task_id", "worker_id", "kind", "issued_at", "destination" ],
+      "required": [
+        "task_id",
+        "worker_id",
+        "kind",
+        "issued_at",
+        "destination"
+      ],
       "properties": {
-        "task_id": { "$ref": "#/$defs/identifier" },
-        "worker_id": { "$ref": "#/$defs/workerId" },
-        "kind": { "$ref": "#/$defs/kind" },
-        "issued_at": { "$ref": "#/$defs/timestamp" },
-        "destination": { "$ref": "#/$defs/artifactRef" }
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
+        "issued_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "destination": {
+          "$ref": "#/$defs/artifactRef"
+        }
       }
     },
     "panelItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "worker_id", "kind", "status", "substrate", "tier" ],
+      "required": [
+        "worker_id",
+        "kind",
+        "status",
+        "substrate",
+        "tier"
+      ],
       "properties": {
-        "worker_id": { "$ref": "#/$defs/workerId" },
-        "kind": { "$ref": "#/$defs/kind" },
-        "status": { "$ref": "#/$defs/workerStatus" },
-        "substrate": { "type": "string", "minLength": 3 },
-        "tier": { "type": "string", "minLength": 3 }
+        "worker_id": {
+          "$ref": "#/$defs/workerId"
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
+        "status": {
+          "$ref": "#/$defs/workerStatus"
+        },
+        "substrate": {
+          "type": "string",
+          "minLength": 3
+        },
+        "tier": {
+          "type": "string",
+          "minLength": 3
+        }
       }
     },
     "gainMetrics": {
@@ -580,11 +1220,26 @@
         "vermelho_verde"
       ],
       "properties": {
-        "alcance_total": { "type": "integer", "minimum": 0 },
-        "denominador": { "type": "integer", "minimum": 1 },
-        "material_admitido": { "type": "integer", "minimum": 0 },
-        "casos_novos": { "type": "integer", "minimum": 0 },
-        "vermelho_verde": { "type": "integer", "minimum": 0 }
+        "alcance_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "denominador": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "material_admitido": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "casos_novos": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "vermelho_verde": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "evolutionLedger": {
@@ -608,83 +1263,337 @@
         "frentes_encerradas",
         "pending",
         "return_to",
-        "recorded_at"
+        "recorded_at",
+        "candidate_identity"
       ],
       "properties": {
-        "artifact_type": { "const": "EVOLUTION_LEDGER" },
-        "evolution_ledger_id": { "$ref": "#/$defs/identifier" },
-        "causal": { "$ref": "#/$defs/causalHeader" },
-        "executive_mission_ref": { "$ref": "#/$defs/identifier" },
-        "mode": { "$ref": "#/$defs/mode" },
-        "deliverable_type": { "enum": [ "analysis", "proposal" ] },
-        "plan": { "$ref": "#/$defs/evolutionPlan" },
+        "artifact_type": {
+          "const": "EVOLUTION_LEDGER"
+        },
+        "evolution_ledger_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "causal": {
+          "$ref": "#/$defs/causalHeader"
+        },
+        "executive_mission_ref": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mode": {
+          "$ref": "#/$defs/mode"
+        },
+        "deliverable_type": {
+          "enum": [
+            "analysis",
+            "proposal"
+          ]
+        },
+        "plan": {
+          "$ref": "#/$defs/evolutionPlan"
+        },
         "assignments": {
           "type": "array",
-          "items": { "$ref": "#/$defs/assignmentRecord" },
+          "items": {
+            "$ref": "#/$defs/assignmentRecord"
+          },
           "uniqueItems": true
         },
         "panel": {
           "type": "array",
-          "items": { "$ref": "#/$defs/panelItem" },
+          "items": {
+            "$ref": "#/$defs/panelItem"
+          },
           "maxItems": 4,
           "uniqueItems": true
         },
         "scoreboard": {
           "type": "array",
-          "items": { "$ref": "#/$defs/scoreboardLine" },
+          "items": {
+            "$ref": "#/$defs/scoreboardLine"
+          },
           "uniqueItems": true
         },
         "candidate_sets": {
           "type": "array",
-          "items": { "$ref": "#/$defs/candidateSet" },
+          "items": {
+            "$ref": "#/$defs/candidateSet"
+          },
           "uniqueItems": true
         },
         "gems": {
           "type": "array",
-          "items": { "$ref": "#/$defs/gemItem" },
+          "items": {
+            "$ref": "#/$defs/gemItem"
+          },
           "uniqueItems": true
         },
-        "metrics": { "$ref": "#/$defs/gainMetrics" },
+        "metrics": {
+          "$ref": "#/$defs/gainMetrics"
+        },
         "capability_gaps": {
           "type": "array",
-          "items": { "$ref": "#/$defs/evolutionCapabilityGap" }
+          "items": {
+            "$ref": "#/$defs/evolutionCapabilityGap"
+          }
         },
-        "frentes_encerradas": { "$ref": "#/$defs/optionalStrings" },
+        "frentes_encerradas": {
+          "$ref": "#/$defs/optionalStrings"
+        },
         "pending": {
           "type": "array",
-          "items": { "type": "string", "minLength": 3 },
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
           "minItems": 1,
           "uniqueItems": true,
-          "contains": { "type": "string", "pattern": "R6" },
+          "contains": {
+            "type": "string",
+            "pattern": "R6"
+          },
           "minContains": 1
         },
-        "return_to": { "const": "ceo-maestro" },
-        "recorded_at": { "$ref": "#/$defs/timestamp" }
+        "return_to": {
+          "const": "ceo-maestro"
+        },
+        "recorded_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "candidate_identity": {
+          "$ref": "#/$defs/candidateIdentityCrosscheck"
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "deliverable_type": { "const": "proposal" } },
-            "required": [ "deliverable_type" ]
+            "properties": {
+              "deliverable_type": {
+                "const": "proposal"
+              }
+            },
+            "required": [
+              "deliverable_type"
+            ]
           },
           "then": {
             "properties": {
-              "mode": { "const": "EVOLUCAO" },
-              "assignments": { "minItems": 1 },
-              "scoreboard": { "minItems": 1 },
-              "candidate_sets": { "minItems": 1 }
+              "mode": {
+                "const": "EVOLUCAO"
+              },
+              "assignments": {
+                "minItems": 1
+              },
+              "scoreboard": {
+                "minItems": 1
+              },
+              "candidate_sets": {
+                "minItems": 1
+              }
             }
           }
         },
         {
           "if": {
-            "properties": { "mode": { "const": "AVALIACAO" } },
-            "required": [ "mode" ]
+            "properties": {
+              "mode": {
+                "const": "AVALIACAO"
+              }
+            },
+            "required": [
+              "mode"
+            ]
           },
           "then": {
             "properties": {
-              "deliverable_type": { "const": "analysis" },
-              "candidate_sets": { "maxItems": 0 }
+              "deliverable_type": {
+                "const": "analysis"
+              },
+              "candidate_sets": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "description": "Proposta com candidato exige identidade CONFERIDA. Um ledger que aponta para o candidato errado deixa de ser apenas confuso e passa a ser invalido.",
+          "if": {
+            "properties": {
+              "deliverable_type": {
+                "const": "proposal"
+              }
+            },
+            "required": [
+              "deliverable_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "candidate_identity": {
+                "properties": {
+                  "status": {
+                    "const": "CONFERIDO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "candidateIdentityCrosscheck": {
+      "description": "Cruzamento de identidade do candidato, EM UMA LINHA, para que o schema possa cruzar. JSON Schema nao compara dois campos entre si; o retrovisor de expressao regular compara. `(?P=c)`, `(?P=d)` e `(?P=r)` obrigam o identificador do candidato a ser o mesmo da pasta, o digest declarado a ser o mesmo do recomputado, e as tres rodadas — a do ledger, a do plano e a da missao — a serem a mesma. Motivo: em 2026-08-01 o 37-EVOLUTION-LEDGER-R3 declarou o digest do cand-B com round 2 no plano enquanto o julgado era o cand-C com round 3, e VALIDOU COM ZERO ERROS porque nada cruzava.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "line",
+        "recipe",
+        "candidate_id",
+        "candidate_root_ref",
+        "declared_digest",
+        "recomputed_digest",
+        "round_declared",
+        "plan_round",
+        "mission_round",
+        "mission_ref",
+        "errors",
+        "checked_at"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "CONFERIDO",
+            "DIVERGENTE",
+            "NAO_CONFERIDO"
+          ]
+        },
+        "line": {
+          "description": "A linha cruzada. O pattern com retrovisor e o cruzamento.",
+          "type": "string",
+          "minLength": 60
+        },
+        "recipe": {
+          "const": "_compartilhado/verificacoes_pacote.py::digest_de_arvore"
+        },
+        "candidate_id": {
+          "type": "string",
+          "minLength": 3
+        },
+        "candidate_root_ref": {
+          "type": "string",
+          "minLength": 3
+        },
+        "declared_digest": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "recomputed_digest": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "const": "n/a"
+            }
+          ]
+        },
+        "round_declared": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "plan_round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "mission_round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "mission_ref": {
+          "type": "string",
+          "minLength": 3
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "checked_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      },
+      "allOf": [
+        {
+          "description": "CONFERIDO exige a linha cruzada e zero erros. E o retrovisor que cruza.",
+          "if": {
+            "properties": {
+              "status": {
+                "const": "CONFERIDO"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "line": {
+                "pattern": "^candidate=(?P<c>[A-Za-z0-9][A-Za-z0-9._-]{2,63}) root=candidatos/(?P=c) declared=(?P<d>sha256:[0-9a-f]{64}) recomputed=(?P=d) round=(?P<r>10|[1-9]) plan_round=(?P=r) mission_round=(?P=r)$"
+              },
+              "errors": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "description": "DIVERGENTE nomeia o que nao bateu; divergencia sem motivo escrito e ajuste silencioso.",
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DIVERGENTE"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "errors": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "description": "NAO_CONFERIDO nao publica numero recomputado: nao houve recomputacao.",
+          "if": {
+            "properties": {
+              "status": {
+                "const": "NAO_CONFERIDO"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "recomputed_digest": {
+                "const": "n/a"
+              }
             }
           }
         }

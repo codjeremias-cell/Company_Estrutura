@@ -1,0 +1,47 @@
+[PASS] pacote, time elÃ¡stico e vÃ­nculos â€” esperado vÃ¡lido
+[PASS] metadata da gerente e dos oito agentes â€” esperado vÃ¡lido
+[PASS] fonte normativa e tokens â€” esperado vÃ¡lido
+[PASS] links internos resolvem â€” esperado vÃ¡lido
+[FAIL] sÃ©rie global de ADR Ã© Ãºnica em toda a estrutura â€” esperado vÃ¡lido
+       sÃ©rie de ADR: nÃºmero 020 duplicado em ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/A/references/adr-020-producao-honesta.md e ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/mech/B/references/adr-020-producao-honesta.md
+[PASS] todo pacote gerente tem validador que roda a trava global â€” esperado vÃ¡lido
+[PASS] a recusa de digest() dispara e ninguÃ©m tem cÃ³pia privada do motor â€” esperado vÃ¡lido
+[PASS] nenhuma asserÃ§Ã£o Ã© verdadeira por construÃ§Ã£o sobre valor produzido â€” esperado vÃ¡lido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md â€” esperado vÃ¡lido
+[PASS] schema e refs locais â€” esperado vÃ¡lido
+[PASS] autoridade e rotas externas herdadas do Diretor â€” esperado vÃ¡lido
+[PASS] fontes legadas intactas e cÃ³pias exatas â€” esperado vÃ¡lido
+[PASS] catÃ¡logo de evals â€” esperado vÃ¡lido
+[PASS] schema aceita CONTENT_MARKETING_BRIEF â€” esperado vÃ¡lido
+[PASS] schema aceita as oito atribuiÃ§Ãµes exclusivas â€” esperado vÃ¡lido
+[PASS] schema aceita MARKETING_DELIVERABLE â€” esperado vÃ¡lido
+[PASS] schema aceita CAMPAIGN_ASSET_MANIFEST â€” esperado vÃ¡lido
+[PASS] schema e recÃ¡lculo aceitam CAMPAIGN_READINESS_RECORD â€” esperado vÃ¡lido
+[PASS] schema aceita MARKETING_CAPABILITY_GAP â€” esperado vÃ¡lido
+[PASS] Diretor aceita DEPARTMENT_RETURN produzido â€” esperado vÃ¡lido
+[PASS] brief de ativaÃ§Ã£o exige autorizaÃ§Ã£o â€” esperado rejeitado
+[PASS] assignment rejeita capacidade trocada â€” esperado rejeitado
+[PASS] assignment de ativaÃ§Ã£o exige autorizaÃ§Ã£o â€” esperado rejeitado
+[PASS] assignment rejeita retorno fora da gerente â€” esperado rejeitado
+[PASS] deliverable rejeita produtor forjado â€” esperado rejeitado
+[PASS] deliverable COMPLETED exige artefato â€” esperado rejeitado
+[PASS] deliverable COMPLETED exige evidÃªncia â€” esperado rejeitado
+[PASS] deliverable BLOCKED exige motivo â€” esperado rejeitado
+[PASS] aÃ§Ã£o executada exige autorizaÃ§Ã£o â€” esperado rejeitado
+[PASS] aÃ§Ã£o executada exige recibo â€” esperado rejeitado
+[PASS] manifesto READY rejeita pendÃªncia â€” esperado rejeitado
+[PASS] readiness exige oito dimensÃµes â€” esperado rejeitado
+[PASS] readiness rejeita dimensÃ£o duplicada â€” esperado rejeitado
+[PASS] ready nÃ£o mascara gate FAIL â€” esperado rejeitado
+[PASS] ready nÃ£o mascara direito nÃ£o provado â€” esperado rejeitado
+[PASS] ready rejeita lacuna aberta â€” esperado rejeitado
+[PASS] PASS exige evidÃªncia â€” esperado rejeitado
+[PASS] gerente nÃ£o fecha prÃ³pria lacuna â€” esperado rejeitado
+[PASS] lacuna exige causa observada â€” esperado rejeitado
+[PASS] retorno departamental nÃ£o se autoaceita â€” esperado rejeitado
+[PASS] Diretor rejeita produtor causal forjado â€” esperado rejeitado
+[PASS] retorno nÃ£o pula o Diretor â€” esperado rejeitado
+[PASS] regras de ativaÃ§Ã£o, gates e time sÃ£o recalculadas â€” esperado vÃ¡lido
+
+Resultado: 42/43 casos passaram.
+DistribuiÃ§Ã£o: 21 positivos, 22 negativos.

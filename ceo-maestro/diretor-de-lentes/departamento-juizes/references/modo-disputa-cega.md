@@ -9,7 +9,8 @@ de uma disputa ainda precisa passar por VALIDACAO antes de integrar.
 Tudo o que este arquivo não redefine vale como está no protocolo central: identidade (quarteto),
 descoberta do time (§2, regra 1), lacunas (§1.5), anti-bypass (§5), rastreabilidade (§6) e riscos
 residuais (§7). A rubrica é a mesma ([rubrica-e-corte.md](rubrica-e-corte.md)) — o que muda é o
-**uso**: aqui a nota separa candidatos, não decide gate, e o corte de 9,5 **não se aplica**.
+**uso**: aqui a nota separa candidatos, não decide gate, e as faixas do ADR-014 **não se
+aplicam**.
 
 ## 1. Quando o Departamento recusa a disputa
 
@@ -146,7 +147,7 @@ PANEL_HANDOFF:
   contract_id: "<id>"
   contract_version: <inteiro>
   contract_digest: "sha256:<digest>"
-  rubric_ref: "rubrica-corte-v1"
+  rubric_ref: "rubrica-corte-v2"
   status: "COMPLETED | PARTIAL | BLOCKED"
   decision_mode: "CONSENSO_UNANIME | CONSENSO_PARCIAL | CONSENSO_MAIORIA | DECISAO_DE_LIDERANCA"
   leadership_reason: "SEM_CONSENSO | SEM_RETORNO | QUORUM_DEGRADADO | n/a"

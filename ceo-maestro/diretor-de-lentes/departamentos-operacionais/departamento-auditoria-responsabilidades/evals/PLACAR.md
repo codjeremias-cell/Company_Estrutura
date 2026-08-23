@@ -1,6 +1,23 @@
 # Placar de migração — Departamento de Auditoria e Responsabilidades
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **65/65 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 178/178 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:c8541731769e0683804a778d107cb011c7a87d70d7406aca2b8b0649bfbdb7d9` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **65/65 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -89,6 +106,30 @@ dimensão bloqueada vira exatamente uma violação; cada ressalva vira pendênci
 
 ## O que ainda não foi provado
 
+### Estado vigente das obrigações — conferido em 2026-08-08
+
+> **A auditoria independente e o parecer dos Juízes não estão pendentes.** A campanha [`remedicao-dos-sete-2026-08-03`](../../../../evals/remedicao-dos-sete-2026-08-03/PLACAR.md) executou as duas sobre este pacote. O texto dos itens abaixo é registro da rodada em que foi escrito e fica como está.
+
+| obrigação | estado em 2026-08-08 | quem emitiu |
+|---|---|---|
+| Auditoria independente | **EXECUTADA** em 2026-08-03 · `governance_report` **NONCOMPLIANT** · **6 achados** nomeados | `departamento-auditoria-responsabilidades`, por instância externa a este pacote |
+| Parecer dos Juízes | **EMITIDO** em 2026-08-03 · **REPROVED** · **falha crítica nomeada** · `minimum_score` **5**, faixa **5–5** · **3 de 8** critérios `NAO_DISCRIMINADO` | `departamento-juizes` |
+
+> **Este é o único dos sete cuja faixa fecha firme** (`lo = hi`). Nos outros seis ela atravessa o corte 6/7, e foi por isso que o conserto começou por aqui: não depende de esperar régua melhor.
+
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da remedição de 2026-08-03: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | — | já fechado no próprio texto, com data |
+| 2 | o próprio Departamento | a `lente-auditor-responsabilidades` for avaliada nos mesmos cenários, ou este item registrar a decisão de não comparar, com motivo |
+| 3 | `diretor-de-lentes` | o Diretor designar instância externa para auditar este pacote — ele não se audita, e por isso o dono do fechamento não pode ser ele mesmo |
+| 4 | o próprio Departamento | houver âncora externa ao pacote que prove a emissão — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo. Depende das tarefas 50 e 57 |
+| 5 | o próprio Departamento | a procedência da evidência for recomputável além do digest, ou o limite `R4` for aceito explicitamente, com dono e data |
+
+
 Declarado como `SKIP` com motivo — prova executada > checklist, e sucesso simulado é violação
 (RI-04):
 
@@ -98,10 +139,24 @@ Declarado como `SKIP` com motivo — prova executada > checklist, e sucesso simu
    mecânica desta mesma página já declarava a execução. A seção criada para não esconder ausência de
    prova estava negando prova existente.
 
-   O que **de fato** continua aberto: **2 asserções falharam** (58 de 60) e **1 caso não rodou** (15
-   de 16) — nada disso estava inventariado, e precisa ser nomeado um a um antes de este item fechar.
-   E o **acionamento** segue sem prova: os prompts rodaram sob carga explícita, então está medida a
-   aderência ao contrato, não o disparo espontâneo pelos gatilhos declarados.
+   *Correção de 2026-07-27, segunda passada:* a primeira redação desta linha dizia que as 2
+   asserções falhadas e o caso não rodado "não estavam inventariados". **Estavam** — o
+   [FORWARD-TEST.md](FORWARD-TEST.md) traz a seção "O padrão que o instrumento não previu", com o
+   diagnóstico e uma ação sugerida. O erro foi meu, ao corrigir a contradição anterior sem reler o
+   forward.
+
+   O que **de fato** continua aberto, já diagnosticado no forward: as **2 asserções são defeito do
+   instrumento**, não da skill. Os prompts do catálogo são pedidos crus do usuário, e o contrato
+   deste Departamento exige `DEPARTMENT_MISSION` vinda do `diretor-de-lentes` — então todas as
+   instâncias bloquearam corretamente no portão de canal, e as asserções que descrevem
+   comportamento *depois* do portão ficam parcialmente inalcançáveis. O forward é explícito: *"não
+   é falha da skill — é o contrato funcionando"*. O **caso 1 é inválido por especificação**.
+
+   A ação sugerida pelo próprio forward é separar o catálogo em **casos de portão** (pedido cru) e
+   **casos de operação** (com `DEPARTMENT_MISSION` completa no prompt). Hoje mistura os dois — e o
+   mesmo padrão aparece em mais quatro pacotes; ver o achado sistêmico no
+   `PLANO-DE-ACAO-2026-07-27.md`, frente 2. O **acionamento** segue sem prova: os prompts rodaram
+   sob carga explícita, então está medida a aderência ao contrato, não o disparo espontâneo.
 2. **Baseline do pacote legado.** A `lente-auditor-responsabilidades` não foi avaliada contra os
    mesmos cenários. O que está provado por leitura de schema é que o legado produz uma nota que o
    `governanceReport` do CEO não tem onde receber; que a migração **melhora o comportamento**

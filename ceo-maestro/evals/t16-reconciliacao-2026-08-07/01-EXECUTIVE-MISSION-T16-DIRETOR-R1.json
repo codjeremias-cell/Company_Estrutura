@@ -1,0 +1,104 @@
+{
+  "artifact_type": "EXECUTIVE_MISSION",
+  "mission_id": "MISSION-T16-RECONCILIACAO-BLOCKERS-R1",
+  "causal": {
+    "work_item_id": "T16",
+    "front_id": "FRONT-T16-RECONCILIACAO-BLOCKERS",
+    "handoff_id": "HANDOFF-T16-CEO-DIRETOR-R1-01",
+    "message_id": "MSG-T16-CEO-DIRETOR-R1",
+    "causation_message_ids": [
+      "MSG-T39-CEO-DIRETOR-R2-BLOCKED",
+      "MSG-T16-CEO-REABERTURA-R1"
+    ],
+    "contract_id": "CTR-T16-RECONCILIACAO-BLOCKERS-2026-08-07",
+    "contract_version": 1,
+    "contract_digest": "sha256:ce4135b4da3c800536cdfbe0df7ccd91407b724e9567fac1a8c22d23ee641694",
+    "candidate_digest": "n/a",
+    "round": 1,
+    "attempt": 1,
+    "producer": "ceo-maestro",
+    "producer_version": "2026-08-07",
+    "producer_digest": "sha256:4f6fcd8989d928a4d7f50891c65a6d101bb262684df2c4ae0a3174f1bf136eef",
+    "producer_digest_recipe": "hashlib::sha256 sobre bytes crus de ceo-maestro/SKILL.md na raiz Estrutura Final de Skills",
+    "created_at": "2026-08-07T18:30:00-03:00"
+  },
+  "recipients": ["diretor-de-lentes"],
+  "objective": "Reconciliar os dois bloqueadores de governança da T16 em candidato isolado, validar a fidelidade das 23 barreiras e devolver proposta rastreável sem escrita canônica ou promoção.",
+  "deliverable_type": "proposal",
+  "required_level": "INTERNO",
+  "scope_in": [
+    "ceo-maestro/evals/barreiras-em-prosa-2026-08-03",
+    "ceo-maestro/evals/t16-reconciliacao-2026-08-07",
+    "_compartilhado/verificacoes_pacote.py",
+    "ceo-maestro/diretor-de-lentes/schemas",
+    "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-auditoria-responsabilidades",
+    "ceo-maestro/diretor-de-lentes/departamento-juizes"
+  ],
+  "scope_out": [
+    "qualquer escrita nos 23 contratos canônicos",
+    "T38 e T39",
+    "T40, T41, T42 e T43",
+    "estado/estado.json e memoria",
+    "promoção, nota ou escolha de vencedor"
+  ],
+  "constraints": [
+    "A campanha histórica de T16 é somente leitura e não pode ser sobrescrita.",
+    "O Diretor deve orquestrar os Departamentos; não executar Auditoria ou Juízes diretamente.",
+    "O candidate_digest deve ser da árvore do candidato pela receita canônica; manifest_digest, se usado, é separado.",
+    "A ausência de Auditoria, Juízes ou worker independente deve resultar em PROGRESS ou BLOCKED, nunca em aceite.",
+    "T38 e T39 permanecem visíveis como dependências independentes."
+  ],
+  "decisions_binding": [
+    "Esta é uma onda de reconciliação e prova, não de canonização.",
+    "O candidato só pode ser encaminhado a julgamento com identidade e digests reproduzíveis.",
+    "Achados residuais e limites do método permanecem em pending mesmo que os dois BLOCKER sejam sanados."
+  ],
+  "dependencies": [
+    "campanha histórica T16 e seu GOVERNANCE-REPORT",
+    "schema vigente do Diretor e dos envelopes de Auditoria/Juízes",
+    "receita canônica de digest da árvore",
+    "T38 e T39 preservadas como pendências independentes"
+  ],
+  "acceptance_criteria": [
+    "A missão e todos os envelopes novos validam contra os schemas canônicos.",
+    "O candidato isolado corrige os dois BLOCKER sem alterar o canônico.",
+    "A prova reconfirma os 23 contratos, a distribuição de 126 itens e os casos de regressão aplicáveis.",
+    "A identidade do candidato e os digests são reproduzíveis por terceiro.",
+    "A proposta devolvida declara Auditoria, Juízes, custos, riscos e pendências sem promoção."
+  ],
+  "required_evidence": [
+    "contrato e missão com digests",
+    "plano e retornos do Diretor",
+    "overlay do candidato e diff limitado ao escopo",
+    "prova independente de fidelidade e regressão",
+    "governance_report da Auditoria e JUDGE_REPORT quando elegíveis",
+    "registro explícito das pendências T38/T39"
+  ],
+  "matrix_exchange": {
+    "allowed": false,
+    "topics": [],
+    "read_scope": [],
+    "write_scope": [],
+    "consolidation_owner": null
+  },
+  "permissions": {
+    "default_policy": "deny",
+    "allowed_tools": ["read-only repository inspection", "local validation", "write candidate and evidence artifacts under ceo-maestro/evals/t16-reconciliacao-2026-08-07"],
+    "allowed_resources": [
+      "ceo-maestro/diretor-de-lentes",
+      "ceo-maestro/evals/barreiras-em-prosa-2026-08-03",
+      "ceo-maestro/evals/t16-reconciliacao-2026-08-07"
+    ],
+    "expires_at": "2026-08-14T23:59:59-03:00"
+  },
+  "stop_when": [
+    "o contrato, alvo ou escopo divergirem",
+    "o candidato não puder ser separado do canônico",
+    "a receita de digest não reproduzir a identidade",
+    "a prova depender de resultado fabricado ou de contexto histórico como passe",
+    "Auditoria ou Juízes não puderem receber envelopes elegíveis"
+  ],
+  "judge_gate_required": true,
+  "return_to": "ceo-maestro",
+  "issued_at": "2026-08-07T18:30:00-03:00"
+}

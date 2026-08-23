@@ -1,0 +1,100 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-experiencia-e-risco",
+  "lens": "experiencia-e-risco",
+  "instancia": 1,
+  "round": "nucleo-de-comando-r2",
+  "assignment_id": "ASSIGN-NUCLEO-R2-EXP-I1",
+  "created_at": "2026-08-06T00:00:00-03:00",
+  "commit_julgado": "ed3b63f",
+  "required_level": "INTERNO",
+  "rubric_ref": "rubrica-corte-v2",
+  "contract_id": "CONTRATO-NUCLEO-R2-20260807",
+  "contract_version": 1,
+  "contract_digest_conferido": {
+    "declarado": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+    "recalculado": "sha256:3a4750d9e983769c555db20d731fc4f012ca24ea851d2211cdc4f93a343756ed",
+    "receita": "00-CONTRATO.md, sem BOM, CRLF->LF, 5453 bytes normalizados (5549 crus)",
+    "estado": "CONFERE"
+  },
+  "custody_copy_conferida": {
+    "declarado": "sha256:0c592c799f991d7252321af7d45f458721a9b75273093126047b7a590d1e5d2a",
+    "recalculado": "sha256:0c592c799f991d7252321af7d45f458721a9b75273093126047b7a590d1e5d2a",
+    "receita_recuperada": "sha256 sobre os 5 arquivos de saida-crua em ordem alfabetica, concatenando nome.encode() + conteudo com CRLF->LF; bytes=44838 = soma dos normalizados; arquivos=5",
+    "receita_publicada_no_envelope": false,
+    "taken_at": "2026-08-07T01:30:00-03:00",
+    "issued_at": "2026-08-07T01:35:00-03:00",
+    "anterior_ao_despacho": true,
+    "estado": "CONFERE, mas por receita que eu tive de adivinhar em 10 tentativas"
+  },
+  "scores": [
+    {
+      "pacote": "ceo-maestro",
+      "criterion_id": "C05",
+      "score": 6,
+      "banda": "cru",
+      "razao": "A rota do CEO EXISTE e foi percorrida de verdade, e eu contei: 25 instancias de EXECUTIVE_MISSION e 6 de EXECUTIVE_SUBMISSION materializadas e numeradas em compliant-porta-unica-2026-08-01 e barreiras-em-prosa-2026-08-03, correlacionadas ao longo de nove rodadas, com um EXECUTIVE-MISSION-JULGAMENTO dedicado por rodada (08-, 24-, 38-, 54-, 81-, 99-, 124-, 145-, 167-). O vizinho consome o envelope pelo CODIGO REAL do CEO, nao por desenho: a bateria de departamento-negocios fecha com 'EXECUTIVE_SUBMISSION de Negocios aceita pelo schema do CEO' E 'pela semantica do CEO', mais 'regressao passa: ceo-maestro'. Isso e rota percorrida, e eu credito. LACUNA OBSERVAVEL, e ela esta exatamente na rodada oferecida como prova: nucleo-de-comando-r2-2026-08-07/ nao contem NENHUMA EXECUTIVE_MISSION. Varri a pasta: os unicos arquivos que citam o token sao dois .stdout.txt dentro de saida-crua, que so ecoam nomes de caso. O Diretor emite o 01-JUDGMENT-REQUEST sem missao a montante, e a participacao do CEO na rodada existe apenas em prosa no 00-CONTRATO.md. Nao e falta de capacidade: a mesma arvore mostra nove vezes como se faz. SEGUNDA LACUNA: a linha verde '[PASS] nenhuma rodada de julgamento nova sem JUDGE_ASSIGNMENT', publicada como prova de maquina desta rodada, nao pode ter avaliado esta rodada. Em validate_workflow.py, rodadas_em_bypass() pula toda pasta em que _houve_julgamento() e falso, e esse predicado so e verdadeiro quando existe arquivo PARECER*, *VEREDITO* ou *JUDGE-OPINION*. Na custodia (01:30, cinco minutos antes do despacho) nao existia nenhum, e nao existia nenhum quando li a pasta. A trava esta correta; a alegacao do contrato — 'e condicao de o validador ficar verde' — e prospectiva, e o verde publicado nao a sustenta. Ironia registrada: e o deposito deste parecer que passa a ativar a cobertura da trava sobre esta rodada.",
+      "evidence_ref": "EV-CEO-C05",
+      "artifact_ref": "Estrutura Final de Skills/ceo-maestro/evals/nucleo-de-comando-r2-2026-08-07/ (ausencia de EXECUTIVE_MISSION) + ceo-maestro/evals/validate_workflow.py:2683-2706 (_houve_julgamento/rodadas_em_bypass) + ceo-maestro/evals/compliant-porta-unica-2026-08-01/*.json"
+    },
+    {
+      "pacote": "ceo-maestro",
+      "criterion_id": "C06",
+      "score": 6,
+      "banda": "cru",
+      "razao": "O 'o que NAO faz' e forte e EXECUTADO, nao so escrito: 12 Guardrails, 12 Proibicoes, 'Nao decide especialidade tecnica, nota, veredito, conformidade nem prova', e um NAO explicito na description — com casos que fazem a trava reprovar ('bypass direto ao executor', 'gate autoafirmado nao esconde falha critica', 'digest de regras autoafirmado e rejeitado', 'placar forjado e detectado', 'autoridade errada nao aprova'). Esse terco do criterio esta em nivel alto. O 'onde falha' e o 'o que nao sabe' NAO estao na superficie normativa do pacote. Grepei SKILL.md, CONTRATO-DE-COMPROMISSO.md e as seis references/ por limite, risco residual, teto, nao fecha, ponto cego: TODOS os acertos sao maquinaria para colher a limitacao DE OUTREM — LIMITATION_REPORT, residual_risks do candidato, CAPABILITY_GAP, LIMIT_REACHED. Nenhuma linha diz onde o proprio CEO falha. O teto OI-04 e DELE (dito assim em departamento-evolucao-skills/evals/producao-honesta-2026-08-04/PLACAR.md:165, coluna dono = ceo-maestro) e esta declarado nos documentos DOS OUTROS. A favor: existe UM limite proprio nomeado dentro do pacote — o comentario 'LIMITE DECLARADO: forjar um JSON com esse artifact_type e trivial... e o mesmo teto OI-04' em evals/validate_workflow.py:2596-2600 — e eu VERIFIQUEI que ele e verdadeiro e esta medido certo: montei o diff e um envelope que falha o proprio schema em 13 contagens ainda satisfaz a trava. Mas e comentario de codigo, cobre uma trava so, e nada exige sua presenca. Quanto ao limite do ator unico: ELE CONTA, e eu digo por que na secao propria do relatorio — nao e desculpa. O que o desqualifica de nota alta e outra coisa: ele mora no 00-CONTRATO.md e no nota_de_limite do pedido, dois arquivos que MORREM COM A RODADA. Nada em SKILL.md, no contrato ou no schema obriga a rodada seguinte a repeti-lo, e nenhum validador ficaria vermelho se ele sumisse — enquanto este mesmo validador do CEO roda 8 casos que reprovam o envelope de um vizinho por falta dos limites R6/R9/R10/R11. O pacote impoe limite declarado a outro e nao carrega o proprio.",
+      "evidence_ref": "EV-CEO-C06",
+      "artifact_ref": "ceo-maestro/SKILL.md:203-216 + CONTRATO-DE-COMPROMISSO.md (Proibicoes) + ceo-maestro/evals/validate_workflow.py:2596-2600 + nucleo-de-comando-r2-2026-08-07/00-CONTRATO.md (secao 'Os dois conflitos')"
+    },
+    {
+      "pacote": "diretor-de-lentes",
+      "criterion_id": "C05",
+      "score": 6,
+      "banda": "cru",
+      "razao": "Rota percorrida, e com volume: contei em disco 9 JUDGMENT_REQUEST, 20 DEPARTMENT_MISSION, 11 DEPARTMENT_JUDGE_REPORT, DIRECTOR_PLAN, DIRECTOR_CAPABILITY_GAP e BLOCKED_RETURN como instancias reais e correlacionadas. E o vizinho consome pelo codigo do Diretor: 'MATRIX_EXCHANGE_MESSAGE aceita pelo schema do Diretor' E 'pela semantica do Diretor', mais 'regressao passa: diretor-de-lentes'. LACUNA, e ela e afiada porque esta na UNICA instancia canonica que o Diretor produziu NESTA rodada. Diffei 01-JUDGMENT-REQUEST.json contra $defs/judgmentRequest do proprio diretor-de-lentes.schema.json: 8 campos required AUSENTES (judgment_request_id, causal, department_return_ref, candidate_digest, applicable_criteria, artifact_refs, evidence_refs, issued_at), 8 campos presentes que additionalProperties:false PROIBE (request_id, producer, mode, contract_id, contract_version, candidatos, custody_copy, nota_de_limite) e um aggregation_rule sem declared_at e sem rationale, ambos required em $defs/aggregationRule. O declared_at nao e formalidade: e a garantia do ADR-016 contra escolher a regra depois de ver as notas. O contrato afirma isso em prosa ('Agregacao — selada agora') e omite o campo que a maquina conferiria. E o proprio validador do Diretor imprimiu VERDE, nesta mesma saida crua, o caso que pegaria isso: '[PASS] JUDGMENT_REQUEST rejeita regra sem declared_at — esperado rejeitado'. A trava e provada em fixture e nao e aplicada ao envelope de producao, porque nada valida os envelopes da rodada contra o schema. O Diretor tambem declara em SKILL.md:33 'Receber missao executiva somente do ceo-maestro' e aqui operou sem missao a montante e sem department_return_ref, sem declarar que o caso meta-julgamento cai fora do seu fluxo. Rota percorrida — com envelope que o proprio schema da casa recusaria.",
+      "evidence_ref": "EV-DIR-C05",
+      "artifact_ref": "nucleo-de-comando-r2-2026-08-07/01-JUDGMENT-REQUEST.json vs ceo-maestro/diretor-de-lentes/schemas/diretor-de-lentes.schema.json ($defs/judgmentRequest, $defs/aggregationRule) + saida-crua/diretor-de-lentes.stdout.txt"
+    },
+    {
+      "pacote": "diretor-de-lentes",
+      "criterion_id": "C06",
+      "score": 5,
+      "banda": "cru",
+      "razao": "O 'o que NAO faz' esta bem posto e e conferido por trava: 'O Diretor orquestra; nao executa, nao julga e nao autoriza excecoes'; 'Impedir qualquer atalho CEO -> Departamento, Diretor -> Agente ou Negocios -> Departamento'; com casos verdes que reprovam ('schema rejeita bypass para agente', 'retorno departamental nao se autoaceita', 'Auditoria nao substitui Juizes ausentes', 'gate exige parecer dos Juizes', 'troca matricial rejeita remetente forjado'). Os outros DOIS tercos do criterio estao vazios. Grepei SKILL.md, CONTRATO-DE-COMPROMISSO.md e as SETE references/ por limite, risco residual, teto, nao cobre, nao fecha: exatamente tres acertos, e os tres sao sobre limite ALHEIO — 'literalmente os limites do CEO' (SKILL.md:114), 'conferir LIMITATION_REPORT' (SKILL.md:218) e 'risco residual aceito | CEO' (comunicacao-matricial-negocios.md:23). Nao ha secao de riscos residuais, nao ha teto, nao ha 'o que eu nao sei'. E ha um desconhecido VIVO e nomeavel que o pacote nao menciona: ele dirige dez Departamentos operacionais mais os Juizes, e NENHUM deles e invocavel no runtime — conferi na lista viva de skills desta sessao, onde a Estrutura aparece com uma entrada so, ceo-maestro, embora os SKILL.md aninhados existam no destino implantado. O Diretor nao pode ser acionado nem acionar por canal nenhum, e o pacote nao diz isso em lugar algum. Nao e descuido invisivel: o padrao existe e e cumprivel na propria casa, com coluna 'Teto' e declaracao unica referenciada pelo documento inteiro. Aqui nao ha nada equivalente.",
+      "evidence_ref": "EV-DIR-C06",
+      "artifact_ref": "ceo-maestro/diretor-de-lentes/SKILL.md + CONTRATO-DE-COMPROMISSO.md + references/ (7 arquivos, varredura por limite/risco residual/teto) + lista viva de skills da sessao"
+    },
+    {
+      "pacote": "departamento-negocios",
+      "criterion_id": "C05",
+      "score": 5,
+      "banda": "cru",
+      "razao": "Este e o caso literal que o criterio nomeia: rota declarada e NUNCA percorrida. O pacote declara 12 saidas canonicas (BUSINESS_INTAKE, BUSINESS_EVALUATION_PLAN, BUSINESS_AGENT_MISSION, BUSINESS_AGENT_REPORT, BUSINESS_CONSOLIDATION, BUSINESS_SCORECARD, BUSINESS_GAP_REPORT, BUSINESS_REWORK_ORDER, BUSINESS_CAPABILITY_GAP, BUSINESS_JUDGMENT_PACKAGE, MATRIX_EXCHANGE_MESSAGE, BUSINESS_RETURN). Procurei instancias materializadas de todas na arvore inteira: ZERO. Todo acerto do token vive dentro do proprio pacote — SKILL.md, contrato, references, schema, evals.json e fixtures do validate_workflow.py — mais ecos incidentais em stdout de validador. Nenhuma EXECUTIVE_MISSION real jamais teve o Departamento como destino; nas duas campanhas reais ele aparece so como pacote CONTADO, nunca como alvo de missao. O Departamento nunca abriu uma rodada. O FORWARD-TEST.md declara 15/15 casos e 62/62 assertions, mas o cru nao foi depositado: evals/ tem apenas FORWARD-TEST.md, PLACAR*.md, evals.json e validate_workflow.py, e as 'evidencias comportamentais' sao duas citacoes de uma linha; o proprio documento diz que mede 'aderencia comportamental aos prompts'. CREDITO REAL, e por ele nao desco mais: e a prova de consumo pelo vizinho mais forte que li nesta rodada. A bateria de 235 casos termina rodando o envelope pelo codigo alheio, nao pelo desenho — 'EXECUTIVE_SUBMISSION de Negocios aceita pelo schema do CEO' e 'pela semantica do CEO'; 'LIMITATION_REPORT ... schema do CEO' e 'semantica do CEO'; 'MATRIX_EXCHANGE_MESSAGE aceita pelo schema do Diretor' e 'pela semantica do Diretor'; mais 'regressao passa: ceo-maestro' e 'regressao passa: diretor-de-lentes'. O envelope e consumivel pelos dois vizinhos, provado por execucao. O que falta e o que o criterio pede pelo nome: transito. A forma esta provada; a rota, nao.",
+      "evidence_ref": "EV-NEG-C05",
+      "artifact_ref": "varredura da arvore por BUSINESS_(RETURN|SCORECARD|INTAKE|...) — acertos so em ceo-maestro/departamento-negocios/{SKILL.md,CONTRATO,references,schemas,evals} + saida-crua/departamento-negocios.stdout.txt"
+    },
+    {
+      "pacote": "departamento-negocios",
+      "criterion_id": "C06",
+      "score": 6,
+      "banda": "cru",
+      "razao": "O 'o que NAO faz' e o mais completo dos que li e o mais conferido por trava: uma lista 'Voce nao pode' com 8 itens em SKILL.md, 15 Proibicoes no contrato, uma description que termina em 'Nao use como consultor executor, Juiz, CTO, decisor executivo nem substituto de aconselhamento financeiro regulado', e uma secao 'Entradas aceitas' que nomeia CINCO chamadores ilegitimos um a um (Diretor em canal direto, Juizes, outro Departamento, agente, Jeremias fora do CEO) e o estado de falha correspondente. E isso reprova de verdade: 'rejeita JUDGE_REPORT produzido localmente', 'rejeita EXECUTIVE_DECISION produzido localmente', 'rejeita EXCEPTION_REQUEST produzido localmente', 'rejeita matriz para si proprio', 'rejeita fallback de capacidade', 'rejeita gerente fabricando relatorio', 'rejeita missao de agente produzida pelo CEO', 'rejeita dois agentes' / 'quarto agente' / 'agente duplicado'. Ha ainda UM limite proprio de dominio, nomeado e verificavel, que os outros nao tem: 'nao oferecer aconselhamento financeiro pessoal regulado' e 'responsabilidade das alegacoes e limites regulatorios' (SKILL.md:119) — isso e um 'o que eu nao devo ser usado para' de verdade, com modo de falha concreto. E os estados de recusa sao nomeados, nao genericos: B_BLOCKED e BUSINESS_CAPABILITY_GAP, com gatilho declarado. O que falta e o 'onde falha': nao ha secao de riscos residuais, nao ha teto, e o desconhecido mais consequente do pacote fica calado — ele NUNCA foi acionado, a regua interna de 9,5 nunca correu sobre uma proposta real, e nada no pacote diz isso. Ironia que registro: references/regua-de-avaliacao.md:37 exige que a nota 10.0 tenha 'risco residual explicitado' — do candidato, sempre do candidato, nunca do proprio Departamento.",
+      "evidence_ref": "EV-NEG-C06",
+      "artifact_ref": "ceo-maestro/departamento-negocios/SKILL.md:20-31,119 + CONTRATO-DE-COMPROMISSO.md:42-52,107-121 + references/regua-de-avaliacao.md:37 + saida-crua/departamento-negocios.stdout.txt"
+    }
+  ],
+  "minimo_dos_meus_criterios": 5,
+  "confidence": "media",
+  "por_que_essa_confianca": "Alta na parte mecanica, que reproduzi sozinho e qualquer um refaz: o contract_digest bate exatamente (CRLF->LF, sem BOM, 5453 bytes); o custody sha256 bate exatamente depois que recuperei a receita; a custodia e anterior ao despacho (01:30 < 01:35); e os dois diffs de envelope contra schema sao aritmetica de conjunto, nao leitura — 13 contagens de nao conformidade no meu JUDGE_ASSIGNMENT e 16 no JUDGMENT_REQUEST, com o write_path violando o pattern da trava 1 do ADR-016. Media no conjunto por tres razoes. Primeira: sou PROIBIDO DE EXECUTAR, entao minha afirmacao de que a trava T32 nao avaliou esta rodada vem de LER _houve_julgamento() e listar a pasta, nao de rodar; se o predicado for alcancado por outro caminho, esse achado enfraquece. Segunda: provei uma AUSENCIA (zero instancias BUSINESS_*) com um grep cujo filtro de exclusao eu mesmo escrevi para nao pisar em contexto proibido — filtro esconde, e a casa ja registrou que busca filtrada vira falso negativo. Terceira: a receita do custody digest nao esta publicada em lugar nenhum; eu a achei por tentativa, em 10 candidatos. O digest e genuino, mas terceiro sem as minhas dez tentativas reportaria NAO_REPRODUZIDO — o que confirma o valor e nao a reprodutibilidade.",
+  "o_que_declaro_contra_mim": [
+    "Provei ausencia com busca filtrada. O meu 'zero instancias BUSINESS_*' saiu de um grep com seis padroes de exclusao que eu escrevi para respeitar o contexto proibido. Se existir uma instancia real dentro de qualquer um deles, meu achado central sobre departamento-negocios C05 esta errado e a nota esta subestimada. Nao verifiquei e, pelas regras desta rodada, nao podia.",
+    "Nao executei nada — e o achado da trava T32 depende disso. A afirmacao 'a linha verde nao avaliou esta rodada' e derivada de leitura de codigo mais listagem de diretorio. E o raciocinio mais forte que fiz sem maquina, e por isso o mais fragil.",
+    "Confirmei o custody digest com uma receita que adivinhei. Acertei na decima tentativa, com nome+conteudo normalizado por arquivo em ordem alfabetica. Isso prova que o numero e verdadeiro; NAO prova que ele e verificavel por terceiro, e eu apresentei as duas coisas juntas no comeco do trabalho antes de separa-las.",
+    "Li notas que nao eram minhas. Ao grepar por 'departamento-negocios' caí em compliant-porta-unica-2026-08-01/42-DEPARTMENT-JUDGE-REPORT-R3.json, que traz pareceres pontuados ('nota 9', 'nota 8') de OUTRA rodada, sobre OUTRO candidato e sob OUTRO criterio (C07-CONTAGEM-E-ARVORE). Nao esta na minha lista de proibidos e nao toca meus quatro pacotes nem meus seis criterios, mas li notas alheias e pode ter ancorado a minha nocao de como se parece um '9 com um risco nomeado' nesta casa.",
+    "A direcao do meu vies foi DUREZA, e nao brandura. No instante em que descobri que os envelopes desta rodada falham os proprios schemas, eu quis que esse achado fosse decisivo, e tive de me perguntar duas vezes se estava pontuando a RODADA em vez dos PACOTES. O criterio e sobre o pacote; a rodada e so a instancia mais recente dele.",
+    "Escrevi 7 para ceo-maestro C05 e depois baixei para 6. A justificativa foi leitura literal da rubrica ('7-8 = sem defeito observado', e eu observei defeito). Nao consigo separar com honestidade o quanto disso foi rigor e o quanto foi a mesma vontade de endurecer com quem me despachou. Registro os dois movimentos porque so o segundo numero apareceria no placar.",
+    "Em ceo-maestro C06 dei credito a um limite que vive num COMENTARIO de Python. Isso e leitura generosa de 'o pacote diz': comentario nao e declaracao ao chamador, e nada obriga sua presenca. Um juiz mais estrito da 5 ali, e eu nao teria argumento contra.",
+    "Usei o padrao da propria casa como regua de 'nomeado e verificavel' — a tabela de riscos residuais com coluna Teto, e os limites const exigidos por schema em outro pacote. Fui instruido a nunca comparar um pacote com outro. Usei aquilo como DEFINICAO do termo, nao como linha de base de pontuacao, mas a fronteira e fina e posso te-la cruzado.",
+    "O ceo-maestro e um dos julgados e participou da cadeia que emitiu a minha designacao. Isso me constrangeu de um jeito especifico e util de nomear: passei mais tempo procurando defeito NA CADEIA que me despachou do que procurando defeito no departamento-negocios, que nao me despachou nada. As seis notas nao saem da mesma quantidade de esforco, e as duas de Negocios sao as que menos evidencia negativa receberam por busca ativa."
+  ]
+}

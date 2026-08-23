@@ -1,0 +1,105 @@
+{
+  "artifact_type": "JUDGE_OPINION",
+  "judge_id": "agente-julgar-experiencia-e-risco",
+  "lens": "experiencia-e-risco",
+  "instancia": 2,
+  "round": "recoleta-c03-c05-c06",
+  "created_at": "2026-08-05T00:00:00-03:00",
+  "commit_julgado": "ab5882cf09a95d841168fd52faf656ac55997287",
+  "required_level": "INTERNO",
+  "scores": [
+    {
+      "package_id": "departamento-arquitetura-dados",
+      "criterion_id": "C05",
+      "score": 8,
+      "razao": "A cadeia atravessa e a travessia e provada contra o consumidor, nao contra o proprio fixture: o DATA_LEDGER e convertido e validado contra diretor-de-lentes.schema.json#/$defs/departmentReturn, com negativos para autor divergente e retorno endereçado ao CEO; o validador confere ainda que o Diretor reconhece este Departamento em operationalDepartment e knownCapability e que o delegationTarget da Arquitetura de Software aponta para ca. O gerente sabe o que despachar (par capacidade-agente travado por const na DATA_TASK) e o agente sabe a quem responder (return_to const na gerente). A restriçao do vizinho entra no envelope interno: architectural_constraint no DATA_PLAN e inherited_constraint na DATA_TASK, e a dependencia ao Desenvolvimento so e valida com attached_constraint de no minimo 20 caracteres. Sobram dois riscos menores, nomeados: (1) a unica conversao definida em toda a arvore descarta delegated_dependencies e fixa pending_refs vazio - as dependencias para Desenvolvimento e Segurança cruzam a fronteira apenas como conteudo do ledger citado em evidence_refs, sem sinal tipado que o Diretor possa ler; (2) o lado de entrada nao e materializado: DEPARTMENT_MISSION nunca e instanciada nem validada contra o schema do Diretor, so aparece como department_mission_ref, de modo que a recusa de missao de origem indevida permanece em prosa. Nao atinge 9 porque sao dois riscos, nao um. Descontei o FAIL da serie global de ADR: ele acusa o numero 020 duplicado por copias de laboratorio de outra frente e nao e defeito deste pacote.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/validate_workflow.py:999",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/validate_workflow.py:1019",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/validate_workflow.py:1025",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/evals/validate_workflow.py:390",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/schemas/departamento-arquitetura-dados.schema.json:781",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/schemas/departamento-arquitetura-dados.schema.json:212",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-arquitetura-dados/references/protocolo-de-dados.md:21",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/schemas/diretor-de-lentes.schema.json:622"
+      ]
+    },
+    {
+      "package_id": "departamento-desenvolvimento",
+      "criterion_id": "C05",
+      "score": 7,
+      "razao": "A saida atravessa: o DEV_LEDGER vira DEPARTMENT_RETURN com numero real de teste e e validado contra o schema do diretor-de-lentes, com negativo para autor divergente; o validador confere que o Diretor reconhece este Departamento em operationalDepartment e knownCapability e que Arquitetura de Software e Arquitetura de Dados delegam para ca; e o que sai daqui para os vizinhos sai tipado, com delegationTarget de cinco Departamentos e attached_context obrigatorio. O agente sabe a quem responder e o par capacidade-agente e travado. O que falta e a metade de entrada, e ela e central justamente neste pacote, cuja funçao e materializar o que tres vizinhos decidiram: a chegada da decisao upstream e um booleano autodeclarado (upstream_present) no DEV_PLAN, sem referencia nem digest do artefato que a produziu, e a DEV_TASK nao tem nenhum campo para transportar a decisao herdada - o agente pode implementar sem que o grao, o plano de migraçao ou o token tenham entrado no envelope, e o schema nao percebe. Soma-se que a conversao para o envelope do consumidor so e exercitada com delegated_dependencies e capability_gaps vazios e pending_refs fixado em vazio, entao o caminho de travessia de dependencia e pendencia fica sem prova. Atende o criterio - a cadeia atravessa - mas com duas lacunas na fronteira de entrada, o que o mantem no piso da banda. Descontei o FAIL da serie global de ADR, alheio a este pacote.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/evals/validate_workflow.py:544",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/evals/validate_workflow.py:557",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/evals/validate_workflow.py:247",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/evals/validate_workflow.py:262",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/schemas/departamento-desenvolvimento.schema.json:544",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/schemas/departamento-desenvolvimento.schema.json:632",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/schemas/departamento-desenvolvimento.schema.json:451",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-desenvolvimento/references/protocolo-de-desenvolvimento.md:53"
+      ]
+    },
+    {
+      "package_id": "departamento-conteudo-marketing",
+      "criterion_id": "C05",
+      "score": 8,
+      "razao": "A travessia e verificada em mais pontos da estrutura do vizinho do que o proprio retorno exige: alem de derivar o DEPARTMENT_RETURN e valida-lo contra o schema do Diretor com tres negativos (autoaceite ACCEPTED, produtor causal forjado e retorno endereçado ao CEO), o validador exige que a matriz do Diretor tenha exatamente dez Departamentos, que o departmentReturn aceite este produtor e aponte ao Diretor, que a troca matricial Diretor-Negocios exista nos dois sentidos por const, que o judgmentRequest seja exclusivo do Diretor, que o parecer independente tenha produtor travado nos Juizes, e que os tokens de fronteira externa apareçam na SKILL, no contrato, no protocolo e no SKILL do agente de inteligencia. O agente sabe a quem responder (return_to na gerente, com negativo para retorno fora dela) e o par agente-capacidade e exclusivo. A pendencia e a lacuna aberta cruzam a fronteira como dado, em pending_refs. Dois riscos menores, nomeados: (1) o protocolo manda registrar no DEPARTMENT_RETURN a necessidade de custodia institucional, sua natureza provavel e a evidencia, mas o envelope do Diretor e additionalProperties:false e nao tem campo para isso - o handoff a Registros so pode viajar como referencia sem tipo, e nenhuma conversao conservadora e declarada para ele; (2) a metade de entrada nao e materializada: a SKILL manda consumir a DEPARTMENT_MISSION do schema do Diretor, mas nenhum caso instancia uma missao nem prova a recusa de missao endereçada a outro. Descontei o FAIL da serie global de ADR, alheio a este pacote.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/evals/validate_workflow.py:568",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/evals/validate_workflow.py:602",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/evals/validate_workflow.py:737",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/evals/validate_workflow.py:819",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/evals/validate_workflow.py:402",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/references/protocolo-conteudo-marketing.md:132",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/agentes/agente-narrativa-redacao/CONTRATO-DE-COMPROMISSO.md:9",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/schemas/diretor-de-lentes.schema.json:568"
+      ]
+    },
+    {
+      "package_id": "departamento-conteudo-marketing",
+      "criterion_id": "C06",
+      "score": 8,
+      "razao": "O pacote diz o que nao fecha em tres camadas, e em duas delas o dono e obrigatorio por schema, nao por costume: toda MARKETING_CAPABILITY_GAP exige recovery_owner e recovery_condition entre os campos obrigatorios, e toda linha das oito dimensoes de prontidao exige reason, evidence_refs e owner, com NOT_PROVEN existindo como status proprio - o que impede que o nao provado se esconda dentro de NOT_APPLICABLE. O protocolo declara oito riscos residuais com uma coluna Teto que diz explicitamente o que a mitigaçao nao alcança (mudança de politica entre consulta e publicaçao, autodeclaraçao que nao prova a cadeia de proveniencia, documento de licenca falso, fingerprint de conteudo sobrevivendo a higienizaçao, açao externa fora do runtime sem recibo). O PLACAR lista sete SKIPs com motivo, afirma que SKIP nao e PASS e o veredito de materializaçao e APROVADO_COM_RESSALVAS com as ressalvas nomeadas. Nao confessa so o que passa. Dois riscos menores, nomeados: (1) os sete SKIPs do proprio PLACAR e as oito linhas de risco residual nao nomeiam dono nem condiçao de fechamento - quem fecha R4 ou quem executa o forward comportamental fica sem resposta, e essa e exatamente a camada em que o pacote fala de si; (2) verificavel nao e verificado: recovery_condition e reason sao strings de comprimento minimo 3, entao o schema garante presença da condiçao, nunca que ela seja checavel. Descontei o FAIL da serie global de ADR, alheio a este pacote.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/schemas/departamento-conteudo-marketing.schema.json:799",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/schemas/departamento-conteudo-marketing.schema.json:835",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/schemas/departamento-conteudo-marketing.schema.json:697",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/schemas/departamento-conteudo-marketing.schema.json:717",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/references/protocolo-conteudo-marketing.md:155",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/references/protocolo-conteudo-marketing.md:104",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/evals/PLACAR.md:51",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/evals/PLACAR.md:65"
+      ]
+    },
+    {
+      "package_id": "departamento-qa-usabilidade",
+      "criterion_id": "C06",
+      "score": 7,
+      "razao": "A declaraçao de limite deste pacote e a mais mecanizada que li nele: skipDetail exige reason, impact, owner e resume_when como campos obrigatorios, pendingItem exige owner, impact, resume_when e blocking, e o defeito exige owner - ou seja, nenhum limite que surja em operaçao existe sem dono e sem condiçao de retomada. A tabela de estados declara, coluna a coluna, o que cada estado Nunca significa (PASS nunca significa ausencia de defeito; SKIP nunca e passe; UNVERIFIED nunca e conformidade). Os sete riscos residuais R-QA-01..07 trazem coluna Teto com o que a mitigaçao nao alcança. E ha uma confissao rara, que e o oposto exato do defeito que o criterio caça: o protocolo declara que o envelope generico do Diretor nao possui campos proprios para UNVERIFIED e MISSING e, em vez de calar, descreve o transporte conservador em skip com motivo rotulado, pendencias preservadas e referencia ao relatorio que mantem os estados originais. Um defeito observado e um risco impedem a banda superior. Defeito: a seçao O que ainda nao foi provado do PLACAR contradiz o proprio arquivo sobre quick_validate.py - a linha 24 declara PASS 4/4 com PyYAML 6.0.3 instalado e o bloqueio anterior derrubado, enquanto as linhas 40-42 afirmam que a execuçao bloqueada nao vira PASS e que a limitaçao ambiental permanece declarada, e a linha 57 mantem a disponibilidade do PyYAML na lista do que nao foi provado; um limite cuja condiçao de fechamento o proprio documento diz estar cumprida, e que segue listado como aberto, nao e condiçao verificavel. Risco: os tres limites proprios do PLACAR e as sete linhas de risco residual nao nomeiam dono, e resume_when e Teto sao strings livres - presença garantida, verificabilidade nao. Descontei o FAIL da serie global de ADR: acusa o numero 020 duplicado em copias de laboratorio sob ceo-maestro/evals/producao-honesta-2026-08-04/origem-independente-R1/lab/, de outra frente.",
+      "evidencia": [
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/schemas/departamento-qa-usabilidade.schema.json:441",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/schemas/departamento-qa-usabilidade.schema.json:327",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/references/protocolo-qa-usabilidade.md:73",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/references/protocolo-qa-usabilidade.md:361",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/references/protocolo-qa-usabilidade.md:390",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/PLACAR.md:24",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/PLACAR.md:40",
+        "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-qa-usabilidade/evals/PLACAR.md:51"
+      ]
+    }
+  ],
+  "minimo_dos_meus_criterios": 7,
+  "confidence": "media",
+  "por_que_essa_confianca": "Alta na parte estrutural: C05 e C06 se leem no pacote, e schema, contrato, protocolo, agentes e validador estao integros na arvore e foram lidos diretamente, com linha citada. Media no conjunto por tres motivos verificaveis. Primeiro, nenhum dos quatro pacotes tem execuçao ponta a ponta da cadeia: toda a prova de travessia e compatibilidade de forma entre um fixture escrito pelo proprio pacote e o schema do consumidor - eu li converters, nao rodadas. Segundo, eu nao executo nada nesta rodada por contrato, entao aceito a saida crua do CEO como fato sobre a contagem e nao pude confirmar que os casos de fronteira que li estao entre os que passaram. Terceiro, C05 e C06 dependem de leitura de intençao (o que conta como fronteira operavel, o que conta como condiçao verificavel) mais do que os criterios mecanicos, e duas instancias podem divergir por ate a largura de uma banda.",
+  "o_que_declaro_contra_mim": [
+    "O contrato desta recoleta declara a arvore julgada como o commit 4446786; meu worktree, apos git reset --hard master, esta em ab5882c, que e o commit selado da propria recoleta. Julguei ab5882c e declarei ab5882c. Se a intençao era medir 4446786, minhas cinco notas foram tiradas de uma arvore diferente da contratada, e o CEO precisa decidir se isso invalida ou nao o parecer - eu nao troquei de arvore para fazer o numero bater.",
+    "Nao executei nada: nao rodei validador, nao reproduzi nenhum dos numeros da saida crua, e nao verifiquei que os casos de fronteira que citei estao entre os PASS. Estou confiando na saida crua do CEO exatamente onde ela e mais conveniente para as notas altas - se algum dos casos de fronteira que sustentam meus 8 estiver quebrado e contado como PASS, meu parecer cai junto.",
+    "Toda a minha prova de C05 e prova de FORMA, nao de comportamento. Os converters que li (to_department_return, derive_department_return) sao fixtures escritos pelo proprio pacote que testam. Nenhuma DEPARTMENT_MISSION real entrou, nenhum agente real respondeu. Estou julgando que a cadeia ATRAVESSARIA, nao que atravessou - e o proprio criterio me avisa que verde no proprio teste nao prova travessia. Aceitei validaçao cruzada contra o schema do consumidor como o teto do que se pode provar por leitura, e essa aceitaçao e minha, nao do contrato.",
+    "Encontrei o descarte de delegated_dependencies na conversao do arquitetura-dados so porque abri o converter linha a linha; nao apliquei o mesmo grau de escrutinio a todos os cinco pares antes de fixar as notas. Apliquei depois, e conferi os tres converters, mas a ordem em que procurei pode ter enviesado o que achei: procurei defeito primeiro no pacote que ja estava indo para nota alta.",
+    "Mudei a nota do arquitetura-dados de 9 para 8 e do conteudo-marketing de 9 para 8 durante a analise, ao achar o segundo risco em cada um. Isso significa que minha primeira leitura era mais generosa do que a evidencia sustentava, e que a fronteira 8/9 aqui depende de quanto eu cavei, nao de uma regra estavel. Outra instancia que cave menos provavelmente devolve 9 nos dois.",
+    "Nao consegui avaliar a metade de entrada da fronteira em nenhum dos quatro: DEPARTMENT_MISSION nunca e materializada nem validada em nenhum dos validadores que li. Contei isso como risco nomeado, e nao como lacuna que rebaixa a banda, porque o criterio C05 enumera tres perguntas e as tres olham para dentro e para a saida. E uma leitura minha do criterio, e uma leitura mais dura rebaixaria os quatro.",
+    "Na contradiçao do PyYAML do qa-usabilidade eu decidi que a direçao importa - o pacote declara MAIS limite do que tem, nao menos - e por isso mantive 7 em vez de descer para a banda de 4-6. Um juiz que leia o criterio ao pe da letra (a banda 7-8 exige sem defeito observado, e eu observei um defeito) tem base para 6, e eu nao teria como refutar.",
+    "Nao li os agentes um a um em nenhum dos quatro pacotes: amostrei um contrato de agente em arquitetura-dados e um em conteudo-marketing, e para os demais confiei no enum de workerId e nos casos de par capacidade-agente relatados no PLACAR. Se algum agente individual declarar canal lateral, eu nao teria visto."
+  ]
+}

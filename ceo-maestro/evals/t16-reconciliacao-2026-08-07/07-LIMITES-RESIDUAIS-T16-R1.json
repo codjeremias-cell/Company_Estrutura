@@ -1,0 +1,44 @@
+{
+  "artifact_type": "LIMITES_RESIDUAIS",
+  "campaign": "T16",
+  "candidate_digest": "sha256:c3559c652c4842025852115cac15c1eea50a9afb8be74504ee2a32724c9420dc",
+  "promotion": "NOT_PROMOTED",
+  "limits": [
+    {
+      "finding_id": "AUD-T16-01",
+      "severity": "LOW",
+      "blocking": false,
+      "owner_role": "ceo-maestro",
+      "status": "PENDING",
+      "limit": "GRANULARIDADE_FUNDIDA continua sem trava normativa sobre quantos itens uma barreira deve ter.",
+      "closure_condition": "Decisão do CEO ou norma canônica específica; não foi inventada nesta onda."
+    },
+    {
+      "finding_id": "AUD-T16-04",
+      "severity": "MEDIUM",
+      "blocking": false,
+      "owner_role": "departamento-evolucao-skills",
+      "status": "PENDING",
+      "limit": "A prova histórica mediu escapes adicionais da perna 2; o instrumento declarava um limite e registrou três comportamentos de escape.",
+      "closure_condition": "Declarar os escapes ou fechar a perna; nenhuma das duas ações pertence ao Diretor nesta missão."
+    },
+    {
+      "finding_id": "AUD-T16-05",
+      "severity": "MEDIUM",
+      "blocking": false,
+      "owner_role": "departamento-evolucao-skills",
+      "status": "PENDING",
+      "limit": "O manifest.json histórico diverge do PLACAR quanto ao branch e à descrição do instrumento entregue.",
+      "closure_condition": "Atualizar o artefato histórico somente sob missão própria; T16 não reescreve a campanha de origem."
+    },
+    {
+      "finding_id": "AUD-T16-06",
+      "severity": "LOW",
+      "blocking": false,
+      "owner_role": "departamento-evolucao-skills",
+      "status": "PENDING",
+      "limit": "Os ramos EOL_MUDOU_CONTEUDO_INTACTO e CONTEUDO_MUDOU não tinham caso real executado na campanha histórica.",
+      "closure_condition": "Construir e executar os casos em campanha própria; não declarar cobertura por inferência."
+    }
+  ]
+}

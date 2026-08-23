@@ -1,0 +1,51 @@
+{
+  "artifact_type": "BLOCKED_RETURN",
+  "director_return_id": "DRET-T16-R1-BLOCKED",
+  "causal": {
+    "work_item_id": "T16",
+    "front_id": "FRONT-T16-RECONCILIACAO-BLOCKERS",
+    "handoff_id": "HANDOFF-T16-DIRETOR-CEO-R1-01",
+    "message_id": "MSG-T16-DIRETOR-CEO-BLOCKED-R1",
+    "causation_message_ids": ["MSG-T16-DIRETOR-PLAN-R1", "MSG-T16-DIRETOR-AUDIT-GAP-R1"],
+    "contract_id": "CTR-T16-RECONCILIACAO-BLOCKERS-2026-08-07",
+    "contract_version": 1,
+    "contract_digest": "sha256:ce4135b4da3c800536cdfbe0df7ccd91407b724e9567fac1a8c22d23ee641694",
+    "candidate_digest": "sha256:c3559c652c4842025852115cac15c1eea50a9afb8be74504ee2a32724c9420dc",
+    "round": 1,
+    "attempt": 1,
+    "producer": "diretor-de-lentes",
+    "producer_version": "2026-08-07",
+    "producer_digest": "sha256:684050450d2dbb58e853b2c03a32b5838eada76fc76a4438e637a1432f707e11",
+    "created_at": "2026-08-07T19:15:00-03:00"
+  },
+  "executive_mission_ref": "MISSION-T16-RECONCILIACAO-BLOCKERS-R1",
+  "state": "D_BLOCKED",
+  "summary": "T16 reconciliou os dois blockers em artefatos isolados e a prova local reproduz árvore, manifesto, 23 barreiras e 126 itens; permanece bloqueada porque não há worker independente observável para Auditoria e Juízes.",
+  "artifact_refs": [
+    "03-DIRECTOR-PLAN-T16-R1.json",
+    "04-DEPARTMENT-MISSION-AUDIT-T16-R1.json",
+    "candidato-isolado/manifest.json",
+    "52-PROOF-SCOREBOARD-T16-R1.json",
+    "07-LIMITES-RESIDUAIS-T16-R1.json"
+  ],
+  "evidence_refs": [
+    "02-HISTORICAL-SNAPSHOT-T16.json",
+    "prova-independente/51-PROOF-T16-R1.py",
+    "ceo-maestro/diretor-de-lentes/schemas/diretor-de-lentes.schema.json",
+    "_compartilhado/verificacoes_pacote.py",
+    "ceo-maestro/evals/barreiras-em-prosa-2026-08-03/validacao/02-GOVERNANCE-REPORT.json"
+  ],
+  "director_gap_refs": ["DGAP-T16-QA-R1", "DGAP-T16-AUDIT-R1", "DGAP-T16-JUDGES-R1"],
+  "blocking_pending_refs": [
+    "PENDING-T16-RUNTIME-INDEPENDENCE",
+    "PENDING-T16-AUDIT-DISPATCH",
+    "PENDING-T16-JUDGE-DISPATCH",
+    "AUD-T16-01",
+    "AUD-T16-04",
+    "AUD-T16-05",
+    "AUD-T16-06"
+  ],
+  "next_event": "Disponibilizar worker independente observável; então emitir QA_RETURN/AUDIT_RETURN, conferir Auditoria e só depois emitir JUDGMENT_REQUEST.",
+  "returned_to": "ceo-maestro",
+  "returned_at": "2026-08-07T19:15:00-03:00"
+}

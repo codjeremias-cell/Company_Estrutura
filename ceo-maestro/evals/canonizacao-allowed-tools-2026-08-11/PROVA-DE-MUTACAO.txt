@@ -1,0 +1,118 @@
+==============================================================================
+PROVA DE MUTACAO - canonizacao de `allowed-tools` no frontmatter
+Data: 2026-08-11 | departamento-evolucao-skills sob EXECUTIVE_MISSION do ceo-maestro
+Alvo da mudanca: _compartilhado/verificacoes_pacote.py :: validate_frontmatter
+==============================================================================
+
+python ........: 3.14.6
+modulo alterado: _compartilhado\verificacoes_pacote.py
+SHA-256 do modulo (versao canonizada): 523bae879fa9bbe00eddcc107d9bfbe7db451556fe9ee508303a59e3d2a66bef
+
+------------------------------------------------------------------------------
+PROVA A - a trava AINDA REPROVA o que deve reprovar
+------------------------------------------------------------------------------
+Se `allowed-tools` virou opcional sem allowlist, campo desconhecido passaria.
+As tres mutacoes abaixo mostram que nao passa.
+
+A1) campo desconhecido `foo: bar` em SKILL.md QUE JA TEM allowed-tools
+  arquivo .......: ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-desenvolvimento\SKILL.md
+  SHA-256 antes .: 434b35addeb43e11c92ae82c7e01f94131482c0c61f86925fc5200017de75a37
+  SHA-256 mutado : ade6a15047d5eb9086551fd29b0a4f5ff5b4d51cf5c1b1a4de9710999da0ffcc
+  pacote ........: ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-desenvolvimento
+  rc ............: 1
+  Resultado: 115/116 casos passaram.
+  [FAIL] frontmatter da gerente — esperado válido
+  VEREDITO ......: REPROVOU (esperado)
+  SHA-256 depois : 434b35addeb43e11c92ae82c7e01f94131482c0c61f86925fc5200017de75a37
+  RESTAURADO ....: SIM, byte a byte
+
+A2) campo desconhecido `foo: bar` em SKILL.md SEM allowed-tools
+  arquivo .......: ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-registros\agentes\agente-estado-e-handoffs\SKILL.md
+  SHA-256 antes .: e8787d6daa7bae486b757097947336006a9a315cd1761fdd12942518307e5aec
+  SHA-256 mutado : 76438c11be03b8bca0d22e8fabcd65a8dfbdd6d170794cfe07a52a2ed39f16b4
+  pacote ........: ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-registros
+  rc ............: 1
+  Resultado: 181/182 casos passaram.
+  [FAIL] metadata da gerente e dos quatro agentes — esperado válido
+  VEREDITO ......: REPROVOU (esperado)
+  SHA-256 depois : e8787d6daa7bae486b757097947336006a9a315cd1761fdd12942518307e5aec
+  RESTAURADO ....: SIM, byte a byte
+
+A3) `allowed-tools` FORA DA ORDEM canonica (antes de description)
+  arquivo .......: ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-desenvolvimento\SKILL.md
+  SHA-256 antes .: 434b35addeb43e11c92ae82c7e01f94131482c0c61f86925fc5200017de75a37
+  SHA-256 mutado : 78fa9db9bd97ab09d191c1c52ac19ad113c77b25a1ae47f5af81f0cc8b126e26
+  pacote ........: ceo-maestro\diretor-de-lentes\departamentos-operacionais\departamento-desenvolvimento
+  rc ............: 1
+  Resultado: 115/116 casos passaram.
+  [FAIL] frontmatter da gerente — esperado válido
+  VEREDITO ......: REPROVOU (esperado)
+  SHA-256 depois : 434b35addeb43e11c92ae82c7e01f94131482c0c61f86925fc5200017de75a37
+  RESTAURADO ....: SIM, byte a byte
+
+------------------------------------------------------------------------------
+PROVA B - a MINHA MUDANCA e a causa do verde
+------------------------------------------------------------------------------
+Revertida a comparacao para a lista exata `["name", "description"]`,
+os quatro pacotes precisam voltar a reprovar. Se ficassem verdes, o verde
+de hoje viria de outra coisa e a mudanca seria inocua.
+
+  SHA-256 do modulo antes .: 523bae879fa9bbe00eddcc107d9bfbe7db451556fe9ee508303a59e3d2a66bef
+  SHA-256 do modulo mutante: 6de3a918115dfc39743dd33a5c305750e34db4236dee8b448cbfa579fcb8fde6
+
+  [departamento-evolucao-skills] rc=1 | Resultado: 82/83 casos passaram.
+      [FAIL] metadata da gerente e dos quatro agentes — esperado válido
+  [departamento-arquitetura-software] rc=1 | Resultado: 79/80 casos passaram.
+      [FAIL] metadata da gerente e dos seis agentes — esperado válido
+  [departamento-desenvolvimento] rc=1 | Resultado: 114/116 casos passaram.
+      [FAIL] frontmatter da gerente — esperado válido
+      [FAIL] frontmatter e interface dos oito agentes — esperado válido
+  [departamento-registros] rc=1 | Resultado: 181/182 casos passaram.
+      [FAIL] metadata da gerente e dos quatro agentes — esperado válido
+
+  TOTAL DE [FAIL] COM O MUTANTE: 5  (esperado: 5)
+  SHA-256 do modulo depois : 523bae879fa9bbe00eddcc107d9bfbe7db451556fe9ee508303a59e3d2a66bef
+  RESTAURADO ..............: SIM, byte a byte
+
+  Reconferencia com o modulo restaurado:
+      [departamento-evolucao-skills] rc=0 | Resultado: 83/83 casos passaram.
+      [departamento-arquitetura-software] rc=0 | Resultado: 80/80 casos passaram.
+      [departamento-desenvolvimento] rc=0 | Resultado: 116/116 casos passaram.
+      [departamento-registros] rc=0 | Resultado: 182/182 casos passaram.
+  TOTAL DE [FAIL] RESTAURADO: 0  (esperado: 0)
+
+==============================================================================
+CONCLUSAO: TODAS AS PROVAS PASSARAM
+  A1/A2/A3: campo desconhecido e ordem errada continuam reprovando.
+  B: sem a mudanca, 5 FAIL voltam; com ela, 0. A causa do verde e a mudanca.
+==============================================================================
+
+==============================================================================
+PROVA C - O QUE ESTA PROVA NAO CONSEGUE FECHAR (achado, nao conquista)
+==============================================================================
+Pergunta: alguma bateria PERMANENTE cobre a regra alterada?
+Resposta medida: NAO. O motor compartilhado e CEGO para ela.
+
+  _compartilhado/teste_validador_schema.py
+    ocorrencias da palavra "frontmatter" ......: 0
+    resultado com o modulo CANONIZADO .........: 66/66 casos passaram.
+    resultado com o MUTANTE aplicado ..........: 66/66 casos passaram.
+    (mutante = `esperadas = ["name", "description"]`, o comportamento pre-2026-08-11)
+
+  VEREDITO: mutante ESCAPOU do motor. O teste do motor nao exercita
+  validate_frontmatter em nenhum caso; quem avermelha e apenas o efeito
+  colateral nos 16 validadores de pacote, atraves dos 13 SKILL.md reais.
+
+  SHA-256 do modulo apos restaurar: 523bae879fa9bbe00eddcc107d9bfbe7db451556fe9ee508303a59e3d2a66bef
+  (identico ao da versao canonizada declarada no topo desta prova)
+
+CONSEQUENCIA, declarada e nao contornada:
+  - REVERTER a canonizacao e auto-detectavel: os 16 ficam vermelhos, porque os
+    13 SKILL.md reais passam a violar a lista exata.
+  - AFROUXAR a trava (passar a ignorar chave desconhecida) NAO E DETECTADO POR
+    NADA hoje. Nenhum caso planta um campo desconhecido de forma permanente.
+  - Fechar isso exige caso proprio num validador, com adendo de contagem no
+    mesmo ato. NAO foi feito nesta rodada: adicionar caso mexe no denominador
+    dos 16, que e exatamente o numero que esta rodada foi encarregada de medir.
+    Fica nomeado como pendencia, e nao como coisa provada.
+==============================================================================

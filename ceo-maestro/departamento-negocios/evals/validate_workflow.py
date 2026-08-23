@@ -42,17 +42,57 @@ DIRECTOR_SCHEMA_PATH = DIRECTOR_ROOT / "schemas" / "diretor-de-lentes.schema.jso
 CEO_SCHEMA_PATH = CEO_ROOT / "schemas" / "ceo-maestro.schema.json"
 DIRECTOR_VALIDATOR_PATH = DIRECTOR_ROOT / "evals" / "validate_workflow.py"
 CEO_VALIDATOR_PATH = CEO_ROOT / "evals" / "validate_workflow.py"
+ADR014_PATH = (
+    DIRECTOR_ROOT
+    / "departamento-juizes"
+    / "references"
+    / "adr-014-dois-niveis-de-veredito.md"
+)
 RULES_PATH = STRUCTURE_ROOT / "regras-de-ouro" / "REGRAS-DE-OURO.md"
 
 sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
+    from _compartilhado.validador_schema import (  # noqa: E402
+        digest,
+        is_type,
+        json_pointer,
+        validate_schema,
+    )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
+        validate_contract_sections,
+        validate_skill_tokens,
+        SECOES_CONTRATO_AGENTE,
+        TOKENS_SKILL_AGENTE,
+    )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
         validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
     )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(
         "[FAIL] motor compartilhado ausente em "
         f"{STRUCTURE_ROOT}/_compartilhado: {exc}"
+    )
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
     )
     raise SystemExit(1)
 
@@ -62,6 +102,16 @@ AGENTS = [
     "agente-viabilidade-e-monetizacao",
 ]
 CRITERIA = [f"BIZ-{number:02d}" for number in range(1, 9)]
+REQUIRED_LEVELS = {"PRODUCAO", "INTERNO"}
+# ADR-016: NAO_DISCRIMINADO e veredito valido do lado externo. Nao alcanca
+# nenhum required_level -- entra aqui para que o gate o recuse pelo motivo certo
+# ("nao alcanca o nivel") em vez de rejeita-lo como veredito desconhecido.
+EXTERNAL_VERDICTS = {
+    "VALIDATED",
+    "ACEITO_USO_INTERNO",
+    "REPROVED",
+    "NAO_DISCRIMINADO",
+}
 CRITERION_OWNER = {
     "BIZ-01": AGENTS[1],
     "BIZ-02": AGENTS[0],
@@ -94,135 +144,6 @@ REPORT_MESSAGES = {
 }
 
 
-def digest(char: str) -> str:
-    return "sha256:" + char * 64
-
-
-def json_pointer(root: dict[str, Any], ref: str) -> Any:
-    if not ref.startswith("#/"):
-        raise ValueError(f"referência externa não suportada: {ref}")
-    value: Any = root
-    for token in ref[2:].split("/"):
-        value = value[token.replace("~1", "/").replace("~0", "~")]
-    return value
-
-
-def is_type(value: Any, expected: str) -> bool:
-    if expected == "object":
-        return isinstance(value, dict)
-    if expected == "array":
-        return isinstance(value, list)
-    if expected == "string":
-        return isinstance(value, str)
-    if expected == "integer":
-        return isinstance(value, int) and not isinstance(value, bool)
-    if expected == "number":
-        return isinstance(value, (int, float)) and not isinstance(value, bool)
-    if expected == "boolean":
-        return isinstance(value, bool)
-    if expected == "null":
-        return value is None
-    return True
-
-
-def validate_schema(
-    value: Any,
-    schema: dict[str, Any],
-    root: dict[str, Any],
-    path: str = "$",
-) -> list[str]:
-    if "$ref" in schema:
-        try:
-            return validate_schema(value, json_pointer(root, schema["$ref"]), root, path)
-        except (KeyError, ValueError) as exc:
-            return [f"{path}: $ref inválido: {exc}"]
-
-    errors: list[str] = []
-
-    if "oneOf" in schema:
-        matches = [
-            not validate_schema(value, option, root, path)
-            for option in schema["oneOf"]
-        ]
-        if sum(matches) != 1:
-            return [f"{path}: oneOf esperava 1 alternativa, obteve {sum(matches)}"]
-
-    for child in schema.get("allOf", []):
-        errors.extend(validate_schema(value, child, root, path))
-
-    if "if" in schema and not validate_schema(value, schema["if"], root, path):
-        if "then" in schema:
-            errors.extend(validate_schema(value, schema["then"], root, path))
-    elif "else" in schema:
-        errors.extend(validate_schema(value, schema["else"], root, path))
-
-    if "not" in schema and not validate_schema(value, schema["not"], root, path):
-        errors.append(f"{path}: valor proibido por not")
-
-    expected_type = schema.get("type")
-    if expected_type and not is_type(value, expected_type):
-        return [f"{path}: tipo inválido; esperado {expected_type}"]
-
-    if "const" in schema and value != schema["const"]:
-        errors.append(f"{path}: difere de const")
-    if "enum" in schema and value not in schema["enum"]:
-        errors.append(f"{path}: fora do enum")
-
-    if isinstance(value, str):
-        if len(value) < schema.get("minLength", 0):
-            errors.append(f"{path}: string curta")
-        if "maxLength" in schema and len(value) > schema["maxLength"]:
-            errors.append(f"{path}: string longa")
-        if "pattern" in schema and not re.search(schema["pattern"], value):
-            errors.append(f"{path}: não corresponde ao pattern")
-        if schema.get("format") == "date-time":
-            try:
-                datetime.fromisoformat(value.replace("Z", "+00:00"))
-            except ValueError:
-                errors.append(f"{path}: data/hora inválida")
-
-    if isinstance(value, (int, float)) and not isinstance(value, bool):
-        if "minimum" in schema and value < schema["minimum"]:
-            errors.append(f"{path}: abaixo do mínimo")
-        if "maximum" in schema and value > schema["maximum"]:
-            errors.append(f"{path}: acima do máximo")
-        if "exclusiveMaximum" in schema and value >= schema["exclusiveMaximum"]:
-            errors.append(f"{path}: no/acima do máximo exclusivo")
-
-    if isinstance(value, list):
-        if len(value) < schema.get("minItems", 0):
-            errors.append(f"{path}: poucos itens")
-        if "maxItems" in schema and len(value) > schema["maxItems"]:
-            errors.append(f"{path}: itens demais")
-        if schema.get("uniqueItems"):
-            encoded = [json.dumps(item, sort_keys=True) for item in value]
-            if len(encoded) != len(set(encoded)):
-                errors.append(f"{path}: itens duplicados")
-        if "items" in schema:
-            for index, item in enumerate(value):
-                errors.extend(validate_schema(item, schema["items"], root, f"{path}[{index}]"))
-        if "contains" in schema:
-            matches = sum(
-                not validate_schema(item, schema["contains"], root, f"{path}[{index}]")
-                for index, item in enumerate(value)
-            )
-            if matches < schema.get("minContains", 1):
-                errors.append(f"{path}: contains insuficiente")
-            if "maxContains" in schema and matches > schema["maxContains"]:
-                errors.append(f"{path}: contains excedido")
-
-    if isinstance(value, dict):
-        for key in schema.get("required", []):
-            if key not in value:
-                errors.append(f"{path}: chave ausente: {key}")
-        properties = schema.get("properties", {})
-        for key, item in value.items():
-            if key in properties:
-                errors.extend(validate_schema(item, properties[key], root, f"{path}.{key}"))
-            elif schema.get("additionalProperties") is False:
-                errors.append(f"{path}: chave extra: {key}")
-
-    return errors
 
 
 def causal(
@@ -513,6 +434,7 @@ def fixtures() -> list[dict[str, Any]]:
         "consolidation_ref": "consolidation-001",
         "scorecard_ref": "scorecard-001",
         "purpose": "STANDARD_JUDGMENT",
+        "required_level": "INTERNO",
         "business_internal_minimum_score": 9.5,
         "evidence_refs": consolidated_evidence_refs,
         "dissents": [],
@@ -529,6 +451,7 @@ def fixtures() -> list[dict[str, Any]]:
             causation_message_ids=["message-judgment-package-001"],
         ),
         "executive_mission_ref": "executive-mission-001",
+        "required_level": "INTERNO",
         "sender": "departamento-negocios",
         "recipient": "diretor-de-lentes",
         "topic": "gate-de-julgamento",
@@ -546,6 +469,7 @@ def fixtures() -> list[dict[str, Any]]:
             message_id="message-return-001",
             causation_message_ids=["message-intake-001"],
         ),
+        "required_level": "INTERNO",
         "state": "B_BLOCKED",
         "reason": "Matriz necessária não autorizada.",
         "evidence_refs": ["executive-mission-001"],
@@ -598,6 +522,115 @@ def scorecard_integrity(card: dict[str, Any]) -> list[str]:
     if ready != (actual >= Decimal("9.5")):
         errors.append("estado não corresponde ao corte")
     return errors
+
+
+def external_band_for(score: int) -> str:
+    if score == 10:
+        return "VALIDATED"
+    if score >= 7:
+        return "ACEITO_USO_INTERNO"
+    return "REPROVED"
+
+
+def external_verdict_for(
+    minimum_score: Any,
+    *,
+    critical_fail: bool = False,
+    blocking_pending_refs: list[Any] | None = None,
+    minimum_score_range: dict[str, Any] | None = None,
+) -> str | None:
+    """Mapeia a escala inteira externa ao veredito fixo do ADR-014/ADR-016."""
+    if (
+        not isinstance(minimum_score, int)
+        or isinstance(minimum_score, bool)
+        or not 0 <= minimum_score <= 10
+    ):
+        return None
+    if critical_fail or blocking_pending_refs:
+        return "REPROVED"
+    # ADR-016: faixa que atravessa um corte nao vira veredito -- sai como
+    # NAO_DISCRIMINADO, que nao autoriza producao nem uso interno.
+    if isinstance(minimum_score_range, dict):
+        lo, hi = minimum_score_range.get("lo"), minimum_score_range.get("hi")
+        if isinstance(lo, int) and isinstance(hi, int):
+            if external_band_for(lo) != external_band_for(hi):
+                return "NAO_DISCRIMINADO"
+    return external_band_for(minimum_score)
+
+
+def external_level_reached(verdict: str, required_level: str) -> bool:
+    """Aplica a exigência do pedinte sem reutilizar a nota decimal interna."""
+    if required_level == "PRODUCAO":
+        return verdict == "VALIDATED"
+    if required_level == "INTERNO":
+        return verdict in {"VALIDATED", "ACEITO_USO_INTERNO"}
+    return False
+
+
+def external_required_target(required_level: str) -> int | None:
+    if required_level == "PRODUCAO":
+        return 10
+    if required_level == "INTERNO":
+        return 7
+    return None
+
+
+def external_judgment_gate(
+    judge_report: dict[str, Any],
+    expected_required_level: str,
+) -> list[str]:
+    errors: list[str] = []
+    if judge_report.get("artifact_type") != "JUDGE_REPORT":
+        return ["gate externo exige JUDGE_REPORT"]
+    if expected_required_level not in REQUIRED_LEVELS:
+        errors.append("required_level executivo ausente ou inválido")
+    if judge_report.get("required_level") != expected_required_level:
+        errors.append("required_level do parecer diverge da missão")
+    verdict = judge_report.get("verdict")
+    if verdict not in EXTERNAL_VERDICTS:
+        errors.append("veredito externo ausente ou inválido")
+    minimum_score = judge_report.get("minimum_score")
+    expected_verdict = external_verdict_for(
+        minimum_score,
+        critical_fail=judge_report.get("critical_fail") is True,
+        blocking_pending_refs=judge_report.get("blocking_pending_refs", []),
+        minimum_score_range=judge_report.get("minimum_score_range"),
+    )
+    if expected_verdict is None:
+        errors.append("nota externa deve ser inteira entre 0 e 10")
+    elif verdict != expected_verdict:
+        errors.append("veredito não corresponde à faixa fixa do ADR-014")
+    return errors
+
+
+def external_judge_fixture(
+    minimum_score: int,
+    required_level: str,
+    *,
+    critical_fail: bool = False,
+    blocking_pending_refs: list[str] | None = None,
+    minimum_score_range: dict[str, int] | None = None,
+) -> dict[str, Any]:
+    pending = [] if blocking_pending_refs is None else blocking_pending_refs
+    faixa = (
+        {"lo": minimum_score, "hi": minimum_score}
+        if minimum_score_range is None
+        else minimum_score_range
+    )
+    return {
+        "artifact_type": "JUDGE_REPORT",
+        "minimum_score": minimum_score,
+        "minimum_score_range": faixa,
+        "verdict": external_verdict_for(
+            minimum_score,
+            critical_fail=critical_fail,
+            blocking_pending_refs=pending,
+            minimum_score_range=faixa,
+        ),
+        "required_level": required_level,
+        "critical_fail": critical_fail,
+        "blocking_pending_refs": pending,
+    }
 
 
 def bundle_integrity(
@@ -790,6 +823,7 @@ def bundle_integrity(
 
 def judgment_integrity(
     package: dict[str, Any],
+    executive_mission: dict[str, Any],
     intake: dict[str, Any],
     plan: dict[str, Any],
     missions: list[dict[str, Any]],
@@ -798,6 +832,11 @@ def judgment_integrity(
     scorecard: dict[str, Any],
 ) -> list[str]:
     errors = bundle_integrity(intake, plan, missions, reports, consolidation, scorecard)
+    required_level = executive_mission.get("required_level")
+    if required_level not in REQUIRED_LEVELS:
+        errors.append("missão executiva sem required_level válido")
+    if package.get("required_level") != required_level:
+        errors.append("required_level do pacote diverge da missão")
     if package["executive_mission_ref"] != intake["executive_mission_ref"]:
         errors.append("pacote diverge da missão do intake")
     if package["executive_mission_ref"] != plan["executive_mission_ref"]:
@@ -876,6 +915,8 @@ def executive_chain_integrity(
         errors.append("missao executiva nao foi produzida pelo CEO")
     if mission_causal.get("candidate_digest") != "n/a":
         errors.append("missao executiva deve preservar candidate_digest n/a")
+    if executive_mission.get("required_level") not in REQUIRED_LEVELS:
+        errors.append("missao executiva sem required_level valido")
     if "departamento-negocios" not in executive_mission.get("recipients", []):
         errors.append("Negocios nao e destinatario da missao executiva")
     executive_keys = [
@@ -933,6 +974,8 @@ def matrix_authorization(
         errors.append("dono da consolidação alterado")
     if message["executive_mission_ref"] != mission.get("mission_id"):
         errors.append("referência da missão divergente")
+    if message.get("required_level") != mission.get("required_level"):
+        errors.append("required_level matricial diverge da missão")
     for key in [
         "work_item_id",
         "front_id",
@@ -954,6 +997,23 @@ def matrix_authorization(
         not in message["causal"].get("causation_message_ids", [])
     ):
         errors.append("mensagem matricial nao deriva do artefato esperado")
+    return errors
+
+
+def business_return_integrity(
+    business_return: dict[str, Any],
+    executive_mission: dict[str, Any],
+) -> list[str]:
+    errors: list[str] = []
+    if business_return.get("return_to") != "ceo-maestro":
+        errors.append("BUSINESS_RETURN não retorna ao CEO")
+    if business_return.get("causal", {}).get("producer") != "departamento-negocios":
+        errors.append("BUSINESS_RETURN não foi produzido por Negócios")
+    required_level = executive_mission.get("required_level")
+    if required_level not in REQUIRED_LEVELS:
+        errors.append("missão executiva sem required_level válido")
+    if business_return.get("required_level") != required_level:
+        errors.append("required_level do BUSINESS_RETURN diverge da missão")
     return errors
 
 
@@ -1125,11 +1185,19 @@ def business_limitation_gate(
     errors: list[str] = []
     if judge_report is None or judge_report.get("artifact_type") != "JUDGE_REPORT":
         return ["LIMITATION_REPORT exige JUDGE_REPORT independente"]
-    if judge_report.get("verdict") != "REPROVED":
-        errors.append("limitação exige veredito REPROVED")
+    required_level = judge_report.get("required_level")
+    errors.extend(external_judgment_gate(judge_report, required_level))
+    if external_level_reached(judge_report.get("verdict", ""), required_level):
+        errors.append("limitação exige parecer que não alcance o required_level")
     judge_minimum = judge_report.get("minimum_score")
-    if not isinstance(judge_minimum, (int, float)) or judge_minimum >= 9.5:
-        errors.append("limitação exige nota dos Juízes abaixo de 9,5")
+    target = external_required_target(required_level)
+    if (
+        not isinstance(judge_minimum, int)
+        or isinstance(judge_minimum, bool)
+        or target is None
+        or not 0 <= judge_minimum < target
+    ):
+        errors.append("limitação exige nota externa inteira abaixo do alvo do nível")
     if report.get("submitted_by") != "departamento-negocios":
         errors.append("limitação de Negócios exige submitted_by canônico")
     causal_header = report.get("causal", {})
@@ -1146,8 +1214,10 @@ def business_limitation_gate(
         item.get("criterion_id"): item.get("score")
         for item in judge_report.get("scorecard", [])
         if item.get("applicable") is True
-        and isinstance(item.get("score"), (int, float))
-        and item["score"] < 9.5
+        and isinstance(item.get("score"), int)
+        and not isinstance(item.get("score"), bool)
+        and target is not None
+        and item["score"] < target
     }
     below_evaluations = report.get("below_cutoff_evaluations", [])
     actual_below = {
@@ -1181,6 +1251,10 @@ def executive_submission_boundary(submission: dict[str, Any]) -> list[str]:
     if "departamento-negocios" not in mission.get("recipients", []):
         errors.append("Negócios não é destinatário da missão")
     judge = submission.get("judge_report", {})
+    required_level = mission.get("required_level")
+    errors.extend(external_judgment_gate(judge, required_level))
+    if not external_level_reached(judge.get("verdict", ""), required_level):
+        errors.append("veredito não alcança o required_level da missão")
     if submission.get("candidate_digest") != judge.get("candidate_digest"):
         errors.append("candidato diverge do parecer")
     try:
@@ -1255,9 +1329,14 @@ def main() -> int:
         PACKAGE_ROOT / "references" / "bootstrap.md",
         PACKAGE_ROOT / "references" / "adr-001-rota-vigente-aos-juizes.md",
         PACKAGE_ROOT / "references" / "origem-sintese.md",
+        ADR014_PATH,
     ]
     for path in required_files:
-        results.check(f"arquivo existe: {path.relative_to(PACKAGE_ROOT)}", path.is_file())
+        try:
+            relative_path = path.relative_to(PACKAGE_ROOT)
+        except ValueError:
+            relative_path = path.relative_to(CEO_ROOT)
+        results.check(f"arquivo existe: {relative_path}", path.is_file())
 
     actual_agents = sorted(path.name for path in AGENTS_ROOT.iterdir() if path.is_dir())
     results.check("exatamente três diretórios de agentes", actual_agents == sorted(AGENTS), str(actual_agents))
@@ -1265,6 +1344,23 @@ def main() -> int:
         root = AGENTS_ROOT / agent
         for relative in ["SKILL.md", "CONTRATO-DE-COMPROMISSO.md", "agents/openai.yaml"]:
             results.check(f"{agent}/{relative}", (root / relative).is_file())
+
+    # --- Estrutura normativa dos contratos e SKILL de agente ------------------
+    # GUIA, passos 7 e 8. Até 2026-07-27 este validador conferia a existência do
+    # arquivo, não a sua anatomia: os três agentes deste pacote usavam uma quarta
+    # variante, com zero dos seis tokens e sem a trava anti-bypass declarada. A
+    # conferência mora no _compartilhado; a lista do que é obrigatório continua
+    # sendo decisão deste pacote.
+    for agent in AGENTS:
+        root = AGENTS_ROOT / agent
+        errors = validate_contract_sections(
+            root / "CONTRATO-DE-COMPROMISSO.md", SECOES_CONTRATO_AGENTE, agent)
+        results.check(f"{agent}: contrato na anatomia canônica",
+                      not errors, " | ".join(errors))
+        errors = validate_skill_tokens(
+            root / "SKILL.md", TOKENS_SKILL_AGENTE, agent)
+        results.check(f"{agent}: SKILL.md com os tokens normativos",
+                      not errors, " | ".join(errors))
 
     for skill_path, expected_name in [
         (SKILL_PATH, "departamento-negocios"),
@@ -1283,6 +1379,54 @@ def main() -> int:
         "série global de ADR é única em toda a estrutura",
         not adr_errors,
         " | ".join(adr_errors),
+    )
+    cobertura_errors = validate_cobertura_de_validadores(STRUCTURE_ROOT)
+    results.check(
+        "todo pacote gerente tem validador que roda a trava global",
+        not cobertura_errors,
+        " | ".join(cobertura_errors),
+    )
+    cobertura_errors = validate_trava_de_digest(STRUCTURE_ROOT)
+    results.check(
+        "a recusa de digest() dispara e ninguém tem cópia privada do motor",
+        not cobertura_errors,
+        " | ".join(cobertura_errors),
+    )
+    cadeia_errors = validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)
+    results.check(
+        "nenhum placar de pacote declara total de cadeia como estado corrente",
+        not cadeia_errors,
+        " | ".join(cadeia_errors),
+    )
+    selo_errors = validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)
+    results.check(
+        "a contagem publicada aponta para o digest do instrumento vigente",
+        not selo_errors,
+        " | ".join(selo_errors),
+    )
+    travas_errors = validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)
+    results.check(
+        "as travas do modulo compartilhado nao estao neutralizadas",
+        not travas_errors,
+        " | ".join(travas_errors),
+    )
+    dono_errors = validate_pendencia_tem_dono(STRUCTURE_ROOT)
+    results.check(
+        "toda pendencia declarada nomeia quem responde por ela",
+        not dono_errors,
+        " | ".join(dono_errors),
+    )
+    cobertura_errors = validate_sem_check_tautologico(STRUCTURE_ROOT)
+    results.check(
+        "nenhuma asserção é verdadeira por construção sobre valor produzido",
+        not cobertura_errors,
+        " | ".join(cobertura_errors),
+    )
+    cobertura_errors = validate_fonte_normativa_conferida(STRUCTURE_ROOT)
+    results.check(
+        "a fonte normativa confere com o valor declarado em ORIGEM.md",
+        not cobertura_errors,
+        " | ".join(cobertura_errors),
     )
 
     markdown_files = list(PACKAGE_ROOT.rglob("*.md"))
@@ -1328,6 +1472,36 @@ def main() -> int:
         for item in valid_fixtures
         if item["artifact_type"] == "BUSINESS_REWORK_ORDER"
     )
+    business_return = next(
+        item
+        for item in valid_fixtures
+        if item["artifact_type"] == "BUSINESS_RETURN"
+    )
+    executive_mission = {
+        "mission_id": "executive-mission-001",
+        "causal": causal(
+            "ceo-maestro",
+            candidate_digest="n/a",
+            message_id="message-ceo-001",
+            causation_message_ids=["message-user-001"],
+        ),
+        "required_level": "INTERNO",
+        "recipients": ["departamento-negocios", "diretor-de-lentes"],
+        "scope_in": ["Critérios atribuídos no plano."],
+        "permissions": {
+            "default_policy": "deny",
+            "allowed_tools": [],
+            "allowed_resources": [],
+            "expires_at": "2026-07-27T12:00:00Z",
+        },
+        "matrix_exchange": {
+            "allowed": True,
+            "topics": ["gate-de-julgamento", "viabilidade-tecnica"],
+            "read_scope": ["candidate-001", "judgment-package-001"],
+            "write_scope": ["judgment-request", "judge-report-return"],
+            "consolidation_owner": "departamento-negocios",
+        },
+    }
 
     invalid_cases: list[tuple[str, dict[str, Any]]] = []
     two_agents = copy.deepcopy(plan)
@@ -1366,9 +1540,19 @@ def main() -> int:
     judgment_below = copy.deepcopy(judgment)
     judgment_below["business_internal_minimum_score"] = 9.49
     invalid_cases.append(("rejeita pacote aos Juízes abaixo do corte", judgment_below))
+    judgment_without_level = copy.deepcopy(judgment)
+    judgment_without_level.pop("required_level")
+    invalid_cases.append(
+        ("rejeita pacote de julgamento sem required_level", judgment_without_level)
+    )
     bad_matrix = copy.deepcopy(matrix)
     bad_matrix["causal"]["producer"] = "diretor-de-lentes"
     invalid_cases.append(("rejeita remetente diferente do produtor", bad_matrix))
+    matrix_without_level = copy.deepcopy(matrix)
+    matrix_without_level.pop("required_level")
+    invalid_cases.append(
+        ("rejeita mensagem matricial sem required_level", matrix_without_level)
+    )
     same_party = copy.deepcopy(matrix)
     same_party["recipient"] = "departamento-negocios"
     invalid_cases.append(("rejeita matriz para si próprio", same_party))
@@ -1376,6 +1560,11 @@ def main() -> int:
     cap_fallback = copy.deepcopy(cap_fallback)
     cap_fallback["fallback_used"] = True
     invalid_cases.append(("rejeita fallback de capacidade", cap_fallback))
+    return_without_level = copy.deepcopy(business_return)
+    return_without_level.pop("required_level")
+    invalid_cases.append(
+        ("rejeita BUSINESS_RETURN sem required_level", return_without_level)
+    )
     forbidden = {"artifact_type": "JUDGE_REPORT"}
     invalid_cases.append(("rejeita JUDGE_REPORT produzido localmente", forbidden))
     forbidden = {"artifact_type": "EXECUTIVE_DECISION"}
@@ -1436,7 +1625,16 @@ def main() -> int:
     )
     results.check(
         "pacote padrão correlacionado",
-        not judgment_integrity(judgment, intake, plan, missions, reports, consolidation, scorecard),
+        not judgment_integrity(
+            judgment,
+            executive_mission,
+            intake,
+            plan,
+            missions,
+            reports,
+            consolidation,
+            scorecard,
+        ),
     )
     colliding_plan = copy.deepcopy(plan)
     colliding_missions = copy.deepcopy(missions)
@@ -1594,7 +1792,18 @@ def main() -> int:
     forged_judgment["candidate_ref"] = "forged-candidate"
     results.check(
         "rejeita pacote de julgamento com referências forjadas",
-        bool(judgment_integrity(forged_judgment, intake, plan, missions, reports, consolidation, scorecard)),
+        bool(
+            judgment_integrity(
+                forged_judgment,
+                executive_mission,
+                intake,
+                plan,
+                missions,
+                reports,
+                consolidation,
+                scorecard,
+            )
+        ),
     )
     uncaused_judgment = copy.deepcopy(judgment)
     uncaused_judgment["causal"]["causation_message_ids"] = [
@@ -1605,6 +1814,7 @@ def main() -> int:
         bool(
             judgment_integrity(
                 uncaused_judgment,
+                executive_mission,
                 intake,
                 plan,
                 missions,
@@ -1631,6 +1841,7 @@ def main() -> int:
         "pacote de limitação correlacionado",
         not judgment_integrity(
             limitation_package,
+            executive_mission,
             intake,
             plan,
             missions,
@@ -1640,30 +1851,6 @@ def main() -> int:
         ),
     )
 
-    executive_mission = {
-        "mission_id": "executive-mission-001",
-        "causal": causal(
-            "ceo-maestro",
-            candidate_digest="n/a",
-            message_id="message-ceo-001",
-            causation_message_ids=["message-user-001"],
-        ),
-        "recipients": ["departamento-negocios", "diretor-de-lentes"],
-        "scope_in": ["Critérios atribuídos no plano."],
-        "permissions": {
-            "default_policy": "deny",
-            "allowed_tools": [],
-            "allowed_resources": [],
-            "expires_at": "2026-07-27T12:00:00Z",
-        },
-        "matrix_exchange": {
-            "allowed": True,
-            "topics": ["gate-de-julgamento", "viabilidade-tecnica"],
-            "read_scope": ["candidate-001", "judgment-package-001"],
-            "write_scope": ["judgment-request", "judge-report-return"],
-            "consolidation_owner": "departamento-negocios",
-        },
-    }
     results.check(
         "delegações preservam escopo e permissões do CEO",
         not delegation_authorization(missions, executive_mission),
@@ -1675,6 +1862,19 @@ def main() -> int:
             intake,
             plan,
             missions,
+        ),
+    )
+    missing_level_mission = copy.deepcopy(executive_mission)
+    missing_level_mission.pop("required_level")
+    results.check(
+        "rejeita EXECUTIVE_MISSION sem required_level",
+        bool(
+            executive_chain_integrity(
+                missing_level_mission,
+                intake,
+                plan,
+                missions,
+            )
         ),
     )
     reset_round_intake = copy.deepcopy(intake)
@@ -1710,6 +1910,39 @@ def main() -> int:
         bool(delegation_authorization(widened_scope, executive_mission)),
     )
     results.check("matriz autorizada aceita", not matrix_authorization(matrix, executive_mission))
+    results.check(
+        "BUSINESS_RETURN preserva required_level",
+        not business_return_integrity(business_return, executive_mission),
+    )
+    divergent_return_level = copy.deepcopy(business_return)
+    divergent_return_level["required_level"] = "PRODUCAO"
+    results.check(
+        "rejeita BUSINESS_RETURN com required_level divergente",
+        bool(business_return_integrity(divergent_return_level, executive_mission)),
+    )
+    divergent_package_level = copy.deepcopy(judgment)
+    divergent_package_level["required_level"] = "PRODUCAO"
+    results.check(
+        "rejeita pacote com required_level divergente",
+        bool(
+            judgment_integrity(
+                divergent_package_level,
+                executive_mission,
+                intake,
+                plan,
+                missions,
+                reports,
+                consolidation,
+                scorecard,
+            )
+        ),
+    )
+    divergent_matrix_level = copy.deepcopy(matrix)
+    divergent_matrix_level["required_level"] = "PRODUCAO"
+    results.check(
+        "rejeita matriz com required_level divergente",
+        bool(matrix_authorization(divergent_matrix_level, executive_mission)),
+    )
     no_matrix = copy.deepcopy(executive_mission)
     no_matrix["matrix_exchange"]["allowed"] = False
     results.check("matriz fechada bloqueia", bool(matrix_authorization(matrix, no_matrix)))
@@ -1722,6 +1955,111 @@ def main() -> int:
     wrong_owner = copy.deepcopy(matrix)
     wrong_owner["consolidation_owner"] = "diretor-de-lentes"
     results.check("mudança do consolidador bloqueia", bool(matrix_authorization(wrong_owner, executive_mission)))
+
+    boundary_expectations = [
+        (6, "INTERNO", False),
+        (6, "PRODUCAO", False),
+        (7, "INTERNO", True),
+        (7, "PRODUCAO", False),
+        (9, "INTERNO", True),
+        (9, "PRODUCAO", False),
+        (10, "INTERNO", True),
+        (10, "PRODUCAO", True),
+    ]
+    for external_score, required_level, should_pass in boundary_expectations:
+        judge_report = external_judge_fixture(external_score, required_level)
+        label = f"{external_score}/{required_level}"
+        results.check(
+            f"ADR-014 aceita parecer coerente na borda {label}",
+            not external_judgment_gate(judge_report, required_level),
+        )
+        results.check(
+            f"ADR-014 aplica o nível exigido na borda {label}",
+            external_level_reached(judge_report["verdict"], required_level)
+            is should_pass,
+        )
+
+    fractional_external = external_judge_fixture(9, "INTERNO")
+    fractional_external["minimum_score"] = 9.5
+    results.check(
+        "rejeita nota fracionária no gate externo",
+        bool(external_judgment_gate(fractional_external, "INTERNO")),
+    )
+    missing_external_level = external_judge_fixture(9, "INTERNO")
+    missing_external_level.pop("required_level")
+    results.check(
+        "rejeita parecer sem required_level",
+        bool(external_judgment_gate(missing_external_level, "INTERNO")),
+    )
+    divergent_external_level = external_judge_fixture(9, "INTERNO")
+    results.check(
+        "rejeita parecer com required_level divergente",
+        bool(external_judgment_gate(divergent_external_level, "PRODUCAO")),
+    )
+    invalid_external_verdict = external_judge_fixture(7, "INTERNO")
+    invalid_external_verdict["verdict"] = "VALIDATED"
+    results.check(
+        "rejeita veredito incompatível com a faixa externa",
+        bool(external_judgment_gate(invalid_external_verdict, "INTERNO")),
+    )
+    critical_external = external_judge_fixture(10, "INTERNO", critical_fail=True)
+    results.check(
+        "falha crítica força REPROVED",
+        not external_judgment_gate(critical_external, "INTERNO")
+        and not external_level_reached(
+            critical_external["verdict"],
+            critical_external["required_level"],
+        ),
+    )
+    pending_external = external_judge_fixture(
+        10,
+        "INTERNO",
+        blocking_pending_refs=["pending-001"],
+    )
+    results.check(
+        "pendência bloqueante força REPROVED",
+        not external_judgment_gate(pending_external, "INTERNO")
+        and not external_level_reached(
+            pending_external["verdict"],
+            pending_external["required_level"],
+        ),
+    )
+
+    # --- ADR-016: NAO_DISCRIMINADO chega coerente e nao autoriza nada -------
+    undiscriminated_external = external_judge_fixture(
+        6, "INTERNO", minimum_score_range={"lo": 6, "hi": 8}
+    )
+    results.check(
+        "ADR-016 aceita parecer NAO_DISCRIMINADO coerente com a faixa medida",
+        undiscriminated_external["verdict"] == "NAO_DISCRIMINADO"
+        and not external_judgment_gate(undiscriminated_external, "INTERNO"),
+    )
+    results.check(
+        "ADR-016 nega uso interno e producao ao NAO_DISCRIMINADO",
+        not external_level_reached(
+            undiscriminated_external["verdict"], "INTERNO"
+        )
+        and not external_level_reached(
+            undiscriminated_external["verdict"], "PRODUCAO"
+        ),
+    )
+    forged_undiscriminated = external_judge_fixture(
+        7, "INTERNO", minimum_score_range={"lo": 6, "hi": 7}
+    )
+    forged_undiscriminated["verdict"] = "ACEITO_USO_INTERNO"
+    results.check(
+        "ADR-016 rejeita faixa que atravessa carimbada como aceite interno",
+        bool(external_judgment_gate(forged_undiscriminated, "INTERNO")),
+    )
+    stable_external = external_judge_fixture(
+        7, "INTERNO", minimum_score_range={"lo": 7, "hi": 9}
+    )
+    results.check(
+        "ADR-016 preserva o aceite interno quando a faixa nao atravessa",
+        stable_external["verdict"] == "ACEITO_USO_INTERNO"
+        and not external_judgment_gate(stable_external, "INTERNO")
+        and external_level_reached(stable_external["verdict"], "INTERNO"),
+    )
 
     below_scorecard = scorecard_fixture(9.2)
     below_scorecard["state"] = "B_NEEDS_CTO"
@@ -1881,7 +2219,10 @@ def main() -> int:
                 ceo_validator = importlib.util.module_from_spec(ceo_spec)
                 ceo_spec.loader.exec_module(ceo_validator)
 
-                normal_judge = ceo_validator.judge_report([9.5, 9.7, 10.0])
+                # ADR-014: o judge_report e dos JUIZES, e VALIDATED passou a
+                # exigir 10 em tudo. A regua INTERNA de Negocios (9,5) e outra
+                # e nao foi tocada -- ver ADR-014, "nao decidido aqui".
+                normal_judge = ceo_validator.judge_report([10, 10, 10])
                 business_submission = ceo_validator.submission(normal_judge)
                 business_submission["submitted_by"] = "departamento-negocios"
                 business_submission["causal"]["producer"] = "departamento-negocios"
@@ -1936,7 +2277,7 @@ def main() -> int:
                     ),
                 )
 
-                below_judge = ceo_validator.judge_report([9.3, 10.0, 10.0])
+                below_judge = ceo_validator.judge_report([9, 10, 10], "PRODUCAO")
                 business_limitation = ceo_validator.limitation_report(below_judge)
                 business_limitation["submitted_by"] = "departamento-negocios"
                 business_limitation["causal"]["producer"] = "departamento-negocios"
@@ -1983,7 +2324,7 @@ def main() -> int:
                     ),
                 )
                 mismatched_limitation = copy.deepcopy(business_limitation)
-                mismatched_limitation["current_minimum_score"] = 9.2
+                mismatched_limitation["current_minimum_score"] = 8
                 results.check(
                     "rejeita limitação divergente do JUDGE_REPORT",
                     bool(
@@ -2035,10 +2376,18 @@ def main() -> int:
                 "não pertencem ao pacote de Negócios",
             )
         else:
+            # Excerto cortado em limite de LINHA, nunca de caractere.
+            # `combined[-500:]` cortava no meio de uma palavra, e a primeira
+            # linha do excerto saía sem sentido — medido em 2026-08-19, o
+            # detalhe deste mesmo caso chegava ao placar como
+            # `[FAIL] regressão passa: ceo-maestro: tado`, onde `tado` era o
+            # rabo de uma palavra qualquer. Quem lê o FAIL precisa do fim da
+            # saída do subprocesso, e o fim de uma saída são linhas inteiras:
+            # é lá que moram o `Resultado: N/M` e as linhas de erro.
             results.check(
                 f"regressão passa: {script.parent.parent.name}",
                 False,
-                combined[-500:],
+                "\n".join(combined.rstrip().splitlines()[-12:]),
             )
 
     total = results.pass_count + len(results.failures)
@@ -2056,4 +2405,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     raise SystemExit(main())

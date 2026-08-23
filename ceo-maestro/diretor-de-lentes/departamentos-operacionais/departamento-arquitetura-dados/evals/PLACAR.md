@@ -1,8 +1,21 @@
 # Placar — Departamento de Arquitetura de Dados
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **114/114 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
->
-> Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 129/129 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:2c925d1c31b73f7d7dd1ece1c3378133850ff4bfb7e35d6ab814d2644dbb8b78` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Passagem pelo gate
+
+Este pacote foi submetido ao gate em 2026-07-29. Opiniões, notas, veredito e
+histórico vivem fora do candidato, no
+[resultado consolidado](../../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
+para não contaminar uma rodada futura com o próprio julgamento.
 
 Data: 2026-07-26
 Versão avaliada: 1.0.0
@@ -13,7 +26,7 @@ na lente canônica `arquiteto-dados`, nas Regras de Ouro e nas lições registra
 
 | Verificação | Resultado | Executado? |
 |---|---:|---|
-| Validador determinístico do Departamento | 114/114 PASS | **sim** |
+| Validador determinístico do Departamento | 122/122 PASS | **sim** |
 | Regressão do `departamento-arquitetura-software` | 70/70 PASS | **sim** |
 | Regressão do `departamento-auditoria-responsabilidades` | 64/64 PASS | **sim** |
 | Regressão do `departamento-juizes` | 61/61 PASS | **sim** |
@@ -21,7 +34,8 @@ na lente canônica `arquiteto-dados`, nas Regras de Ouro e nas lições registra
 | Regressão do `ceo-maestro` | 32/32 PASS | **sim** |
 | Regressão do `departamento-evolucao-skills` | 56/56 PASS | **sim** |
 | Motor compartilhado de schema | 55/55 PASS | **sim** |
-| Forward comportamental (16 prompts de `evals.json`) | **16/16 casos · 49/49 asserções · 0 contorno** | **sim** — [FORWARD-TEST.md](FORWARD-TEST.md) |
+| Forward comportamental (16 prompts de `evals.json`) | **NOT_PROVEN** — 16/16 casos e 49/49 asserções são relato histórico sem respostas brutas | **não reproduzível** — [FORWARD-TEST.md](FORWARD-TEST.md) |
+| Procedência normativa reconciliada | **2/2 citações verificadas · 4/4 mutações rejeitadas** | **sim** — [forward-proveniencia.json](forward-proveniencia.json) |
 | Baseline da lente canônica nos mesmos cenários | — | **NÃO — pendente** |
 | Auditoria independente | — | **NÃO — pendente** |
 | Parecer dos Juízes | — | **NÃO — pendente** |
@@ -87,9 +101,12 @@ grão sem significado não conta como declarado; evolução sem rollback em uma 
 fora do `CONTRACT`, sem versão livre ou com uma fase só não é reversível; e acesso "por garantia" ou
 declarado como medido não é justificado.
 
-**Coerência do catálogo (5).** O `evals.json` tem ao menos 12 casos, todos declarando `acionou` e
-`aderiu`, com ao menos um caso de recusa por fronteira; e os digests das regras e do schema são
-verificáveis.
+**Coerência do catálogo e procedência (11).** O `evals.json` tem ao menos 12 casos, todos
+declarando `acionou` e `aderiu`, com ao menos um caso de recusa por fronteira; e os digests das
+regras e do schema são verificáveis. O catálogo exige inventário para alegação normativa. O
+inventário vigente resolve regra, âncora e digest da mesma linha, preserva como ausência os
+artefatos brutos não encontrados, recalcula o resumo e rejeita quatro mutações: âncora fabricada,
+citação não verificada conservando `PASS`, placar adulterado e omissão de citação normativa.
 
 ## Defeitos encontrados e corrigidos durante a construção
 
@@ -111,14 +128,31 @@ Registrados porque o que impediu cada um de sair foi o **teste**, não o cuidado
 
 ## O que ainda não foi provado
 
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da remedição de 2026-08-03: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | o próprio Departamento | as respostas completas do forward existirem em disco, ou este item declarar o relato de 2026-07-26 como histórico não reproduzível, com data |
+| 2 | o próprio Departamento | a lente `arquiteto-dados` for avaliada nos mesmos cenários, ou este item registrar a decisão de não comparar, com motivo |
+| 3 | `departamento-auditoria-responsabilidades` e `departamento-juizes` | os dois emitirem sobre este pacote — auditoria sem achado bloqueante e veredito que não seja `REPROVED` |
+| 4 | o próprio Departamento | houver âncora externa ao pacote que prove a emissão — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo. Depende das tarefas 50 e 57 |
+| 5 | o próprio Departamento | houver volumetria medida em vez de premissa de quem pede, e ganho de índice lido de execução em vez de plano |
+| 6 | o próprio Departamento | as lições L1–L7 forem verificadas fora de Java/Spring, Supabase e Tauri, ou o alcance declarado for reduzido ao stack conhecido |
+
+
 `SKIP` declarado com motivo — prova executada > checklist, e sucesso simulado é violação (RI-04):
 
-1. **Forward comportamental — EXECUTADO em 2026-07-26.** 16 instâncias independentes,
-   [FORWARD-TEST.md](FORWARD-TEST.md): **16/16 casos, 49/49 asserções, zero contorno**. Encontrou
-   **dois defeitos**: a L5 existia só em prosa no schema (corrigido — `IN_TRANSACTION` agora exige
-   `anti_dual_write: OUTBOX`, com três casos negativos novos) e uma citação de RO-W8 fabricada numa
-   resposta (registrada, não corrigível no pacote). **Não medido:** disparo orgânico e acionamento
-   por roteamento cego.
+1. **Forward comportamental — relato histórico não reproduzível.** O relatório de 2026-07-26
+   registra 16/16 casos, 49/49 asserções e zero contorno, mas as respostas completas
+   `scratchpad/forward/dados-NN.md` não existem no worktree nem na revisão-base; o `evals.json`
+   conserva `acionou` e `aderiu` como `NAO_MEDIDO`. Logo, o estado vigente é **NOT_PROVEN**.
+   O defeito L5 descrito no relatório foi corrigido no schema, mas a resposta que o teria
+   revelado também não é reproduzível. Separadamente, a suposta citação fabricada de RO-W8 era
+   erro da avaliação: a frase existe na própria regra. A reconciliação de 2026-07-29 prova as
+   duas citações e trava somente sua procedência em
+   [forward-proveniencia.json](forward-proveniencia.json).
 2. **Baseline da lente canônica.** A `arquiteto-dados` não foi avaliada contra os mesmos cenários.
    Que este Departamento **melhora o comportamento** permanece não medido; o que se sabe por leitura
    é que a canônica não produz os envelopes que o Diretor consome.

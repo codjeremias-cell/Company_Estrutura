@@ -1,0 +1,106 @@
+===== INICIO diretor-de-lentes =====
+[PASS] pacote, vínculos e metadata — esperado válido
+[PASS] série global de ADR é única em toda a estrutura — esperado válido
+[PASS] todo pacote gerente tem validador que roda a trava global — esperado válido
+[PASS] a recusa de digest() dispara e ninguém tem cópia privada do motor — esperado válido
+[PASS] nenhuma asserção é verdadeira por construção sobre valor produzido — esperado válido
+[PASS] nenhum placar de pacote declara total de cadeia como estado corrente — esperado válido
+[PASS] a fonte normativa confere com o valor declarado em ORIGEM.md — esperado válido
+[PASS] contratos de gerente na anatomia canônica — esperado válido
+[PASS] schema e referências locais — esperado válido
+[PASS] autoridades herdadas do schema do CEO — esperado válido
+[PASS] catálogo de evals — esperado válido
+[PASS] schema aceita DIRECTOR_PLAN — esperado válido
+[PASS] schema aceita DEPARTMENT_MISSION — esperado válido
+[PASS] schema aceita DEPARTMENT_RETURN — esperado válido
+[PASS] schema aceita DEPARTMENT_RETURN de Conteúdo e Marketing — esperado válido
+[PASS] schema aceita JUDGMENT_REQUEST — esperado válido
+[PASS] schema aceita DEPARTMENT_JUDGE_REPORT — esperado válido
+[PASS] schema aceita DEPARTMENT_GATE_RECORD — esperado válido
+[PASS] schema aceita REWORK_ORDER — esperado válido
+[PASS] schema aceita MATRIX_EXCHANGE_MESSAGE — esperado válido
+[PASS] schema aceita DIRECTOR_CAPABILITY_GAP — esperado válido
+[PASS] schema aceita PROGRESS — esperado válido
+[PASS] schema aceita BLOCKED_RETURN — esperado válido
+[PASS] JUDGMENT_REQUEST exige required_level — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT exige required_level — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita score fracionário — esperado rejeitado
+[PASS] JUDGMENT_REQUEST rejeita required_level desconhecido — esperado rejeitado
+[PASS] JUDGMENT_REQUEST exige aggregation_rule — esperado rejeitado
+[PASS] JUDGMENT_REQUEST exige instances_per_lens — esperado rejeitado
+[PASS] JUDGMENT_REQUEST rejeita método de agregação fora do enum — esperado rejeitado
+[PASS] JUDGMENT_REQUEST rejeita regra sem declared_at — esperado rejeitado
+[PASS] JUDGMENT_REQUEST aceita agregação MENOR — esperado válido
+[PASS] JUDGMENT_REQUEST aceita agregação MEDIANA — esperado válido
+[PASS] JUDGMENT_REQUEST aceita agregação EMPATE_DECLARADO — esperado válido
+[PASS] DEPARTMENT_JUDGE_REPORT exige minimum_score_range — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT exige aggregation_rule — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT aceita NAO_DISCRIMINADO com faixa que atravessa — esperado válido
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita NAO_DISCRIMINADO sem faixa que atravessa — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita NAO_DISCRIMINADO com uma instância — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita aceite interno com faixa que atravessa — esperado rejeitado
+[PASS] NAO_DISCRIMINADO não alcança PRODUCAO nem INTERNO — esperado válido
+[PASS] gate INTERNO não integra NAO_DISCRIMINADO — esperado rejeitado
+[PASS] gate rejeita regra de agregação trocada entre pedido e parecer — esperado rejeitado
+[PASS] gate rejeita faixa que não bate com o minimum_score declarado — esperado rejeitado
+[PASS] gate rejeita faixa invertida — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita REPROVED limpo com mínimo 9 — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita ACEITO_USO_INTERNO com mínimo 10 — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT rejeita VALIDATED com mínimo 9 — esperado rejeitado
+[PASS] DEPARTMENT_JUDGE_REPORT aceita REPROVED com mínimo 6 — esperado válido
+[PASS] schema rejeita bypass para agente — esperado rejeitado
+[PASS] plano exige dez Departamentos — esperado rejeitado
+[PASS] matriz não aceita cobertura duplicada — esperado rejeitado
+[PASS] retorno departamental não se autoaceita — esperado rejeitado
+[PASS] plano exige autoria do Diretor — esperado rejeitado
+[PASS] retorno exige produtor igual ao Departamento — esperado rejeitado
+[PASS] cadeia retorno-pedido-Juízes íntegra — esperado válido
+[PASS] gate INTERNO integra ACEITO_USO_INTERNO com mínimo 9 — esperado válido
+[PASS] gate INTERNO integra ACEITO_USO_INTERNO com mínimo 7 — esperado válido
+[PASS] gate INTERNO integra VALIDATED com mínimo 10 — esperado válido
+[PASS] gate PRODUCAO rejeita ACEITO_USO_INTERNO — esperado rejeitado
+[PASS] gate INTERNO rejeita REPROVED com mínimo 6 — esperado rejeitado
+[PASS] gate rejeita required_level divergente — esperado rejeitado
+[PASS] falha crítica força REPROVED mesmo com 10 — esperado válido
+[PASS] pendência bloqueante força REPROVED mesmo com 10 — esperado válido
+[PASS] gate rejeita candidato divergente — esperado rejeitado
+[PASS] gate rejeita contrato divergente — esperado rejeitado
+[PASS] gate rejeita versão de contrato divergente — esperado rejeitado
+[PASS] gate rejeita missão de outra rodada — esperado rejeitado
+[PASS] gate departamental não aceita 9,49 — esperado rejeitado
+[PASS] gate exige parecer dos Juízes — esperado rejeitado
+[PASS] troca matricial correlacionada — esperado válido
+[PASS] troca matricial INTERNO preserva required_level — esperado válido
+[PASS] troca matricial exige required_level — esperado rejeitado
+[PASS] troca matricial rejeita required_level desconhecido — esperado rejeitado
+[PASS] troca matricial rejeita required_level divergente — esperado rejeitado
+[PASS] troca matricial rejeita tópico externo — esperado rejeitado
+[PASS] troca matricial rejeita remetente forjado — esperado rejeitado
+[PASS] troca matricial rejeita candidato divergente — esperado rejeitado
+[PASS] lacuna interna aceita Juízes ausentes — esperado válido
+[PASS] lacuna dirigida rejeita capacidade lateral — esperado rejeitado
+[PASS] PROGRESS não mascara estado bloqueado — esperado rejeitado
+[PASS] 10 em tudo prepara CEO — esperado válido
+[PASS] nota fracionária 9,5 é bloqueada — esperado válido
+[PASS] nota fracionária 9,49 não arredonda — esperado válido
+[PASS] média alta não compensa menor nota — esperado válido
+[PASS] INTERNO aceita mínimo 9 — esperado válido
+[PASS] PRODUCAO não aceita mínimo 9 — esperado válido
+[PASS] INTERNO aceita mínimo 7 — esperado válido
+[PASS] INTERNO reprova mínimo 6 — esperado válido
+[PASS] veredito divergente da faixa bloqueia — esperado válido
+[PASS] required_level desconhecido bloqueia — esperado válido
+[PASS] Auditoria não substitui Juízes ausentes — esperado válido
+[PASS] falha crítica bloqueia — esperado válido
+[PASS] RI/RO violada bloqueia — esperado válido
+[PASS] pendência bloqueante impede submissão — esperado válido
+[PASS] limite completo segue ao CEO sem validar — esperado válido
+[PASS] décima rodada retorna limite ao CEO — esperado válido
+[PASS] troca matricial completa é permitida — esperado válido
+[PASS] troca com destinatário único é negada — esperado válido
+[PASS] troca sem dono único é negada — esperado válido
+[PASS] digest da fonte normativa confere com o declarado em ORIGEM.md — esperado válido
+
+Resultado: 101/101 casos passaram.
+
+===== FIM diretor-de-lentes =====

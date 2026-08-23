@@ -1,0 +1,58 @@
+PROVA DE MUTACAO — T55 (recusa de rodar a cadeia a partir do runtime)
+Gerada em: 2026-08-22T00:43:30-03:00
+Instrumento: scratchpad/t55_mutar2.py — muta a funcao de PRODUCAO, nunca uma copia.
+
+REGRA: verde de mutacao e pergunta, nao aprovacao. Duas exigencias que a versao 1
+deste arnes NAO tinha, e que a invalidaram:
+
+  (a) BASELINE VERDE. A v1 rodou com o selo de contagem ja envelhecido pela propria
+      edicao dos 16 validadores. Com o vermelho pre-existente, DOIS dos quatro
+      mutantes marcaram MORTO sem terem mudado nada -- o criterio era exit != 0, e o
+      exit ja era 1. Mutante que morre de causa alheia nao prova trava nenhuma.
+      Isto e teste-que-passa-pela-razao-errada.
+
+  (b) MARCA EXIGIDA por mutante. Mutar um validador muda o SHA-256 dele e envelhece
+      o selo de contagem daquele pacote; ele ficaria vermelho pelo SELO e nao pela
+      trava. Exigir a marca especifica (RECUSA_AUSENTE, DETECTOR_DE_RECUSA_CEGO,
+      DETECTOR_DE_RECUSA_GRITA_NO_INOCENTE) separa "reprovou" de "reprovou POR ISTO".
+
+===============================================================================
+SAIDA DA CORRIDA
+===============================================================================
+=== BASELINE ===
+  validador: verde=True placar=17/17 marcas=[]
+  direta   : ok=True           rodar a cadeia daqui.
+
+  MORTO  chamada removida de UM validador                           [validador] placar=15/17 marcas=['RECUSA_AUSENTE']
+  MORTO  _chama_recusa vira busca TEXTUAL (aceitaria mencao em comentario) [validador] placar=16/17 marcas=['DETECTOR_DE_RECUSA_GRITA_NO_INOCENTE']
+  MORTO  _chama_recusa nunca acha (deteccao cega)                   [validador] placar=16/17 marcas=['RECUSA_AUSENTE', 'DETECTOR_DE_RECUSA_CEGO']
+  MORTO  REGRA 1 morta (.claude/skills deixa de ser reconhecido)    [direta]          rodar a cadeia daqui.
+  MORTO  REGRA 2 morta (raiz sem manifesto + pacote estranho passa) [direta]          rodar a cadeia daqui.
+  MORTO  recusa deixa de abortar (vira aviso silencioso)            [direta]          rodar a cadeia daqui.
+
+Todas as 6 mutacoes ficaram VERMELHAS, contra baseline verde, com restauracao byte a byte.
+
+===============================================================================
+DOIS ACHADOS DO PROPRIO ARNES, registrados em vez de apagados
+===============================================================================
+
+1. A SONDA DIRETA PEGOU UM DEFEITO QUE A BATERIA NUNCA VERIA.
+   Primeira corrida do baseline: NameError: name 'sys' is not defined.
+   A funcao recusar_execucao_fora_da_fonte usava file=sys.stderr, e o modulo
+   _compartilhado/verificacoes_estrutura.py nao importava sys. A recusa teria
+   ESTOURADO em vez de imprimir a mensagem -- e nenhum dos 16 validadores acusaria,
+   porque todos rodam a partir da FONTE, onde esse caminho nunca e exercitado.
+   Verificar presenca nao e verificar efeito: a trava existia, era chamada por 16
+   validadores, e estava quebrada.
+
+2. O MUTANTE DA REGRA 1 SOBREVIVEU NA PRIMEIRA CORRIDA, E O MOTIVO ERA BOM.
+   raiz_e_runtime tem duas identificacoes positivas independentes:
+     REGRA 1 — a raiz e <algo>/.claude/skills ou <algo>/.agents/skills;
+     REGRA 2 — falta MANIFESTO-DA-ESTRUTURA.json E ha pacote estranho no 1o nivel.
+   Matando a REGRA 1, a REGRA 2 pegava o mesmo runtime sozinha e a sonda passava.
+   Defesa em profundidade e desejavel, mas mutante que sobrevive por causa da regra
+   vizinha nao prova regra nenhuma. A sonda ganhou dois casos sinteticos que so UMA
+   das regras pode pegar (um .claude/skills VAZIO, que so a REGRA 1 ve; e uma raiz de
+   nome qualquer sem manifesto e com pacote estranho, que so a REGRA 2 ve), mais um
+   caso de fonte sintetica COM manifesto que nenhuma das duas pode recusar.
+   As duas regras passaram a ser provadas isoladamente.

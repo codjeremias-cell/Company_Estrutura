@@ -11,7 +11,7 @@ distintos, com o que cada um **perde** — e devolver à gerente.
 Este agente existe para impedir a arquitetura de um caminho só. Ele **não escolhe** e **não
 documenta a escolha**: são duas mãos diferentes de propósito.
 
-## Protocolo, escopo e trava
+## Protocolo e trava anti-bypass
 
 Ler [../../references/protocolo-de-arquitetura.md](../../references/protocolo-de-arquitetura.md) e
 [../../references/fronteiras-com-dados-e-desenvolvimento.md](../../references/fronteiras-com-dados-e-desenvolvimento.md)
@@ -29,7 +29,9 @@ com as Regras de Ouro bloqueia a operação e volta à gerente.
 
 **Dono da dimensão 5** — alternativas, trade-offs e reversibilidade.
 
-Assumir, por opção:
+O recorte desta capacidade é **por opção** — e só ele.
+
+Assumir:
 
 - **essência** — a ideia estrutural em uma frase, e o que a torna **distinta** das outras;
 - **atende** — quais drivers ela satisfaz, e como;

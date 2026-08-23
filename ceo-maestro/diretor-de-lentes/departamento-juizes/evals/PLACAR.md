@@ -1,6 +1,47 @@
 # Placar de migração — Departamento de Juízes
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **62/62 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. A cadeia canônica hoje soma **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../ORGANOGRAMA.md).
+<!-- SELO-DE-CONTAGEM -->
+> **Contagem vigente, ligada ao instrumento que a produziu.** Regenerada por
+> `_compartilhado/selar_contagem.py` e conferida pela trava
+> `validate_contagem_ligada_ao_instrumento`, que fica **vermelha** se o validador
+> mudar e o selo não for refeito. Qualquer outro número deste documento é
+> registro da data em que foi medido — não estado de agora.
+
+CONTAGEM-VIGENTE: 174/174 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:4865300a196bae3af8e3908016abedd86e00793f49556606c69021db808f7cab` | medido-em: 2026-08-22
+<!-- /SELO-DE-CONTAGEM -->
+
+## Atualização ativa — ADR-014 (2026-07-29)
+
+A rubrica corrente é `rubrica-corte-v2`: cada score e o `minimum_score` externo são inteiros;
+`10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO` e `0–6 → REPROVED`. Falha crítica, lacuna,
+pendência bloqueante ou ausência do registro de emissão força `REPROVED`, mesmo com nota 10.
+O `required_level` recebido é registrado sem mover essa régua.
+
+| Medição ativa | Resultado |
+|---|---:|
+| Validador determinístico do Departamento | **88/88 PASS** |
+| Baseline imediatamente anterior à migração integral | 70/70 PASS |
+| Delta explicado pelo ADR-014 | **+18 casos** |
+| Catálogo ativo | `evals.json` v1.1.0, atualizado em 2026-07-29 |
+
+O delta cobre rubrica v2 nas atribuições e exemplos, `required_level` obrigatório e nunca inferido,
+notas inteiras, matriz
+6/7/9/10, relatórios de fronteira, ausência e divergência de nível, frações e todos os bloqueios
+que impedem veredito positivo.
+
+> **Marco histórico.** Todo resultado datado de 2026-07-26 abaixo — inclusive
+> [FORWARD-TEST.md](FORWARD-TEST.md), o corte `9,5`, o tratamento de nota 9 como reprovação e os
+> totais de cadeia daquela medição — é evidência **pré-ADR-014**. Foi preservado para
+> rastreabilidade e não descreve a regra vigente.
+
+## Passagem pelo gate
+
+Este pacote foi submetido em 2026-07-29 a painel externo, respeitando a trava
+contra autojulgamento. Opiniões, notas, veredito e histórico vivem fora do
+candidato, no
+[resultado consolidado](../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md).
+
+> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **62/62 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../ORGANOGRAMA.md).
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -57,8 +98,9 @@ diferentes, `JUDGE_OPINION`, `JUDGE_CAPABILITY_GAP`, `PANEL_RECORD`, `PANEL_HAND
 `n/a` com motivo verificável (aceito); parecer `BLOCKED` sem abstenção; parecer `BLOCKED` com
 abstenção (aceito); parecer `COMPLETED` sem nenhuma nota.
 
-**Casos negativos — consolidação e veredito (9).** `VALIDATED` com menor nota `9`; a mesma rodada
-como `REPROVED` (aceita); reprovação sem crítica e sem mudança exigida; `VALIDATED` com lacuna
+**Casos negativos — consolidação e veredito (9, regra v1 pré-ADR-014).** `VALIDATED` com menor
+nota `9`; a mesma rodada como `REPROVED` (aceita naquela versão); reprovação sem crítica e sem
+mudança exigida; `VALIDATED` com lacuna
 aberta; `VALIDATED` com critério sem dona; `VALIDATED` sem registro de emissão das atribuições
 (condição de R6); `pending` sem R6 nomeado; `VALIDATED` com falha crítica; retorno endereçado fora
 do Diretor.
@@ -80,11 +122,25 @@ resto da estrutura de fato consome.
 **Aritmética da consolidação (12).** Recalculada em código, sem consultar o campo declarado:
 critério com dois avaliadores vale a **menor** nota; `minimum_score` é o mínimo do `scorecard`;
 média `9,0` sobre `10/10/6/10` não substitui o mínimo `6`; `n/a` declarado não entra no mínimo;
-`10` em tudo valida; `9` em um único critério reprova; e critério sem dona, ótica ausente, falha
+`10` em tudo valida; na v1, `9` em um único critério reprovava — na v2 vigente,
+`9 → ACEITO_USO_INTERNO`; e critério sem dona, ótica ausente, falha
 crítica, pendência bloqueante ou ausência de registro de emissão reprovam **mesmo com 10 em todos
 os critérios**.
 
 ## O que ainda não foi provado
+
+### Dono e condição de fechamento, item a item
+
+> Exigido pelos achados `CA-01` e `GR-01`/`GR-02` da remedição de 2026-08-03: pendência declarada sem dono é pendência de ninguém. "O próprio Departamento" significa o pacote que este placar mede — ele responde pela própria evidência.
+
+| item | dono | fecha quando |
+|---:|---|---|
+| 1 | — | já fechado no próprio texto, com data |
+| 2 | o próprio Departamento | a `lente-juizes` for avaliada nos mesmos cenários com instrumento comum, ou este item registrar a decisão de não comparar, com motivo |
+| 3 | `departamento-auditoria-responsabilidades` | houver `AUDIT_RECEIPT` sobre este pacote emitido por instância externa |
+| 4 | o próprio Departamento | houver âncora externa ao pacote que prove a emissão — runtime separado, assinatura fora da árvore ou terceiro que não compartilhe o processo. Depende das tarefas 50 e 57 |
+| 5 | `ceo-maestro` | os casos de `ceo-maestro/evals/evals.json` forem reexecutados após a migração deste pacote, como o `ceo-maestro/evals/README.md` manda |
+
 
 Declarado como `SKIP` com motivo, conforme a regra da casa — prova executada > checklist, e
 sucesso simulado é violação:

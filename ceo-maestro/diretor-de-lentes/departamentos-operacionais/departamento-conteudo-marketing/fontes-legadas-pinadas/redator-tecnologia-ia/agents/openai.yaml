@@ -1,0 +1,4 @@
+interface:
+  display_name: "Redator de Tecnologia e IA"
+  short_description: "Escreva conteúdo tech claro e verificável"
+  default_prompt: "Use $redator-tecnologia-ia para pesquisar e redigir esta peca de tecnologia com fontes verificaveis."

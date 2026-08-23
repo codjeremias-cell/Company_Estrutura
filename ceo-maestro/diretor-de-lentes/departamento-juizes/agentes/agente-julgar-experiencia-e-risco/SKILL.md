@@ -32,7 +32,9 @@ com as Regras de Ouro bloqueia a operação e volta à gerente.
 
 ## Fronteira exclusiva
 
-Assumir, só na ótica de experiência e risco:
+O recorte desta capacidade é **só na ótica de experiência e risco** — e só ele.
+
+Assumir:
 
 - clareza para o leitor e o operador real — o candidato se entende sem decifração;
 - custo de manutenção e de aprendizado ao longo do tempo;

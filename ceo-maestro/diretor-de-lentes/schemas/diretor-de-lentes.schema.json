@@ -63,6 +63,30 @@
       },
       "uniqueItems": true
     },
+    "aggregationMethod": {
+      "$comment": "ADR-016: regra de combinacao entre instancias da MESMA lente, fixada no JUDGMENT_REQUEST antes de qualquer parecer existir.",
+      "enum": [ "MENOR", "MEDIANA", "EMPATE_DECLARADO" ]
+    },
+    "aggregationRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "method", "declared_at", "rationale" ],
+      "properties": {
+        "method": { "$ref": "#/$defs/aggregationMethod" },
+        "declared_at": { "$ref": "#/$defs/timestamp" },
+        "rationale": { "type": "string", "minLength": 10 }
+      }
+    },
+    "scoreRange": {
+      "$comment": "ADR-016: faixa entre as consolidacoes por instancia. Com uma instancia, lo == hi.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "lo", "hi" ],
+      "properties": {
+        "lo": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "hi": { "type": "integer", "minimum": 0, "maximum": 10 }
+      }
+    },
     "operationalDepartment": {
       "enum": [
         "departamento-arquitetura-software",
@@ -237,7 +261,7 @@
       "properties": {
         "criterion_id": { "$ref": "#/$defs/identifier" },
         "score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
           "maximum": 10
         },
@@ -735,7 +759,10 @@
         "department_return_ref",
         "candidate_digest",
         "contract_digest",
+        "required_level",
         "applicable_criteria",
+        "instances_per_lens",
+        "aggregation_rule",
         "artifact_refs",
         "evidence_refs",
         "return_to",
@@ -753,7 +780,20 @@
         },
         "candidate_digest": { "$ref": "#/$defs/digest" },
         "contract_digest": { "$ref": "#/$defs/digest" },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
+          ]
+        },
         "applicable_criteria": { "$ref": "#/$defs/requiredStrings" },
+        "instances_per_lens": {
+          "$comment": "ADR-016: quantas instancias independentes da MESMA lente o Diretor esta contratando. 1 mantem o desenho anterior.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "aggregation_rule": { "$ref": "#/$defs/aggregationRule" },
         "artifact_refs": { "$ref": "#/$defs/requiredRefs" },
         "evidence_refs": { "$ref": "#/$defs/requiredRefs" },
         "return_to": { "const": "diretor-de-lentes" },
@@ -765,6 +805,16 @@
             "causal": {
               "properties": {
                 "producer": { "const": "diretor-de-lentes" }
+              }
+            }
+          }
+        },
+        {
+          "$comment": "ADR-016: a regra de agregacao e fixada no pedido, antes de qualquer parecer existir. declared_at anterior a todo issued_at de parecer e conferido em codigo; aqui fica travada a existencia e a anterioridade ao proprio pedido.",
+          "properties": {
+            "aggregation_rule": {
+              "properties": {
+                "declared_at": { "$ref": "#/$defs/timestamp" }
               }
             }
           }
@@ -782,9 +832,13 @@
         "candidate_digest",
         "contract_digest",
         "round",
+        "instances_per_lens",
+        "aggregation_rule",
+        "minimum_score_range",
         "scorecard",
         "minimum_score",
         "verdict",
+        "required_level",
         "critical_fail",
         "blocking_pending_refs",
         "evidence_refs",
@@ -812,14 +866,29 @@
           "uniqueItems": true
         },
         "minimum_score": {
-          "type": "number",
+          "type": "integer",
           "minimum": 0,
           "maximum": 10
         },
+        "minimum_score_range": { "$ref": "#/$defs/scoreRange" },
+        "instances_per_lens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "aggregation_rule": { "$ref": "#/$defs/aggregationRule" },
         "verdict": {
           "enum": [
             "VALIDATED",
-            "REPROVED"
+            "ACEITO_USO_INTERNO",
+            "REPROVED",
+            "NAO_DISCRIMINADO"
+          ]
+        },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
           ]
         },
         "critical_fail": { "type": "boolean" },
@@ -849,10 +918,82 @@
           },
           "then": {
             "properties": {
-              "minimum_score": { "minimum": 9.5 },
+              "minimum_score": { "const": 10 },
+              "minimum_score_range": {
+                "properties": {
+                  "lo": { "const": 10 },
+                  "hi": { "const": 10 }
+                }
+              },
               "critical_fail": { "const": false },
               "blocking_pending_refs": { "maxItems": 0 }
             }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verdict": { "const": "ACEITO_USO_INTERNO" }
+            },
+            "required": ["verdict"]
+          },
+          "then": {
+            "properties": {
+              "minimum_score": {
+                "minimum": 7,
+                "maximum": 9
+              },
+              "minimum_score_range": {
+                "properties": {
+                  "lo": { "minimum": 7 },
+                  "hi": { "maximum": 9 }
+                }
+              },
+              "critical_fail": { "const": false },
+              "blocking_pending_refs": { "maxItems": 0 },
+              "criticisms": { "minItems": 1 },
+              "required_changes": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "$comment": "ADR-016: faixa que atravessa o corte nao vira veredito. NAO_DISCRIMINADO nao autoriza producao, publicacao nem uso interno -- nenhum required_level o alcanca.",
+          "if": {
+            "properties": {
+              "verdict": { "const": "NAO_DISCRIMINADO" }
+            },
+            "required": ["verdict"]
+          },
+          "then": {
+            "properties": {
+              "instances_per_lens": { "minimum": 2 },
+              "critical_fail": { "const": false },
+              "blocking_pending_refs": { "maxItems": 0 },
+              "criticisms": { "minItems": 1 },
+              "required_changes": { "minItems": 1 }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "minimum_score_range": {
+                    "properties": {
+                      "lo": { "maximum": 6 },
+                      "hi": { "minimum": 7 }
+                    }
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "minimum_score_range": {
+                    "properties": {
+                      "lo": { "minimum": 7, "maximum": 9 },
+                      "hi": { "const": 10 }
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         {
@@ -866,6 +1007,13 @@
             "properties": {
               "criticisms": { "minItems": 1 },
               "required_changes": { "minItems": 1 }
+            },
+            "not": {
+              "properties": {
+                "minimum_score": { "minimum": 7 },
+                "critical_fail": { "const": false },
+                "blocking_pending_refs": { "maxItems": 0 }
+              }
             }
           }
         }
@@ -913,6 +1061,38 @@
           }
         },
         {
+          "oneOf": [
+            {
+              "properties": {
+                "judgment_request": {
+                  "properties": {
+                    "required_level": { "const": "PRODUCAO" }
+                  }
+                },
+                "judge_report": {
+                  "properties": {
+                    "required_level": { "const": "PRODUCAO" }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "judgment_request": {
+                  "properties": {
+                    "required_level": { "const": "INTERNO" }
+                  }
+                },
+                "judge_report": {
+                  "properties": {
+                    "required_level": { "const": "INTERNO" }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
           "if": {
             "properties": {
               "decision": { "const": "ACCEPTED_FOR_INTEGRATION" }
@@ -920,16 +1100,48 @@
             "required": ["decision"]
           },
           "then": {
-            "properties": {
-              "judge_report": {
+            "oneOf": [
+              {
                 "properties": {
-                  "verdict": { "const": "VALIDATED" },
-                  "minimum_score": { "minimum": 9.5 },
-                  "critical_fail": { "const": false },
-                  "blocking_pending_refs": { "maxItems": 0 }
+                  "judgment_request": {
+                    "properties": {
+                      "required_level": { "const": "PRODUCAO" }
+                    }
+                  },
+                  "judge_report": {
+                    "properties": {
+                      "required_level": { "const": "PRODUCAO" },
+                      "verdict": { "const": "VALIDATED" },
+                      "minimum_score": { "const": 10 },
+                      "critical_fail": { "const": false },
+                      "blocking_pending_refs": { "maxItems": 0 }
+                    }
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "judgment_request": {
+                    "properties": {
+                      "required_level": { "const": "INTERNO" }
+                    }
+                  },
+                  "judge_report": {
+                    "properties": {
+                      "required_level": { "const": "INTERNO" },
+                      "verdict": {
+                        "enum": [
+                          "VALIDATED",
+                          "ACEITO_USO_INTERNO"
+                        ]
+                      },
+                      "critical_fail": { "const": false },
+                      "blocking_pending_refs": { "maxItems": 0 }
+                    }
+                  }
                 }
               }
-            }
+            ]
           }
         }
       ]
@@ -942,6 +1154,7 @@
         "matrix_message_id",
         "causal",
         "executive_mission_ref",
+        "required_level",
         "sender",
         "recipient",
         "topic",
@@ -957,6 +1170,12 @@
         "matrix_message_id": { "$ref": "#/$defs/identifier" },
         "causal": { "$ref": "#/$defs/causalHeader" },
         "executive_mission_ref": { "$ref": "#/$defs/identifier" },
+        "required_level": {
+          "enum": [
+            "PRODUCAO",
+            "INTERNO"
+          ]
+        },
         "sender": {
           "enum": [
             "diretor-de-lentes",

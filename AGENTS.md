@@ -6,6 +6,10 @@ Para qualquer trabalho nesta árvore, carregue primeiro
 `ceo-maestro/SKILL.md`. O CEO Maestro é a entrada operacional da estrutura;
 Jeremias permanece como autoridade humana final.
 
+A porta continua sendo **uma só**. `especialista-planejador/`, no topo desta
+árvore, não é uma segunda porta da cadeia: é consultor direto de Jeremias, fora
+dela — ver *Fora da cadeia de comando*.
+
 ## Hierarquia vigente
 
 - O CEO Maestro conversa diretamente somente com seus três pares executivos:
@@ -29,17 +33,55 @@ Jeremias permanece como autoridade humana final.
 - O CEO Maestro não chama Departamento operacional nem agente executor
   diretamente.
 
+## Fora da cadeia de comando
+
+Existe **uma** skill no topo desta árvore que não é nó da cadeia:
+`especialista-planejador/`, irmã de `ceo-maestro/`, instalada em 2026-08-08.
+
+- É **consultor direto de Jeremias**. Canal único, nos dois sentidos:
+  `Jeremias → especialista → Jeremias → ceo-maestro`. O último passo é decisão
+  de Jeremias, não repasse do especialista.
+- **Não tem superior e não tem subordinado.** Não responde ao CEO, ao Diretor
+  nem a Departamento nenhum, e não tem `agentes/`.
+- **Não emite nem recebe `EXECUTIVE_MISSION`**, `DEPARTMENT_MISSION` ou
+  `JUDGMENT_REQUEST`. Não tem `return_to` e não fala com departamentos.
+- **Não é um quarto par executivo.** Os pares executivos do CEO continuam sendo
+  três, e só três — `diretor-de-lentes`, `departamento-negocios` e
+  `departamento-evolucao-skills`. Nem `ceo-maestro/SKILL.md`, nem o contrato do
+  CEO, nem a `description`, nem a matriz de rota foram alterados por causa dele.
+- A única linha que a instalação acrescentou dentro de `ceo-maestro/` está em
+  `evals/coletar_saida_crua.py`: uma chave em `SUBORDINADOS_ESPERADOS`
+  declarando **zero subordinados**. É tabela de inventário de `evals/`, não
+  cadeia de comando, e entrou com autorização explícita de Jeremias.
+- Anatomia reduzida de propósito, e **verificada**: sem `agentes/`, sem
+  `schemas/`, sem `references/`. O validador do próprio pacote reprova se
+  qualquer uma das três aparecer, porque seria a primeira assinatura de um nó de
+  cadeia. Mecânica: 14/14 PASS.
+- A fonte normativa é a mesma de todos: `regras-de-ouro/REGRAS-DE-OURO.md`.
+
+Detalhes, diagrama e a exceção ao *Contrato estrutural obrigatório* estão em
+`ORGANOGRAMA.md`, seção *Fora da cadeia de comando*.
+
 ## Gate executivo
 
 Produto ou proposta final exige relatório vigente do Departamento de Juízes,
-menor nota aplicável maior ou igual a 9,5, ausência de falha crítica e de
-pendência bloqueante. Não usar média nem arredondamento.
+ausência de falha crítica e de pendência bloqueante, e veredito derivado da
+menor nota aplicável: `10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO`,
+`0–6 → REPROVED`. Não usar média, nota fracionária, arredondamento nem
+compensação entre critérios.
 
-Abaixo de 9,5, o CEO somente pode pedir autorização explícita a Jeremias após
-receber relatório verificável de impossibilidade ou limite objetivo. Se
-Jeremias autorizar, registrar `VALIDATED_BY_EXCEPTION`, preservar a nota real
-e vincular candidato, riscos, relatório e autorização. A exceção nunca elimina
-gates inegociáveis.
+Toda `EXECUTIVE_MISSION` declara `required_level`: `PRODUCAO` exige
+`VALIDATED`; `INTERNO` aceita `VALIDATED` ou `ACEITO_USO_INTERNO`. O nível é
+propagado pelo Diretor no `JUDGMENT_REQUEST` e conferido no fechamento.
+Missão sem nível falha fechada como `PRODUCAO`.
+
+Veredito abaixo do nível exigido volta para retrabalho. O CEO somente pode
+pedir autorização explícita a Jeremias após receber relatório verificável de
+impossibilidade ou limite objetivo para o mesmo nível. Se Jeremias autorizar,
+registrar `VALIDATED_BY_EXCEPTION`, preservar a nota real e vincular
+candidato, riscos, relatório e autorização. A exceção nunca elimina gates
+inegociáveis. `ACEITO_USO_INTERNO` não autoriza produção, publicação nem
+exposição a terceiro.
 
 ## Governança
 

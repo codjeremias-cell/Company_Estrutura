@@ -39,8 +39,9 @@ opera sob `EXECUTIVE_MISSION` deste CEO. A demanda pode nascer no
 envelope que autoriza é sempre desta camada. Sem essa linha, o único que pode acionar a
 Evolução ficaria sem regra que a alcançasse.
 
-Palavra-chave não define o dono sozinha; a responsabilidade real define. Missão mista contém
-dois `front_id`, dependências explícitas e uma barreira de integração.
+Palavra-chave não define o dono sozinha; a responsabilidade real define. Toda missão declara
+`required_level: PRODUCAO | INTERNO`; missão mista contém dois `front_id`, um único nível,
+dependências explícitas e uma barreira de integração.
 
 ## Comunicação matricial
 
@@ -65,7 +66,10 @@ RECEIVED
   → DELEGATED
   → RETURNED
   → JUDGED
-  ├── minimum_score >= 9,5 → VALIDATED
+  ├── 10 → VALIDATED
+  ├── 7–9 + required_level INTERNO → ACEITO_USO_INTERNO
+  ├── 7–9 + required_level PRODUCAO → REWORK
+  ├── ≤ 6 → REWORK
   ├── melhoria viável → REWORK → ROUTED
   ├── limite objetivo provado → AWAITING_HUMAN_EXCEPTION
   │   ├── Jeremias autoriza → VALIDATED_BY_EXCEPTION
@@ -73,8 +77,9 @@ RECEIVED
   └── capacidade/prova ausente → BLOCKED
 ```
 
-Estados terminais: `VALIDATED`, `VALIDATED_BY_EXCEPTION`, `BLOCKED`, `CANCELLED` e
-`LIMIT_REACHED`. A décima rodada sem atingir o corte termina em `LIMIT_REACHED`, salvo se uma
+Estados terminais: `VALIDATED`, `ACEITO_USO_INTERNO`, `VALIDATED_BY_EXCEPTION`, `BLOCKED`,
+`CANCELLED` e `LIMIT_REACHED`. `ACEITO_USO_INTERNO` só termina missão `INTERNO`; não libera
+produção. A décima rodada sem alcançar o `required_level` termina em `LIMIT_REACHED`, salvo se uma
 exceção válida tiver sido autorizada antes do fechamento.
 
 ## Barreira de submissão
@@ -84,19 +89,24 @@ O dono executivo só emite `EXECUTIVE_SUBMISSION` quando:
 - todas as frentes obrigatórias retornaram;
 - dependências e conflitos foram resolvidos;
 - `scope_touched` permanece contido no `scope_in` da missão;
+- o `required_level` é idêntico na missão, no pedido aos Juízes e no parecer;
 - artefatos e evidências possuem proveniência;
 - testes aplicáveis registram ao menos um `PASS`, nenhum `FAIL` e justificam todo `SKIP`;
 - Auditoria forneceu `governance_report` ligado ao digest das Regras de Ouro locais;
 - Juízes emitiu `JUDGE_REPORT`;
 - a menor nota pode ser recalculada;
+- o veredito deriva da faixa fixa do ADR-014;
 - pendências e riscos continuam visíveis.
 
-Retorno parcial permanece em `DELEGATED` ou `REWORK`; nunca cruza a barreira.
+Quando o veredito alcança o nível, a submissão pode pedir fechamento normal. Quando não alcança,
+ela só pode sustentar `REWORK` ou carregar `LIMITATION_REPORT` verificável para o fluxo de exceção;
+nunca se apresenta como aceite normal. Retorno ainda incompleto permanece em `DELEGATED` ou
+`REWORK` e não cruza a barreira.
 
 ## Capacidade ausente
 
-Se `diretor-de-lentes`, `departamento-negocios` ou a proveniência de
-`departamento-juizes` não resolver para pacote migrado, confiável e pinado:
+Se `diretor-de-lentes`, `departamento-negocios`, `departamento-evolucao-skills` ou a proveniência
+de `departamento-juizes` não resolver para pacote migrado, confiável e pinado:
 
 1. registrar `CAPABILITY_GAP`;
 2. bloquear somente a frente dependente;
@@ -106,4 +116,4 @@ Se `diretor-de-lentes`, `departamento-negocios` ou a proveniência de
 ## Critério de conclusão
 
 O workflow está concluído quando existe um estado terminal, a decisão aponta para um pacote
-íntegro e nenhuma entrega abaixo de 9,5 aparece como validação normal.
+íntegro e nenhum veredito abaixo do `required_level` aparece como validação normal.

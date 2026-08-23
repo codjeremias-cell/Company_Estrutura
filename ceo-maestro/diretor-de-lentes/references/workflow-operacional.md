@@ -23,8 +23,8 @@ D_RECEIVED
   → D_DELEGATED
   → D_INTEGRATING
   → D_AWAITING_JUDGES
-      ├── D_JUDGES_APPROVED → D_READY_FOR_CEO → D_SUBMITTED
-      ├── D_JUDGES_REPROVED → D_REWORK → D_DELEGATED
+      ├── D_LEVEL_REACHED → D_READY_FOR_CEO → D_SUBMITTED
+      ├── D_LEVEL_NOT_REACHED → D_REWORK → D_DELEGATED
       ├── D_LIMITATION_ASSEMBLY → D_LIMITATION_VERIFIED → D_SUBMITTED
       └── D_BLOCKED
 ```
@@ -69,10 +69,11 @@ Para cada `DEPARTMENT_RETURN`:
 3. conferir `scope_touched`, artefatos, digests, testes e evidências;
 4. manter `PENDING` aberto e dissensos visíveis;
 5. emitir `JUDGMENT_REQUEST`;
-6. correlacionar missão, retorno, pedido e parecer em `DEPARTMENT_GATE_RECORD`;
-7. aceitar o resultado para integração somente com decisão
+6. propagar e conferir o mesmo `required_level` da missão;
+7. correlacionar missão, retorno, pedido e parecer em `DEPARTMENT_GATE_RECORD`;
+8. aceitar o resultado para integração somente com decisão
    `ACCEPTED_FOR_INTEGRATION`;
-8. em reprovação, emitir `REWORK_ORDER` sem corrigir a entrega.
+9. quando o veredito não alcançar o nível, emitir `REWORK_ORDER` sem corrigir a entrega.
 
 Mudança no candidato invalida julgamento, auditoria e relatório de limitação anteriores.
 

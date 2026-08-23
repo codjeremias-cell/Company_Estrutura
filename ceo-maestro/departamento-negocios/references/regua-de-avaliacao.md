@@ -4,6 +4,11 @@
 
 Esta régua mede prontidão interna. Não é a rubrica dos Juízes e não produz veredito final.
 
+Ela permanece decimal por decisão explícita do
+[ADR-014](../../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md).
+Não use `9,5` para interpretar `JUDGE_REPORT`: o gate externo usa nota inteira, `verdict` e
+`required_level`.
+
 Cada critério aplicável recebe score decimal de `0` a `10`, sem arredondamento. O resultado é:
 
 ```text

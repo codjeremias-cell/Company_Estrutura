@@ -79,23 +79,52 @@ sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
     from _compartilhado.validador_schema import (  # noqa: E402
         collect_property_names,
+        conferir_digest_das_regras,
         digest,
         find_const,
         sha256_file,
         validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
-        validate_adr_series,
         validate_agents_folder,
+    validate_contract_sections,
+    validate_skill_tokens,
+    SECOES_CONTRATO_AGENTE,
+    TOKENS_SKILL_AGENTE,
         validate_frontmatter,
         validate_links,
         validate_openai_yaml,
         validate_required_files,
     )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
+        validate_adr_series,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
+    )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print(
         "[FAIL] motor compartilhado ausente em "
         f"{STRUCTURE_ROOT}/_compartilhado: {exc}"
+    )
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
     )
     raise SystemExit(1)
 
@@ -513,6 +542,24 @@ def validate_structure() -> list[str]:
             f"está sob {PACKAGE_ROOT.parent.name}/"
         )
     errors.extend(validate_agents_folder(AGENTS_ROOT, AGENT_NAMES))
+    # --- Estrutura normativa dos contratos e SKILL de agente ---------------
+    # GUIA, passos 7 e 8. Ate 2026-07-27 nenhum validador olhava heading de
+    # contrato de agente, e o resultado medido foi 15 de 66 conformes, com a
+    # trava anti-bypass ausente em 30. A conferencia mora no _compartilhado; a
+    # lista do que e obrigatorio continua sendo decisao deste pacote.
+    for _agente in sorted(p for p in AGENTS_ROOT.iterdir() if p.is_dir()):
+        errors.extend(
+            validate_contract_sections(
+                _agente / "CONTRATO-DE-COMPROMISSO.md",
+                SECOES_CONTRATO_AGENTE,
+                _agente.name,
+            )
+        )
+        errors.extend(
+            validate_skill_tokens(
+                _agente / "SKILL.md", TOKENS_SKILL_AGENTE, _agente.name
+            )
+        )
     return errors
 
 
@@ -658,6 +705,26 @@ def validate_evals() -> list[str]:
             errors.append(f"evals: {c['id']} nomeia a skill no prompt")
         if len(c.get("assertions", [])) < 3:
             errors.append(f"evals: {c['id']} com menos de 3 assertions")
+
+    # --- Trava do instrumento (frente 2, 2026-07-27) -----------------------
+    # `tipo` separa o que o caso mede: PORTAO e pedido cru — mede recusa e
+    # roteamento; OPERACAO traz o envelope no prompt — mede o que a skill faz
+    # depois de autorizada. Sem essa separacao o catalogo mede a recusa com
+    # precisao e a execucao por hipotese, e assercoes pos-portao ficam
+    # inalcancaveis por construcao. Caso irrodavel e APOSENTADO com motivo e
+    # sai do denominador.
+    validos = [c for c in cases if c.get("status") != "APOSENTADO"]
+    for case in cases:
+        tipo = case.get("tipo")
+        if tipo not in {"PORTAO", "OPERACAO"}:
+            errors.append(f"evals: {case.get('id')} sem tipo PORTAO/OPERACAO")
+        if case.get("status") == "APOSENTADO" and not case.get("motivo"):
+            errors.append(f"evals: {case.get('id')} aposentado sem motivo")
+    if len(validos) < 12:
+        errors.append(
+            f"evals: apenas {len(validos)} casos validos (aposentados nao contam)"
+        )
+
     return errors
 
 
@@ -676,6 +743,14 @@ def run() -> int:
     cases.append(("fonte normativa única e tokens de contrato", True, validate_normative_source()))
     cases.append(("links internos do pacote resolvem", True, validate_links(PACKAGE_ROOT)))
     cases.append(("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT)))
+    cases.append(("todo pacote gerente tem validador que roda a trava global", True, validate_cobertura_de_validadores(STRUCTURE_ROOT)))
+    cases.append(("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT)))
+    cases.append(("nenhuma asserção é verdadeira por construção sobre valor produzido", True, validate_sem_check_tautologico(STRUCTURE_ROOT)))
+    cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
+    cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)))
+    cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)))
+    cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(STRUCTURE_ROOT)))
+    cases.append(("a fonte normativa confere com o valor declarado em ORIGEM.md", True, validate_fonte_normativa_conferida(STRUCTURE_ROOT)))
     cases.append(("schema interno, workerId e dimensões", True, validate_schema_shape(schema)))
     cases.append(("ADR-006: sem nota nem veredito no schema", True, validate_no_scoring(schema)))
     cases.append(("ADR-006: sem modelo de dados nem código no schema", True, validate_scope_boundary(schema)))
@@ -972,11 +1047,20 @@ def run() -> int:
                                      "skip_reasons": [], "critical_fail": False}),
         ("as seis óticas cobrem as seis primeiras dimensões",
          sorted(AGENT_KIND.values()) == sorted(DIMENSIONS[:6])),
-        ("digest das regras é verificável",
-         RULES_PATH.is_file() and sha256_file(RULES_PATH).startswith("sha256:")),
     ]
     for name, passed in checks:
         cases.append((name, True, [] if passed else ["condição comportamental falhou"]))
+
+    # --- C04 — a fonte normativa confere contra o valor DECLARADO ------------
+    # Fora da lista de booleanos de propósito: quando isto reprova, quem lê
+    # precisa do valor declarado, do recomputado e da receita. A lista acima só
+    # sabe dizer "condição comportamental falhou", e número sem receita é
+    # exatamente o que o C04 proíbe.
+    cases.append((
+        "digest da fonte normativa confere com o declarado em ORIGEM.md",
+        True,
+        conferir_digest_das_regras(RULES_PATH),
+    ))
 
     # --- Gabaritos da documentação validam contra o próprio schema -----------
     # Achado do forward de 2026-07-26: três instâncias independentes reportaram
@@ -1024,4 +1108,7 @@ def run() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

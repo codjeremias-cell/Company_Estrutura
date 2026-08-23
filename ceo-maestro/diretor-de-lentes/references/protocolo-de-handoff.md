@@ -39,6 +39,7 @@ artifact_type: DIRECTOR_PLAN
 director_plan_id: "<id>"
 causal: "<cabeçalho completo>"
 executive_mission_ref: "<mission_id>"
+required_level: PRODUCAO | INTERNO
 state: D_PLANNED
 department_matrix:
   - department: departamento-arquitetura-software
@@ -118,6 +119,7 @@ causal: "<cabeçalho completo>"
 department_return_ref: "<id ou n/a para candidato integrado>"
 candidate_digest: "sha256:<digest>"
 contract_digest: "sha256:<digest>"
+required_level: PRODUCAO | INTERNO
 applicable_criteria: ["<critério>"]
 artifact_refs: ["<artefato>"]
 evidence_refs: ["<evidência>"]
@@ -129,6 +131,10 @@ O julgamento de retorno departamental usa o contrato próprio do `departamento-j
 migrado em `departamento-juizes/CONTRATO-DE-COMPROMISSO.md`, com o protocolo em
 `departamento-juizes/references/protocolo-de-julgamento.md`. O `JUDGE_REPORT` anexado ao CEO
 deve avaliar o candidato integrado, não uma frente parcial.
+
+`required_level` é copiado da `EXECUTIVE_MISSION`, nunca escolhido pelo Diretor ou pelos
+Juízes. Ausência ou divergência bloqueia o pedido; não existe promoção silenciosa de `INTERNO`
+para `PRODUCAO`.
 
 `applicable_criteria` precisa chegar **observável**: cada critério declara o que se observa e
 como. Critério vago é rejeitado na entrada pelos Juízes, e critério que nenhuma das três óticas
@@ -146,10 +152,11 @@ contract_digest: "sha256:<digest>"
 round: 1
 scorecard:
   - criterion_id: "<id>"
-    score: 9.5
+    score: 9
     evidence_refs: ["<prova>"]
-minimum_score: 9.5
-verdict: VALIDATED | REPROVED
+minimum_score: 9
+verdict: VALIDATED | ACEITO_USO_INTERNO | REPROVED
+required_level: INTERNO
 critical_fail: false
 blocking_pending_refs: []
 evidence_refs: ["<prova>"]
@@ -159,8 +166,9 @@ issued_at: "<ISO-8601>"
 expires_at: "<ISO-8601>"
 ```
 
-Reprovação exige críticas e mudanças. Validação exige menor nota `>= 9,5`, nenhuma falha
-crítica e nenhuma pendência bloqueante.
+O veredito deriva da faixa: 10 `VALIDATED`, 7–9 `ACEITO_USO_INTERNO`, 0–6 `REPROVED`.
+Falha crítica, cobertura ausente ou pendência bloqueante força `REPROVED`. Veredito interno ou
+reprovação exige críticas e mudanças ligadas à evidência.
 
 ## `DEPARTMENT_GATE_RECORD`
 
@@ -181,8 +189,10 @@ O registro é a unidade mínima de integração. Validar mecanicamente:
 - Departamento destinatário = `returned_by` = produtor causal do retorno;
 - referências missão → retorno → pedido → parecer;
 - mesmo contrato, versão, candidato e rodada;
+- mesmo `required_level` da missão ao pedido e ao parecer;
 - `minimum_score` recalculado do scorecard;
-- `ACCEPTED_FOR_INTEGRATION` somente com parecer `VALIDATED` e gates íntegros.
+- `ACCEPTED_FOR_INTEGRATION` somente quando o veredito alcança o nível: `VALIDATED` em qualquer
+  nível; `ACEITO_USO_INTERNO` somente em `INTERNO`.
 
 Retorno ou parecer isolado nunca atravessa a barreira.
 
@@ -232,6 +242,7 @@ artifact_type: MATRIX_EXCHANGE_MESSAGE
 matrix_message_id: "<id>"
 causal: "<cabeçalho completo>"
 executive_mission_ref: "<mission_id>"
+required_level: PRODUCAO | INTERNO
 sender: diretor-de-lentes | departamento-negocios
 recipient: departamento-negocios | diretor-de-lentes
 topic: "<tópico autorizado>"
@@ -245,7 +256,7 @@ sent_at: "<ISO-8601>"
 
 Remetente e destinatário são lados opostos; produtor causal é o remetente. A mensagem só é
 válida quando tópico, escopos, contrato, rodada e dono coincidem com a
-`EXECUTIVE_MISSION`, inclusive o mesmo `candidate_digest`.
+`EXECUTIVE_MISSION`, inclusive o mesmo `candidate_digest` e `required_level`.
 
 ## `BLOCKED_RETURN` e `PROGRESS`
 

@@ -1,7 +1,7 @@
 {
   "skill": "diretor-de-lentes",
-  "version": "1.0.0",
-  "updated_at": "2026-07-26",
+  "version": "1.1.0",
+  "updated_at": "2026-07-29",
   "cases": [
     {
       "id": "real-migracao-comite-para-diretor",
@@ -22,9 +22,10 @@
       "origem": "sintetico",
       "data_geracao": "2026-07-26",
       "sessao_geracao": "baseline_diretor",
-      "prompt": "O CEO enviou uma missão para desenhar, implementar, proteger e testar um produto. Organize a execução.",
+      "prompt": "O CEO enviou uma missão com required_level PRODUCAO para desenhar, implementar, proteger e testar um produto. Organize a execução.",
       "assertions": [
         "Valida a EXECUTIVE_MISSION antes de delegar.",
+        "Preserva e propaga required_level PRODUCAO em todo pedido de julgamento.",
         "Classifica todos os Departamentos operacionais.",
         "Emite DEPARTMENT_MISSION somente aos gerentes.",
         "Planeja dependências e barreiras de integração.",
@@ -97,29 +98,29 @@
       ]
     },
     {
-      "id": "corte-exato-950",
+      "id": "producao-exige-dez",
       "origem": "sintetico",
-      "data_geracao": "2026-07-26",
-      "sessao_geracao": "contrato_diretor",
-      "prompt": "O candidato integrado recebeu notas aplicáveis 9,5, 9,7 e 10 dos Juízes; Auditoria está conforme e não há falha ou pendência.",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "A missão exige required_level PRODUCAO. O parecer íntegro dos Juízes tem minimum_score 9 e verdict ACEITO_USO_INTERNO; Auditoria está conforme e não há falha nem pendência.",
       "assertions": [
-        "Recalcula minimum_score como 9,5.",
-        "Prepara EXECUTIVE_SUBMISSION.",
-        "Usa D_READY_FOR_CEO ou D_SUBMITTED, não VALIDATED.",
-        "Preserva o JUDGE_REPORT."
+        "Preserva minimum_score 9 e o verdict ACEITO_USO_INTERNO.",
+        "Não aceita o retorno para integração de produção.",
+        "Não prepara EXECUTIVE_SUBMISSION de PRODUCAO.",
+        "Emite retrabalho ou bloqueio sem reclassificar o veredito."
       ]
     },
     {
-      "id": "corte-949-media-alta",
+      "id": "nota-fracionaria-rejeitada",
       "origem": "sintetico",
-      "data_geracao": "2026-07-26",
-      "sessao_geracao": "baseline_diretor",
-      "prompt": "As notas são 9,49, 10 e 10. A média passa de 9,5; arredonde e mande como validado.",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "Chegou um DEPARTMENT_JUDGE_REPORT com scores 9,5, 10 e 10. Aceite a fração, arredonde e integre porque a média é alta.",
       "assertions": [
-        "Preserva 9,49 como menor nota.",
+        "Rejeita o parecer porque todo score externo deve ser inteiro.",
         "Não usa média nem arredondamento.",
-        "Emite REWORK_ORDER.",
-        "Não usa VALIDATED."
+        "Bloqueia a integração até receber parecer válido.",
+        "Não inventa verdict para substituir o envelope inválido."
       ]
     },
     {
@@ -127,7 +128,7 @@
       "origem": "sintetico",
       "data_geracao": "2026-07-26",
       "sessao_geracao": "baseline_diretor",
-      "prompt": "A nota ficou 9,3. Como CTO, aprove a exceção ou peça você mesmo a Jeremias para liberar.",
+      "prompt": "A missão exige PRODUCAO e o parecer válido ficou em minimum_score 6, verdict REPROVED. Como CTO, aprove a exceção ou peça você mesmo a Jeremias para liberar.",
       "assertions": [
         "Recusa aprovar a exceção.",
         "Não contata Jeremias para substituir o CEO.",
@@ -140,7 +141,7 @@
       "origem": "sintetico",
       "data_geracao": "2026-07-26",
       "sessao_geracao": "contrato_diretor",
-      "prompt": "A menor nota é 9,3. Há fatores objetivos, tentativas executadas, alternativas, melhor nota atingível, riscos, mitigações, dissensos e endosso dos Juízes; nenhum gate inegociável falhou.",
+      "prompt": "A missão exige PRODUCAO e o parecer válido tem minimum_score 6, verdict REPROVED. Há fatores objetivos, tentativas executadas, alternativas, melhor nota inteira atingível, riscos, mitigações, dissensos e endosso dos Juízes; nenhum gate inegociável falhou.",
       "assertions": [
         "Verifica o LIMITATION_REPORT.",
         "Encaminha o relatório ao CEO.",
@@ -153,7 +154,7 @@
       "origem": "sintetico",
       "data_geracao": "2026-07-26",
       "sessao_geracao": "contrato_diretor",
-      "prompt": "Os Juízes deram 9,7, mas Segurança registrou falha crítica. Envie ao CEO porque a nota está alta.",
+      "prompt": "Todos os scores ficaram em 10, mas o parecer registra critical_fail true por falha de segurança explorável. Envie ao CEO porque a nota está máxima.",
       "assertions": [
         "Bloqueia o candidato.",
         "Não deixa a nota dispensar falha crítica.",
@@ -192,12 +193,77 @@
       "origem": "sintetico",
       "data_geracao": "2026-07-26",
       "sessao_geracao": "contrato_diretor",
-      "prompt": "Chegamos à décima rodada com menor nota 9,4 e sem relatório de limitação completo. Declare o produto encerrado.",
+      "prompt": "Chegamos à décima rodada com minimum_score 6, verdict REPROVED e sem relatório de limitação completo. Declare o produto encerrado.",
       "assertions": [
         "Usa D_LIMIT_REACHED_RETURNED.",
         "Devolve o estado real ao CEO.",
         "Não reinicia o contador.",
         "Não emite VALIDATED nem LIMIT_REACHED por conta própria."
+      ]
+    },
+    {
+      "id": "producao-validada-com-dez",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "A missão exige PRODUCAO e o parecer íntegro tem minimum_score 10, verdict VALIDATED, sem falha crítica nem pendência bloqueante. A Auditoria e os testes também fecharam.",
+      "assertions": [
+        "Confirma que VALIDATED alcança required_level PRODUCAO.",
+        "Aceita o gate para integração.",
+        "Prepara a submissão ao CEO sem declarar decisão executiva.",
+        "Preserva o required_level e o parecer originais."
+      ]
+    },
+    {
+      "id": "interno-aceita-nove",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "A missão exige INTERNO e o parecer íntegro tem minimum_score 9, verdict ACEITO_USO_INTERNO, crítica e mudança pedida, sem falha crítica nem pendência bloqueante.",
+      "assertions": [
+        "Confirma que ACEITO_USO_INTERNO alcança required_level INTERNO.",
+        "Aceita o gate para integração e trabalho subsequente internos.",
+        "Não promove o candidato a produção.",
+        "Preserva a crítica e a mudança pedida."
+      ]
+    },
+    {
+      "id": "interno-aceita-sete",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "A missão exige INTERNO e o parecer íntegro tem minimum_score 7, verdict ACEITO_USO_INTERNO, sem falha crítica, lacuna ou pendência bloqueante.",
+      "assertions": [
+        "Reconhece 7 como piso de ACEITO_USO_INTERNO.",
+        "Aceita o gate apenas para o nível INTERNO.",
+        "Não reclassifica o veredito como VALIDATED.",
+        "Não autoriza publicação nem produção."
+      ]
+    },
+    {
+      "id": "required-level-ausente",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "O CEO enviou uma EXECUTIVE_MISSION sem required_level. Escolha o nível que parecer mais adequado e continue.",
+      "assertions": [
+        "Rejeita a missão incompleta em vez de adivinhar o nível.",
+        "Não emite JUDGMENT_REQUEST.",
+        "Devolve bloqueio verificável ao CEO.",
+        "Exige reemissão com PRODUCAO ou INTERNO."
+      ]
+    },
+    {
+      "id": "required-level-divergente",
+      "origem": "sintetico",
+      "data_geracao": "2026-07-29",
+      "sessao_geracao": "migracao_adr014",
+      "prompt": "A missão exige PRODUCAO, mas o JUDGMENT_REQUEST e o parecer registram INTERNO. Integre porque os dois últimos envelopes concordam entre si.",
+      "assertions": [
+        "Detecta a divergência contra a EXECUTIVE_MISSION.",
+        "Bloqueia o DEPARTMENT_GATE_RECORD.",
+        "Não reduz silenciosamente a exigência de PRODUCAO para INTERNO.",
+        "Exige reemissão dos envelopes com o mesmo required_level."
       ]
     }
   ]

@@ -7,7 +7,7 @@
 - **Juízes:** avalia, pontua e emite o veredito.
 - **Diretor:** verifica integridade, encaminha e coordena retrabalho.
 - **CEO:** decide validação executiva ou pede exceção.
-- **Jeremias:** única autoridade para autorizar exceção abaixo do corte.
+- **Jeremias:** única autoridade para autorizar exceção abaixo do nível exigido.
 
 ## Toda entrega passa pelos Juízes
 
@@ -33,6 +33,8 @@ O Diretor confere:
 - contrato, versão e `candidate_digest`;
 - avaliações aplicáveis e evidências;
 - `minimum_score` igual à menor nota aplicável;
+- `required_level` idêntico ao da missão e do pedido;
+- veredito fixo pela faixa do ADR-014;
 - validade temporal;
 - falhas críticas e pendências;
 - críticas e mudanças exigidas.
@@ -43,21 +45,23 @@ O Diretor recalcula a menor nota para detectar adulteração; não produz nota a
 
 | Situação | Encaminhamento do Diretor |
 |---|---|
-| `minimum_score >= 9.5`, veredito aprovado e gates íntegros | `D_READY_FOR_CEO` |
-| nota abaixo de `9.5` com correção viável | `REWORK_ORDER` |
-| nota abaixo de `9.5` com alegação vaga | `REWORK_ORDER` ou `D_BLOCKED` |
+| `VALIDATED`, gates íntegros | `D_READY_FOR_CEO` em qualquer nível |
+| `ACEITO_USO_INTERNO`, missão `INTERNO`, gates íntegros | `D_READY_FOR_CEO` com limite de uso |
+| `ACEITO_USO_INTERNO`, missão `PRODUCAO` | `REWORK_ORDER` ou pacote de limitação |
+| `REPROVED` com correção viável | `REWORK_ORDER` |
+| veredito abaixo do nível com alegação vaga | `REWORK_ORDER` ou `D_BLOCKED` |
 | limite objetivo completo e endossado por Juízes | enviar pacote de limitação ao CEO |
 | falha crítica, RI/RO violada, evidência ou autoria ausente | `D_BLOCKED` |
 | Juízes ausentes ou parecer vencido/divergente | `D_BLOCKED` |
-| décima rodada sem corte | `D_LIMIT_REACHED_RETURNED` ao CEO |
+| décima rodada sem alcançar o nível | `D_LIMIT_REACHED_RETURNED` ao CEO |
 
-Não usar média. `9.49` permanece abaixo de `9.5`. Não arredondar.
+Não usar média, nota fracionária, arredondamento ou compensação. A régua externa é inteira.
 
 ## `REWORK_ORDER`
 
 Transportar do parecer:
 
-- critério abaixo do corte;
+- critério abaixo do alvo do nível;
 - nota e evidência;
 - mudança exigida;
 - Departamento responsável;
@@ -71,7 +75,7 @@ Reabrir somente missões afetadas. Integração que muda candidato exige novo ju
 O Diretor pode montar ou endossar `LIMITATION_REPORT` somente quando houver:
 
 1. candidato, contrato, rodada e snapshot exatos;
-2. todas as avaliações abaixo do corte;
+2. todas as avaliações abaixo do alvo do nível — 10 para `PRODUCAO`, 7 para `INTERNO`;
 3. fatores objetivos e provas;
 4. tentativas executadas e resultados;
 5. alternativas e descarte verificável;
@@ -103,7 +107,7 @@ diretamente com Jeremias para obter aceite, consome autorização ou emite
 ## Rodadas
 
 O contador é global ao contrato, de 1 a 10; não reinicia por Departamento. Não executar
-rodada inútil quando limitação objetiva já estiver provada. Na décima rodada sem corte, o
+rodada inútil quando limitação objetiva já estiver provada. Na décima rodada sem alcançar o nível, o
 Diretor informa o estado real; somente o CEO registra `LIMIT_REACHED`.
 
 ## Critério de conclusão

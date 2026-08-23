@@ -1,6 +1,6 @@
 # ADR-001 — Rota vigente de Negócios aos Juízes
 
-- **Status:** aceito para esta migração, com revisão coordenada pendente
+- **Status:** aceito; emendado em 2026-07-29 pelo ADR-014
 - **Data:** 2026-07-26
 - **Escopo:** `departamento-negocios`
 
@@ -22,6 +22,21 @@ Enquanto o contrato materializado dos Juízes não for alterado de forma coorden
 6. sem matriz autorizada, Negócios bloqueia e pede ao CEO missão revisada.
 
 O canal de julgamento não é usado para tratar problema técnico; a mesma matriz transporta dois tópicos distintos e explicitamente autorizados.
+
+## Emenda ADR-014 — nível exigido e veredito
+
+A rota exclusiva pelo Diretor permanece inalterada. A partir do
+[ADR-014](../../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md):
+
+1. a `EXECUTIVE_MISSION` declara `required_level: PRODUCAO|INTERNO`;
+2. Negócios o copia sem alteração para `BUSINESS_JUDGMENT_PACKAGE`,
+   `MATRIX_EXCHANGE_MESSAGE` e `BUSINESS_RETURN`;
+3. o Diretor é o único produtor de `JUDGMENT_REQUEST` e o único receptor direto de
+   `JUDGE_REPORT`;
+4. Negócios consome o retorno por `verdict + required_level`: produção exige `VALIDATED`;
+   uso interno admite `VALIDATED` ou `ACEITO_USO_INTERNO`;
+5. a nota externa é inteira (`10`, `7–9`, `0–6`); o corte decimal `9,5` continua apenas na
+   avaliação interna de Negócios.
 
 ## Consequências
 

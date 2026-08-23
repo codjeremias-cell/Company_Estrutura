@@ -14,8 +14,10 @@ Uso: python evals/validate_workflow.py
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -26,7 +28,17 @@ SKILL_PATH = PACKAGE_ROOT / "SKILL.md"
 CONTRACT_PATH = PACKAGE_ROOT / "CONTRATO-DE-COMPROMISSO.md"
 OPENAI_PATH = PACKAGE_ROOT / "agents" / "openai.yaml"
 SCHEMA_PATH = PACKAGE_ROOT / "schemas" / "departamento-arquitetura-dados.schema.json"
+# Valor DECLARADO do schema deste pacote, conferido a cada execucao por
+# conferir_digest_declarado(). Receita: sha256 do conteudo com CRLF->LF e sem
+# BOM (validador_schema.py::sha256_texto_normalizado) — a mesma da fonte
+# normativa, para que a conferencia sobreviva a um clone com outro EOL.
+# Quem alterar o schema atualiza esta linha no MESMO commit; sem isso, reprova.
+SCHEMA_DIGEST_DECLARADO = (
+    "sha256:d7cff760eda9d2afb542704697a716ccad196ff865bbc7f1605428c4874bf1bb"
+)
 EVALS_PATH = PACKAGE_ROOT / "evals" / "evals.json"
+FORWARD_PROVENANCE_PATH = PACKAGE_ROOT / "evals" / "forward-proveniencia.json"
+SCOREBOARD_PATH = PACKAGE_ROOT / "evals" / "PLACAR.md"
 AGENTS_ROOT = PACKAGE_ROOT / "agentes"
 REFERENCES_ROOT = PACKAGE_ROOT / "references"
 
@@ -42,16 +54,47 @@ RULES_PATH = STRUCTURE_ROOT / "regras-de-ouro" / "REGRAS-DE-OURO.md"
 sys.path.insert(0, str(STRUCTURE_ROOT))
 try:
     from _compartilhado.validador_schema import (  # noqa: E402
-        collect_property_names, digest, find_const, sha256_file, validate_schema,
+        collect_property_names,
+        conferir_digest_das_regras,
+        conferir_digest_declarado,
+        digest,
+        find_const,
+        sha256_file,
+        validate_schema,
     )
     from _compartilhado.verificacoes_pacote import (  # noqa: E402
+        validate_agents_folder, validate_contract_sections, validate_frontmatter,
+        validate_links, validate_openai_yaml, validate_required_files,
+        validate_skill_tokens, SECOES_CONTRATO_AGENTE, TOKENS_SKILL_AGENTE,
+    )
+    from _compartilhado.verificacoes_estrutura import (  # noqa: E402
+        recusar_execucao_fora_da_fonte,
         validate_adr_series,
-        validate_agents_folder, validate_frontmatter, validate_links,
-        validate_openai_yaml, validate_required_files,
+        validate_cobertura_de_validadores,
+        validate_fonte_normativa_conferida,
+        validate_placar_nao_declara_cadeia,
+        validate_contagem_ligada_ao_instrumento,
+        validate_travas_compartilhadas_com_efeito,
+        validate_pendencia_tem_dono,
+        validate_sem_check_tautologico,
+        validate_trava_de_digest,
     )
 except ModuleNotFoundError as exc:  # pragma: no cover
     print("[FAIL] motor compartilhado ausente em "
           f"{STRUCTURE_ROOT}/_compartilhado: {exc}")
+    raise SystemExit(1)
+except ImportError as exc:  # pragma: no cover
+    # `ModuleNotFoundError` é SUBCLASSE de `ImportError`: o handler acima não
+    # captura o pai. Sem este segundo braço, aplicar os validadores sem o
+    # `_compartilhado` atualizado mata o processo por traceback, sem sumário e
+    # sem dizer qual condição faltou — o modo de falha que este candidato
+    # existe para repudiar. Medido na rodada 1: dez validadores assim.
+    print(
+        "[FAIL] OVERLAY_APLICADO_PELA_METADE: _compartilhado existe mas não "
+        f"expõe o que este validador importa ({exc}). Este conjunto é "
+        "INDIVISÍVEL: validadores e _compartilhado/ se aplicam no mesmo ato, "
+        "ou a fonte normativa fica sem conferência nenhuma."
+    )
     raise SystemExit(1)
 
 
@@ -427,6 +470,253 @@ def acesso_justificado(items: list[dict[str, Any]]) -> bool:
     )
 
 
+def _rule_line(rules_text: str, rule_id: str) -> str | None:
+    """Resolve uma RO para a única linha normativa que a declara."""
+    matches = re.findall(
+        rf"^- \*\*{re.escape(rule_id)}\b.*$",
+        rules_text,
+        flags=re.MULTILINE,
+    )
+    return matches[0] if len(matches) == 1 else None
+
+
+REQUIRED_CLAIM_FIELDS = frozenset({
+    "rule_id",
+    "source_anchor",
+    "rule_line_sha256",
+})
+
+EXTERNAL_SOURCE_ROLE_POLICY = {
+    "role_id": "CORROBORATIVE_TECHNICAL_SOURCE",
+    "normative_authority": False,
+    "may_create_rule": False,
+    "may_replace_rule": False,
+}
+
+
+def derive_forward_summary(
+    evidence: dict[str, Any],
+    catalog: dict[str, Any],
+) -> dict[str, Any]:
+    """Projeta totais em memória; a projeção nunca é persistida no contrato-fonte."""
+    citations = [
+        citation
+        for case_ in evidence.get("casos", [])
+        for citation in case_.get("citacoes_normativas", [])
+    ]
+    verified = sum(c.get("verification") == "VERIFIED" for c in citations)
+    raw_absent = evidence.get("artefatos_brutos_forward", {}).get("status") == "ABSENT"
+    gate_contract = evidence.get("gate_contract", {})
+    return {
+        "behavioral_cases_reported": len(catalog.get("cases", [])),
+        "behavioral_assertions_reported": sum(
+            len(case_.get("checks", [])) for case_ in catalog.get("cases", [])
+        ),
+        "behavioral_assertions_verified": 0 if raw_absent else None,
+        "behavioral_status":
+            "NOT_REPRODUCIBLE" if raw_absent else "RAW_PRESENT_REQUIRES_CASE_PROOF",
+        "normative_claims_reported": len(citations),
+        "normative_claims_verified": verified,
+        "normative_claims_unverified": len(citations) - verified,
+        "forward_overall":
+            gate_contract.get("absent_raw_evidence_outcome")
+            if raw_absent else "REQUIRES_BEHAVIORAL_AND_PROVENANCE_PROOF",
+    }
+
+
+def _mutate_anchor(evidence: dict[str, Any]) -> None:
+    evidence["casos"][0]["citacoes_normativas"][1][
+        "source_anchor"
+    ] = "RO-W8 não contém esta afirmação"
+
+
+def _mutate_citation_status(evidence: dict[str, Any]) -> None:
+    evidence["casos"][0]["citacoes_normativas"][1][
+        "verification"
+    ] = "UNVERIFIED_NON_NORMATIVE"
+
+
+def _mutate_persisted_summary(evidence: dict[str, Any]) -> None:
+    evidence["resumo"] = {"forward_overall": "PASS"}
+
+
+def _mutate_claim_omitted(evidence: dict[str, Any]) -> None:
+    evidence["casos"][0]["citacoes_normativas"].pop()
+
+
+MUTATION_BUILDERS = {
+    "ANCHOR_FABRICATED": _mutate_anchor,
+    "CITATION_UNVERIFIED": _mutate_citation_status,
+    "SUMMARY_TAMPERED": _mutate_persisted_summary,
+    "CLAIM_OMITTED": _mutate_claim_omitted,
+}
+
+
+def validate_gate_contract(
+    gate_contract: dict[str, Any],
+    catalog: dict[str, Any],
+) -> list[str]:
+    """Confere invariantes mínimos e interpreta a política sem espelhá-la inteira."""
+    errors: list[str] = []
+    policy = catalog.get("forward_provenance_policy", {})
+    if policy != {
+        "policy_id": gate_contract.get("policy_id"),
+        "contract": FORWARD_PROVENANCE_PATH.name,
+    }:
+        errors.append("ponte catálogo → contrato central ausente ou divergente")
+    if gate_contract.get("inventory") != "REQUIRED_FOR_NORMATIVE_CLAIMS":
+        errors.append("inventário normativo deixou de ser obrigatório")
+    if set(gate_contract.get("verified_claim_requires", [])) != REQUIRED_CLAIM_FIELDS:
+        errors.append("campos mínimos de citação verificada foram relaxados")
+    if gate_contract.get("positive_outcome_requires") != (
+        "BEHAVIORAL_RAW_EVIDENCE_AND_ALL_NORMATIVE_CLAIMS_VERIFIED"
+    ):
+        errors.append("resultado positivo deixou de exigir as duas classes de prova")
+    if gate_contract.get("absent_raw_evidence_outcome") != "NOT_PROVEN":
+        errors.append("ausência de evidência bruta deixou de falhar fechada")
+    if gate_contract.get("case_outcome_when_raw_absent") != (
+        "PROVENANCE_VERIFIED_BEHAVIOR_NOT_REPRODUCIBLE"
+    ):
+        errors.append("caso sem evidência bruta ganhou resultado permissivo")
+    if gate_contract.get("non_normative_fallback") != (
+        "LABEL_AS_UNVERIFIED_NON_NORMATIVE"
+    ):
+        errors.append("fallback não normativo deixou de declarar incerteza")
+    if gate_contract.get("raw_absence") != {
+        "status": "ABSENT",
+        "behavioral_result": "HISTORICAL_REPORT_NOT_REPRODUCIBLE",
+    }:
+        errors.append("estado canônico de ausência foi alterado")
+    source_path = gate_contract.get("normative_source_path", "")
+    if not source_path or (
+        FORWARD_PROVENANCE_PATH.parent / source_path
+    ).resolve() != RULES_PATH.resolve():
+        errors.append("fonte normativa não resolve para as Regras de Ouro canônicas")
+    if gate_contract.get("official_source_prefix") != "https://supabase.com/docs/":
+        errors.append("origem oficial do fato técnico foi relaxada")
+    if gate_contract.get("external_source_role") != EXTERNAL_SOURCE_ROLE_POLICY:
+        errors.append("fonte externa recebeu autoridade normativa")
+    if gate_contract.get("derived_summary") != {
+        "persistence": "FORBIDDEN",
+        "emitted_by": Path(__file__).name,
+        "stdout_prefix": "FORWARD_SUMMARY ",
+    }:
+        errors.append("resumo derivado deixou de ser projeção não persistida")
+    if gate_contract.get("required_mutations") != list(MUTATION_BUILDERS):
+        errors.append("inventário das mutações falha-fechada foi alterado")
+    return errors
+
+
+def validate_forward_provenance(
+    evidence: dict[str, Any],
+    catalog: dict[str, Any],
+    rules_text: str,
+) -> list[str]:
+    """Interpreta o contrato central e falha fechado para qualquer relaxamento."""
+    errors: list[str] = []
+    gate_contract = evidence.get("gate_contract", {})
+    errors.extend(validate_gate_contract(gate_contract, catalog))
+    if "resumo" in evidence:
+        errors.append("resumo derivado foi persistido e pode divergir da fonte")
+    external_sources = {
+        source.get("id"): source
+        for source in evidence.get("fontes_externas_nao_normativas", [])
+    }
+    cases = evidence.get("casos", [])
+    citations = [
+        citation
+        for case_ in cases
+        for citation in case_.get("citacoes_normativas", [])
+    ]
+
+    if evidence.get("fonte_normativa", {}).get("caminho") != (
+        gate_contract.get("normative_source_path")
+    ):
+        errors.append("fonte normativa divergente da origem canônica")
+
+    raw = evidence.get("artefatos_brutos_forward", {})
+    raw_files = list((PACKAGE_ROOT / "scratchpad" / "forward").glob("dados-*.md"))
+    raw_absence = gate_contract.get("raw_absence", {})
+    if raw.get("status") != raw_absence.get("status") or raw_files:
+        errors.append("estado dos artefatos brutos não corresponde ao filesystem")
+    if raw.get("behavioral_result") != raw_absence.get("behavioral_result"):
+        errors.append("resultado comportamental ausente foi promovido a prova")
+
+    for citation in citations:
+        missing_fields = REQUIRED_CLAIM_FIELDS - set(citation)
+        if missing_fields:
+            errors.append(
+                "citação normativa sem campos mínimos: "
+                + ", ".join(sorted(missing_fields))
+            )
+        rule_id = citation.get("rule_id", "")
+        line = _rule_line(rules_text, rule_id)
+        if line is None:
+            errors.append(f"{rule_id}: regra ausente ou duplicada")
+            continue
+        anchor = citation.get("source_anchor", "")
+        if not anchor or anchor not in line:
+            errors.append(f"{rule_id}: âncora não pertence à linha da regra")
+        claim = citation.get("claim", "")
+        if not claim or claim.casefold() not in anchor.casefold():
+            errors.append(f"{rule_id}: alegação não é sustentada pela âncora declarada")
+        actual_digest = "sha256:" + hashlib.sha256(line.encode("utf-8")).hexdigest()
+        if citation.get("rule_line_sha256") != actual_digest:
+            errors.append(f"{rule_id}: digest da linha normativa diverge")
+        if citation.get("verification") != "VERIFIED":
+            errors.append(f"{rule_id}: citação normativa não verificada")
+        external_ref = citation.get("external_source_ref")
+        if external_ref and external_ref not in external_sources:
+            errors.append(f"{rule_id}: fonte externa referenciada não existe")
+
+    for source_id, source in external_sources.items():
+        if not str(source.get("url", "")).startswith(
+            gate_contract.get("official_source_prefix", "")
+        ):
+            errors.append(f"{source_id}: fonte técnica não é documentação oficial")
+        if source.get("papel") != EXTERNAL_SOURCE_ROLE_POLICY["role_id"]:
+            errors.append(f"{source_id}: fonte externa recebeu autoridade normativa")
+
+    for case_ in cases:
+        claims = case_.get("citacoes_normativas", [])
+        if case_.get("expected_normative_claim_count") != len(claims):
+            errors.append(
+                f"caso {case_.get('case_id')}: inventário omitiu citação normativa"
+            )
+        all_verified = bool(claims) and all(
+            claim.get("verification") == "VERIFIED"
+            and (line := _rule_line(rules_text, claim.get("rule_id", ""))) is not None
+            and claim.get("source_anchor", "") in line
+            for claim in claims
+        )
+        if case_.get("provenance_gate") == "PASS" and not all_verified:
+            errors.append(
+                f"caso {case_.get('case_id')}: gate de procedência sem todas as citações"
+            )
+        if case_.get("overall") == "PASS" and (
+            raw.get("status") != "PRESENT"
+            or case_.get("provenance_gate") != "PASS"
+            or not all_verified
+        ):
+            errors.append(
+                f"caso {case_.get('case_id')}: resultado positivo sem prova bruta íntegra"
+            )
+        if (
+            raw.get("status") == raw_absence.get("status")
+            and case_.get("overall")
+            != gate_contract.get("case_outcome_when_raw_absent")
+        ):
+            errors.append(
+                f"caso {case_.get('case_id')}: ausência bruta não permaneceu visível"
+            )
+
+    catalog_ids = {case_.get("id") for case_ in catalog.get("cases", [])}
+    evidence_ids = {case_.get("case_id") for case_ in cases}
+    if not evidence_ids or not evidence_ids <= catalog_ids:
+        errors.append("inventário de procedência aponta para caso inexistente")
+    return errors
+
+
 def run() -> int:
     cases: list[tuple[str, bool, list[str]]] = []
 
@@ -441,7 +731,8 @@ def run() -> int:
 
     # --- A. Pacote e vínculos ------------------------------------------------
     case("arquivos obrigatórios da gerente", True, validate_required_files(
-        [SKILL_PATH, CONTRACT_PATH, OPENAI_PATH, SCHEMA_PATH, EVALS_PATH]))
+        [SKILL_PATH, CONTRACT_PATH, OPENAI_PATH, SCHEMA_PATH, EVALS_PATH,
+         FORWARD_PROVENANCE_PATH]))
     case("references/ completo", True, validate_required_files([
         REFERENCES_ROOT / "adr-008-dados-skill-nova-e-seis-agentes.md",
         REFERENCES_ROOT / "fronteiras-do-departamento.md",
@@ -461,11 +752,34 @@ def run() -> int:
             AGENTS_ROOT / name / "agents" / "openai.yaml", display, f"${name}")
     case("frontmatter e interface dos seis agentes", True, agent_errors)
 
+    # --- Estrutura normativa dos contratos e SKILL de agente ------------------
+    # GUIA, passos 7 e 8. Até 2026-07-27 este validador não olhava heading de
+    # contrato nem token de SKILL, e os seis agentes deste pacote usavam uma
+    # anatomia própria: zero dos seis tokens, trava anti-bypass ausente. A
+    # conferência mora no _compartilhado; a lista do que é obrigatório continua
+    # sendo decisão deste pacote.
+    agent_errors = []
+    for name in AGENT_CAPABILITY:
+        agent_errors += validate_contract_sections(
+            AGENTS_ROOT / name / "CONTRATO-DE-COMPROMISSO.md",
+            SECOES_CONTRATO_AGENTE, name)
+        agent_errors += validate_skill_tokens(
+            AGENTS_ROOT / name / "SKILL.md", TOKENS_SKILL_AGENTE, name)
+    case("estrutura normativa dos seis agentes", True, agent_errors)
+
     case("interface da gerente", True, validate_openai_yaml(
         OPENAI_PATH, "Departamento de Arquitetura de Dados", f"${DEPARTMENT}"))
     case("todos os links markdown internos resolvem", True,
          validate_links(PACKAGE_ROOT))
     case("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT))
+    case("todo pacote gerente tem validador que roda a trava global", True, validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT))
+    case("nenhuma asserção é verdadeira por construção sobre valor produzido", True, validate_sem_check_tautologico(STRUCTURE_ROOT))
+    cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
+    cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(STRUCTURE_ROOT)))
+    cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)))
+    cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(STRUCTURE_ROOT)))
+    case("a fonte normativa confere com o valor declarado em ORIGEM.md", True, validate_fonte_normativa_conferida(STRUCTURE_ROOT))
 
     posicao: list[str] = []
     if PACKAGE_ROOT.parent.name != "departamentos-operacionais":
@@ -768,6 +1082,8 @@ def run() -> int:
 
     # --- Coerência do catálogo de evals -------------------------------------
     catalogo = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
+    provenance = json.loads(FORWARD_PROVENANCE_PATH.read_text(encoding="utf-8"))
+    rules_text = RULES_PATH.read_text(encoding="utf-8")
     check("catálogo de evals tem ao menos 12 casos", len(catalogo.get("cases", [])) >= 12,
           f"catálogo com {len(catalogo.get('cases', []))} casos")
     check("todo caso do catálogo declara acionamento e aderência",
@@ -776,10 +1092,70 @@ def run() -> int:
     check("catálogo tem ao menos um caso de recusa por fronteira",
           any(c.get("espera_recusa") for c in catalogo.get("cases", [])),
           "nenhum caso de recusa")
-    check("digest das regras de ouro é verificável",
-          RULES_PATH.is_file() and sha256_file(RULES_PATH).startswith("sha256:"))
-    check("digest do próprio schema é verificável",
-          digest(SCHEMA_PATH.read_text(encoding="utf-8")).startswith("sha256:"))
+    contract = provenance.get("gate_contract", {})
+    check("contrato central interpretado permanece falha-fechada", not (
+        provenance_errors := validate_forward_provenance(
+            provenance, catalogo, rules_text
+        )
+    ), "; ".join(provenance_errors))
+
+    for mutation_id, mutate in MUTATION_BUILDERS.items():
+        mutated = copy.deepcopy(provenance)
+        mutate(mutated)
+        check(
+            f"mutação obrigatória {mutation_id} é rejeitada",
+            bool(validate_forward_provenance(mutated, catalogo, rules_text)),
+            f"{mutation_id} conservou resultado positivo",
+        )
+
+    summary_contract = contract.get("derived_summary", {})
+    print(
+        summary_contract.get("stdout_prefix", "FORWARD_SUMMARY ")
+        + json.dumps(
+            derive_forward_summary(provenance, catalogo),
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )
+    case("digest da fonte normativa confere com o declarado em ORIGEM.md", True,
+         conferir_digest_das_regras(RULES_PATH))
+    case("digest do próprio schema confere com o declarado", True,
+         conferir_digest_declarado(SCHEMA_PATH, SCHEMA_DIGEST_DECLARADO,
+                                   "schema do pacote"))
+
+    # Registro de rodada encerrada não se reescreve: a contagem VIGENTE pode
+    # ser redeclarada por um adendo ao lado (PLACAR-ADENDO-*.md), e a última
+    # redeclaração encontrada — ordem lexicográfica do nome, que abre pela
+    # data — prevalece. A linha do PLACAR.md permanece como registro da rodada
+    # em que foi escrita. A rodada 2 da T19 reescrevia o PLACAR.md; o
+    # julgamento apontou a contradição, e esta é a forma que não toca registro.
+    padrao_da_contagem = (
+        r"^\| Validador determinístico do Departamento \| "
+        r"(\d+)/(\d+) PASS \| \*\*sim\*\* \|$"
+    )
+    scoreboard_count = None
+    fontes_da_contagem = [SCOREBOARD_PATH] + sorted(
+        SCOREBOARD_PATH.parent.glob("PLACAR-ADENDO-*.md")
+    )
+    for fonte_da_contagem in fontes_da_contagem:
+        achado = re.search(
+            padrao_da_contagem,
+            fonte_da_contagem.read_text(encoding="utf-8"),
+            flags=re.MULTILINE,
+        )
+        if achado is not None:
+            scoreboard_count = achado
+    final_case_count = len(cases) + 1
+    check(
+        "placar declara a contagem vigente do validador",
+        scoreboard_count is not None
+        and int(scoreboard_count.group(1)) == final_case_count
+        and int(scoreboard_count.group(2)) == final_case_count,
+        (
+            "linha do validador ausente ou divergente: "
+            f"esperado {final_case_count}/{final_case_count} PASS"
+        ),
+    )
 
     failures = 0
     for name, expected_valid, errors in cases:
@@ -801,4 +1177,7 @@ def run() -> int:
 
 
 if __name__ == "__main__":
+    # T55: recusa medir a Estrutura a partir do runtime, onde a raiz
+    # resolve para .claude/skills e as skills do Catalogo viram pacotes.
+    recusar_execucao_fora_da_fonte(STRUCTURE_ROOT)
     sys.exit(run())

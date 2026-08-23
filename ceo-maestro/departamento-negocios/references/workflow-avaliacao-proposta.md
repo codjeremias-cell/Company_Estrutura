@@ -14,13 +14,13 @@
 | `B_INTERNAL_REWORK` | Diretor devolveu tratativa para a frente interna | emitir retrabalho |
 | `B_LIMITATION_REVIEW` | remediações esgotadas e limitação objetiva sustentada | enviar pacote de verificação ao Diretor |
 | `B_AWAITING_LIMITATION_VERIFICATION` | Diretor abriu a verificação com os Juízes | aguardar parecer independente |
-| `B_LIMITATION_VERIFIED` | Juízes confirmaram impossibilidade e score final abaixo de `9.5` | emitir `LIMITATION_REPORT` ao CEO |
+| `B_LIMITATION_VERIFIED` | Juízes confirmaram impossibilidade e o veredito não alcança o `required_level` | emitir `LIMITATION_REPORT` ao CEO |
 | `B_READY_FOR_JUDGMENT` | menor score interno pelo menos `9.5` | montar pacote de julgamento |
 | `B_AWAITING_JUDGMENT` | pacote entregue ao Diretor pela matriz | aguardar veredito vigente |
 | `B_READY_FOR_EXECUTIVE_DECISION` | todos os gates aprovados | submeter ao CEO |
 | `B_BLOCKED` | entrada, capacidade, evidência, autorização ou gate ausente | devolver ao CEO |
 
-Nenhum estado interno se chama `VALIDATED` ou `REPROVED`.
+Nenhum estado interno se chama `VALIDATED`, `ACEITO_USO_INTERNO` ou `REPROVED`.
 
 ## 2. Sequência
 
@@ -40,7 +40,7 @@ EXECUTIVE_MISSION
        < 9,5 e impossibilidade objetiva após tratamento
               -> BUSINESS_JUDGMENT_PACKAGE / LIMITATION_VERIFICATION
               -> Diretor -> Juízes -> Diretor
-              -> JUDGE_REPORT < 9,5 + VERIFIED_IMPOSSIBILITY
+              -> JUDGE_REPORT abaixo do required_level + VERIFIED_IMPOSSIBILITY
               -> LIMITATION_REPORT -> CEO
 ```
 
@@ -113,6 +113,11 @@ Antes do retrabalho, todo score abaixo de `9.5` é repassado ao Diretor por matr
 
 A nota interna serve para impedir submissão imatura. O veredito vem dos Juízes.
 
+O `required_level` nasce na `EXECUTIVE_MISSION` e atravessa sem alteração o
+`BUSINESS_JUDGMENT_PACKAGE`, a `MATRIX_EXCHANGE_MESSAGE` e o `BUSINESS_RETURN`. A escala externa é
+inteira: `10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO`, `0–6 → REPROVED`. A régua decimal `9,5`
+continua restrita ao gate interno deste Departamento.
+
 Enquanto os Juízes aceitarem pedido somente do Diretor:
 
 - Negócios prepara, mas não produz, `JUDGMENT_REQUEST`;
@@ -121,7 +126,12 @@ Enquanto os Juízes aceitarem pedido somente do Diretor:
 - sem essa autorização, o CEO precisa revisar a missão;
 - o veredito retorna pelo Diretor e deve referenciar o mesmo candidato e contrato.
 
-Uma limitação objetiva tem rota própria. O pacote abaixo de `9.5` só atravessa com `purpose: LIMITATION_VERIFICATION`, evidências dos fatores objetivos e remediações tentadas. Depois do parecer independente, Negócios pode emitir `LIMITATION_REPORT` conforme o schema do CEO. Sem `JUDGE_REPORT` abaixo do corte e `VERIFIED_IMPOSSIBILITY`, esse artefato é proibido.
+Uma limitação objetiva tem rota própria. O pacote com score **interno** abaixo de `9.5` só atravessa
+com `purpose: LIMITATION_VERIFICATION`, evidências dos fatores objetivos e remediações tentadas.
+Depois do parecer independente, Negócios pode emitir `LIMITATION_REPORT` conforme o schema do CEO
+quando o veredito externo não alcança o `required_level`: para `PRODUCAO`, alvo 10; para `INTERNO`,
+alvo 7. Sem parecer externo inteiro, nível correlacionado e `VERIFIED_IMPOSSIBILITY`, esse artefato
+é proibido.
 
 ## 8. Conclusão
 
@@ -131,6 +141,7 @@ A entrega só chega ao CEO quando os cinco gates estiverem simultaneamente verda
 2. `business_internal_minimum_score >= 9.5`;
 3. testes obrigatórios sem falha;
 4. Auditoria conforme;
-5. `JUDGE_REPORT` vigente e aprovado.
+5. `JUDGE_REPORT` vigente cujo `verdict` alcance o `required_level`: produção somente com
+   `VALIDATED`; uso interno com `VALIDATED` ou `ACEITO_USO_INTERNO`.
 
 O Departamento então emite `EXECUTIVE_SUBMISSION`, nunca decisão executiva.

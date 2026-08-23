@@ -1,7 +1,8 @@
 # ADR-001 — CEO Maestro na hierarquia executiva
 
-**Status:** aceito para migração — **emendado em 2026-07-26 pelo
-[ADR-004](../departamento-evolucao-skills/references/adr-004-evolucao-no-nivel-do-ceo.md)**  
+**Status:** aceito para migração — **emendado pelo
+[ADR-004](../departamento-evolucao-skills/references/adr-004-evolucao-no-nivel-do-ceo.md) e pelo
+[ADR-014](../diretor-de-lentes/departamento-juizes/references/adr-014-dois-niveis-de-veredito.md)**
 **Data:** 2026-07-26  
 **Decisor:** Jeremias
 
@@ -9,10 +10,13 @@
 > O ADR-004 criou o `departamento-evolucao-skills` no nível do CEO, porque ele
 > evolui as skills do próprio Diretor e não pode responder a quem ele modifica.
 > São **três** pares executivos: `diretor-de-lentes`, `departamento-negocios` e
-> `departamento-evolucao-skills`. O restante desta decisão — corte 9,5, parecer
-> obrigatório dos Juízes, CEO sem comando direto sobre agentes — permanece
-> vigente e não foi alterado. Onde o texto abaixo diz "duas relações diretas",
-> leia **três**.
+> `departamento-evolucao-skills`. Onde o texto abaixo diz "duas relações diretas", leia
+> **três**.
+>
+> **Emenda (ADR-014, 2026-07-28).** O corte binário 9,5 abaixo é histórico e foi substituído
+> pelas faixas `10 → VALIDATED`, `7–9 → ACEITO_USO_INTERNO`, `0–6 → REPROVED`, com
+> `required_level` declarado no envelope. O parecer obrigatório dos Juízes e o CEO sem comando
+> direto sobre agentes permanecem vigentes.
 
 ## Contexto
 

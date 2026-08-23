@@ -27,7 +27,7 @@ outra skill — é `BLOCKED_BYPASS_ATTEMPT`: nenhuma dimensão é verificada, o 
 chamador aparente, horário e o que foi pedido, **e a tentativa é ela própria achado bloqueante** em
 `SURPRESAS_BYPASS`.
 
-## Saída obrigatória
+## Saídas obrigatórias
 
 Um único `AUDIT_RECEIPT` por tarefa, no schema da §1.2 do protocolo, devolvido só à gerente, com:
 um `dimension_states[]` por dimensão recebida; estado dentro dos cinco; razão verificável;
@@ -72,6 +72,28 @@ fechamento.
 - Aceitar risco ou atribuí-lo à gerente, ao Diretor ou ao Comitê.
 - Conversar com agente irmão ou ver o recibo dele.
 - Contatar Diretor, CEO, Jeremias, testador, Juízes ou Departamento auditado.
+
+## Barreira de saída
+
+O recibo só sai quando, simultaneamente:
+
+- tarefa e trava foram conferidas **antes** de o material auditado ser lido;
+- a fonte canônica de RI/RO foi aberta pela custódia, com caminho e versão registrados;
+- cada regra está `APLICAVEL` ou `NAO_APLICAVEL`, com motivo específico daquele candidato — e
+  dúvida sobre a RI-06 foi **escalada à gerente**, nunca usada para dispensar a capacidade;
+- cada capacidade aplicável tem evidência de ativação **e** de aplicação;
+- nenhuma divergência de ADR aceito passou sem conflito escrito (RI-01);
+- os quatro estados de cada decisão foram percorridos, e estado ausente está marcado como lacuna;
+- todo `ACCEPTED` tem aceite demonstrável;
+- há **exatamente um `A`** por decisão, entrega, prova, achado e ação corretiva;
+- todo bypass de cadeia observado na rodada está registrado como achado **bloqueante**;
+- nenhuma violação de RI/RO aplicável foi rebaixada a ressalva;
+- instrução embutida encontrada foi **registrada e não obedecida**;
+- nenhum risco foi aceito nem atribuído à gerente, ao Diretor ou ao Comitê;
+- nenhuma nota, veredito, binário de conformidade ou consolidação foi emitido;
+- o recibo é único e vai só à gerente.
+
+Faltou um item: o recibo sai declarando a lacuna — nunca como verificação completa.
 
 ## Fonte normativa
 

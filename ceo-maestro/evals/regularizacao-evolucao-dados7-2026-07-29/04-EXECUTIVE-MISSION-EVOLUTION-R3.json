@@ -1,0 +1,118 @@
+{
+  "artifact_type": "EXECUTIVE_MISSION",
+  "mission_id": "MISSION-T13-EVOL-REWORK-R3-20260730",
+  "causal": {
+    "work_item_id": "TASK-13",
+    "front_id": "FRONT-DADOS7-AUDIT-REWORK",
+    "handoff_id": "HANDOFF-T13-CEO-EVOL-R3",
+    "message_id": "MSG-T13-CEO-EVOL-R3-01",
+    "causation_message_ids": [
+      "MSG-T13-DIRECTOR-CEO-REWORK-R2-01"
+    ],
+    "contract_id": "CONTRACT-T13-EVOL-DADOS7-20260729",
+    "contract_version": 1,
+    "contract_digest": "sha256:ddd188a4d1ef9c1265646df6e17f4f60bc6b6ab72d0be2c8e2dce0cb04f64dac",
+    "candidate_digest": "n/a",
+    "round": 3,
+    "attempt": 1,
+    "producer": "ceo-maestro",
+    "producer_version": "1",
+    "producer_digest": "sha256:5fe11a01b225690c56c87a7fd617425d087c86f74c7693f141c7dfc9877076ff",
+    "created_at": "2026-07-30T14:34:00-03:00"
+  },
+  "recipients": [
+    "departamento-evolucao-skills"
+  ],
+  "objective": "Regularizar os achados da Auditoria R2 sobre cand-E em área isolada, produzir novo candidato correlacionado, refazer a prova independente e devolver um ledger rastreável para novo gate.",
+  "deliverable_type": "proposal",
+  "required_level": "PRODUCAO",
+  "scope_in": [
+    "Candidato E de digest sha256:1740f2e026778ecb06f61e18e8cd9d4a2c900a3c616d52a9cf319545bc724373",
+    "Divergência entre PLACAR.md 122/122 e prova fresca 121/121",
+    "Registros de ciclo PLANNED, ACCEPTED, EXECUTED e VERIFIED da rodada",
+    "Ativação e retorno conferíveis de Colheita e Diagnóstico",
+    "Decisão explícita de aplicabilidade de Mineração Externa",
+    "Owner único de TETO_PROVAVEL e sequência do gate pré-promoção",
+    "Nova prova independente, digest ordinal e EVOLUTION_LEDGER"
+  ],
+  "scope_out": [
+    "Editar ou promover a skill viva",
+    "Alterar ADR-014, ADR-015 ou RO-W8",
+    "Fabricar outputs brutos históricos",
+    "Transformar NOT_PROVEN em evidência positiva",
+    "Publicar, fazer push ou entregar a terceiros",
+    "Reabrir a seleção cega entre cand-D e cand-E sem novo achado técnico"
+  ],
+  "constraints": [
+    "O Departamento de Evolução orquestra e não edita o canônico, não pontua e não promove",
+    "O agente que alterar o candidato fica impedido de produzir a prova independente",
+    "A correção deve partir de cand-E e gerar novo digest em área isolada",
+    "R6 permanece explicitamente pending",
+    "Não se pode alterar retrospectivamente os recibos da Auditoria R2",
+    "Qualquer mudança no candidato exige transcript, retorno de prova e ledger frescos"
+  ],
+  "decisions_binding": [
+    "cand-E permanece a recomendação unânime da disputa R2, mas está bloqueada por NONCOMPLIANT",
+    "TETO_PROVAVEL tem exatamente um accountable: ceo-maestro; Evolução registra e escala a lacuna, mas não a encerra",
+    "Mineração Externa é não aplicável nesta rodada: o gap é interno, está evidenciado localmente e a missão não autoriza pesquisa externa",
+    "DONE 7-10 é uma sequência: no gate pré-promoção, obrigações posteriores são registradas como bloqueadas pelo gate, não como atraso que exija promoção antecipada",
+    "Nenhuma promoção ocorre antes de nova Auditoria COMPLIANT e JUDGE_REPORT de PRODUCAO"
+  ],
+  "dependencies": [
+    "DIR-RETURN-T13-REWORK-R2",
+    "GOV-T13-CANDE-R2 e os três AUDIT_RECEIPTs R2",
+    "cand-E e a prova EVOL-T13-PROVA-04",
+    "Capacidades pinadas do departamento-evolucao-skills"
+  ],
+  "acceptance_criteria": [
+    "Colheita e Diagnóstico possui EVOLUTION_TASK e EVOLUTION_RETURN conferíveis",
+    "A não aplicabilidade de Mineração Externa aparece no plano, no ledger e no retorno",
+    "Cada decisão concluída possui ciclo PLANNED, ACCEPTED, EXECUTED e VERIFIED com identidade, versão e referência",
+    "PLACAR.md declara exatamente a contagem produzida pela prova do mesmo digest",
+    "O novo candidato rejeita 4/4 mutações, preserva NOT_PROVEN e termina sem FAIL ou SKIP",
+    "EVOLUTION_LEDGER valida no schema, fixa ceo-maestro como owner de TETO_PROVAVEL e mantém R6 pending",
+    "O retorno permite nova Auditoria sem depender de promoção, regressão global ou deploy antecipados"
+  ],
+  "required_evidence": [
+    "EVOLUTION_TASK e EVOLUTION_RETURN de Colheita e Diagnóstico",
+    "Registro de aplicabilidade de Mineração Externa",
+    "Registro ACCEPTED e ciclo completo para diagnóstico, alteração do candidato e prova",
+    "Manifesto ordinal e digest do candidato regularizado",
+    "Transcript completo da nova prova independente",
+    "EVOLUTION_RETURN de candidato e de prova",
+    "EVOLUTION_LEDGER R3 schema-valid"
+  ],
+  "matrix_exchange": {
+    "allowed": false,
+    "topics": [],
+    "read_scope": [],
+    "write_scope": [],
+    "consolidation_owner": null
+  },
+  "permissions": {
+    "default_policy": "deny",
+    "allowed_tools": [
+      "filesystem_read",
+      "candidate_workspace_write",
+      "skill_eval_execute",
+      "sha256",
+      "schema_validate"
+    ],
+    "allowed_resources": [
+      "Estrutura Final de Skills/ceo-maestro/departamento-evolucao-skills/evals/regularizacao-dados7-2026-07-29",
+      "Estrutura Final de Skills/ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29/auditoria-r2",
+      "Estrutura Final de Skills/ceo-maestro/evals/regularizacao-evolucao-dados7-2026-07-29",
+      "Estrutura Final de Skills/regras-de-ouro/REGRAS-DE-OURO.md"
+    ],
+    "expires_at": "2026-07-30T23:59:59-03:00"
+  },
+  "stop_when": [
+    "O candidato regularizado, a prova independente e o EVOLUTION_LEDGER R3 forem devolvidos ao CEO",
+    "Uma capacidade obrigatória estiver ausente, inválida ou conflitada",
+    "A prova não puder ser executada sem tocar o canônico",
+    "O retrabalho ultrapassar os cinco artefatos autorizados de cand-E"
+  ],
+  "judge_gate_required": true,
+  "return_to": "ceo-maestro",
+  "issued_at": "2026-07-30T14:34:00-03:00"
+}

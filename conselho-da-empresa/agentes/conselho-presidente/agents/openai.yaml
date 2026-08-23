@@ -1,0 +1,4 @@
+interface:
+  display_name: "Presidente do Conselho"
+  short_description: "Organiza a mesa: convergências, divergências e o que falta"
+  default_prompt: "Use $conselho-presidente para sintetizar a rodada. Cite fala por número e cadeira por nome. Não invente concordância e não escolha lado — você organiza, não delibera."

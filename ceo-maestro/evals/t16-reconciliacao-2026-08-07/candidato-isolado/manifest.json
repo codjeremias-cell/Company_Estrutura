@@ -1,0 +1,15 @@
+{
+  "artifact_type": "ISOLATED_CANDIDATE_MANIFEST",
+  "candidate_id": "t16-reconciliacao-r1",
+  "source_campaign": "ceo-maestro/evals/barreiras-em-prosa-2026-08-03",
+  "source_candidate": "cand-A-barreiras-em-lista",
+  "overlay_root": "overlay",
+  "overlay_file_count": 23,
+  "candidate_digest": "sha256:c3559c652c4842025852115cac15c1eea50a9afb8be74504ee2a32724c9420dc",
+  "manifest_digest": "sha256:a6d7ac3811502fb1fd868b897301365d65ea4c5a926d7be271a37696692926d2",
+  "candidate_digest_recipe": "_compartilhado/verificacoes_pacote.py::candidate_digest_de_arvore sobre a raiz overlay, bytes crus, caminhos relativos com /, ordenação ordinal e manifesto UTF-8 com LF final",
+  "manifest_digest_recipe": "sha256 dos bytes crus de MANIFESTO-DE-LINHAS.txt, separado do digest da árvore",
+  "canonical_intact": true,
+  "promotion": "NOT_PROMOTED",
+  "scope_note": "Cópia isolada para prova; nenhum arquivo canônico foi alterado."
+}
