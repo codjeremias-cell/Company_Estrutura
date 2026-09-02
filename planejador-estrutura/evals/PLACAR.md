@@ -52,7 +52,7 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
 | item | dono | fecha quando |
 |---:|---|---|
 | 1 | o próprio Departamento | **FECHADO em 2026-09-01** — [medição comportamental](medicao-comportamental-2026-09-01/RESULTADO.md) com três braços, correção cega e agregador escrito antes das notas |
-| 2 | **Jeremias** | **MEDIDO em 2026-09-02, resultado NEGATIVO** — [5 sessões novas, acionamento zero](medicao-acionamento-2026-09-02/RESULTADO.md). O que resta é decisão dele: se a rota entra no `roteamento-global.md`, que tem teto de 2.048 B |
+| 2 | **Jeremias** | **MEDIDO em 2026-09-02, resultado NEGATIVO** — [9 sessões novas, 7 delas limpas no braço A, acionamento zero](medicao-acionamento-2026-09-02/RESULTADO.md). O que resta é decisão dele: se a rota entra no `roteamento-global.md`, que tem teto de 2.048 B |
 | 3 | o próprio Departamento | **FECHADO em 2026-09-02** — `validate_paridade_da_doutrina` compara as duas regiões **vivas**, byte a byte, a cada execução; divergência reprova, e contraparte ausente reprova também |
 | 4 | Jeremias | **FECHADO em 2026-09-02** — publicado nos **três** runtimes (`.claude/skills/`, `.agents/skills/` e o global `~/.claude/skills/`), sob o nome novo, com paridade SHA-256 conferida pelo próprio deploy |
 
@@ -96,15 +96,20 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
   **em 5 sessões novas, `planejador-estrutura` foi acionada zero vezes.** Relatório e os cinco brutos
   em [`medicao-acionamento-2026-09-02/`](medicao-acionamento-2026-09-02/RESULTADO.md).
 
-  | | rodadas | acionaram | nomearam |
-  |---|---:|---:|---:|
-  | braço A — frase neutra | 4 | **0** | **0** |
-  | braço B — frase que cita a Estrutura | 1 | **0** | **1** |
+  | | rodadas | limpas | acionaram | nomearam |
+  |---|---:|---:|---:|---:|
+  | braço A — frase neutra | 8 | 7 | **0** | **0** |
+  | braço B — frase que cita a Estrutura | 1 | 1 | **0** | **1** |
 
-  **A mesma frase neutra produziu três rotas diferentes em quatro rodadas** — `ceo-maestro`,
-  `especialista-planejador` e `mapa-de-decisoes` duas vezes. Não há rota estável para relatar: há
-  dispersão. E o nome `planejador-estrutura` **não aparece em nenhuma das quatro respostas** do
-  braço A, nem acionado nem citado.
+  **O braço A foi repetido a pedido de Jeremias**, com quatro rodadas a mais em pastas
+  recém-criadas e vazias, porque a primeira leva tinha n=3 limpas. **As quatro não mudaram o zero
+  — mudaram o que dá para afirmar sobre ele.**
+
+  A mesma frase neutra produziu **três rotas diferentes em oito rodadas, sem favorita**:
+  `ceo-maestro` 3 · `especialista-planejador` 3 · `mapa-de-decisoes` 2 · **`planejador-estrutura`
+  0**. Com n=4 isso admitia "azar em quatro sorteios"; com n=8, três destinos e zero acertos, é
+  ausência de caminho. E o nome `planejador-estrutura` **não aparece em nenhuma das oito
+  respostas** — não é skill preterida na escolha, é skill que não entra na conversa.
 
   **A causa não é conjectura sobre o modelo: é a tabela de roteamento lida.** A linha 13 do
   `roteamento-global.md` diz `custo, prazo, dono, Plano B → especialista-planejador`, que é

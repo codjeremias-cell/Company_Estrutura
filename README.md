@@ -16,9 +16,9 @@ ausência**.
 ## Leia isto antes de tirar conclusão do que está aqui
 
 **Esta é uma cópia parcial, e a palavra é literal.** A fonte é um repositório privado. O que você vê
-são **729 arquivos espelhados** de um total de **18.972** — mais este `README.md` e o `.gitignore`,
+são **729 arquivos espelhados** de um total de **18.977** — mais este `README.md` e o `.gitignore`,
 que existem só aqui. A diferença não é curadoria editorial: são **46 pastas de campanha**, com
-**18.243 arquivos**, removidas por um motivo único e verificável — elas carregam **caminhos
+**18.248 arquivos**, removidas por um motivo único e verificável — elas carregam **caminhos
 absolutos da máquina de origem** dentro dos artefatos, e publicá-las exporia o layout de pastas e a
 conta de usuário local.
 

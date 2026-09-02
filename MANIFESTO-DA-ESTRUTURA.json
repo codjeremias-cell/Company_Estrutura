@@ -1,17 +1,17 @@
 {
   "artifact_type": "MANIFESTO_DA_ESTRUTURA",
   "versao_do_formato": 1,
-  "gerado_em": "2026-09-02T18:00:00-03:00",
+  "gerado_em": "2026-09-02T20:00:00-03:00",
   "receita": "_compartilhado/validador_schema.py::sha256_texto_normalizado sobre cada arquivo — BOM removido, CRLF trocado por LF, bytes UTF-8. Caminhos relativos à raiz da Estrutura, em POSIX, ordenados. O digest do manifesto cobre o bloco `arquivos`, nunca o arquivo inteiro, para que ele possa carregar o próprio valor sem virar autorreferência.",
   "assinatura": {
     "estado": "NAO_ASSINADO",
     "motivo": "assinatura exige chave; o caminho previsto é atestação por OIDC no CI (actions/attest-build-provenance), que assina sem que ninguém guarde segredo. Enquanto não existir, este manifesto prova integridade e diferença, não origem."
   },
-  "total_de_arquivos": 18891,
-  "digest_do_inventario": "sha256:a99d7878a972880670b30bbf26350fbc5fd23e9af51580d7da75df90ad24ada1",
+  "total_de_arquivos": 18896,
+  "digest_do_inventario": "sha256:a6d9fce48261f09f15d863bc08360d9e5bc222153b0a7af0099b316bacb8b322",
   "predecessor": {
-    "gerado_em": "2026-09-02T17:00:00-03:00",
-    "digest_do_inventario": "sha256:9c57a04312c085c7cbd935fe366809ee56c0b5e753d41e0f5c0cce3e05c36fa4",
+    "gerado_em": "2026-09-02T19:00:00-03:00",
+    "digest_do_inventario": "sha256:dd92bc3f4917c958b962e69e18e6b64d83a95ec237166595e5405187b4a5859b",
     "total_de_arquivos": 18891
   },
   "arquivos": {
@@ -18834,15 +18834,20 @@
     "planejador-estrutura/evals/custodia-instalacao/VERIFICACAO-CORRENTE-2026-08-25.txt": "sha256:7725d8791d7e7b3a44d6e82a72962777791298edfce71061b19667069f89e99e",
     "planejador-estrutura/evals/custodia-instalacao/VERIFICACAO-CORRENTE-2026-09-01.txt": "sha256:5986a9fc11e7632bd7a1ea3add17f37c5f8b329e3e3ae78ca64f4f03225e85ec",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/A1-artefato-escrito-na-arena.md": "sha256:1fa0d9ef72d3d0708871baac8d6595ebf604acdd065db1403bf860f74d074098",
-    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/CUSTODIA.txt": "sha256:328fa5276da2a1118af714a9dc623d5af7ccc365fdae2645f0b918a7ff26850c",
-    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/PROMPTS.json": "sha256:c8c0ca15207f769fcbccc3b1b9a9b5294c00e40e2d6381293aa2e25dcc5d98e9",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/A8-artefato-escrito-na-arena.md": "sha256:aa070d6075cbf73db0ca924da9afc896cdc95be9a992fbfd0aad9270cef4faf8",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/CUSTODIA.txt": "sha256:2759f2784524e7056b808c6ba77d214e33dbb7aa4b53d9197b15426d6110d3c3",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/PROMPTS.json": "sha256:90ce24e24479bf575dad500668b64bbc413271b6037ca8e81950e7b80a833bf3",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A1.stream.jsonl": "sha256:fda303ebb31e4c044ce8d7365015305d8510cb29e28de0691195d50f07a179bb",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A2.stream.jsonl": "sha256:6556c67bc2e5a2afc8c274534e6cb3dde84f0617a38afdeb380833733630642f",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A3.stream.jsonl": "sha256:9623b8a2fb77714f223ddb3b7278d0debea934d066414129351390d50a2563e5",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A4.stream.jsonl": "sha256:6a6dde3f08e5ee27426edcac051bb88e0545f4bce1ec08ae21dd22795caf2c28",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A5.stream.jsonl": "sha256:151a08f4143a9e4bdef57b39383c054d5853697a7a9fcc0ab5feaeee83c0cf34",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A6.stream.jsonl": "sha256:ad3abbd42a3bb3898bfc52c7e8608a01bf905178a35f29c981f713303cf90346",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A7.stream.jsonl": "sha256:2b3653f2ec2f226a0761853d1338bb847fe2058caab2b057026c0e0c0527c90d",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A8.stream.jsonl": "sha256:b145d1662574689f1e26e2c39c702be8eb4395bb649acceb8b13b5d8a1017fe4",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/B.stream.jsonl": "sha256:7bfcb1bf45c8f2f56ccefa06b613c093903f1198ae02cef4c8cda66d4ecec8ef",
-    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/RESULTADO.json": "sha256:183f115c8b4c2cc0f02d6528a51705f2fa6cfb63a9f5a79fd4f00a900e902dfb",
-    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/RESULTADO.md": "sha256:c3083e2cb2a7569120d17b0d3733736cf64206ca8d70df157dd905b2990d759a",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/RESULTADO.json": "sha256:01a47e20e8217fbd9c88d4ee63adf9c393b24839c9884b78230899afd10b4398",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/RESULTADO.md": "sha256:15215dd50829b836a9fc05c4b9ffc740d8deca7db9bd4dbd3050f317365f960a",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/scripts/analisar.py": "sha256:4722cf619d424a044eead5b19168db121012cf79c2e6435cd216d3515c1fc0b4",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/scripts/custodiar.py": "sha256:ee9dc99710426b41af9fc988acbbcca48281be93056e71416ac05cc679b3f5ec",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/correcoes/C1.json": "sha256:dc86086b43cdee9b1d4f5b75344ed64ef9c8b73f5cab98aaf9634b4515c465b1",
@@ -18893,23 +18898,23 @@
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/sujeitos/S-C-P4/PROMPT.txt": "sha256:8ed9c7f21b53bbc98f297b0b66c2937419502239d88091cb5903c3b0bdb75ca5",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/sujeitos/S-C-P5/PROMPT.txt": "sha256:cef0b5518070bf0725be400c74375dac2a91c10a1c1990cb92eec8549ba9fb1a",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/sujeitos/S-C-P6/PROMPT.txt": "sha256:d91ae7da7cc70fe6f42cc676ee6e9139fb6fca5265649258b98178402ebea996",
-    "planejador-estrutura/evals/PLACAR.md": "sha256:88b79efbf0a36cdc9f10177a764b92dc96fc7e9b26a74c98705cd727b3746e71",
+    "planejador-estrutura/evals/PLACAR.md": "sha256:cc6aa16ee72f4b9f2d47b9a46deb837a32f3dd8584c933396870b1f9e2374e11",
     "planejador-estrutura/evals/validate_workflow.py": "sha256:cdc1d825d59dd2890d8125fb157414fa74b5c3faaa71bb4aa9cfa67a40e2f0d2",
     "planejador-estrutura/referencia/origem-e-fundamentacao.md": "sha256:74b8db714907a0b9e1496d30e568072186b9ff26c6864573a12f5973b0122c0c",
     "planejador-estrutura/SKILL.md": "sha256:dc20757a5d7046a7ad41ec46b1ede8e1c52938335e9a6b9c9f8fe7bda5639d4e",
     "PLANO-DE-ACAO-2026-07-27.md": "sha256:09b83bca4cdaf86466f26263bfa308505df9f299276317e215dc4ce36947fee9",
-    "prova_mutacao_vitrine.py": "sha256:b103b6c7a1b51a5a58b7cb604456ce7cc080056589bbb467032c3e73f2eb7382",
-    "publicar_vitrine.py": "sha256:4e3eac92b72c45dd8103cb6b10ec66befd19b7d3e010c47fe5b58a56292489da",
+    "prova_mutacao_vitrine.py": "sha256:0383adbe5333d6cff300ed80dc2c2e4d4d234f7f1183860e6b12c2c250b8b961",
+    "publicar_vitrine.py": "sha256:1a9eaf4a284a068666f491f09a63a2eff9595d2c037b0eb4741a11431b37df6b",
     "registros/PROPOSTA-GRAO-IDENTIDADE-E-EVOLUCAO-APRENDIZAGEM.md": "sha256:30abb1276d730cc74695ebe149825a0eabd8887ce78a6ca1846c56b31f85af2f",
     "registros/relatorios/aprendizagem/README.md": "sha256:500cad39eccc6a20c4297853cc7c059527c08f8c8af8705fc8d3176453896a8b",
     "regras-de-ouro/ORIGEM.md": "sha256:5dfbbb991f44e3d4b9bd26ab66125638cb9c1899c3cac936a33ea622a462cd8b",
     "regras-de-ouro/REGRAS-DE-OURO.md": "sha256:6429c988e640dcc3c9ce0557e05a6a629e224af97c4c3cba27abd08d4b45bf3d",
     "RETOMADA-2026-07-29.md": "sha256:4a6f5a2a154e26d3555210ad937c4e19de72ebe3ee9805647355d1b77e0b33b8",
-    "vitrine-exclusoes.json": "sha256:2960057de0bfe4b6ebc8d87f7a9d7166a1a945f6b806de4b72db2a6e4486900d"
+    "vitrine-exclusoes.json": "sha256:efd33d060e6662ed50fcfd05418da043fe5793b1a52078222153b917a4288598"
   },
   "mudancas_desde_o_predecessor": {
-    "acrescentados": 0,
-    "alterados": 2,
+    "acrescentados": 5,
+    "alterados": 6,
     "removidos": []
   }
 }
