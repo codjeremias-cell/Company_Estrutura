@@ -95,6 +95,12 @@ import subprocess
 import sys
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 ROOT = Path(__file__).resolve().parents[1]          # ceo-maestro/
 ESTRUTURA = ROOT.parent                              # Estrutura Final de Skills/
 
@@ -146,6 +152,19 @@ SUBORDINADOS_ESPERADOS: dict[str, dict] = {
         "ancora": ("- **Pares executivos diretos:** `diretor-de-lentes`, "
                    "`departamento-negocios` e"),
     },
+    # (f) A Diretoria Agentica e o departamento-de-treinamento SAIRAM da arvore
+    #     em 2026-09-01, por decisao de Jeremias: sao do projeto Empresa GradUP,
+    #     onde a copia viva esta em dados/biblioteca/agente/<nome>/<hash>/.
+    #
+    #     A decisao de hoje REVERTE a de 2026-08-27, que os havia devolvido ao
+    #     master -- e que este mesmo comentario registrava. As expectativas deles
+    #     saem junto: expectativa declarada para pacote que nao existe e
+    #     declaracao orfa, e este arquivo existe justamente para que arvore e
+    #     declaracao nao divirjam em silencio.
+    #
+    #     Historico completo: criados em 2026-08-19, removidos em 2026-08-20 pela
+    #     T90 (as 4 pecas de prova estao no commit dela), devolvidos em 2026-08-27,
+    #     julgados na T117 (ambos REPROVED), removidos em 2026-09-01.
     # (e) Único com expectativa ABERTA: o contrato nomeia um subordinado e
     #     remete o resto a um grupo, sem cardinal. Conferível: que os Juízes
     #     estejam lá, e que todo o resto venha do container — não o total.
@@ -196,7 +215,12 @@ SUBORDINADOS_ESPERADOS: dict[str, dict] = {
     # do CEO nem subordinado de ninguem. Entra na tabela porque tem
     # validador proprio (exigencia do gate de cobertura), nao porque a
     # cadeia o comande. Expectativa: ZERO subordinados.
-    "especialista-planejador": {
+    # RENOMEADO EM 2026-09-02 (era `especialista-planejador`). A chave desta
+    # tabela e o NOME DA PASTA, entao renomear o pacote a quebra: o gate de
+    # cobertura acusou `expectativa declarada` no ato, e foi assim que o
+    # renome apareceu aqui. Nome antigo colidia com uma lente homonima do
+    # Catalogo; a decisao de renomear e de Jeremias, em 2026-09-02.
+    "planejador-estrutura": {
         "nomes": set(),
         "fonte": CONTRATO,
         "ancora": ("- **Subordinados diretos:** nenhum. "
@@ -271,7 +295,7 @@ def coerencia(saida: str, sum_: dict, exit_code: int | None = None) -> list[str]
     if fails_contados != esperado:
         erros.append(
             f"incoerência interna: sumário diz {sum_['passou']}/{sum_['total']} "
-            f"(⇒ {esperado} falha(s)) mas há {fails_contados} linha(s) [FAIL]"
+            f"(-> {esperado} falha(s)) mas há {fails_contados} linha(s) [FAIL]"
         )
     declarado = RE_FAIL_DECL.search(saida)
     if declarado and int(declarado.group(1)) != esperado:
@@ -286,7 +310,7 @@ def coerencia(saida: str, sum_: dict, exit_code: int | None = None) -> list[str]
         if exit_code != exit_esperado:
             erros.append(
                 f"incoerência interna: sumário {sum_['passou']}/{sum_['total']} "
-                f"(⇒ exit {exit_esperado}) mas o processo saiu com exit={exit_code}"
+                f"(-> exit {exit_esperado}) mas o processo saiu com exit={exit_code}"
             )
     return erros
 

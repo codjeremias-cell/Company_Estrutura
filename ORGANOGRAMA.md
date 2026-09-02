@@ -21,7 +21,7 @@
   Mecânica: **55/55 PASS**.
 - [x] `ceo-maestro/departamento-negocios/` — gerente, três agentes, matriz com o Diretor e
   validação. Mecânica: **226/226 PASS**; forward: 15/15 casos e 62/62 assertions PASS.
-- [x] `especialista-planejador/` — **fora da cadeia de comando**, no topo da Estrutura, instalado em
+- [x] `planejador-estrutura/` — **fora da cadeia de comando**, no topo da Estrutura, instalado em
   2026-08-08. Consultor direto de Jeremias: sem superior, sem subordinado, sem `EXECUTIVE_MISSION`.
   Mecânica própria: **14/14 PASS**. Ver a seção *Fora da cadeia de comando* mais abaixo — ele não
   entra na contagem de Departamentos operacionais nem na de pares executivos do CEO.
@@ -179,7 +179,7 @@ flowchart TB
 
     EVO["Departamento de Evolução de Skills<br/><code>departamento-evolucao-skills</code><br/>só sob missão do CEO"]
 
-    ESP(["especialista-planejador<br/>consultor direto de Jeremias<br/><b>FORA da cadeia de comando</b>"])
+    ESP(["planejador-estrutura<br/>consultor direto de Jeremias<br/><b>FORA da cadeia de comando</b>"])
 
     HUM <-. "consulta e devolve; não é subordinado<br/>e não é par executivo" .-> ESP
 
@@ -205,7 +205,7 @@ flowchart TB
     JUIZ -. "parecer ao CTO" .-> CTO
 ```
 
-O `especialista-planejador` aparece **solto**, ligado só a Jeremias e por traço pontilhado de mão
+O `planejador-estrutura` aparece **solto**, ligado só a Jeremias e por traço pontilhado de mão
 dupla, porque é exatamente isso que ele é: um consultor que Jeremias consulta e que devolve a
 Jeremias. Ele **não** tem seta para o CEO, para o CTO nem para Departamento nenhum — não emite nem
 recebe `EXECUTIVE_MISSION`, não fala com departamentos e não é um quarto par executivo. O fluxo
@@ -561,12 +561,12 @@ Decisões em `ceo-maestro/departamento-evolucao-skills/references/adr-004-evoluc
 - `agente-mercado-e-cliente`
 - `agente-viabilidade-e-monetizacao`
 
-## Fora da cadeia de comando — `especialista-planejador`
+## Fora da cadeia de comando — `planejador-estrutura`
 
 > Esta seção **não** entra na numeração acima. Os itens 1–13 são nós da cadeia; este não é nó
 > nenhum. Está aqui para que a árvore canônica não minta por omissão sobre uma pasta que existe.
 
-- Pasta/skill: `especialista-planejador` — **no topo da Estrutura**, irmã de `ceo-maestro`,
+- Pasta/skill: `planejador-estrutura` — **no topo da Estrutura**, irmã de `ceo-maestro`,
   instalada em 2026-08-08.
 - Subordinação: **nenhuma.** Não responde ao CEO, ao CTO nem a Departamento algum.
 - Subordinados: **nenhum.** Não tem `agentes/`, não delega e não convoca.
@@ -607,7 +607,7 @@ Estrutura Final de Skills/
 ├── regras-de-ouro/
 │   ├── REGRAS-DE-OURO.md
 │   └── ORIGEM.md
-├── especialista-planejador/   # FORA da cadeia — consultor direto de Jeremias
+├── planejador-estrutura/   # FORA da cadeia — consultor direto de Jeremias
 │   ├── SKILL.md
 │   ├── CONTRATO-DE-COMPROMISSO.md
 │   ├── agents/openai.yaml
@@ -774,7 +774,7 @@ Toda skill da estrutura futura deverá declarar, no mínimo:
 - referência obrigatória à fonte única `regras-de-ouro/REGRAS-DE-OURO.md`;
 - compromisso de bloquear a operação quando houver conflito com as Regras de Ouro.
 
-**Uma exceção, e ela é declarada, não tolerada.** O `especialista-planejador` está **fora da cadeia
+**Uma exceção, e ela é declarada, não tolerada.** O `planejador-estrutura` está **fora da cadeia
 de comando** e por isso não tem superior, não tem canal de retorno para a cadeia e não passa pelo
 `departamento-juizes`: não há entrega de departamento para julgar, porque ele não é departamento.
 O que ele mantém, sem exceção, é o resto — papel declarado, responsabilidades, proibições, entradas
@@ -802,7 +802,7 @@ reprova se alguma aparecer — a exceção é provada, não confiada.
 | `orquestrador-registros` | `departamento-registros` |
 | inexistente | `departamento-negocios` |
 | inexistente | `departamento-evolucao-skills` (skill nova, fora da lista original) |
-| `especialista-planejador` (canônica do Catálogo) | `especialista-planejador` — **não é migração de lente nem nó de cadeia**: variante da mesma doutrina instalada no topo da Estrutura em 2026-08-08, como consultor direto de Jeremias, fora da cadeia de comando. A canônica do Catálogo **continua existindo** e não foi aposentada. |
+| `planejador-estrutura` (canônica do Catálogo) | `planejador-estrutura` — **não é migração de lente nem nó de cadeia**: variante da mesma doutrina instalada no topo da Estrutura em 2026-08-08, como consultor direto de Jeremias, fora da cadeia de comando. A canônica do Catálogo **continua existindo** e não foi aposentada. |
 
 ## Estado desta etapa
 

@@ -232,6 +232,51 @@ o que ficou sem prova.
 Abaixo, no mesmo artefato, o envelope do schema aplicável. O resumo **espelha** o envelope e nunca
 acrescenta.
 
+### Qual envelope devolve o quê — escolha pelo destinatário
+
+*"O envelope do schema aplicável"* não basta, e custou uma rodada inteira: a R3 do ADR-020 respondeu
+a uma `EXECUTIVE_MISSION` com `return_to: ceo-maestro` usando `EVOLUTION_RETURN`, cujo `return_to` é
+**const `departamento-evolucao-skills`**. Trabalho medido, envelope interno, zero alcance.
+
+**Escolha pelo destinatário, nunca pelo nome que soa parecido:**
+
+| quem responde a quem | envelope | `return_to` |
+|---|---|---|
+| agente-folha → esta gerente | `EVOLUTION_RETURN` | const `departamento-evolucao-skills` |
+| esta gerente → CEO | `EVOLUTION_LEDGER` | const `ceo-maestro` |
+
+**`candidate_sets: []` depende do `deliverable_type`, e essa frase já custou uma rodada.**
+
+| `deliverable_type` | `candidate_sets: []` |
+|---|---|
+| `analysis` | **válida** |
+| `proposal` | **INVÁLIDA** — e junto caem `candidate_identity.status: CONFERIDO` e `scoreboard` não-vazio |
+
+O `minItems: 2` de fato mora **dentro** de um `candidateSet`, e o array de fato não tem mínimo no
+bloco `properties`. **Mas o `evolutionLedger` tem um `allOf` condicional** que acrescenta
+`candidate_sets.minItems = 1` quando o tipo é `proposal`. Quem parar de ler no `properties` conclui
+o contrário — foi o que aconteceu comigo em 2026-08-24, e a versão anterior desta seção afirmava a
+metade errada.
+
+**Nenhuma amostra escolhida ao acaso corrige isso:** censo de 2026-08-24 — 64 `EVOLUTION_LEDGER` na
+árvore, os **6** com `candidate_sets` vazio são **todos `analysis`**, e **zero** `proposal` tem
+vazio. Um par a par que caia num `analysis` confirma a frase sem tocar a condição que decide.
+
+**Escolha o tipo pelo que a rodada produziu, nunca pelo que deixa o schema verde:** rodada com
+painel de candidatos é `proposal` e leva `candidate_sets`; rodada que produziu instrumento e
+medição, sem candidato em `candidatos/`, é `analysis`. Não invente `candidate_sets` para "caber" —
+ajustar o artefato ao critério é o defeito que esta casa mais combate. E não troque o
+`deliverable_type` para o schema fechar: ele é campo da missão do CEO, e mudá-lo é reclassificar o
+achado, que é a mesma evasão por outro campo.
+
+**Entrega final é outra coisa ainda.** `product` e `proposal` só alcançam o gate do CEO por
+`EXECUTIVE_SUBMISSION`, que exige `judge_report` — e este Departamento **não** produz parecer de
+Juízes. O portão é um segundo ato, do CEO. Devolver o ledger é o seu fim de linha.
+
+A escolha está sob medição: `validate_envelope_alcanca_destinatario`, no validador deste pacote,
+deriva o destinatário permitido **do schema** e acusa envelope que não alcança o `return_to` da
+missão — inclusive envelope que declare no próprio corpo um destinatário que o const não autoriza.
+
 ## Exemplo — entra → sai
 
 **Entra:** o CEO envia missão de `AVALIACAO` sobre quatro skills do track Java, com o relatório de

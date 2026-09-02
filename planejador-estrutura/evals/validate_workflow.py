@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Validador determinístico do `especialista-planejador` — variante Estrutura.
+"""Validador determinístico do `planejador-estrutura` — variante Estrutura.
 
 **Este validador é mínimo de propósito, e o mínimo tem dois deveres.**
 
@@ -41,7 +41,7 @@ OPENAI_PATH = PACKAGE_ROOT / "agents" / "openai.yaml"
 REFERENCE_PATH = PACKAGE_ROOT / "referencia" / "origem-e-fundamentacao.md"
 RULES_PATH = STRUCTURE_ROOT / "regras-de-ouro" / "REGRAS-DE-OURO.md"
 
-SKILL_NAME = "especialista-planejador"
+SKILL_NAME = "planejador-estrutura"
 DISPLAY_NAME = "Especialista Planejador"
 RULES_LINK = "../regras-de-ouro/REGRAS-DE-OURO.md"
 
@@ -72,6 +72,7 @@ try:
         recusar_execucao_fora_da_fonte,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_coletor_de_contagem_atribui_ao_dono,
         validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         validate_placar_nao_declara_cadeia,
@@ -240,6 +241,12 @@ def run() -> int:
         (
             "as travas do modulo compartilhado nao estao neutralizadas",
             validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT),
+        )
+    )
+    casos.append(
+        (
+            "o coletor de contagem nao atribui a um pacote o placar de outro",
+            validate_coletor_de_contagem_atribui_ao_dono(STRUCTURE_ROOT),
         )
     )
     casos.append(

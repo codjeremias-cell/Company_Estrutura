@@ -7,7 +7,7 @@
 > mudar e o selo não for refeito. Qualquer outro número deste documento é
 > registro da data em que foi medido — não estado de agora.
 
-CONTAGEM-VIGENTE: 106/106 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:1011f32b0ea6714833da869a568c9e538b92208fdd3c806611a6ec7aa786db7b` | medido-em: 2026-08-22
+CONTAGEM-VIGENTE: 106/106 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:1011f32b0ea6714833da869a568c9e538b92208fdd3c806611a6ec7aa786db7b` | medido-em: 2026-09-02
 <!-- /SELO-DE-CONTAGEM -->
 
 ## Atualização ativa — ADR-014 (2026-07-29)

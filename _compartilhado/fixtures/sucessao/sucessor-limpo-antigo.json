@@ -1,0 +1,15 @@
+{
+  "report_id": "FIXTURE-SUCESSAO-05",
+  "verdict": "COMPLIANT",
+  "issued_at": "2025-12-31T00:00:00Z",
+  "pending": [
+    "Ressalva em FIXTURE: o achado segue aberto. dono: departamento-auditoria-responsabilidades. fecha quando: a inspecao for reexecutada contra a identidade vigente"
+  ],
+  "violations": [],
+  "evidence_refs": [],
+  "candidate_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "contract_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "rules_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "auditor_ref": "departamento-auditoria-responsabilidades",
+  "_fixture": "Isola a condicao da ORDEM. Limpo, id proprio, mesmos campos de ligacao; a unica coisa errada e ser ANTERIOR ao superado."
+}

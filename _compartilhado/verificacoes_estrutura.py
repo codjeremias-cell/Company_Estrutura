@@ -79,9 +79,11 @@ apaga e exige vermelho (M8–M11 de `instrumentos-r3/31_medir_r3.py`).
 from __future__ import annotations
 
 import ast
+import hashlib
+import json
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 from _compartilhado.verificacoes_pacote import (
     SECOES_CONTRATO_GERENTE,
@@ -97,6 +99,7 @@ __all__ = [
     "validate_fonte_normativa_conferida",
     "validate_contagem_ligada_ao_instrumento",
     "validate_travas_compartilhadas_com_efeito",
+    "validate_coletor_de_contagem_atribui_ao_dono",
     "PISO_DE_FUNCOES_OBRIGATORIAS",
     "achar_corpo_neutralizado",
     "achar_checks_tautologicos",
@@ -135,7 +138,11 @@ FUNCOES_DE_ESTRUTURA = (
     "validate_placar_nao_declara_cadeia",
     "validate_contagem_ligada_ao_instrumento",
     "validate_travas_compartilhadas_com_efeito",
-    "validate_pendencia_tem_dono",
+    "validate_pendencia_tem_dono",    # T-COLETOR (2026-09-01): entra AQUI e NAO em FUNCOES_OBRIGATORIAS. A
+    # varredura de neutralizacao cobre as DUAS listas, entao a trava fica
+    # guardada; obrigar os 18 a chama-la custaria 18 edicoes para conferir
+    # um modulo que e UM so.
+    "validate_coletor_de_contagem_atribui_ao_dono",
 )
 
 # O gate exige a **própria** presença, e não só "alguma checagem de estrutura".
@@ -160,6 +167,30 @@ FUNCAO_DE_RECUSA = "recusar_execucao_fora_da_fonte"
 
 FUNCOES_OBRIGATORIAS = (
     "validate_cobertura_de_validadores",
+    # T97 -- promovida em 2026-08-23, por decisao de Jeremias (saida "a").
+    #
+    # ERA 5/16 COM CHAMADA, e os cinco nao tinham padrao: dois nos de topo, dois
+    # departamentos comuns e o pacote mais novo. Nao havia motivo escrito em
+    # lugar nenhum para so cinco a rodarem -- procurar esse motivo foi a primeira
+    # coisa que a T97 fez, e nao existe. A chamada entrou nos onze restantes
+    # antes da promocao, derivada do proprio estilo de cada arquivo, e cada um
+    # recebeu tambem o par NEGATIVO (a regra do passo 9 quebrou na hora em
+    # `conteudo-marketing` e `registros`, que ja estavam no limite).
+    #
+    # MEDIDO ANTES DE PROMOVER, duas coisas. (1) A funcao e GLOBAL: recebe a raiz
+    # e varre os 16 pacotes gerentes, entao quem a chama nao muda O QUE ela
+    # confere, so quantas vezes roda. Sobre a raiz devolve ZERO erro -- promover
+    # nao reprova contrato nenhum. (2) Ela NUNCA TINHA PROVA DE ACUSACAO: o motor
+    # nao a mencionava e nao havia autoteste. Verde por nao ter o que reprovar e
+    # verde por nao saber reprovar sao indistinguiveis de fora, e promover uma
+    # trava possivelmente inerte seria instalar cerimonia, nao guarda. O
+    # `_autoteste_dos_contratos_de_gerente` entrou junto, com quatro amostras.
+    #
+    # `validate_adr_series` NAO foi promovida, e a razao e de desenho: promover as
+    # duas deixaria as duas listas identicas e o conjunto COMPLEMENTAR vazio --
+    # e a trava de cobertura, que exige "chame alguma funcao complementar",
+    # reprovaria os dezesseis. Ela fica como a unica complementar.
+    "validate_contratos_de_gerente",
     # T39 — promovida em 2026-08-22. Estava so entre as COMPLEMENTARES, onde a
     # regra e "chama alguma das N": um validador que a largasse continuaria verde
     # chamando outra, e a trava sumiria em silencio. Medido antes de mover: os
@@ -184,6 +215,9 @@ FUNCOES_OBRIGATORIAS = (
 # lugar cai sem produzir vermelho nenhum.
 PISO_DE_FUNCOES_OBRIGATORIAS = (
     "validate_cobertura_de_validadores",
+    # T97 -- o par da promocao acima. Sao dois lugares por desenho: com um so,
+    # encolher a exigencia nao produzia vermelho nenhum (tarefa 84).
+    "validate_contratos_de_gerente",
     "validate_placar_nao_declara_cadeia",
     "validate_trava_de_digest",
     "validate_sem_check_tautologico",
@@ -369,11 +403,14 @@ def usa(caminho):
 # linha solta satisfazia a cobertura da rodada 2 com o retorno no lixo. A amostra
 # boa consome cada retorno nos idiomas reais da casa (argumento de `case`/
 # `check`, tupla dentro de `cases.append`, variável intermediária consumida);
-# a amostra ruim chama as quatro e descarta os quatro retornos.
+# a amostra ruim chama todas e descarta todos os retornos. (Dizia "as quatro"
+# desde quando eram quatro; a T97 fez a nona entrar, e numero em prosa
+# envelhece calado.)
 _AMOSTRA_COBERTURA_COM_EFEITO = '''
 from _compartilhado.verificacoes_estrutura import (
     validate_cobertura_de_validadores,
     validate_contagem_ligada_ao_instrumento,
+    validate_contratos_de_gerente,
     validate_fonte_normativa_conferida,
     validate_travas_compartilhadas_com_efeito,
     validate_pendencia_tem_dono,
@@ -394,12 +431,15 @@ def run(cases, case, results, STRUCTURE_ROOT):
     case("placar nao declara cadeia", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT))
     dono = validate_pendencia_tem_dono(STRUCTURE_ROOT)
     results.check("pendencia tem dono", not dono, " | ".join(dono))
+    contratos = validate_contratos_de_gerente(STRUCTURE_ROOT)
+    results.check("contratos de gerente", not contratos, " | ".join(contratos))
 '''
 
 _AMOSTRA_COBERTURA_SEM_EFEITO = '''
 from _compartilhado.verificacoes_estrutura import (
     validate_cobertura_de_validadores,
     validate_contagem_ligada_ao_instrumento,
+    validate_contratos_de_gerente,
     validate_fonte_normativa_conferida,
     validate_travas_compartilhadas_com_efeito,
     validate_pendencia_tem_dono,
@@ -417,6 +457,7 @@ def run(STRUCTURE_ROOT):
     validate_travas_compartilhadas_com_efeito(STRUCTURE_ROOT)
     validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)
     validate_pendencia_tem_dono(STRUCTURE_ROOT)
+    validate_contratos_de_gerente(STRUCTURE_ROOT)
 '''
 
 
@@ -481,7 +522,7 @@ def raiz_e_runtime(structure_root: Path) -> str | None:
        instalado noutro caminho.
 
     Fonte sadia não dispara nenhuma das duas: conferido em 2026-08-22, o primeiro
-    nível da fonte tem apenas `ceo-maestro` e `especialista-planejador` com
+    nível da fonte tem apenas `ceo-maestro` e `planejador-estrutura` com
     `SKILL.md`, e ambos têm contrato. **A regra 2 exige as duas condições de
     propósito** — só "há pacote sem contrato" seria o próprio defeito que
     `validate_contratos_de_gerente` existe para acusar, e recusar ali mascararia
@@ -1009,6 +1050,91 @@ def _chamadas_com_efeito(
     return importa, chamadas, com_efeito, sem_efeito
 
 
+
+# TAREFA 97 — as amostras que provam que `validate_contratos_de_gerente` ACUSA.
+#
+# Ela existia desde 2026-07-27 e **nunca teve prova de acusação**: o motor não a
+# menciona, e não havia autoteste. Sobre a árvore real ela devolve zero erro — e
+# zero de trava sem prova é ambíguo entre "não há o que reprovar" e "não sabe
+# reprovar". A T97 ia promovê-la a obrigatória; promover uma trava inerte é
+# instalar cerimônia, não guarda.
+#
+# `Barreira de saída` aparece literal de propósito, e não derivada da constante:
+# amostra construída inteiramente a partir da especificação não consegue acusar a
+# especificação. Se a seção sumir de `SECOES_CONTRATO_GERENTE`, a amostra fora de
+# ordem deixa de casar e o autoteste grita.
+_SECAO_ANCORA = "Barreira de saída"
+
+
+def _contrato_de_amostra(secoes: tuple[str, ...], em_prosa: tuple[str, ...] = ()) -> str:
+    """Monta um CONTRATO-DE-COMPROMISSO.md sintético na ordem dada."""
+    partes = ["# Contrato de amostra\n"]
+    for secao in secoes:
+        partes.append("## %s\n" % secao)
+        if secao in em_prosa:
+            partes.append("Texto corrido, sem item de lista nenhum.\n")
+        else:
+            partes.append("- item um\n- item dois\n")
+    return "\n".join(partes)
+
+
+def _autoteste_dos_contratos_de_gerente() -> list[str]:
+    """A anatomia de contrato prova que enxerga, a cada chamada.
+
+    Quatro amostras, uma por forma de falha que `validate_contract_sections`
+    declara conhecer: seção ausente, ordem trocada, seção contável em prosa — e a
+    amostra íntegra, que precisa passar, porque trava que grita no inocente é
+    desligada na semana seguinte e não obedecida.
+    """
+    import tempfile
+    from pathlib import Path as _P
+
+    secoes = SECOES_CONTRATO_GERENTE
+    if len(secoes) < 3 or _SECAO_ANCORA not in secoes:
+        return [
+            "ANATOMIA_DE_CONTRATO_SEM_ESPECIFICACAO: SECOES_CONTRATO_GERENTE tem "
+            f"{len(secoes)} seção(ões) e {'inclui' if _SECAO_ANCORA in secoes else 'NÃO inclui'} "
+            f"{_SECAO_ANCORA!r}; sem especificação não há o que conferir"
+        ]
+
+    i = secoes.index(_SECAO_ANCORA)
+    trocadas = list(secoes)
+    trocadas[i], trocadas[i - 1] = trocadas[i - 1], trocadas[i]
+
+    amostras = (
+        ("íntegra", _contrato_de_amostra(secoes), True),
+        ("sem a seção-âncora", _contrato_de_amostra(tuple(s for s in secoes if s != _SECAO_ANCORA)), False),
+        ("com duas seções fora de ordem", _contrato_de_amostra(tuple(trocadas)), False),
+        ("com seção contável em prosa", _contrato_de_amostra(secoes, em_prosa=("Obrigações",)), False),
+    )
+
+    erros: list[str] = []
+    with tempfile.TemporaryDirectory() as tmp:
+        for nome, texto, deve_passar in amostras:
+            alvo = _P(tmp) / "CONTRATO-DE-COMPROMISSO.md"
+            alvo.write_text(texto, encoding="utf-8")
+            try:
+                achados = validate_contract_sections(alvo, secoes, "amostra")
+            except Exception as exc:  # noqa: BLE001
+                erros.append(
+                    f"ANATOMIA_DE_CONTRATO_QUEBRADA: a amostra {nome!r} levantou "
+                    f"{exc.__class__.__name__}: {exc}"
+                )
+                continue
+            if deve_passar and achados:
+                erros.append(
+                    f"ANATOMIA_DE_CONTRATO_GRITA_NO_INOCENTE: a amostra {nome!r} "
+                    f"cumpre as {len(secoes)} seções na ordem e mesmo assim foi "
+                    f"acusada: {achados}"
+                )
+            if not deve_passar and not achados:
+                erros.append(
+                    f"ANATOMIA_DE_CONTRATO_CEGA: a amostra {nome!r} viola a "
+                    "anatomia canônica e passou; trava que não acusa o defeito "
+                    "conhecido não autoriza concluir nada sobre a árvore"
+                )
+    return erros
+
 def _autoteste_da_cobertura() -> list[str]:
     """A análise de efeito prova que enxerga, a cada chamada.
 
@@ -1049,6 +1175,7 @@ def _autoteste_da_cobertura() -> list[str]:
     erros.extend(_autoteste_do_teto())
     erros.extend(_autoteste_do_digest_truncado())
     erros.extend(_autoteste_da_exclusao())
+    erros.extend(_autoteste_dos_contratos_de_gerente())
     return erros
 
 
@@ -2957,7 +3084,7 @@ def _autoteste_do_selo(motor) -> list[str]:
 # sete — era de forma, e estava em toda a Estrutura.
 #
 # CUIDADO DE INSTRUMENTO, e ele me pegou duas vezes aqui. (1) A primeira
-# varredura era sensível a caixa e não achou a seção do `especialista-planejador`,
+# varredura era sensível a caixa e não achou a seção do `planejador-estrutura`,
 # escrita `O que ainda NÃO foi provado`; declarar "não tem seção" teria isentado
 # um pacote que tinha quatro pendências. (2) A segunda contava só itens
 # numerados, e aquele pacote usa traço — a contagem saiu 4 pacotes onde eram 5.
@@ -3180,6 +3307,147 @@ def _autotestes_descartados(funcao: ast.FunctionDef) -> list[str]:
     return descartados
 
 
+def validate_coletor_de_contagem_atribui_ao_dono(structure_root: Path) -> list[str]:
+    """O coletor de contagem não atribui a um pacote o placar de OUTRO.
+
+    A LACUNA, medida em 2026-09-01
+    ------------------------------
+    `selar_contagem.medir` devolvia `achados[-1]` — a última linha de resultado
+    da saída. Enquanto a cadeia está verde isso acerta, porque há um sumário só.
+    Quando um pacote reprova, `departamento-negocios` embute no próprio relatório
+    um excerto da saída do subprocesso que falhou, e o excerto **carrega o
+    `Resultado: N/M` alheio, sem recuo e sem prefixo**.
+
+    Na corrida de 2026-09-01, com o CEO em 182/183, a saída de Negócios trazia
+    `182/183`, depois o próprio `245/246`, depois `182/183` de novo. Nem o
+    primeiro nem o último eram dele. E `gravar_selo` **escreve**: o coletor
+    carimbaria no `PLACAR.md` de Negócios o placar do CEO, apagando a última
+    fotografia boa — que é a lição `reselar durante regressão` já registrada
+    nesta casa.
+
+    POR QUE ESTA TRAVA EXISTE E NÃO BASTOU O AVISO
+    ----------------------------------------------
+    O registro de contagem de 2026-08-30 **já descrevia por escrito** que a casa
+    tem dois formatos de sumário e que um grep ingênuo perde três pacotes. O
+    aviso estava lá, em prosa, e a armadilha pegou duas vezes seguidas na
+    apuração seguinte. Aviso em prosa não previne erro: o que previne é vermelho.
+
+    OS QUATRO CASOS, E POR QUE SÃO QUATRO
+    -------------------------------------
+    Dois positivos (um por formato) e dois negativos, porque mutação precisa
+    morrer nas duas direções:
+
+    * quem voltar a `achados[-1]` devolve `182/183` no caso do eco e o caso 3
+      fica vermelho;
+    * quem fizer a função recusar sempre — o mutante que **cala** — quebra os
+      casos 1 e 2, que exigem número;
+    * quem colapsar `SEM_RESULTADO` dentro de `AMBIGUO` quebra o caso 4: "não
+      concluiu" e "concluiu e não dá para atribuir" são defeitos diferentes, e
+      juntá-los faz o segundo sumir dentro do primeiro.
+
+    O caso 5 é estrutural e carrega peso próprio: os quatro primeiros exercitam
+    `extrair_contagem`, e nada neles obriga `medir` a **usá-la**. Sem ele,
+    deixar a função nova correta e intocada, com `medir` ainda indexando
+    `achados`, passaria — que é `verificar presença não é verificar efeito`.
+    """
+    erros: list[str] = []
+    coletor = Path(__file__).resolve().parent / "selar_contagem.py"
+    if not coletor.is_file():
+        return [f"COLETOR_AUSENTE: {coletor} sumiu; a contagem da cadeia ficou sem dono"]
+
+    try:
+        from _compartilhado.selar_contagem import extrair_contagem
+    except ImportError as exc:  # pragma: no cover
+        return [f"COLETOR_NAO_IMPORTAVEL: {exc}"]
+
+    # ------------------------------------------------------------------ 1 e 2
+    # Positivos, um por formato em uso na casa. Se algum dia um terceiro formato
+    # aparecer, é aqui que ele precisa entrar — e é aqui que a falta dele arde.
+    for rotulo, saida, esperado in (
+        ("formato minúsculo", "[PASS] x\n\nResultado: 17/17 casos passaram.\n", (17, 17)),
+        ("formato MAIÚSCULO", "[PASS] x\n\nRESULTADO: 128/128 PASS; 0 FAIL\n", (128, 128)),
+    ):
+        ok, total, estado = extrair_contagem(saida)
+        if (ok, total) != esperado or estado != "OK":
+            erros.append(
+                f"COLETOR_NAO_MEDE_SAIDA_LIMPA ({rotulo}): esperado {esperado} com"
+                f" estado OK, veio ({ok}, {total}) com estado {estado!r}"
+            )
+
+    # ---------------------------------------------------------------------- 3
+    # A forma REAL do eco, copiada da corrida de 2026-09-01: o sumário próprio
+    # (245/246) espremido entre dois sumários alheios (182/183).
+    eco = (
+        "[FAIL] regressão passa: ceo-maestro: [PASS] algo\n"
+        "\n"
+        "Resultado: 182/183 casos passaram.\n"
+        "\n"
+        "RESULTADO: 245/246 PASS; 1 FAIL; 0 WARN\n"
+        "\n"
+        "Resultado: 182/183 casos passaram.\n"
+    )
+    ok, total, estado = extrair_contagem(eco)
+    if not estado.startswith("AMBIGUO"):
+        erros.append(
+            "COLETOR_ATRIBUI_PLACAR_ALHEIO: com três sumários na mesma saída, o"
+            f" coletor devolveu ({ok}, {total}) com estado {estado!r} em vez de"
+            " recusar. É exatamente o defeito de 2026-09-01: o placar do CEO"
+            " seria selado no PLACAR.md de Negócios"
+        )
+    if ok is not None or total is not None:
+        erros.append(
+            f"COLETOR_DEVOLVE_NUMERO_AMBIGUO: recusou mas ainda entregou ({ok},"
+            f" {total}); quem não confere o estado sela o número mesmo assim"
+        )
+
+    # ---------------------------------------------------------------------- 4
+    ok, total, estado = extrair_contagem("[PASS] rodou e não imprimiu sumário\n")
+    if estado != "SEM_RESULTADO":
+        erros.append(
+            "COLETOR_CONFUNDE_MUDO_COM_AMBIGUO: saída sem sumário devolveu"
+            f" {estado!r}. 'não concluiu' e 'não dá para atribuir' são categorias"
+            " separadas — juntá-las faz a segunda sumir dentro da primeira"
+        )
+
+    # ---------------------------------------------------------------------- 5
+    try:
+        arvore = ast.parse(coletor.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError) as exc:  # pragma: no cover
+        return erros + [f"COLETOR_ILEGIVEL: {exc}"]
+    corpo_medir = next(
+        (no for no in ast.walk(arvore)
+         if isinstance(no, ast.FunctionDef) and no.name == "medir"),
+        None,
+    )
+    if corpo_medir is None:
+        erros.append("COLETOR_SEM_MEDIR: selar_contagem.medir sumiu")
+    else:
+        usa = any(
+            isinstance(no, ast.Call) and isinstance(no.func, ast.Name)
+            and no.func.id == "extrair_contagem"
+            for no in ast.walk(corpo_medir)
+        )
+        if not usa:
+            erros.append(
+                "MEDIR_NAO_USA_O_COLETOR_AFERIDO: `medir` não chama"
+                " `extrair_contagem`. A função aferida existir não basta — se"
+                " `medir` voltar a ler os achados por conta própria, os quatro"
+                " casos acima seguem verdes e o defeito volta inteiro"
+            )
+        indexa = any(
+            isinstance(no, ast.Subscript) and isinstance(no.value, ast.Name)
+            and no.value.id == "achados"
+            for no in ast.walk(corpo_medir)
+        )
+        if indexa:
+            erros.append(
+                "MEDIR_ESCOLHE_POR_INDICE: `medir` voltou a indexar `achados`."
+                " Escolher o primeiro ou o último sumário é adivinhar qual deles"
+                " pertence ao pacote"
+            )
+    return erros
+
+
 def validate_travas_compartilhadas_com_efeito(structure_root: Path) -> list[str]:
     """As funções obrigatórias DESTE módulo não estão neutralizadas.
 
@@ -3329,4 +3597,745 @@ def validate_fonte_normativa_conferida(structure_root: Path) -> list[str]:
             f"CONFERENCIA_DA_FONTE_NORMATIVA_QUEBRADA: "
             f"{exc.__class__.__name__}: {exc}"
         )
+    return erros
+
+
+# ---------------------------------------------------------------------------
+# TAREFA 105 — limite residual sem dono e sem condição não encolhe nunca
+# ---------------------------------------------------------------------------
+#
+# Achado #1 da reconciliação da tarefa 47, e ele não é só nosso: um painel
+# EXTERNO já o pontuou em 2026-08-05, com o critério pela metade —
+# *"a segunda metade do critério — 'com dono e condição de fechamento
+# verificável' — quase não é atendida. (…) As declarações são honestas e
+# completas, mas majoritariamente NÃO ACIONÁVEIS — ninguém está na linha por
+# elas"* (`ceo-maestro/evals/nucleo-de-comando-2026-08-05/pareceres/
+# painel-externo/i1/RELATORIO.md`, seção "Risco que sobra").
+#
+# MEDIDO EM 2026-08-23, antes de escrever, sobre a árvore inteira: **126
+# emissões reais** de `governanceReport` carregam **577 entradas** de `pending`.
+# Delas, 504 são os quatro limites fixos (`R6`, `R9`, `R10`, `R11`, presentes
+# nas 126 sem exceção) e **73 são ressalvas de rodada — nenhuma com dono e
+# nenhuma com condição de fechamento**. Emissões de laboratório
+# (`/candidatos/`, backup pré-canonização) e fixtures ficaram fora da conta,
+# pelo mesmo critério estrutural que a tarefa 96 usou para separar pacote real
+# de cópia de campanha.
+#
+# O MOLDE É O DA TAREFA 94, e de propósito: conjunto FECHADO, gerado da
+# medição e não digitado, com o caminho só para baixo. O que muda em relação
+# ao teto por CONTAGEM que a T94 aposentou é o mesmo motivo: contagem não sabe
+# QUAIS. Aqui a dívida é nomeada por digest do próprio texto congelado.
+#
+# CUIDADO COM O IDENTIFICADOR, e ele quase me pegou. O `R6` DESTE envelope é
+# "a existência do painel auditor não é verificável pelo runtime". O `R6` das
+# tabelas de retorno da campanha `metodo-agregacao-2026-07-31` é OUTRO limite
+# — "os 4 agentes não resolvem no runtime", dono `ceo-maestro`. Mesma sigla,
+# limites diferentes, campanhas diferentes. Por isso este registro é do
+# `governanceReport` e de mais nada, e é por isso que ele não se chama
+# `LIMITES` no genérico.
+#
+# O QUE ESTA TRAVA NÃO FAZ: julgar se o dono é o certo, ou se a condição é
+# suficiente. Isso é mérito, e mérito é dos Juízes. Ela impede o estado
+# anterior — 73 limites vivos e nenhum acionável —, não garante boa atribuição.
+# É a mesma fronteira que `achar_pendencia_sem_dono` declara para o PLACAR.
+
+# Dono e condição de fechamento dos quatro limites FIXOS do `governanceReport`.
+# Nenhum dos quatro foi inventado: cada um sai do texto do próprio limite ou de
+# artefato citado ao lado.
+DONO_E_CONDICAO_DE_CADA_LIMITE: dict[str, tuple[str, str]] = {
+    # O texto do R6 diz que "sob porta única a inspeção é executada em papel
+    # pela gerente" — a gerente é quem responde por ela.
+    "R6": (
+        "departamento-auditoria-responsabilidades",
+        "inspeção executada por instância que não a orquestra, com os agentes"
+        " resolvendo no runtime — é exatamente o material que a tarefa 108 do"
+        " ledger pede autorização para produzir, e enquanto ela não for dada o"
+        " limite permanece aberto por decisão, não por esquecimento",
+    ),
+    # O texto do R9 termina em "Pertinência de evidência é mérito, e mérito é
+    # dos Juízes (R5)". O dono sai da própria frase.
+    "R9": (
+        "departamento-juizes",
+        "parecer que ligue cada dimensão ao artefato que a sustenta, emitido"
+        " sob o protocolo de julgamento — a âncora continua provando reabertura"
+        " de arquivo, e pertinência passa a ter quem a afirme",
+    ),
+    # O texto do R10 nomeia a defesa e diz onde ela mora: "a defesa
+    # correspondente é o CONSUMIDOR recomputar o envelope (…) e ela mora fora
+    # deste pacote". O consumidor na barreira é o CEO.
+    "R10": (
+        "ceo-maestro",
+        "o consumidor recomputar o envelope a partir do ledger e do candidato"
+        " antes de decidir na barreira, em vez de ler o arquivo como recebido",
+    ),
+    # O R11 tem dono declarado em artefato: a tabela "O que fica aberto, e para
+    # quem" de `metodo-agregacao-2026-07-31/18-ANEXO-DA-SUBMISSAO-R2.md` traz
+    # "`R11` — teto do método | `ceo-maestro` e Jeremias | âncora externa ao
+    # pacote".
+    "R11": (
+        "ceo-maestro e Jeremias",
+        "âncora externa ao pacote — runtime separado, assinatura fora da árvore"
+        " ou terceiro que não compartilhe o processo. Não cabe no runtime atual,"
+        " e por isso o limite é declarado ABERTO em vez de prometido",
+    ),
+}
+
+# Dívida CONGELADA, gerada da medição de 2026-08-23 e não digitada: 25 entradas
+# distintas, 73 ocorrências, em 26 das 126 emissões reais. Cada tupla é
+# (digest dos 16 primeiros hexadígitos do sha256 do texto, rótulo legível,
+# ocorrências na medição).
+#
+# Elas NÃO são reescritas: emissão congelada é evidência, e editar evidência
+# para o número fechar é o oposto do que esta casa faz. Ficam nomeadas aqui,
+# que é o que a tarefa 94 chamou de dívida nomeada — e o caminho é só para
+# baixo, cobrado por `_ratchet_da_divida`.
+DIVIDA_HISTORICA_SEM_DONO: tuple[tuple[str, str, int], ...] = (
+    ("019492e7cb55572b", "ressalva em PENDING", 2),
+    ("04a86b4431ec6edc", "ressalva em RASTREABILIDADE", 2),
+    ("08abe306c919080d", "ressalva em AUTH", 2),
+    ("1a2706c6d0634db4", "ressalva em SURPRESAS_BYPASS", 3),
+    ("1afcbe0c2b859cb0", "ressalva em RI_RO", 7),
+    ("1b5f545d6f464467", "ressalva em AUTH", 1),
+    ("21f3ef1a4875e87b", "ressalva em RACI", 7),
+    ("325f2873cd6bba67", "ressalva em ESCOPO", 7),
+    ("3e95a04ce3ef6071", "ressalva em RASTREABILIDADE", 1),
+    ("44f0754b094d4435", "ressalva em AUTH", 7),
+    ("4dc869a2cbe2461b", "ressalva em EVIDENCIA", 7),
+    ("4e037ed585b2de6e", "ressalva em ARTEFATOS_TWINS", 2),
+    ("66d4c615e4cb2fe8", "ressalva em SURPRESAS_BYPASS", 1),
+    ("7f420eda457646bf", "ressalva em RACI", 2),
+    ("9175ed0ea7c0e816", "ressalva em RASTREABILIDADE", 1),
+    ("9629bc3e7e8dbaa6", "ressalva em EVIDENCIA", 2),
+    ("99fcc87b1a68ae28", "identidade do candidato NAO_CONFERIDO", 2),
+    ("9a31e2b77f2c3cf4", "ressalva em SURPRESAS_BYPASS", 1),
+    ("a03c430472ba1e87", "ressalva em RACI", 2),
+    ("b919ff09cc1dc14f", "ressalva em RI_RO", 2),
+    ("bcd641475dbc2bc2", "ressalva em RACI", 1),
+    ("c8b49408354e294b", "ressalva em PENDING", 7),
+    ("e64b9e8ca824540e", "ressalva em SURPRESAS_BYPASS", 2),
+    ("ed3e5bbcdec96360", "ressalva em PENDING", 1),
+    ("fa536a1efc9e30a0", "ressalva em AUTH", 1),
+)
+
+_DIGESTS_DA_DIVIDA = frozenset(h for h, _, _ in DIVIDA_HISTORICA_SEM_DONO)
+
+# A forma que uma ressalva NOVA precisa ter. Os dois marcadores são os mesmos
+# nomes das colunas que a casa já usa na tabela do PLACAR — `dono` e
+# `fecha quando` —, para não haver dois vocabulários para a mesma coisa.
+# PEGO POR EXECUÇÃO, não por leitura, em 2026-08-23: a primeira versão desta
+# trava exigia `\S` depois do marcador, e `"dono: ."` PASSAVA — um ponto
+# final é não-espaço. É a mesma erosão que `achar_pendencia_sem_dono` já
+# nomeia para a célula em branco da tabela do PLACAR: a forma satisfeita sem
+# ninguém nomeado. O marcador sozinho não basta; o VALOR tem de ter
+# substância. Não teria pegado por leitura — pegou porque a bateria rodou.
+_MARCA_DE_DONO = re.compile(r"(?i)\bdono\s*:\s*([^|;]*)")
+_MARCA_DE_CONDICAO = re.compile(r"(?i)\bfecha\s+quando\s*:\s*([^|;]*)")
+_MINIMO_ALFANUMERICO_DO_VALOR = 2
+
+
+def _valor_tem_substancia(marcador: "re.Pattern[str]", texto: str) -> bool:
+    """O marcador está presente E o valor depois dele nomeia alguma coisa.
+
+    "Nomear alguma coisa" é ter ao menos dois caracteres alfanuméricos antes
+    do fim da frase. Pontuação, espaço e traço não nomeiam ninguém.
+    """
+    casado = marcador.search(texto)
+    if casado is None:
+        return False
+    valor = casado.group(1).split(". ")[0]
+    return sum(1 for c in valor if c.isalnum()) >= _MINIMO_ALFANUMERICO_DO_VALOR
+
+
+def _identidade_do_limite(texto: str) -> str:
+    """Identidade de uma entrada congelada de `pending`.
+
+    PRIVADA de propósito: `PRODUTORAS_DE_DIGEST` é a superfície que
+    `validate_sem_check_tautologico` vigia, e um produtor de digest novo e
+    público entraria nela sem que ninguém tivesse decidido isso. O caso
+    negativo do validador do CEO não precisa dela — planta texto NOVO, que por
+    construção não está na dívida congelada.
+    """
+    return hashlib.sha256(texto.encode("utf-8")).hexdigest()[:16]
+
+
+def achar_limite_sem_dono(pendencias: object, origem: str) -> list[str]:
+    """Entradas de `pending` que não dizem quem responde nem o que as fecha.
+
+    Três caminhos, e só três:
+
+    1. entrada que começa por um dos quatro limites FIXOS resolve em
+       `DONO_E_CONDICAO_DE_CADA_LIMITE` — dono e condição vêm do registro;
+    2. entrada cujo digest está na dívida congelada é histórico nomeado, e
+       passa sem ser reescrita;
+    3. qualquer outra é entrada NOVA, e precisa carregar `dono:` e
+       `fecha quando:` no próprio texto.
+
+    Pública, no molde de `achar_pendencia_sem_dono`: é o que permite ao
+    validador de um pacote escrever o caso negativo plantando a forma proibida
+    e exigindo que ela seja acusada.
+    """
+    if not isinstance(pendencias, list):
+        return []
+    erros: list[str] = []
+    for posicao, entrada in enumerate(pendencias, 1):
+        if not isinstance(entrada, str):
+            erros.append(
+                f"LIMITE_SEM_DONO: {origem} — a entrada {posicao} de `pending`"
+                " não é texto. Limite que não se lê não se cobra"
+            )
+            continue
+        fixo = next(
+            (
+                identificador
+                for identificador in DONO_E_CONDICAO_DE_CADA_LIMITE
+                if entrada.startswith(identificador + " ")
+            ),
+            None,
+        )
+        if fixo is not None:
+            continue
+        if _identidade_do_limite(entrada) in _DIGESTS_DA_DIVIDA:
+            continue
+        falta = []
+        if not _valor_tem_substancia(_MARCA_DE_DONO, entrada):
+            falta.append("`dono:` com nome de verdade")
+        if not _valor_tem_substancia(_MARCA_DE_CONDICAO, entrada):
+            falta.append("`fecha quando:` com condição de verdade")
+        if falta:
+            erros.append(
+                f"LIMITE_SEM_DONO: {origem} — a entrada {posicao} de `pending`"
+                f" não é limite fixo, não está na dívida congelada e não traz"
+                f" {' nem '.join(falta)}. Limite sem dono e sem condição não"
+                " encolhe nunca: quem lê sabe o que falta e não sabe a quem"
+                " cobrar nem o que fecharia (achado #1 da T47; o painel externo"
+                " de 2026-08-05 chamou isso de declaração não acionável)"
+            )
+    return erros
+
+
+def _autoteste_do_limite_residual() -> list[str]:
+    """Planta as formas conhecidas e exige o veredito certo em cada uma.
+
+    Inclui a integridade do próprio registro: um limite fixo cadastrado com
+    dono vazio satisfaz a forma e não nomeia ninguém — é a mesma erosão que a
+    célula em branco produz na tabela do PLACAR.
+    """
+    erros: list[str] = []
+
+    for identificador, par in DONO_E_CONDICAO_DE_CADA_LIMITE.items():
+        dono, condicao = par
+        if not dono.strip() or not condicao.strip():
+            erros.append(
+                "AUTOTESTE FALHOU: o limite fixo"
+                f" {identificador} está no registro com dono ou condição VAZIO"
+                " — registro em branco satisfaz a forma e não põe ninguém na"
+                " linha"
+            )
+
+    fixo_valido = ["R6 — texto do limite", "R11 — teto"]
+    if achar_limite_sem_dono(fixo_valido, "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: limite FIXO foi acusado — ele resolve no"
+            " registro, e trava que barra evidência boa se disfarça de rigor"
+        )
+
+    nova_sem_nada = ["Ressalva em AUTH: fechar o achado e reexecutar"]
+    if not achar_limite_sem_dono(nova_sem_nada, "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: ressalva NOVA sem dono e sem condição passou —"
+            " é o achado #1 da T47 inteiro"
+        )
+
+    nova_so_dono = ["Ressalva em AUTH: fechar o achado. dono: ceo-maestro"]
+    if not achar_limite_sem_dono(nova_so_dono, "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: ressalva com dono e SEM condição de fechamento"
+            " passou — a segunda metade do critério é a que o painel externo"
+            " mediu como não atendida, e é ela que faz o limite encolher"
+        )
+
+    nova_so_condicao = ["Ressalva em AUTH: fecha quando: o achado for reaberto"]
+    if not achar_limite_sem_dono(nova_so_condicao, "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: ressalva com condição e SEM dono passou —"
+            " condição sem dono é pendência de ninguém"
+        )
+
+    nova_completa = [
+        "Ressalva em AUTH: o achado segue aberto."
+        " dono: departamento-auditoria-responsabilidades."
+        " fecha quando: a inspeção for reexecutada contra a identidade vigente"
+    ]
+    if achar_limite_sem_dono(nova_completa, "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: ressalva COMPLETA foi acusada — a forma pedida"
+            " não pode ser inalcançável, senão a trava vira parede"
+        )
+
+    dono_so_pontuacao = ["Ressalva em AUTH: x. dono: . fecha quando: reabrir"]
+    if not achar_limite_sem_dono(dono_so_pontuacao, "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: `dono:` seguido só de pontuação passou — foi o"
+            " buraco que a PRIMEIRA versão desta trava tinha, e ele é a forma"
+            " satisfeita sem ninguém nomeado"
+        )
+
+    condicao_so_traco = ["Ressalva: x. dono: ceo-maestro. fecha quando: -"]
+    if not achar_limite_sem_dono(condicao_so_traco, "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: `fecha quando:` seguido só de traço passou —"
+            " condição sem substância não fecha limite nenhum"
+        )
+
+    if achar_limite_sem_dono([], "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: `pending` vazio foi acusado — ausência de"
+            " limite não é limite sem dono"
+        )
+
+    if not achar_limite_sem_dono([{"id": "x"}], "fixture"):
+        erros.append(
+            "AUTOTESTE FALHOU: entrada que não é texto passou — limite que não"
+            " se lê não se cobra"
+        )
+
+    return erros
+
+
+def _emissoes_de_governanca(root: Path) -> list[tuple[str, list, dict]]:
+    """As emissões REAIS de `governanceReport` da árvore, com o `pending`.
+
+    O corte é o mesmo critério estrutural da tarefa 96: cópia de campanha e
+    fixture não são cadeia. Aqui isso quer dizer `/candidatos/`, backup
+    pré-canonização, `/fixtures/` e qualquer `$defs` de schema — este último
+    porque a DEFINIÇÃO tem `pending` como objeto, e iterar um objeto devolve as
+    chaves do schema. Foi exatamente esse o defeito do meu primeiro
+    instrumento, em 2026-08-23: `description`, `type`, `items`, `minItems`,
+    `uniqueItems` e `allOf` entraram na medição como se fossem limites.
+    """
+    achadas: list[tuple[str, list, dict]] = []
+
+    def parece_emissao(no: object) -> bool:
+        return (
+            isinstance(no, dict)
+            and isinstance(no.get("report_id"), str)
+            and "auditor_ref" in no
+            and "verdict" in no
+            and isinstance(no.get("pending"), list)
+        )
+
+    def andar(no: object, origem: str) -> None:
+        if isinstance(no, dict):
+            if parece_emissao(no):
+                achadas.append((origem, no["pending"], no))
+            for valor in no.values():
+                andar(valor, origem)
+        elif isinstance(no, list):
+            for valor in no:
+                andar(valor, origem)
+
+    for caminho in sorted(root.rglob("*.json")):
+        relativo = caminho.relative_to(root).as_posix()
+        if (
+            "/candidatos/" in "/" + relativo
+            or "/backup-pre-canonizacao" in "/" + relativo
+            or "/fixtures/" in "/" + relativo
+            or "/schemas/" in "/" + relativo
+            or relativo.endswith(".schema.json")
+            or relativo.endswith("SCHEMA.json")
+        ):
+            continue
+        try:
+            conteudo = json.loads(caminho.read_text(encoding="utf-8"))
+        except (OSError, ValueError, UnicodeDecodeError):
+            continue
+        andar(conteudo, relativo)
+    return achadas
+
+
+def _ratchet_da_divida(
+    divida: tuple[tuple[str, str, int], ...], vistos: "set[str]"
+) -> list[str]:
+    """A dívida congelada só encolhe, e por NOME.
+
+    Digest que não aparece mais em emissão nenhuma tem de sair da lista. É a
+    perna que a tarefa 94 aprendeu a duras penas: o teto por CONTAGEM ficava
+    MUDO quando um item saía e outro entrava, porque contagem não sabe QUAIS.
+
+    Separada em função pura porque a versão anterior era um laço dentro da
+    varredura e **não tinha como ser exercitada**: hoje nenhum digest sumiu,
+    então cegar o laço não mudava nada e o mutante sobrevivia. Trava que só
+    fica vermelha num estado que ainda não aconteceu precisa de fixture.
+    """
+    erros: list[str] = []
+    for digest, rotulo, _ocorrencias in divida:
+        if digest in vistos:
+            continue
+        erros.append(
+            f"DIVIDA_ENCOLHEU: o limite congelado {digest} ({rotulo}) não"
+            " aparece mais em emissão nenhuma e continua na lista. Dívida"
+            " nomeada que não acompanha a realidade vira orçamento: retire-o"
+            " de DIVIDA_HISTORICA_SEM_DONO no mesmo ato"
+        )
+    return erros
+
+
+def _autoteste_da_catraca() -> list[str]:
+    """Planta o encolhimento que ainda não aconteceu e exige que seja visto."""
+    erros: list[str] = []
+    fantasma = (("0" * 16, "limite que já não existe", 1),)
+    if not _ratchet_da_divida(fantasma, {"outro"}):
+        erros.append(
+            "AUTOTESTE FALHOU: digest congelado que sumiu da árvore NÃO foi"
+            " acusado — a lista deixaria de acompanhar a realidade em"
+            " silêncio, que é o defeito que a T94 fechou por nome"
+        )
+    if _ratchet_da_divida(fantasma, {"0" * 16}):
+        erros.append(
+            "AUTOTESTE FALHOU: digest congelado que AINDA aparece foi"
+            " acusado — a catraca viraria parede sobre dívida viva"
+        )
+    if _ratchet_da_divida((), set()):
+        erros.append(
+            "AUTOTESTE FALHOU: dívida VAZIA foi acusada — dívida quitada é o"
+            " estado que esta catraca existe para permitir alcançar"
+        )
+    return erros
+
+
+# --- NC-R4-04: supersessao DECLARADA, e conferida nos proprios arquivos ------
+#
+# O defeito nao era rigor demais da trava: era o envelope NAO TER COMO DIZER que
+# foi superado. A auditoria da rodada v3 do C13 ja declarava a supersessao -- em
+# prosa, no 00b-ADENDO-TENTATIVA-2.md, e num .txt de saida que escreve
+# "Supersessao declarada, nada apagado". A trava nao le prosa, entao a obrigacao
+# de um envelope SUPERADO seguia sendo cobrada como se fosse viva.
+#
+# As tres saidas erradas, e por que cada uma foi recusada:
+#   - APAGAR ou EDITAR o envelope superado: o proprio envelope sucessor diz que
+#     editar artefato ja despachado e o defeito que a rodada 3 descobriu.
+#     Evidencia nao se conserta apagando.
+#   - EXCECAO POR CAMINHO no validador: solta qualquer pasta de mesmo nome, e e
+#     a parte bloqueada afrouxando a propria trava.
+#   - SOMAR a entrada a DIVIDA_HISTORICA_SEM_DONO: aquela lista SO ENCOLHE.
+#     Somar e levantar o teto para me destravar, e teto se levanta por decisao
+#     de Jeremias, nao por conveniencia de quem esta preso nele.
+#
+# O que sobra e ACRESCENTAR uma declaracao, nunca reescrever o passado: um
+# registro de sucessao, aditivo, que nomeia o par. E a isencao e GANHA, nao
+# alegada -- todas as condicoes abaixo sao conferidas NOS ARQUIVOS. Alegacao de
+# sucessao que nao se sustenta nao isenta ninguem: ela ACUSA. E por isso este
+# mecanismo nao vira porta dos fundos.
+
+SUCESSAO_DE_ENVELOPE = "SUCESSAO-DE-ENVELOPE.json"
+
+# Os campos que precisam BATER entre superado e sucessor. Sao o que faz de um
+# envelope o sucessor DAQUELE, e nao de um qualquer: mesmo candidato, mesmo
+# contrato, mesmas regras, mesmo auditor. Sem isto bastaria apontar para
+# qualquer envelope limpo da arvore para se isentar.
+_CAMPOS_QUE_LIGAM_A_SUCESSAO = (
+    "candidate_digest",
+    "contract_digest",
+    "rules_digest",
+    "auditor_ref",
+)
+
+
+def _caminho_de_sucessao_e_bem_formado(relativo: str) -> bool:
+    """Caminho de uma alegacao: relativo a raiz, sem `..` e sem ancora absoluta.
+
+    Separado em REGRA sobre a forma, e nao deixado a cargo do `relative_to`
+    abaixo, por uma razao medida: o `relative_to` so teria efeito se existisse um
+    envelope de governanca DE VERDADE fora da arvore, e por isso mutar aquela
+    guarda nao ficava vermelho em lugar nenhum -- ela passava por prova sem nunca
+    ter sido exercitada. A regra de forma, ao contrario, se prova com um caminho
+    que EXISTE: `a/../b` resolve para dentro e mesmo assim e recusado.
+    O `relative_to` continua abaixo como ultima rede, e fica DECLARADO que ele
+    nao e morto por mutacao -- redundancia deliberada, nao cobertura alegada.
+    """
+    if not isinstance(relativo, str) or not relativo:
+        return False
+    if PurePosixPath(relativo).is_absolute() or PureWindowsPath(relativo).is_absolute():
+        return False
+    return ".." not in relativo.replace("\\", "/").split("/")
+
+
+def _envelope_em(root: Path, relativo: object) -> "dict | None":
+    """O envelope de governanca no caminho dado, ou None se nao for um."""
+    if not isinstance(relativo, str) or not relativo:
+        return None
+    if not _caminho_de_sucessao_e_bem_formado(relativo):
+        return None
+    caminho = (root / relativo).resolve()
+    try:
+        caminho.relative_to(root)
+    except ValueError:
+        return None
+    if not caminho.is_file():
+        return None
+    try:
+        conteudo = json.loads(caminho.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeDecodeError):
+        return None
+    if (
+        isinstance(conteudo, dict)
+        and isinstance(conteudo.get("report_id"), str)
+        and "auditor_ref" in conteudo
+        and "verdict" in conteudo
+        and isinstance(conteudo.get("pending"), list)
+    ):
+        return conteudo
+    return None
+
+
+def confere_sucessao(alegacao: object, root: Path, origem: str) -> list[str]:
+    """A alegacao de sucessao se sustenta? Lista vazia = sim.
+
+    Publica de proposito, no molde de `achar_limite_sem_dono`: e o que permite a
+    um validador de pacote plantar uma alegacao FALSA e exigir que ela seja
+    acusada, em vez de conferir apenas que a funcao existe.
+    """
+    if not isinstance(alegacao, dict):
+        return ["SUCESSAO_INVALIDA: %s - entrada que nao e objeto" % origem]
+    superado_rel = alegacao.get("superado")
+    sucessor_rel = alegacao.get("sucessor")
+    erros: list[str] = []
+    superado = _envelope_em(root, superado_rel)
+    sucessor = _envelope_em(root, sucessor_rel)
+    if superado is None:
+        erros.append(
+            "SUCESSAO_INVALIDA: %s - `superado` (%r) nao resolve num envelope"
+            " de governanca desta arvore" % (origem, superado_rel)
+        )
+    if sucessor is None:
+        erros.append(
+            "SUCESSAO_INVALIDA: %s - `sucessor` (%r) nao resolve num envelope de"
+            " governanca desta arvore. Sucessor que nao existe nao herda"
+            " obrigacao nenhuma" % (origem, sucessor_rel)
+        )
+    if superado is None or sucessor is None:
+        return erros
+
+    for campo in _CAMPOS_QUE_LIGAM_A_SUCESSAO:
+        if superado.get(campo) != sucessor.get(campo):
+            erros.append(
+                "SUCESSAO_INVALIDA: %s - `%s` difere entre superado e sucessor."
+                " Sucessor de um envelope e outro envelope sobre O MESMO"
+                " candidato, sob o mesmo contrato e as mesmas regras; sem isso"
+                " qualquer envelope limpo da arvore serviria de alibi"
+                % (origem, campo)
+            )
+    if superado.get("report_id") == sucessor.get("report_id"):
+        erros.append(
+            "SUCESSAO_INVALIDA: %s - superado e sucessor tem o mesmo"
+            " `report_id`. Um envelope nao sucede a si mesmo" % origem
+        )
+    velho, novo = superado.get("issued_at"), sucessor.get("issued_at")
+    if not (isinstance(velho, str) and isinstance(novo, str) and novo > velho):
+        erros.append(
+            "SUCESSAO_INVALIDA: %s - o `issued_at` do sucessor (%r) nao e"
+            " posterior ao do superado (%r). Sucessao anda para a frente"
+            % (origem, novo, velho)
+        )
+    sujo = achar_limite_sem_dono(sucessor.get("pending"), "%s (sucessor)" % origem)
+    if sujo:
+        erros.append(
+            "SUCESSAO_INVALIDA: %s - o SUCESSOR tem %d limite(s) sem dono. A"
+            " obrigacao MUDA de envelope, nao desaparece: sucessor sujo nao"
+            " isenta superado nenhum" % (origem, len(sujo))
+        )
+    return erros
+
+
+def _sucessoes_declaradas(root: Path) -> "tuple[dict[str, str], list[str]]":
+    """Le os registros de sucessao da arvore.
+
+    Devolve (superado -> origem da declaracao) apenas para as alegacoes que se
+    SUSTENTAM, mais os erros das que nao se sustentam. Alegacao quebrada nao
+    isenta e ainda acusa.
+    """
+    isentos: dict[str, str] = {}
+    erros: list[str] = []
+    for caminho in sorted(root.rglob(SUCESSAO_DE_ENVELOPE)):
+        relativo = caminho.relative_to(root).as_posix()
+        if (
+            "/candidatos/" in "/" + relativo
+            or "/backup-pre-canonizacao" in "/" + relativo
+            or "/fixtures/" in "/" + relativo
+        ):
+            continue
+        try:
+            registro = json.loads(caminho.read_text(encoding="utf-8"))
+        except (OSError, ValueError, UnicodeDecodeError):
+            erros.append(
+                "SUCESSAO_INVALIDA: %s - registro ilegivel. Declaracao que nao"
+                " se le nao isenta nada" % relativo
+            )
+            continue
+        alegacoes = registro.get("sucessoes") if isinstance(registro, dict) else None
+        if not isinstance(alegacoes, list) or not alegacoes:
+            erros.append(
+                "SUCESSAO_INVALIDA: %s - sem lista `sucessoes` com ao menos uma"
+                " entrada. Registro vazio e ruido no caminho da prova" % relativo
+            )
+            continue
+        for alegacao in alegacoes:
+            quebra = confere_sucessao(alegacao, root, relativo)
+            if quebra:
+                erros.extend(quebra)
+                continue
+            isentos[alegacao["superado"]] = relativo
+    return isentos, erros
+
+
+_FIXTURES_DA_SUCESSAO = "_compartilhado/fixtures/sucessao"
+
+
+def _autoteste_da_sucessao(root: Path) -> list[str]:
+    """Planta cada forma de alegacao QUEBRADA e exige que seja vista.
+
+    Sem isto a isencao seria uma porta que ninguem testou.
+
+    As quatro condicoes do meio -- campos que ligam, `report_id`, ordem do
+    `issued_at` e sucessor SUJO -- precisam de dois envelopes de verdade para
+    serem exercitadas, e por isso vivem em fixture sob
+    `_compartilhado/fixtures/sucessao`, que a varredura de emissoes exclui por
+    nome. A primeira escrita desta funcao cobria so tres formas e deixava essas
+    quatro provadas apenas por um script avulso da campanha, FORA da regressao:
+    neutralizar qualquer uma delas mantinha a cadeia verde. Trava cuja prova
+    mora fora da bateria e trava que passa pela razao errada.
+
+    Cada caso abaixo corresponde a uma condicao; neutralize qualquer uma e um
+    destes fica vermelho.
+    """
+    erros: list[str] = []
+    if not confere_sucessao(
+        {"superado": "nao/existe/A.json", "sucessor": "nao/existe/B.json"},
+        root,
+        "autoteste",
+    ):
+        erros.append(
+            "AUTOTESTE FALHOU: sucessao apontando para arquivo INEXISTENTE"
+            " passou - seria isencao por alegacao pura, que e a porta dos"
+            " fundos que este mecanismo existe para nao ser"
+        )
+    if not confere_sucessao("nao sou objeto", root, "autoteste"):
+        erros.append("AUTOTESTE FALHOU: alegacao que nao e objeto passou")
+    if not confere_sucessao({}, root, "autoteste"):
+        erros.append(
+            "AUTOTESTE FALHOU: alegacao VAZIA passou - sem superado e sem"
+            " sucessor nao ha sucessao nenhuma"
+        )
+
+    base = root / _FIXTURES_DA_SUCESSAO
+    if not base.is_dir():
+        erros.append(
+            "AUTOTESTE FALHOU: as fixtures de sucessao sumiram de"
+            f" {_FIXTURES_DA_SUCESSAO} - quatro das sete condicoes deixariam de"
+            " ser exercitadas EM SILENCIO, que e pior que reprovar"
+        )
+        return erros
+
+    def f(nome: str) -> str:
+        return f"{_FIXTURES_DA_SUCESSAO}/{nome}"
+
+    superado = f("superado.json")
+    limpo = f("sucessor-limpo.json")
+    sujo = f("sucessor-sujo.json")
+    outro = f("outro-candidato.json")
+
+    if confere_sucessao({"superado": superado, "sucessor": limpo}, root, "autoteste"):
+        erros.append(
+            "AUTOTESTE FALHOU: a sucessao VALIDA da fixture foi acusada - a"
+            " forma pedida nao pode ser inalcancavel, senao a trava vira parede"
+            " e nenhuma supersessao real conseguiria ser declarada"
+        )
+    if not confere_sucessao({"superado": superado, "sucessor": sujo}, root, "autoteste"):
+        erros.append(
+            "AUTOTESTE FALHOU: sucessor SUJO isentou - a obrigacao teria"
+            " DESAPARECIDO em vez de mudar de envelope, que e exatamente a"
+            " lavagem que esta isencao nao pode permitir"
+        )
+    if not confere_sucessao({"superado": superado, "sucessor": outro}, root, "autoteste"):
+        erros.append(
+            "AUTOTESTE FALHOU: sucessor de OUTRO candidato isentou - qualquer"
+            " envelope limpo da arvore viraria alibi para qualquer envelope sujo"
+        )
+    # Os dois casos abaixo ISOLAM uma condicao cada. A primeira escrita deles
+    # casava duas de uma vez -- "sucede a si mesmo" tambem falhava a ordem do
+    # `issued_at`, e "sucessor anterior" tambem apontava para um sucessor SUJO --
+    # e por isso os mutantes do `report_id` e da ordem SOBREVIVIAM: o caso morria
+    # pela condicao vizinha. Medido por mutacao em 2026-09-01, nao por leitura.
+    if not confere_sucessao(
+        {"superado": superado, "sucessor": f("mesmo-report-id.json")}, root, "autoteste"
+    ):
+        erros.append(
+            "AUTOTESTE FALHOU: sucessor com o MESMO `report_id` isentou, mesmo"
+            " sendo limpo, posterior e do mesmo candidato - um envelope sujo"
+            " sucederia a si mesmo e sairia limpo"
+        )
+    if not confere_sucessao(
+        {"superado": limpo, "sucessor": f("sucessor-limpo-antigo.json")}, root, "autoteste"
+    ):
+        erros.append(
+            "AUTOTESTE FALHOU: sucessor ANTERIOR isentou, mesmo sendo limpo e de"
+            " id proprio - sucessao andaria para tras"
+        )
+    if not confere_sucessao(
+        {"superado": superado, "sucessor": limpo.replace(
+            "fixtures/sucessao/", "fixtures/sucessao/../sucessao/")},
+        root,
+        "autoteste",
+    ):
+        erros.append(
+            "AUTOTESTE FALHOU: caminho com `..` isentou - ele resolve para DENTRO"
+            " da arvore, entao a rede do `relative_to` nao o pega; o que o pega e"
+            " a regra de forma, e sem ela a alegacao escolheria por onde andar"
+        )
+    return erros
+
+
+def validate_limite_residual_tem_dono(structure_root: Path) -> list[str]:
+    """Todo limite residual do envelope nomeia dono e condição de fechamento.
+
+    Duas pernas, no molde da tarefa 94:
+
+    - **entrada nova sem dono reprova na hora** — sem teto e sem folga;
+    - **a dívida congelada só encolhe** — digest que não aparece mais em
+      emissão nenhuma tem de sair da lista, senão a lista vira um número que
+      ninguém consegue baixar.
+
+    A segunda perna é a que a T94 aprendeu a duras penas: teto por CONTAGEM
+    ficava MUDO quando um item saía e outro entrava. Por nome, não fica.
+    """
+    if not structure_root.is_dir():
+        return [
+            "LIMITE_SEM_DONO: raiz da estrutura ausente em"
+            f" {structure_root}"
+        ]
+
+    erros = _autoteste_do_limite_residual() + _autoteste_da_catraca()
+    root = structure_root.resolve()
+
+    vistos: set[str] = set()
+    isentos, erros_de_sucessao = _sucessoes_declaradas(root)
+    erros.extend(erros_de_sucessao)
+    erros.extend(_autoteste_da_sucessao(root))
+
+    for origem, pendencias, _envelope in _emissoes_de_governanca(root):
+        if origem in isentos:
+            # Envelope superado por sucessao DECLARADA e CONFERIDA. A obrigacao
+            # nao sumiu: ela vive no sucessor, que acabou de ser exigido limpo.
+            # As entradas seguem contando para a catraca, porque elas continuam
+            # existindo em disco.
+            for entrada in pendencias:
+                if isinstance(entrada, str):
+                    vistos.add(_identidade_do_limite(entrada))
+            continue
+        erros.extend(achar_limite_sem_dono(pendencias, origem))
+        for entrada in pendencias:
+            if isinstance(entrada, str):
+                vistos.add(_identidade_do_limite(entrada))
+
+    erros.extend(_ratchet_da_divida(DIVIDA_HISTORICA_SEM_DONO, vistos))
     return erros

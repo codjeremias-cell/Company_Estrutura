@@ -93,6 +93,7 @@ try:
         recusar_execucao_fora_da_fonte,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         validate_placar_nao_declara_cadeia,
         validate_contagem_ligada_ao_instrumento,
@@ -1401,9 +1402,93 @@ def validate_inherited_authority() -> list[str]:
     return errors
 
 
-def validate_evals() -> list[str]:
+RESULTADOS_COMPORTAMENTAIS = ("NAO_MEDIDO", "SIM", "NAO")
+
+
+def conferir_evidencia_comportamental(case: dict) -> list[str]:
+    """Resultado medido so vale com evidencia que RECOMPUTA.
+
+    Ate 2026-08-27 esta regra era uma proibicao: `acionou` e `aderiu` tinham de
+    ser exatamente NAO_MEDIDO, e qualquer outro valor reprovava. Ela existia
+    para impedir que alguem declarasse comportamento sem ter executado nada, e
+    acertava nisso -- mas custava o oposto: quando a campanha
+    MISSION-T71-SANEAMENTO-C13-C14-2026-08-27 finalmente executou os 14 casos
+    contra instancia independente, a medicao verdadeira tambem nao podia entrar.
+    Trava que barra a fabricacao e a prova junto barra a prova, porque fabricar
+    e o caso raro e medir e o caso que se quer.
+
+    O que entra no lugar da proibicao NAO e confianca. E recomputacao: um
+    resultado diferente de NAO_MEDIDO exige `evidencia` com o caminho da
+    resposta crua e o seu sha256; o arquivo precisa existir e o digest precisa
+    conferir contra os BYTES REAIS, pela funcao de producao (`sha256_file`).
+    Declaracao sem lastro continua reprovando -- que era, e segue sendo, o ponto.
+    """
     errors: list[str] = []
-    catalogue = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
+    ident = case.get("id")
+    acionou, aderiu = case.get("acionou"), case.get("aderiu")
+
+    for campo, valor in (("acionou", acionou), ("aderiu", aderiu)):
+        if valor not in RESULTADOS_COMPORTAMENTAIS:
+            errors.append(
+                f"evals: {ident}.{campo} fora do enum {RESULTADOS_COMPORTAMENTAIS}"
+            )
+    if errors:
+        return errors
+
+    # Nada medido: nada a provar. E o estado de quem ainda nao rodou.
+    if acionou == "NAO_MEDIDO" and aderiu == "NAO_MEDIDO":
+        if case.get("evidencia"):
+            errors.append(
+                f"evals: {ident} nao mediu nada e mesmo assim anexa evidencia"
+            )
+        return errors
+
+    evidencia = case.get("evidencia")
+    if not isinstance(evidencia, dict):
+        errors.append(
+            f"evals: {ident} declara resultado medido sem evidencia — "
+            "resultado sem lastro e exatamente o que esta trava recusa"
+        )
+        return errors
+
+    caminho = evidencia.get("resposta_crua")
+    esperado = evidencia.get("sha256")
+    if not caminho or not esperado:
+        errors.append(f"evals: {ident}.evidencia sem resposta_crua ou sem sha256")
+        return errors
+    if not evidencia.get("medido_em"):
+        errors.append(f"evals: {ident}.evidencia sem medido_em")
+
+    # Confinamento: a evidencia mora dentro do pacote. Caminho absoluto ou com
+    # `..` nao e evidencia deste pacote, e resolver antes de checar impede que
+    # um alvo fora da arvore seja aceito por parecer relativo.
+    if os.path.isabs(caminho) or ".." in Path(caminho).parts:
+        errors.append(f"evals: {ident}.evidencia.resposta_crua escapa do pacote")
+        return errors
+
+    alvo = (PACKAGE_ROOT / caminho).resolve()
+    if not str(alvo).startswith(str(PACKAGE_ROOT.resolve())):
+        errors.append(f"evals: {ident}.evidencia.resposta_crua sai da raiz do pacote")
+        return errors
+    if not alvo.is_file():
+        errors.append(
+            f"evals: {ident}.evidencia aponta arquivo inexistente ({caminho})"
+        )
+        return errors
+
+    real = sha256_file(alvo)
+    if real != esperado:
+        errors.append(
+            f"evals: {ident}.evidencia com digest que NAO recomputa "
+            f"(declarado {esperado}, real {real})"
+        )
+    return errors
+
+
+def validate_evals(catalogue: dict | None = None) -> list[str]:
+    errors: list[str] = []
+    if catalogue is None:
+        catalogue = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
     if catalogue.get("skill") != DEPARTMENT:
         errors.append("evals: skill incorreta")
     cases = catalogue.get("cases", [])
@@ -1424,10 +1509,7 @@ def validate_evals() -> list[str]:
             errors.append(f"evals: {case.get('id')} com menos de 3 assertions")
         if not case.get("origem"):
             errors.append(f"evals: {case.get('id')} sem origem declarada")
-        if case.get("acionou") != "NAO_MEDIDO" or case.get("aderiu") != "NAO_MEDIDO":
-            errors.append(
-                f"evals: {case.get('id')} declara resultado comportamental não executado"
-            )
+        errors.extend(conferir_evidencia_comportamental(case))
     if not any(case.get("espera_recusa") for case in cases):
         errors.append("evals: nenhum caso de recusa por contrato")
     return errors
@@ -1521,6 +1603,10 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
          validate_adr_series(STRUCTURE_ROOT))
     case("todo pacote gerente tem validador que roda a trava global", True,
          validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("contratos de gerente na anatomia canônica", True,
+         validate_contratos_de_gerente(STRUCTURE_ROOT))
+    case("anatomia de contrato acusa raiz inexistente", False,
+         validate_contratos_de_gerente(STRUCTURE_ROOT / "pacote-inexistente-t97"))
     case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True,
          validate_trava_de_digest(STRUCTURE_ROOT))
     case("nenhuma asserção é verdadeira por construção sobre valor produzido", True,
@@ -1538,6 +1624,78 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
     case("autoridade herdada: o schema do Diretor ainda reserva este Departamento", True,
          validate_inherited_authority())
     case("catálogo de evals comportamentais", True, validate_evals())
+
+    # --- Trava do resultado comportamental (evoluida em 2026-08-27) ----------
+    # Ate esta data a regra era "tem de ser NAO_MEDIDO". Ela barrava fabricacao
+    # e barrava a prova junto: a campanha que executou os 14 casos contra
+    # instancia independente nao podia gravar o resultado. Agora resultado
+    # medido entra, desde que a evidencia RECOMPUTE.
+    def _catalogo_com(mudancas: dict, indice: int = 0) -> dict:
+        catalogo = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
+        catalogo["cases"][indice] = {**catalogo["cases"][indice], **mudancas}
+        return catalogo
+
+    # Arquivo real do proprio pacote, usado como resposta crua: o que se testa
+    # aqui e o MECANISMO de recomputacao, e usar um alvo real evita fixture nova
+    # dentro da arvore -- fixture versionada ja inflou a cadeia nesta casa.
+    _alvo = EVALS_PATH
+    _digest_real = sha256_file(_alvo)
+    _evid_boa = {
+        "resposta_crua": "evals/evals.json",
+        "sha256": _digest_real,
+        "medido_em": "2026-08-27",
+    }
+    # Alvo que EXISTE, porem FORA do pacote: e o que separa "barrado por
+    # confinamento" de "barrado por nao existir". Com o caminho para /etc/passwd
+    # o mutante do confinamento SOBREVIVIA -- o arquivo nao existe no Windows, e
+    # a rejeicao vinha da checagem seguinte, nao da que se queria provar.
+    _fora = STRUCTURE_ROOT / "MANIFESTO-DA-ESTRUTURA.json"
+    _evid_fora = {
+        "resposta_crua": "../../../../MANIFESTO-DA-ESTRUTURA.json",
+        "sha256": sha256_file(_fora),
+        "medido_em": "2026-08-27",
+    }
+
+    case("catálogo todo NAO_MEDIDO segue válido (retrocompatível)", True,
+         validate_evals(_catalogo_com({"acionou": "NAO_MEDIDO",
+                                       "aderiu": "NAO_MEDIDO"})))
+    case("resultado medido com evidência que recomputa é ACEITO", True,
+         validate_evals(_catalogo_com({"acionou": "SIM", "aderiu": "NAO",
+                                       "evidencia": _evid_boa})))
+    case("resultado medido SEM evidência é rejeitado", False,
+         validate_evals(_catalogo_com({"acionou": "SIM", "aderiu": "SIM"})))
+    case("evidência apontando arquivo inexistente é rejeitada", False,
+         validate_evals(_catalogo_com({"acionou": "SIM", "aderiu": "SIM",
+                                       "evidencia": {**_evid_boa,
+                                                     "resposta_crua": "evals/nao-existe.txt"}})))
+    case("evidência cujo digest NÃO recomputa é rejeitada", False,
+         validate_evals(_catalogo_com({"acionou": "SIM", "aderiu": "SIM",
+                                       "evidencia": {**_evid_boa,
+                                                     "sha256": "sha256:" + "0" * 64}})))
+    case("resultado fora do enum é rejeitado", False,
+         validate_evals(_catalogo_com({"acionou": "TALVEZ", "aderiu": "SIM",
+                                       "evidencia": _evid_boa})))
+    case("evidência que EXISTE mas mora fora do pacote é rejeitada", False,
+         validate_evals(_catalogo_com({"acionou": "SIM", "aderiu": "SIM",
+                                       "evidencia": _evid_fora})))
+    # O confinamento tem DUAS checagens: `..`/absoluto no texto, e `startswith`
+    # depois de resolver. Mutar so a primeira nao mudava nada -- a segunda pegava
+    # o mesmo caso, e o mutante SOBREVIVIA por redundancia. Este caso separa as
+    # duas: `..` que resolve DENTRO do pacote passa pela segunda, e so a primeira
+    # barra. Caminho nao normalizado e recusado mesmo com alvo legitimo, porque o
+    # que se aceita aqui vira precedente.
+    case("caminho com `..` que resolve dentro do pacote também é rejeitado", False,
+         validate_evals(_catalogo_com({"acionou": "SIM", "aderiu": "SIM",
+                                       "evidencia": {**_evid_boa,
+                                                     "resposta_crua": "evals/../evals/evals.json"}})))
+    case("evidência sem medido_em é rejeitada", False,
+         validate_evals(_catalogo_com({"acionou": "SIM", "aderiu": "SIM",
+                                       "evidencia": {"resposta_crua": "evals/evals.json",
+                                                     "sha256": _digest_real}})))
+    case("NAO_MEDIDO que mesmo assim anexa evidência é rejeitado", False,
+         validate_evals(_catalogo_com({"acionou": "NAO_MEDIDO",
+                                       "aderiu": "NAO_MEDIDO",
+                                       "evidencia": _evid_boa})))
     case("cobertura: dez áreas com dona única + ai_llm transversal (tarefa 0)", True,
          validate_coverage_ownership())
 

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "departamento-desenvolvimento.schema.json",
-  "title": "Artefatos internos do Departamento de Desenvolvimento",
-  "description": "Envelopes internos. Unico Departamento cujo test_summary carrega numero real (ADR-012 §1). Nao existe campo de nota (ADR-002) nem de decisao macro de arquitetura, modelo de dado ou linguagem visual.",
+  "title": "Artefatos do Departamento de Desenvolvimento e admissao de DEPARTMENT_MISSION de entrada",
+  "description": "Envelopes DEV_* produzidos por este Departamento. O oneOf tambem admite DEPARTMENT_MISSION de entrada (admissao, nao artefato produzido). Unico Departamento cujo test_summary carrega numero real (ADR-012 §1). Nao existe campo de nota (ADR-002) nem de decisao macro de arquitetura, modelo de dado ou linguagem visual.",
   "$defs": {
     "identifier": {
       "type": "string",
@@ -81,16 +81,35 @@
 
     "departmentMissionAdmission": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "required": [
         "artifact_type",
+        "department_mission_id",
         "causal",
         "recipient",
-        "return_to"
+        "mode",
+        "objective",
+        "scope_in",
+        "scope_out",
+        "inputs",
+        "deliverables",
+        "done",
+        "required_evidence",
+        "depends_on",
+        "handoff_to",
+        "decision_authority",
+        "permissions",
+        "stop_when",
+        "return_to",
+        "issued_at"
       ],
       "properties": {
         "artifact_type": {
           "const": "DEPARTMENT_MISSION"
+        },
+        "department_mission_id": {
+          "type": "string",
+          "minLength": 3
         },
         "causal": {
           "type": "object",
@@ -106,8 +125,29 @@
         "recipient": {
           "const": "departamento-desenvolvimento"
         },
+        "mode": {
+          "type": "string"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 3
+        },
+        "scope_in": { "type": "array" },
+        "scope_out": { "type": "array" },
+        "inputs": { "type": "array" },
+        "deliverables": { "type": "array" },
+        "done": { "type": "array" },
+        "required_evidence": { "type": "array" },
+        "depends_on": { "type": "array" },
+        "handoff_to": { "type": "array" },
+        "decision_authority": { "type": "array" },
+        "permissions": { "type": "object" },
+        "stop_when": { "type": "array" },
         "return_to": {
           "const": "diretor-de-lentes"
+        },
+        "issued_at": {
+          "type": "string"
         }
       }
     },
@@ -1764,6 +1804,9 @@
     },
     {
       "$ref": "#/$defs/devLedger"
+    },
+    {
+      "$ref": "#/$defs/departmentMissionAdmission"
     }
   ]
 }

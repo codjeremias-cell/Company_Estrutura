@@ -173,6 +173,7 @@ try:
         recusar_execucao_fora_da_fonte,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         validate_placar_nao_declara_cadeia,
         achar_corpo_neutralizado,
@@ -734,6 +735,16 @@ def run() -> int:
                 "todo pacote gerente tem validador que roda a trava global",
                 True,
                 validate_cobertura_de_validadores(STRUCTURE_ROOT),
+            ),
+            (
+                "contratos de gerente na anatomia canônica",
+                True,
+                validate_contratos_de_gerente(STRUCTURE_ROOT),
+            ),
+            (
+                "anatomia de contrato acusa raiz inexistente",
+                False,
+                validate_contratos_de_gerente(STRUCTURE_ROOT / "pacote-inexistente-t97"),
             ),
             (
                 "a recusa de digest() dispara e ninguém tem cópia privada do motor",

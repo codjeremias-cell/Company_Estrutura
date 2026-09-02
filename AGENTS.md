@@ -6,7 +6,7 @@ Para qualquer trabalho nesta árvore, carregue primeiro
 `ceo-maestro/SKILL.md`. O CEO Maestro é a entrada operacional da estrutura;
 Jeremias permanece como autoridade humana final.
 
-A porta continua sendo **uma só**. `especialista-planejador/`, no topo desta
+A porta continua sendo **uma só**. `planejador-estrutura/`, no topo desta
 árvore, não é uma segunda porta da cadeia: é consultor direto de Jeremias, fora
 dela — ver *Fora da cadeia de comando*.
 
@@ -36,7 +36,7 @@ dela — ver *Fora da cadeia de comando*.
 ## Fora da cadeia de comando
 
 Existe **uma** skill no topo desta árvore que não é nó da cadeia:
-`especialista-planejador/`, irmã de `ceo-maestro/`, instalada em 2026-08-08.
+`planejador-estrutura/`, irmã de `ceo-maestro/`, instalada em 2026-08-08.
 
 - É **consultor direto de Jeremias**. Canal único, nos dois sentidos:
   `Jeremias → especialista → Jeremias → ceo-maestro`. O último passo é decisão

@@ -96,6 +96,7 @@ try:
         COBERTURA_EXCECOES,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         validate_placar_nao_declara_cadeia,
         SELO_DE_CONTAGEM,
@@ -863,6 +864,80 @@ def validate_evals() -> list[str]:
 # Execução
 # --------------------------------------------------------------------------
 
+
+# --------------------------------------------------------------------------
+# T110 — o envelope escolhido alcanca quem a missao mandou responder?
+#
+# Custou uma rodada inteira. A R3 do ADR-020 respondeu a uma EXECUTIVE_MISSION
+# com `return_to: ceo-maestro` usando `EVOLUTION_RETURN`, cujo `return_to` e
+# const `departamento-evolucao-skills` — o envelope INTERNO, de trabalhador para
+# a propria gerente. O trabalho estava certo e nao chegou a lugar nenhum.
+#
+# O caminho certo EXISTIA e foi medido: `EVOLUTION_LEDGER` tem `return_to` const
+# `ceo-maestro`, e `candidate_sets: []` VALIDA — provado par a par sobre um
+# ledger real (com a chave presente e vazia valida; sem a chave, nao). A alegacao
+# de que ele "exige candidate_sets com dois itens" era falsa: o `minItems: 2`
+# mora DENTRO de um candidateSet, e o array nao tem minimo.
+#
+# Entao o defeito nunca foi falta de caminho: foi caminho nao declarado a quem
+# escolhe. Quem le o envelope nao le o schema. Esta trava poe a escolha sob
+# medicao, e a §"Qual envelope devolve o que" do SKILL.md a poe sob leitura.
+# --------------------------------------------------------------------------
+
+
+def destinatario_permitido(schema: dict[str, Any], artifact_type: str):
+    """Le DO SCHEMA quem um envelope deste tipo pode enderecar.
+
+    Devolve `(nome_do_def, const_do_return_to)`. `const` None significa que o
+    envelope nao fixa destinatario. Derivado, nunca chumbado: uma mudanca de
+    const no schema muda esta resposta, que e o ponto.
+    """
+    for nome, deff in (schema.get("$defs") or {}).items():
+        if not isinstance(deff, dict):
+            continue
+        props = deff.get("properties") or {}
+        at = props.get("artifact_type") or {}
+        if at.get("const") != artifact_type:
+            continue
+        return nome, (props.get("return_to") or {}).get("const")
+    return None, None
+
+
+def validate_envelope_alcanca_destinatario(
+    mission: object, envelope: object, schema: dict[str, Any]
+) -> list[str]:
+    """Acusa envelope que nao pode enderecar o `return_to` da missao."""
+    errors: list[str] = []
+    if not isinstance(mission, dict) or not isinstance(envelope, dict):
+        return ["ENVELOPE_NAO_CONFERIVEL: missao ou envelope nao e objeto"]
+
+    destino = mission.get("return_to")
+    if not isinstance(destino, str) or not destino:
+        return errors  # missao sem destinatario declarado: nada a concluir
+
+    tipo = envelope.get("artifact_type")
+    if not isinstance(tipo, str) or not tipo:
+        return ["ENVELOPE_SEM_TIPO: nao da para saber quem ele alcanca"]
+
+    nome_def, const = destinatario_permitido(schema, tipo)
+    if nome_def is None:
+        return [
+            f"ENVELOPE_DESCONHECIDO: `{tipo}` nao tem $def neste schema; a trava "
+            "NAO conclui que o envelope serve — ausencia de definicao e ausencia"
+        ]
+    if const is None:
+        return errors  # envelope de destinatario livre: nada a acusar
+
+    if const != destino:
+        errors.append(
+            f"ENVELOPE_NAO_ALCANCA_O_DESTINATARIO: a missao manda responder a "
+            f"`{destino}` e o envelope `{tipo}` (${{defs}}/{nome_def}) tem "
+            f"`return_to` const `{const}`. Nenhuma emissao dele chega ao "
+            f"destinatario pedido. Foi assim que a R3 do ADR-020 se perdeu: "
+            f"trabalho medido, envelope interno, zero alcance."
+        )
+    return errors
+
 def run() -> int:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     ceo_schema = json.loads(CEO_SCHEMA_PATH.read_text(encoding="utf-8"))
@@ -949,6 +1024,77 @@ def run() -> int:
                 validate_schema(missao_invalida, ceo_schema, ceo_schema),
             )
         )
+    # --- T110: envelope que alcanca o destinatario, com artefatos REAIS -----
+    _m14 = STRUCTURE_ROOT / "ceo-maestro" / "evals" / "producao-honesta-2026-08-04" / (
+        "14-EXECUTIVE-MISSION-R3-POS-DECISAO-T17.json"
+    )
+    _ret_r3 = (
+        STRUCTURE_ROOT / "ceo-maestro" / "departamento-evolucao-skills" / "evals"
+        / "producao-honesta-2026-08-04" / "rodada-3" / "EVOLUTION_RETURN.json"
+    )
+    _ledger_ok = STRUCTURE_ROOT / "ceo-maestro" / "evals" / "envelope-t39-2026-08-07" / (
+        "74-EVOLUTION-LEDGER-T39-R1.json"
+    )
+
+    def _ler(p: Path) -> object:
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception as exc:  # noqa: BLE001
+            return {"__erro__": f"{p.name}: {exc}"}
+
+    _mis, _ret, _led = _ler(_m14), _ler(_ret_r3), _ler(_ledger_ok)
+    _faltando = [
+        p.name for p, o in ((_m14, _mis), (_ret_r3, _ret), (_ledger_ok, _led))
+        if isinstance(o, dict) and "__erro__" in o
+    ]
+    cases.append(
+        (
+            "T110 artefatos reais da R3 presentes em disco",
+            True,
+            [f"ausente ou ilegivel: {a}" for a in _faltando],
+        )
+    )
+    if not _faltando:
+        cases.append(
+            (
+                "T110 EVOLUTION_RETURN nao alcanca ceo-maestro (caso REAL da R3)",
+                False,
+                validate_envelope_alcanca_destinatario(_mis, _ret, schema),
+            )
+        )
+        cases.append(
+            (
+                "T110 EVOLUTION_LEDGER alcanca ceo-maestro (caso REAL)",
+                True,
+                validate_envelope_alcanca_destinatario(_mis, _led, schema),
+            )
+        )
+        # Caso revelado PELA MUTACAO, nao pela leitura: o mutante que troca a
+        # derivacao pelo schema por uma leitura do `return_to` escrito no proprio
+        # envelope SOBREVIVE aos casos acima, porque no artefato real da R3 os
+        # dois valores coincidem. Este caso os separa: um EVOLUTION_RETURN que
+        # DECLARA alcancar o ceo-maestro continua nao alcancando, porque quem
+        # decide e o const do schema, nao o que o envelope diz de si.
+        _ret_forjado = json.loads(json.dumps(_ret))
+        _ret_forjado["return_to"] = "ceo-maestro"
+        cases.append(
+            (
+                "T110 envelope que MENTE o proprio return_to nao passa",
+                False,
+                validate_envelope_alcanca_destinatario(_mis, _ret_forjado, schema),
+            )
+        )
+
+        cases.append(
+            (
+                "T110 envelope de tipo desconhecido nao e isentado",
+                False,
+                validate_envelope_alcanca_destinatario(
+                    _mis, {"artifact_type": "ENVELOPE_INVENTADO"}, schema
+                ),
+            )
+        )
+
     cases.append(
         (
             "PLACAR local aponta para o digest deste validador",
@@ -994,6 +1140,20 @@ def run() -> int:
                 excecoes=COBERTURA_EXCECOES
                 + _excecoes_otica_de_isolamento(STRUCTURE_ROOT),
             ),
+        )
+    )
+    cases.append(
+        (
+            "contratos de gerente na anatomia canônica",
+            True,
+            validate_contratos_de_gerente(STRUCTURE_ROOT),
+        )
+    )
+    cases.append(
+        (
+            "anatomia de contrato acusa raiz inexistente",
+            False,
+            validate_contratos_de_gerente(STRUCTURE_ROOT / "pacote-inexistente-t97"),
         )
     )
     cases.append(("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT)))

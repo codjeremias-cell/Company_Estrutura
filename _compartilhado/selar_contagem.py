@@ -42,6 +42,7 @@ Uso, a partir da raiz de `Estrutura Final de Skills`:
 from __future__ import annotations
 
 import datetime
+import os
 import re
 import subprocess
 import sys
@@ -76,14 +77,68 @@ CONTAGEM-VIGENTE: {ok}/{total} | instrumento: `evals/validate_workflow.py` | sha
 """
 
 
-def medir(pacote: Path) -> tuple[int | None, int | None]:
-    saida = subprocess.run(
-        [sys.executable, "evals/validate_workflow.py"], cwd=str(pacote),
-        capture_output=True, text=True, encoding="utf-8", errors="replace").stdout or ""
+def extrair_contagem(saida: str) -> tuple[int | None, int | None, str]:
+    """A contagem de UM pacote a partir da saída dele — ou a recusa de adivinhar.
+
+    O DEFEITO QUE ESTA FUNÇÃO FECHA, medido em 2026-09-01
+    -----------------------------------------------------
+    Até aqui o coletor devolvia `achados[-1]`: a ÚLTIMA linha de resultado da
+    saída. Isso está certo enquanto a cadeia está verde, e erra exatamente
+    quando ela não está.
+
+    `departamento-negocios` roda a regressão do `ceo-maestro` e do
+    `diretor-de-lentes` como **subprocesso**. Quando o subprocesso PASSA, ele
+    registra só `[PASS] regressão passa: <nome>` e nada é ecoado. Quando o
+    subprocesso FALHA, ele embute um excerto da saída alheia — e o comentário
+    do próprio autor, no validador de Negócios, diz que é lá que "moram o
+    `Resultado: N/M` e as linhas de erro". O excerto vem sem recuo e sem
+    prefixo: é indistinguível de uma linha própria.
+
+    Medido na corrida de 2026-09-01, com o CEO vermelho, a saída de Negócios
+    trazia TRÊS sumários — `182/183` (CEO ecoado), `245/246` (o próprio, no
+    formato maiúsculo) e `182/183` de novo. Nem o primeiro nem o último é o
+    dele. `achados[-1]` selaria Negócios com o placar do CEO, e `gravar_selo`
+    ESCREVE: o número falso iria para o `PLACAR.md` e sobrescreveria a última
+    fotografia boa.
+
+    POR QUE RECUSAR EM VEZ DE ESCOLHER
+    ----------------------------------
+    Não há, na saída, nada que distinga a linha própria da ecoada — as duas são
+    texto solto no mesmo fluxo. Qualquer regra de desempate seria heurística
+    sobre prosa, e heurística que erra em silêncio é o defeito que estamos
+    fechando, não o conserto dele. Então: **um sumário, mede; mais de um,
+    recusa e diz o que viu.**
+
+    A recusa não custa nada na prática, porque saída com dois sumários só
+    acontece quando um pacote da cadeia está vermelho — e selar durante
+    regressão é justamente o que apaga a fotografia do estado bom.
+
+    `SEM_RESULTADO` e `AMBIGUO` são categorias SEPARADAS de propósito: "não
+    concluiu" e "concluiu e não dá para atribuir" são defeitos diferentes, e
+    colapsá-los num só faria o segundo desaparecer dentro do primeiro.
+    """
     achados = RESULTADO.findall(saida)
     if not achados:
-        return None, None
-    return int(achados[-1][0]), int(achados[-1][1])
+        return None, None, "SEM_RESULTADO"
+    if len(achados) > 1:
+        vistos = ", ".join(f"{ok}/{total}" for ok, total in achados)
+        return None, None, (
+            f"AMBIGUO: {len(achados)} sumários na mesma saída ({vistos}). A saída"
+            " embute o resultado de OUTRO pacote — provavelmente uma regressão"
+            " rodada como subprocesso que reprovou. Atribuir qualquer um deles"
+            " seria adivinhar; conserte o pacote vermelho e sele depois."
+        )
+    return int(achados[0][0]), int(achados[0][1]), "OK"
+
+
+def medir(pacote: Path) -> tuple[int | None, int | None, str]:
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    saida = subprocess.run(
+        [sys.executable, "-X", "utf8", "evals/validate_workflow.py"], cwd=str(pacote),
+        env=env, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout or ""
+    return extrair_contagem(saida)
 
 
 def gravar_selo(placar: Path, ok: int, total: int, sha: str, data: str) -> None:
@@ -124,9 +179,12 @@ def main(argv: list[str]) -> int:
             print(f"{pacote.name:44} {estado}")
             continue
 
-        ok, total = medir(pacote)
-        if total is None:
-            print(f"{pacote.name:44} NAO CONCLUIU"); pendentes.append(pacote.name); continue
+        ok, total, estado = medir(pacote)
+        if estado != "OK":
+            # NAO CONCLUIU e AMBIGUO sao categorias distintas, e as duas impedem
+            # o selo: nao se carimba numero que nao se conseguiu atribuir.
+            rotulo = "NAO CONCLUIU" if estado == "SEM_RESULTADO" else estado
+            print(f"{pacote.name:44} {rotulo}"); pendentes.append(pacote.name); continue
         gravar_selo(placar, ok, total, sha, hoje)
         print(f"{pacote.name:44} {ok}/{total}" + ("" if ok == total else "   (vermelho nesta passada)"))
         if ok != total:

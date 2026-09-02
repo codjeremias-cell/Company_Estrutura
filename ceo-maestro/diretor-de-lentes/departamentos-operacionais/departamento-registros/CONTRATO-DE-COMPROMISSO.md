@@ -52,6 +52,17 @@ Missão de qualquer outra origem — inclusive do CEO, de Jeremias, dos Juízes 
 é `BLOCKED_BYPASS_ATTEMPT`, e nenhum registro é decidido nem gravado. Invocação direta de um agente de
 `agentes/`, venha de quem vier, é o mesmo bloqueio.
 
+**"Através do CEO" não é origem de missão — é o começo de um caminho de quatro passos.** O
+`departamento-evolucao-skills` requisita a colheita ao `ceo-maestro`; o CEO emite a
+`EXECUTIVE_MISSION` ao `diretor-de-lentes`; o Diretor emite a `DEPARTMENT_MISSION` a este
+Departamento, com a colheita no escopo — e é **essa** missão, e nenhuma outra, que este contrato
+aceita. Pedido que chegue do CEO, da Evolução ou de qualquer outro papel **sem passar pelo Diretor**
+segue sendo `BLOCKED_BYPASS_ATTEMPT`, sem exceção para o relatório de aprendizagem. O retorno faz o
+mesmo caminho ao contrário: o `LEARNING_REPORT` é gravado e **referenciado** no `DEPARTMENT_RETURN`
+ao Diretor, e é por ele que a referência sobe ao CEO — nunca por entrega direta ao consumidor. O
+envelope do relatório registra a missão de origem e a via (`requested_via: ceo-maestro`); campos e
+travas em [references/protocolo-registros.md](references/protocolo-registros.md), §1.5.
+
 ## Saídas obrigatórias
 
 | Situação | Saída | Schema |

@@ -1831,6 +1831,100 @@
           }
         }
       ]
+    },
+    "departmentMissionAdmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_type",
+        "department_mission_id",
+        "causal",
+        "recipient",
+        "mode",
+        "objective",
+        "scope_in",
+        "scope_out",
+        "inputs",
+        "deliverables",
+        "done",
+        "required_evidence",
+        "depends_on",
+        "handoff_to",
+        "decision_authority",
+        "permissions",
+        "stop_when",
+        "return_to",
+        "issued_at"
+      ],
+      "properties": {
+        "artifact_type": {
+          "const": "DEPARTMENT_MISSION"
+        },
+        "department_mission_id": {
+          "type": "string",
+          "minLength": 3
+        },
+        "causal": {
+          "type": "object",
+          "required": [
+            "producer"
+          ],
+          "properties": {
+            "producer": {
+              "const": "diretor-de-lentes"
+            }
+          }
+        },
+        "recipient": {
+          "const": "departamento-design-ux-ui"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 3
+        },
+        "scope_in": {
+          "type": "array"
+        },
+        "scope_out": {
+          "type": "array"
+        },
+        "inputs": {
+          "type": "array"
+        },
+        "deliverables": {
+          "type": "array"
+        },
+        "done": {
+          "type": "array"
+        },
+        "required_evidence": {
+          "type": "array"
+        },
+        "depends_on": {
+          "type": "array"
+        },
+        "handoff_to": {
+          "type": "array"
+        },
+        "decision_authority": {
+          "type": "array"
+        },
+        "permissions": {
+          "type": "object"
+        },
+        "stop_when": {
+          "type": "array"
+        },
+        "return_to": {
+          "const": "diretor-de-lentes"
+        },
+        "issued_at": {
+          "type": "string"
+        }
+      }
     }
   },
   "oneOf": [
@@ -1848,6 +1942,9 @@
     },
     {
       "$ref": "#/$defs/designLedger"
+    },
+    {
+      "$ref": "#/$defs/departmentMissionAdmission"
     }
   ]
 }

@@ -120,6 +120,7 @@ try:
         recusar_execucao_fora_da_fonte,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         validate_placar_nao_declara_cadeia,
         validate_contagem_ligada_ao_instrumento,
@@ -1466,6 +1467,18 @@ def validate_links_and_evals() -> None:
         "todo pacote gerente tem validador que roda a trava global",
         not errors,
         " | ".join(errors),
+    )
+    errors = validate_contratos_de_gerente(STRUCTURE_ROOT)
+    check(
+        "contratos de gerente na anatomia canônica",
+        not errors,
+        " | ".join(errors),
+    )
+    contratos_ausente = validate_contratos_de_gerente(STRUCTURE_ROOT / "pacote-inexistente-t97")
+    check(
+        "anatomia de contrato acusa raiz inexistente",
+        bool(contratos_ausente),
+        "trava silenciosa: nao acusou raiz ausente",
     )
     errors = validate_trava_de_digest(STRUCTURE_ROOT)
     check(

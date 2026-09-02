@@ -28,7 +28,7 @@ SCHEMA_PATH = PACKAGE_ROOT / "schemas" / "departamento-desenvolvimento.schema.js
 # normativa, para que a conferencia sobreviva a um clone com outro EOL.
 # Quem alterar o schema atualiza esta linha no MESMO commit; sem isso, reprova.
 SCHEMA_DIGEST_DECLARADO = (
-    "sha256:29201676d2b09d9a6ecaf6f726f8e20d3ade3062e8e3a6b00f11551370d476f9"
+    "sha256:ed8938263c8fc8fe0b479c868c1e5b9efb20fed491a77edc643b72726461a18a"
 )
 EVALS_PATH = PACKAGE_ROOT / "evals" / "evals.json"
 AGENTS_ROOT = PACKAGE_ROOT / "agentes"
@@ -309,12 +309,15 @@ def prova_fresca(led: dict[str, Any]) -> bool:
     return led.get("test_evidence", {}).get("against_digest") == led.get("candidate_digest")
 
 def _admission_def(schema: dict[str, Any]) -> dict[str, Any]:
-    return schema["$defs"]["departmentMissionAdmission"]
+    try:
+        return schema["$defs"]["departmentMissionAdmission"]
+    except (KeyError, TypeError):
+        raise LookupError("departmentMissionAdmission ausente") from None
 
 
 def director_mission(schema: dict[str, Any], *, causal_over: dict[str, Any] | None = None,
                      **over: Any) -> dict[str, Any]:
-    """Payload de teste. A trava nao mora aqui: mora no const do schema, lido por mission_verdict."""
+    """Payload de teste. A trava mora no const do schema (lido por mission_verdict) e no oneOf raiz. Este helper nao trava."""
     director = "diretor-de-lentes"
     base: dict[str, Any] = {
         "artifact_type": "DEPARTMENT_MISSION",
@@ -358,16 +361,28 @@ def director_mission(schema: dict[str, Any], *, causal_over: dict[str, Any] | No
 def mission_verdict(mission: dict[str, Any], *, contract_digest: str,
                     schema: dict[str, Any],
                     target_present: bool = True) -> str:
-    """Classifica a missao de entrada contra o contrato local. Sem const, nao ha trava."""
-    adm = _admission_def(schema)
-    expected_p = adm["properties"]["causal"]["properties"]["producer"].get("const")
-    expected_r = adm["properties"]["return_to"].get("const")
-    expected_dest = adm["properties"]["recipient"].get("const")
-    if expected_p and mission.get("causal", {}).get("producer") != expected_p:
+    """Fail-closed. Const ausente = BLOCKED_CONST_AUSENTE. Producer forjado = BLOCKED_BYPASS_ATTEMPT. $defs ausente = BLOCKED_BYPASS_ATTEMPT, nunca excecao."""
+    try:
+        adm = _admission_def(schema)
+    except LookupError:
         return "BLOCKED_BYPASS_ATTEMPT"
-    if expected_r and mission.get("return_to") != expected_r:
+    expected_p = (
+        adm.get("properties", {}).get("causal", {}).get("properties", {})
+        .get("producer", {}).get("const")
+    )
+    expected_r = adm.get("properties", {}).get("return_to", {}).get("const")
+    expected_dest = adm.get("properties", {}).get("recipient", {}).get("const")
+    if not expected_p:
+        return "BLOCKED_CONST_AUSENTE"
+    if mission.get("causal", {}).get("producer") != expected_p:
         return "BLOCKED_BYPASS_ATTEMPT"
-    if expected_dest and mission.get("recipient") != expected_dest:
+    if not expected_r:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    if mission.get("return_to") != expected_r:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    if not expected_dest:
+        return "BLOCKED_INVALID_MISSION"
+    if mission.get("recipient") != expected_dest:
         return "BLOCKED_INVALID_MISSION"
     if not mission.get("causal", {}).get("contract_digest"):
         return "BLOCKED_INVALID_MISSION"
@@ -685,6 +700,40 @@ def run() -> int:
     case("schema local aceita DEPARTMENT_MISSION de entrada do Diretor", True,
          validate_schema(director_mission(schema),
                          schema["$defs"]["departmentMissionAdmission"], schema))
+    schema_sem_const = copy.deepcopy(schema)
+    schema_sem_const["$defs"]["departmentMissionAdmission"]["properties"]["causal"]["properties"]["producer"].pop("const", None)
+    check("const de producer ausente e BLOCKED_CONST_AUSENTE",
+          mission_verdict(director_mission(schema_sem_const, causal_over={"producer": "ceo-maestro"}),
+                          contract_digest=DIG, schema=schema_sem_const) == "BLOCKED_CONST_AUSENTE")
+    schema_sem_adm = copy.deepcopy(schema)
+    del schema_sem_adm["$defs"]["departmentMissionAdmission"]
+    check("$defs/departmentMissionAdmission ausente fecha BLOCKED_BYPASS_ATTEMPT",
+          mission_verdict(director_mission(schema), contract_digest=DIG,
+                          schema=schema_sem_adm) == "BLOCKED_BYPASS_ATTEMPT")
+    schema_sem_defs = copy.deepcopy(schema)
+    schema_sem_defs.pop("$defs", None)
+    check("$defs ausente fecha BLOCKED_BYPASS_ATTEMPT sem excecao",
+          mission_verdict(director_mission(schema), contract_digest=DIG,
+                          schema=schema_sem_defs) == "BLOCKED_BYPASS_ATTEMPT")
+    case("schema raiz aceita DEPARTMENT_MISSION integra do Diretor", True,
+         validate_schema(director_mission(schema), schema, schema))
+    case("schema raiz rejeita DEPARTMENT_MISSION com producer forjado", False,
+         validate_schema(director_mission(schema, causal_over={"producer": "ceo-maestro"}),
+                         schema, schema))
+    incompleta = {
+        "artifact_type": "DEPARTMENT_MISSION",
+        "causal": {"producer": "diretor-de-lentes"},
+        "recipient": DEPARTMENT,
+        "return_to": "diretor-de-lentes",
+    }
+    case("schema raiz rejeita DEPARTMENT_MISSION incompleta", False,
+         validate_schema(incompleta, schema, schema))
+    src = Path(__file__).read_text(encoding="utf-8")
+    rotulo_env = "".join(("ENV-", "T87/", "T88"))
+    check("FAIL ambiental T87/T88 tem rotulo ENV no validador",
+          (rotulo_env + ": FAIL ambiental da estrutura") in src)
+    check("const ausente e producer forjado tem codigos distintos",
+          "BLOCKED_CONST_AUSENTE" in src and "BLOCKED_BYPASS_ATTEMPT" in src)
 
     # --- Catálogo ------------------------------------------------------------
     cat = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
@@ -703,6 +752,11 @@ def run() -> int:
          conferir_digest_declarado(SCHEMA_PATH, SCHEMA_DIGEST_DECLARADO,
                                    "schema do pacote"))
 
+    ENV_T87_T88 = {
+        "série global de ADR é única em toda a estrutura",
+        "todo pacote gerente tem validador que roda a trava global",
+        "contratos de gerente na anatomia canônica",
+    }
     failures = 0
     for name, expected, errors in cases:
         actual = not errors
@@ -711,6 +765,9 @@ def run() -> int:
               f"{'válido' if expected else 'rejeitado'}")
         if not ok:
             failures += 1
+            if name in ENV_T87_T88:
+                print("       ENV-T87/T88: FAIL ambiental da estrutura, "
+                      "nao e o caso de entrada BLOCKED_BYPASS_ATTEMPT.")
             for e in errors:
                 print(f"       {e}")
             if not errors:

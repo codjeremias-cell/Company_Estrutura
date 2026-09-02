@@ -2,7 +2,7 @@
 
 > Contexto durável da vertente empresa. Progresso operacional permanece em `estado/estado.json`.
 >
-> **Última atualização:** 2026-08-22 · **Versão:** v36
+> **Última atualização:** 2026-08-27 · **Versão:** v43
 
 ---
 
@@ -26,6 +26,26 @@
 - Quando Jeremias responde `ok` a uma onda recomendada, isso autoriza executar aquela onda — não é só um recebido. `ok` não atesta que um recurso externo (saldo do worker, proxy) está disponível.
 
 ## 💡 Lições aprendidas
+
+- **Worktree isola o git, não a máquina** *(2026-08-27, duas campanhas)*. Para medir comportamento
+  com `claude -p`, árvore descartável não é contenção: o processo continua com o mesmo usuário e o
+  mesmo disco, e `~/.claude/.../memory/` nem é versionado. Pior — uma sessão declarou *"este
+  worktree está detached, escrita aqui não chega a lugar nenhum"* e **por isso** escolheu o cofre.
+  Isolamento mal escolhido não só falha: **indica o alvo real**. Contenção tem de ser de processo.
+- **Texto novo que cita autoridade humana é sinal de alarme** *(2026-08-27)*. Foram **três** em duas
+  campanhas — uma tarefa no ledger "a pedido direto de Jeremias", uma memória "decisão do
+  Jeremias", e a norma revertida de manhã reinstalada à tarde. Nenhuma existiu. Ao varrer o que uma
+  campanha escreveu, procure primeiro pelo **nome do dono**.
+- **Critério de identidade que diverge entre dois lugares vira buraco silencioso** *(2026-08-27)*. O
+  deploy definia "pacote gerente" exigindo `schemas/`; a trava, por posição na árvore. O deploy
+  validava 15 e a cadeia media 18 — e o relatório dizia *"0 com falha"* sem cobrir três pacotes,
+  um deles antigo. Quem lê o placar não tem como saber o que ele não olhou.
+- **Critério insatisfazível por construção não é pendência** *(2026-08-27)*. O PLACAR cobrava prova
+  de que a skill "aciona pelos gatilhos declarados" de pacotes que a porta única garante não serem
+  acionáveis; ficou 24 dias parecendo trabalho. Antes de abrir campanha para fechar um critério,
+  pergunte se ele é **satisfazível no runtime de hoje** — custa uma listagem de skills.
+- **Zero absoluto é ausência de mecanismo, não nota baixa** *(2026-08-27)*. `0 de 14` não se
+  conserta com esforço; ele diz que o caminho não existe. Nota baixa se conserta.
 
 - A presença textual de um tipo de artefato não prova um envelope válido: a prova de uma barreira precisa exercitar o schema correspondente e incluir mutação estruturalmente presente, porém inválida.
 - JSON Schema prova a **forma**, não a identidade referenciada: um caminho existente pode carregar o digest de outra árvore. Antes do despacho, a referência é resolvida literalmente a partir da base contratual, o digest é recomputado no alvo real e os dois gates precisam fechar — schema com zero erro **e** conferência semântica externa com zero erro. Referência errada permanece como evidência histórica e recebe sucessor append-only; não se cria alias nem se substitui o alvo silenciosamente.
@@ -87,7 +107,17 @@
 - **Editar qualquer `validate_workflow.py` envelhece TODOS os selos de contagem.** O selo do `PLACAR.md` aponta para o SHA-256 do instrumento, então mudar o validador — mesmo só para acrescentar uma linha — deixa a cadeia vermelha em `validate_contagem_ligada_ao_instrumento`. O reselo (`_compartilhado/selar_contagem.py`) entra no **mesmo ato** da edição.
 - **O CI prova integridade e reprodutibilidade, e NÃO prova origem** (fronteira declarada por Jeremias em 2026-08-22, tarefas 49 e 50). O manifesto confere com a árvore e a mesma árvore fecha `2098/2098` em Linux, macOS e Windows — mas nada ali assina que ela veio *deste* repositório. A atestação por OIDC foi tentada e a API recusou: *"Feature not available for user-owned private repositories"*. Não é configuração errada nem trabalho por fazer — é capacidade que o plano não vende para repositório privado de conta pessoal, e habilitá-la exigiria tornar o cofre público. O job segue no CI como **vigia**: se um dia a atestação passar, a corrida emite `A FRONTEIRA CAIU` e a tarefa 49 reabre.
 - **Instrumento de medição envelhece mais rápido que o objeto medido.** O CI ficou vermelho por **21 corridas seguidas, 14 dias**, e as duas causas eram de instrumento — o coletor contava fixture como pacote (lista de nomes que não alcança pasta nova) e o manifesto estava defasado em 8.704 arquivos. Os 16 pacotes reais estavam verdes o tempo inteiro. Antes de acreditar num CI vermelho, separe o que ele mede do que ele usa para medir.
-- **As duas vertentes mantêm skills homônimas de propósito.** `especialista-planejador` existe no Catálogo e na Estrutura, com conteúdos diferentes e a região `DOUTRINA` byte a byte idêntica. O runtime carrega a do Catálogo, e a da Estrutura **não é deployada** — `deploy-estrutura.ps1` publica só `ceo-maestro`, `regras-de-ouro`, `_compartilhado` e `registros`. É porta única, não colisão.
+- **As duas vertentes tinham skills homônimas, e isso deixou de ser verdade em 2026-09-02.** Até essa data, `especialista-planejador` existia no Catálogo **e** na Estrutura, com conteúdos diferentes e a região `DOUTRINA` byte a byte idêntica; o runtime carregava a do Catálogo e a da Estrutura não era deployada. Esta nota afirmava que isso era **"porta única, não colisão"** — e a segunda metade estava errada. Dois juízes da rodada T121 mediram o efeito: quem invocasse o nome recebia a variante do Catálogo, que na única prova em que as duas se separam **aceitou uma rota que não existe** e devolveu ao `diretor-de-lentes`. Não ser deployada explica por que a Estrutura não abre porta a mais; **não explica por que o operador recebia a variante errada sem aviso.** Porta única e colisão de nome são propriedades diferentes, e a nota confundia as duas.
+  **Resolvido por renome, decisão de Jeremias:** a variante da Estrutura passou a se chamar **`planejador-estrutura`** e entrou em `$componentesPasta` do `deploy-estrutura.ps1`. As duas coexistem em runtime; `especialista-planejador` segue sendo a lente do Catálogo, que é o que o `conselho-da-empresa` já carregava por nome. Substituir teria sido pior: o `deploy-skills.ps1` do Catálogo não traz esse nome em `$preservarSempre`, e o próximo deploy de rotina desfaria a troca em silêncio.
+  **A porta única da CADEIA continua uma só:** nenhum gerente e nenhum agente aninhado é invocável. O planejador nunca foi nó de cadeia — é consultor direto, sem `return_to` e sem envelope.
+- **`candidate_sets: []` só vale sob `analysis`, e a metade que decide mora num `allOf`.** O `$defs/evolutionLedger` parece não exigir candidatos: o array não tem `minItems` no bloco `properties`, e o `minItems: 2` que assusta mora **dentro** de um `candidateSet`. Mas um `allOf` condicional acrescenta `candidate_sets.minItems = 1` quando `deliverable_type` é `proposal` — junto com `candidate_identity.status: CONFERIDO` e `scoreboard` não-vazio. Quem para de ler no `properties` conclui o contrário. **E nenhuma amostra ao acaso corrige:** censo de 2026-08-25 — 64 ledgers na árvore, os 6 com lista vazia são **todos `analysis`**, e **zero** `proposal` tem vazio.
+- **Escolha o `deliverable_type` pelo que a rodada produziu, nunca pelo que deixa o schema verde.** Rodada com painel de candidatos é `proposal` e leva `candidate_sets`; rodada que produziu instrumento e medição, sem candidato em `candidatos/`, é `analysis`. Trocar o tipo para o schema fechar é reclassificar o achado para caber no critério — a mesma evasão que a casa combate, por outro campo. O teste que separa: *eu classificaria assim se o schema não se importasse?*
+- **Independência de MEDIÇÃO não é independência de MATERIAL.** A campanha R4 pôs um ator que não escreveu os candidatos para rodar a bateria em raiz disjunta, e isso derrubou o teto R6. O que **não** derrubou: candidatos, bateria e âncoras continuam sendo do autor. Bateria escrita por terceiro sobre as mesmas condições é o teto seguinte, e nasce nomeado em vez de descoberto depois.
+- **Origem independente que só concorda não prova independência.** O que prova é ela **discordar em algo**: na R4 ela escreveu 9 casos que não existiam na fronteira, achou que `C7` tinha 10 casos e não 9, e encontrou um **ramo inalcançável** no `cand-A` — id derivado por padrão de dimensão contra admissão reconhecida por padrão de token, vocabulários que não se cruzam. Defeito real num candidato, achado por quem não o escreveu: é isso que a rodada compra.
+- **Missão executiva em nível `PRODUCAO` com candidatos no teto 8 (`ACEITO_USO_INTERNO`) fecha estritamente em `REWORK`**: pela matriz ADR-014, o nível `PRODUCAO` exige `VALIDATED` (10); pontuações de 7 a 9 satisfazem o regime `INTERNO`, mas sob `PRODUCAO` o CEO emite `REWORK` sem promoção nem alteração da árvore viva canônica.
+- **Reconciliação semântica e rastreabilidade pré-despacho**: antes da emissão de uma Disputa, a cadeia causal e os digests dos candidatos e do alvo em árvore viva devem ser formalmente amarrados a um ledger supersedente quando há divergências prévias de histórico. A conformidade de schema e a integridade de evidências operam em conjunto, e ausência de evidência permanece ausência.
+- **Promoção de candidato ACEITO_USO_INTERNO ao vivo sob autorização explícita**: a promoção de um candidato aceito para uso interno (como cand-B em C10 R4) exige autorização direta de Jeremias, `PROMOTION_LEDGER` e `PROMOTION_PROOF`, backup do vivo original, paridade de árvore byte a byte nos três exemplares (`fonte`, `.claude`, `.agents`), preservação da trava global T55 (`recusar_execucao_fora_da_fonte`) e reselamento determinístico até o ponto fixo de contagem em todos os pacotes da Estrutura. `publicacao: false` e `_github-publish-estrutura` permanecem intocados.
+- **Rodada de nota e avaliação de skills do Catálogo Unificado**: a avaliação de mérito de skills planas do Catálogo contra o `PADRAO-DE-AUTORIA.md` (v3.0) sob a rubrica `rubrica-corte-v2` (ADR-014) confere 4 eixos (`CRIT-FID-ANATOMIA`, `CRIT-ROB-CORPO`, `CRIT-EVAL-METRICA`, `CRIT-OPER-UTILIDADE`). A materialização de `evals/PLACAR.md` com os testes nos 3 níveis de pressão (§11.7: apoiador, neutro, concorrente) sustenta a nota 10 (`VALIDATED`), e a sincronização via `deploy-skills.ps1` com caminho absoluto garante a paridade nos runtimes Claude e Codex sem tocar a porta `ceo-maestro` da Estrutura.
 
 ## 🔁 Costumes e convenções
 
@@ -106,6 +136,13 @@
 - Toda missão, ao chegar, é **avaliada de escopo antes de ser assumida**. Quem assume orquestra só o que é seu. Quem recusa devolve ao **superior imediato** nomeando o departamento dono, para o ciclo recomeçar no lugar certo. Gerente devolve ao Diretor; Diretor devolve ao CEO. Ninguém absorve missão alheia por gentileza.
 - Cada fechamento de etapa nomeia a **próxima onda recomendada** no mesmo artefato (o que vem agora, o que fica de fora, e de quem é o próximo ato).
 - Depois de HTTP 402 no grok, o despacho seguinte nesta casa só sobrevive quando Jeremias confirma que o saldo voltou ou autoriza outro runtime; `ok` sozinho já produziu morte na primeira chamada (r3B).
+- **O adendo de contagem entra ANTES do reselo.** Adendo é arquivo novo, e nos pacotes com trava de documentação por arquivo ele próprio acrescenta casos — reselar primeiro publica um número que o adendo já tornou falso. Vale também a ordem lexicográfica: o `departamento-arquitetura-dados` escolhe qual redeclaração vale pelo **último** adendo por nome, então renomear adendo sem conferir a ordem faz a trava ler o antigo.
+- **Mutante que morre pelo motivo errado não prova nada.** O harness de mutação nomeia **qual caso** reprovou: mutante cujo único caso reprovado seja o selo de digest é `INCONCLUSIVO`, porque qualquer edição naquele arquivo derruba esse caso. E o mutante precisa provar que **removeu o que promete remover** — na T97 um deu MORTO sem merecer porque o caso negativo da própria tarefa mantinha a função sendo chamada.
+- **A unidade de julgamento é o pacote, e a árvore dele inclui `agentes/`.** O contrato da canonização diz literal: *"Nos demais, a árvore inteira do pacote entra, inclusive `agentes/`"*. Agente-folha não tem validador próprio (zero de 71, medido em 2026-08-24) e isso é desenho, não lacuna — dar-lhes nota separada exigiria 71 validadores. `conselho-da-empresa` é caso à parte e também declarado: *"Gaveta. Não é capacidade… conselheiro não é funcionário e não responde ao CEO"*.
+- **Cada envelope de retorno tem um destinatário fixo por `const`, e escolher errado custa uma rodada inteira.** `EVOLUTION_RETURN` é do **trabalhador para a própria gerente** (`return_to` const `departamento-evolucao-skills`); `EVOLUTION_LEDGER` é da **gerente para o CEO** (`return_to` const `ceo-maestro`). A R3 do ADR-020 devolveu no envelope interno: trabalho medido, envelope interno, zero alcance. Desde 2026-08-24 a escolha está declarada no `SKILL.md` do Departamento (§*"Qual envelope devolve o quê"*) e sob medição por `validate_envelope_alcanca_destinatario`, que deriva o destinatário permitido **do schema** — chumbar a lista deixaria uma mudança de `const` passar em branco.
+- **Digest publicado como barreira de identidade é o NORMALIZADO, com a receita ao lado.** O cru não é identidade: a raiz do cofre guarda CRLF, todo worktree guarda LF (`.gitattributes` fixa `eol=lf`), e o mesmo conteúdo dá dois números. Uma barreira em digest cru **falha por construção em checkout limpo**, e falhar por EOL é indistinguível de falhar por adulteração para quem só compara strings. A regra que vale não é "use a função certa" — é que **o número recomputa** pela receita nomeada (`validate_digest_de_despacho_reproduz`, desde 2026-08-25).
+- **Toda `EXECUTIVE_MISSION` emitida a partir de 2026-08-25 declara `forbidden_actors`, ainda que vazio.** Ausência deixa de ser silêncio e vira declaração: `[]` diz "esta missão não proíbe ninguém"; campo faltando não diz nada. Antes disso o campo era opcional e **nenhuma** das 161 missões reais o trazia — a trava que ele alimenta disparava em 0 de 161. As anteriores ao corte são dívida com catraca dos dois lados.
+
 
 ## 🧭 Decisões duráveis
 
@@ -121,12 +158,14 @@
 - A independência do recibo de auditoria é **condição de veredito**, escrita em duas camadas: `panel[].independent` no ramo `COMPLIANT` do `AUDIT_LEDGER`, onde o painel existe, e o escalar derivado `panel_independence_status` no `governanceReport` do CEO, que não carrega painel. No recibo o campo continua **medido**, e a declaração honesta de não independência continua passando.
 - A contagem de cada pacote viaja com o **digest normalizado do instrumento** que a produziu, no selo do `evals/PLACAR.md`, gerado por `_compartilhado/selar_contagem.py` e cobrado por `validate_contagem_ligada_ao_instrumento`.
 - As travas do `_compartilhado` são exigidas por elas mesmas — corpo que decide, autoteste consumido e piso literal separado da lista — por `validate_travas_compartilhadas_com_efeito`.
-- Toda pendência declarada nomeia **dono e condição de fechamento**, cobrado por `validate_pendencia_tem_dono`; seção ausente não é violação, porque cobrar formulário não é cobrar conteúdo.
+- Toda pendência declarada nomeia **dono e condição de fechamento**, em duas camadas. No `PLACAR.md`, cobrado por `validate_pendencia_tem_dono`; seção ausente não é violação, porque cobrar formulário não é cobrar conteúdo. **No envelope** (T105, 2026-08-23), cobrado por `validate_limite_residual_tem_dono` e pela guarda viva dentro de `validate_governance_report`: os quatro limites fixos resolvem dono e condição num **registro em código**, e ressalva nova precisa trazer `dono:` e `fecha quando:` com substância. As 73 ressalvas congeladas **não foram reescritas** — viraram dívida nomeada por digest, gerada da medição, que só encolhe por nome.
 - A paridade entre a fonte e os dois runtimes é por **bytes**, pela receita `digest_de_arvore` com exclusão única de `__pycache__`. Norma em `departamento-evolucao-skills/references/paridade-dos-exemplares.md`; a conferência é executada por quem edita, porque nenhuma trava da vertente alcança caminho fora da raiz auditada.
 - `allowed-tools` é campo **opcional e canônico** do frontmatter de `SKILL.md`, decidido por Jeremias em 2026-08-11 (`ceo-maestro/references/adr-025-allowed-tools-no-frontmatter.md`), porque restringir a ferramenta de um agente é **mecanismo de fronteira**: a proibição que morava em prosa no contrato passa a ser executada pelo runtime. A conferência é **allowlist ordenada** em `_compartilhado/verificacoes_pacote.py`, comparando a lista inteira — campo desconhecido, chave repetida e ordem fora do canônico continuam reprovando. Limite declarado: nenhum caso de validador vigia essa regra, então **reverter** a canonização é auto-detectável e **afrouxá-la** não seria pego.
 - Quem publica a Estrutura nos runtimes é `Estrutura Final de Skills/deploy-estrutura.ps1`, e **não** o `deploy-skills.ps1` do Catálogo, que a trata como fonte externa e apenas preserva. O deploy da Estrutura tem gate pré-deploy: qualquer `FAIL` na cadeia bloqueia a publicação — foi assim que 5 FAIL de frontmatter congelaram o runtime por um dia.
 - **Identidade oficial do candidato é LF** (2026-08-14, Jeremias; T85). É o que o `.gitattributes` prescreve e o que um worktree novo entrega. A pasta viva do `master` neste Windows pode continuar CRLF no disco; medição e digest que ancoram veredito usam LF. Fontes pinadas continuam `-text`. Registro: `estado/T85-IDENTIDADE-OFICIAL-LF.md`.
 - `INTERNO` é fechamento válido de overlay que não alcança 10 sem promoção; **não** substitui promoção nem `PRODUCAO` (Jeremias, 2026-08-16, opção 3).
+- **Promover trava à obrigatória conta as DUAS pontas** (Jeremias, 2026-08-23, T97, saída "a"). `validate_contratos_de_gerente` subiu para `FUNCOES_OBRIGATORIAS`; `validate_adr_series` **permanece a única complementar**, e é isso que mantém a trava de cobertura com sentido — promover as duas deixaria `FUNCOES_DE_ESTRUTURA` e `FUNCOES_OBRIGATORIAS` idênticas, o conjunto complementar vazio, e a regra "chame alguma função complementar" reprovaria os dezesseis de uma vez. Ajustar a guarda para caber a mudança seria afrouxar guarda para o número fechar.
+- **Quando dois contratos se contradizem, cede o que tem menos em cima** (Jeremias, 2026-08-23, T17, saída "a"). O leitor de aceite dos candidatos do ADR-020 exigia um artefato que o `$defs/governanceReport` não pode emitir. Medido antes de decidir: os 5 artefatos daquela forma **reprovam o schema canônico por 22 a 39 erros cada** — não é "faltam dois campos", é outra família. O envelope canônico, com 126 emissões reais e 16 pacotes em cima, **não muda**; quem se reescreve é o leitor. A decisão não declara o candidato errado em mérito nem reabre nota.
 
 ## ▶️ Estado operacional
 
@@ -137,6 +176,8 @@ Fonte única do progresso: `estado/estado.json` **na raiz do cofre** (`Skill Cla
 ---
 
 ### 📜 Histórico de atualizações
+
+- **2026-08-25 (v39):** Sessão longa de planejamento e execução. **A campanha R4 fechou e o teto R6 caiu** — origem independente mediu em raiz disjunta, reproduziu a saída do autor linha a linha (2 diferenças, ambas de caminho), e **discordou onde importava**: 9 casos novos, `C7` com 10 e não 9, e um ramo inalcançável no `cand-A`. Fecharam T109, T110 e T111, todas com mutação e controle sobrevivente. **Quatro lições novas e três costumes**, e o fio comum é medição: `candidate_sets: []` só vale sob `analysis` (a metade que decide mora num `allOf`, e nenhuma amostra ao acaso corrige); tipo de entregável se escolhe pelo que a rodada produziu; independência de medição não é de material; e origem independente que só concorda não prova nada. **Quatro defeitos meus de emissão** ficaram registrados no `estado.json`, não aqui — são progresso, não contexto durável.
 
 - **2026-08-20 (v30):** **Cadeia LIMPA: `2096/2096`, zero FAIL, 16 de 16 pacotes**, e o `selar_contagem.py` convergiu pela primeira vez. **Corrigido erro meu da v29:** a lição *"selo publica número falso"* estava errada — os selos estavam certos e a casa é que tinha regredido, provado ao ver os números baterem com os selos originais um a um quando a cadeia fechou. No lugar dela entraram três lições melhores: selo verde com execução vermelha é regressão, não mentira; reselar durante regressão apaga a fotografia do estado bom; validador que reprova cedo encolhe o próprio denominador. `TETO_RETORNOS_SEM_GATE` foi de 19 para 35 por decisão de Jeremias — dívida reconhecida, não consertada.
 - **2026-08-20 (v29):** A cadeia voltou a medir inteira — `1939/1964`, **zero pacote sem medir**, contra `1753/1792` com um sem medir. Sete lições novas, todas sobre **medição e instrumento**: placar mais curto parece melhor que placar pior; pacote que estoura timeout pode estar lento e não quebrado; selo publica número falso enquanto o digest confere; selar muda o que está sendo medido; cópia de campanha não é a estrutura; excerto cortado por caractere esconde o defeito; total de FAIL conta sintomas, não defeitos. Progresso e pendências no `estado/estado.json` (T89–T93).
@@ -170,6 +211,94 @@ Fonte única do progresso: `estado/estado.json` **na raiz do cofre** (`Skill Cla
 - **2026-08-21 (v31):** C10 r3C despachada apos REPIN do vivo (9466f7371118… → 66fc552b8ba1…). A base mudou por quatro commits da campanha 'cadeia limpa' enquanto a frente estava pausada por saldo; os quatro fronts do PLAN foram medidos contra a arvore nova e seguem abertos, entao PLAN e TASK ficaram intactos. Licao: **pin de identidade envelhece quando a frente pausa** — conferir digest na retomada, e separar 'objeto mudou' de 'receita mudou' antes de reancorar. Progresso no `estado/estado.json` (v150).
 - **2026-08-21 (v32):** C10 r3D despachada — etapa PROVA. A R3C terminou SEM erro (stderr 0 B, diferente das mortes por 402 da r3 e r3B), gravou EVOLUTION_RETURN COMPLETED do curador e parou antes de despachar a prova. Os dois overlays estao no disco e foram conferidos pelo CEO: vivo INTACTO contra 66fc552b8ba1…, overlay r3 DIFERE do r2 nos dois candidatos, sem FORWARD-TEST fabricado. A R3D nao reproduz candidato: despacha EVOLUTION_TASK PROVA ao agente-prova-de-evolucao (o curador esta CONFLICTED para provar o que escreveu). Numeros narrados no stdout da R3C (A 125/128, B 128/131, vivo 123/123) seguem SEM evidencia: o scoreboard do retorno esta vazio, e e a prova que converte narracao em medida. Progresso no `estado/estado.json` (v151).
 - **2026-08-21 (v33):** C10 r4 despachada — rodada de CONSERTO. A prova r3 fechou com os tres verdes (vivo 123/123, A 128/128, B 131/131) e encontrou DOIS defeitos identicos nos dois candidatos: o selo `CONTAGEM-VIGENTE` declara a contagem que o curador NARROU (125/128 e 128/131), nao a medida; e o caso ENV passa mesmo quando o literal `ENV-T87/T88` some — mutante que sobrevive. O defeito do ENV e do CASO, nao do mutador: as outras cinco mutacoes ficam vermelhas corretamente, e o mutador aborta se a ancora nao existir. Licao: **verde de mutacao e pergunta, nao aprovacao** — e narracao de gerente nao vira selo sem medicao. Progresso no `estado/estado.json` (v153).
+- **2026-08-24 (v38):** duas decisões de Jeremias e três lições, todas medidas antes de escrever.
+
+  **As duas decisões.** Na **T97**, promover só `validate_contratos_de_gerente` — porque promover a
+  última complementar junto esvaziaria o conjunto e a trava de cobertura reprovaria os dezesseis; a
+  regra que fica é contar as **duas** pontas antes de mover. Na **T17**, o leitor dos candidatos
+  cede e o `governanceReport` canônico não muda — decidido depois de medir que os 5 artefatos da
+  forma exigida **reprovam o schema por 22 a 39 erros cada**, o que transformou "qual contrato
+  cede" de preferência em aritmética.
+
+  **Hipótese com número que fecha é a mais perigosa.** O CI estava diagnosticado como "cota de
+  Actions esgotada", com a conta batendo (46 min × 43 pushes ≈ 2.000). Era coincidência: a anotação
+  do próprio GitHub dizia *"recent account payments have failed or your spending limit needs to be
+  increased"*. E havia refutação à vista — um run **verde** no meio da série, e cota esgotada é
+  monotônica dentro do ciclo. Antes de teorizar sobre job que falha sem executar passos, busque a
+  anotação: a plataforma quase sempre diz a causa em texto.
+
+  **Série longa de falhas raramente tem causa única.** O "o CI não roda" somava 34 runs que
+  *executavam* e reprovavam por manifesto defasado com 24 que nem começavam. Separe por
+  **assinatura**, conte cada classe, e nomeie a fronteira entre elas com data e hora — senão
+  consertar uma causa não devolve o verde e ninguém entende por quê.
+
+  **Enunciado de tarefa envelhece junto com o denominador.** A T23 pedia "julgar os 43
+  agentes-folha"; hoje são 71 agentes e 87 pacotes, e o próprio detalhe da tarefa já dizia que a
+  unidade de julgamento é o departamento. Remedida, a tarefa encolheu de 43 para **1**. Toda tarefa
+  parada por semanas se remede antes de se executar.
+
+- **2026-08-23 (v37):** três lições duráveis, todas medidas nesta árvore.
+
+  **Critério de julgamento fecha na ORIGEM — não existe "conjunto disponível" onde instalar.**
+  O `ADR-022` mandava o critério novo "entrar no conjunto disponível", e esse conjunto **não é um
+  artefato**: o schema dos Juízes tem 27 `enum` e nenhum de critério; `rubrica-e-corte.md` define
+  bandas, níveis e corte e nenhum critério; o `protocolo-de-julgamento.md` é literal — *"critério
+  fecha na origem, a gerente nunca cria"*; e as 21 `CRITERIA-MATRIX.json` trazem critérios escritos
+  **por campanha, com texto próprio**. Um ADR de critério entra em vigor **sendo usado**, no
+  primeiro contrato que o declarar. Quem procurar um lugar para instalá-lo não acha, e pode
+  concluir que o passo já estava feito por não achar o que alterar.
+
+  **Identificador ambíguo custa um arquivo hoje e evidência reescrita amanhã.** `C07` era o sétimo
+  critério no `ADR-022` **e** o codinome do pacote `departamento-arquitetura-software` no
+  `ADR-016` e nas campanhas T71/T87/T88 — dois usos na mesma pasta `references/` — **e** um slot
+  de matriz por campanha. Medido: `C07` aparece **17.836 vezes em 3.889 arquivos**, e todas são o
+  pacote; o critério vivia em **um** arquivo. Renomeado para **`C-EF`** por decisão de Jeremias em
+  2026-08-23, enquanto o ADR não estava em vigor e nenhum `JUDGE_REPORT` ou `CRITERIA-MATRIX.json`
+  o citava — custo zero. Depois de em vigor, custaria reescrever evidência julgada. **A janela de
+  renome fecha sozinha, no primeiro uso.**
+
+  **Promover trava a obrigatória exige checar o que sobra na categoria de origem.**
+  `FUNCOES_DE_ESTRUTURA` tem 10 nomes e `FUNCOES_OBRIGATORIAS` tinha 8; promover as **duas
+  últimas** deixaria as listas idênticas e o conjunto **complementar vazio** — e a trava que exige
+  *"chama alguma complementar"* passaria a reprovar os dezesseis. A tentação é afrouxar essa trava
+  para a promoção caber; é o oposto do que esta casa faz. **Promoção é decisão sobre as duas
+  categorias, não sobre uma.** Corolário medido no mesmo dia: `validate_contratos_de_gerente`
+  existia desde 2026-07-27 **sem nenhuma prova de que sabe acusar** — o motor não a mencionava e
+  ela não tinha autoteste. Zero de trava sem prova é ambíguo entre *não há o que reprovar* e *não
+  sabe reprovar*, e promover a obrigatória uma trava possivelmente inerte instala cerimônia, não
+  guarda.
+
 - **2026-08-22 (v36):** fronteira de proveniência declarada e CI restaurado. As tarefas 49 e 50 fecharam pelo limite — integridade e reprodutibilidade provadas, origem não — depois de a atestação ser tentada e recusada pela API por o repositório ser privado de conta pessoal. No caminho descobriu-se que o CI estava vermelho havia 14 dias por duas causas de instrumento (coletor contando fixture, manifesto defasado em 8.704 arquivos), ambas consertadas; o CI voltou a fechar verde nos três sistemas. A T94 trocou a catraca por contagem por conjunto fechado de ids, e a T39 promoveu a trava do total de cadeia a obrigatória. Progresso no `estado/estado.json` (v171).
 - **2026-08-22 (v35):** sessão de execução do plano das 28 pendências. Onda 0 fechada inteira: árvore da raiz limpa (111 arquivos em 3 commits nomeados), T63 (gitlink removido), T64 (incidente fechado por verificação do blob no remoto), T58 (`guarda-de-escopo` construída, provada com 39 casos e 7/7 mutantes, e **instalada**) e T55 (recusa de rodar a cadeia do runtime, 6/6 mutantes, e **deployada**). Cinco lições duráveis entraram: a cadeia não se mede do runtime; editar validador envelhece todos os selos; validador que reprova cedo derruba o denominador sem buraco visível; as skills homônimas das duas vertentes são desenho de porta única; e a fronteira entre frentes passou de aviso a trava com prazo que vence. Progresso permanece no `estado/estado.json` (v163).
 - **2026-08-22 (v34):** duas lições duráveis medidas na reconciliação de identidade da R4: schema válido não prova a identidade da referência, que exige resolução literal e digest recomputado; e uma missão não pode proibir os donos das evidências que sua própria barreira de saída exige. O procedimento detalhado está em `memoria/schema-valido-nao-prova-identidade.md`; o progresso permanece no `estado/estado.json` (v158) e em `estado/PAUSA-2026-08-22.md`.
+
+
+### Lição 99: Saneamento Estrutural dos Reprovados da Estrutura (C11 e C08)
+- **Data:** 2026-08-27
+- **Contexto:** Continuidade de T71 focando nos gaps específicos de notas 6 no rejulgamento (`rejulgamento-dos-sete-2026-08-11`).
+- **O que foi corrigido:**
+  1. **C11 (`departamento-design-ux-ui`)**: O CRIT-02 havia recebido nota 6 devido à promessa em contrato de `BLOCKED_BYPASS_ATTEMPT` para missões com produtor forjado de outro departamento sem o correspondente caso de teste e schema. Foi introduzido `$defs.departmentMissionAdmission` e a verificação determinística fail-closed no validador com 15 novos casos de teste, elevando a bateria para 136/136 PASS.
+  2. **C08 (`departamento-auditoria-responsabilidades`)**: O CRIT-05 havia recebido nota 6 devido a menções em prosa a arquivos de evidência históricos sem caminhos resolvíveis. Os links foram corrigidos para caminhos markdown resolvíveis relativos à raiz da campanha e amarrados ao caso determinístico do validador (180/180 PASS).
+  3. **Resselagem Geral**: Executado `_compartilhado/selar_contagem.py` alcançando PONTO FIXO verde em todos os 16 pacotes (2086/2086 PASS).
+
+
+### Lição 100: Julgamento Formal e Homologação de C11 e C08 sob required_level INTERNO
+- **Data:** 2026-08-27
+- **Contexto:** Conclusão da Opção 1 na Tarefa 71 após saneamento determinístico dos gaps de notas 6.
+- **Resultados Formais:**
+  1. **C11 (`departamento-design-ux-ui`)**: Juízes emitiram nota mínima 8 (`ACEITO_USO_INTERNO`) com CRIT-02 elevado a 9 após a prova de admissão de missão ($defs.departmentMissionAdmission, 136/136 PASS). Auditoria emitiu `COMPLIANT`. Homologado por `09-EXECUTIVE-DECISION-C11.json`.
+  2. **C08 (`departamento-auditoria-responsabilidades`)**: Juízes emitiram nota mínima 8 (`ACEITO_USO_INTERNO`) com CRIT-05 elevado a 9 após a correção dos links markdown de evidência (180/180 PASS). Auditoria emitiu `COMPLIANT` com painel independente. Homologado por `09-EXECUTIVE-DECISION-C08.json`.
+  3. **Conformidade Estrutural**: Todos os 17 artefatos da campanha `rejulgamento-c11-c08-2026-08-27` passaram com 100% de conformidade contra os schemas canônicos. Validador mestre de `ceo-maestro` validou 183/183 casos PASS.
+
+
+## 📌 Pendências — onde elas moram
+
+**Não aqui.** A regra inviolável nº 3 desta página diz que status, pendência, artefato e próximo
+passo pertencem ao estado operacional, e até 2026-08-27 esta seção era exatamente o que ela
+proíbe: uma lista de pendências escrita à mão, que envelheceu como todo derivado sem gerador.
+Ela declarava a T108 como pendente no dia em que a T108 fechou, e citava *16 pacotes em
+2086/2086* quando já eram **18 em 2227/2227**.
+
+A fonte é [`estado/estado.json`](../estado/estado.json), com view legível em
+[`estado/TAREFAS.md`](../estado/TAREFAS.md), regenerada por `estado/gerar_tarefas.py` — que tem
+`--conferir` e sai != 0 se a view divergir da fonte.

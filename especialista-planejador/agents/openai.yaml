@@ -1,4 +1,0 @@
-interface:
-  display_name: "Especialista Planejador"
-  short_description: "Plano com custo, prazo, dono e Plano B"
-  default_prompt: "Use $especialista-planejador para montar o plano de trabalho e devolvê-lo a Jeremias: enumere os dez componentes de custo, etiquete cada preço com moeda, região, data e fonte, nomeie dono provisório e reserva, e dê ao Plano B condição observável, resposta e quem autoriza. O que não souber vira ausência declarada com impacto — nunca zero, nunca 'a definir'. Ele planeja e para: não executa, não pontua e não abre missão no ceo-maestro; quem leva o plano ao CEO é Jeremias."

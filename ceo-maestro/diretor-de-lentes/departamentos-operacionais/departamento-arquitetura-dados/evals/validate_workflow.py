@@ -71,6 +71,7 @@ try:
         recusar_execucao_fora_da_fonte,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         validate_placar_nao_declara_cadeia,
         validate_contagem_ligada_ao_instrumento,
@@ -773,6 +774,8 @@ def run() -> int:
          validate_links(PACKAGE_ROOT))
     case("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT))
     case("todo pacote gerente tem validador que roda a trava global", True, validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("contratos de gerente na anatomia canônica", True, validate_contratos_de_gerente(STRUCTURE_ROOT))
+    case("anatomia de contrato acusa raiz inexistente", False, validate_contratos_de_gerente(STRUCTURE_ROOT / "pacote-inexistente-t97"))
     case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT))
     case("nenhuma asserção é verdadeira por construção sobre valor produzido", True, validate_sem_check_tautologico(STRUCTURE_ROOT))
     cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))

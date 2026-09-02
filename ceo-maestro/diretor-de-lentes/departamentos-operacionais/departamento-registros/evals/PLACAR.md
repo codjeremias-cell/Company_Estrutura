@@ -7,7 +7,7 @@
 > mudar e o selo não for refeito. Qualquer outro número deste documento é
 > registro da data em que foi medido — não estado de agora.
 
-CONTAGEM-VIGENTE: 182/182 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:529fb93f0e8d5e5ce860d06bf81ea00fb475c0a6b913b8f009d74dbbb2994134` | medido-em: 2026-08-22
+CONTAGEM-VIGENTE: 189/189 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:af92c3f187e656857375d356e65d0fbb034e40ac78109c3934bade3b6bf61ba6` | medido-em: 2026-09-02
 <!-- /SELO-DE-CONTAGEM -->
 
 ## Passagem pelo gate

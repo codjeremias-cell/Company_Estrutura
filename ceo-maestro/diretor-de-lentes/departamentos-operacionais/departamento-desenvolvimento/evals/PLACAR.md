@@ -7,7 +7,7 @@
 > mudar e o selo não for refeito. Qualquer outro número deste documento é
 > registro da data em que foi medido — não estado de agora.
 
-CONTAGEM-VIGENTE: 123/123 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:6b986ebdbc388e8e60fa083a91e61b83adc46d920ab0d990b6a62b653c4f4fa1` | medido-em: 2026-08-22
+CONTAGEM-VIGENTE: 131/131 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:7964131d36f8d5be163b527beaf82346f844cd044c25b729cbcda4d28eda84f4` | medido-em: 2026-09-02
 <!-- /SELO-DE-CONTAGEM -->
 
 ## Passagem pelo gate
@@ -17,7 +17,7 @@ histórico vivem fora do candidato, no
 [resultado consolidado](../../../../evals/julgamento-pacotes-2026-07-29/08-RESUMO.md),
 para não contaminar uma rodada futura com o próprio julgamento.
 
-> **Reconciliação de 2026-07-26.** O número **próprio** deste pacote foi remedido nesta data e vale **105/105 PASS**. Os valores de **vizinho** e os **totais de cadeia** que aparecem abaixo são o **retrato da cascata que produziu este placar** e foram deixados como estavam: são registro histórico, não alegação corrente. Naquela medição, a cadeia canônica somava **1531/1531 PASS** (motor compartilhado 61 + os 15 validadores de pacote), reconciliada em [`ORGANOGRAMA.md`](../../../../../ORGANOGRAMA.md).
+> **Reconciliação de 2026-07-26 (histórico, não vigente).** O número próprio **nessa data** foi 105/105 PASS. **Não republicar 105/105 como resultado corrente.** O vigente do validador é a linha `CONTAGEM-VIGENTE` do selo. Totais de cadeia daquela medição ficam no retrato datado, não nesta tabela.
 >
 > Regra que passou a valer no `GUIA-DE-EXPANSAO-E-MIGRACAO.md`, passo 10.5: **número de vizinho carrega a data da medição, ou não entra.** Onze de quinze placares declaravam para si um número menor que o real em 2026-07-26, porque cada frente congelava o vizinho e o vizinho crescia depois.
 
@@ -27,16 +27,26 @@ Escopo: migração de `SKILL - Nova formula/maestro/comite-de-lentes/lente-dev-s
 para `…/departamentos-operacionais/departamento-desenvolvimento`, fundamentada na canônica
 `dev-senior` e nos **31 geradores de desenvolvimento** do catálogo
 
-## Resultado
+## Resultado vigente
+
+> Esta tabela **não** publica 105/105. Esse número é retrato de 2026-07-26
+> (parágrafo histórico acima). O vigente do validador é o selo `CONTAGEM-VIGENTE`.
 
 | Verificação | Resultado | Executado? |
 |---|---:|---|
-| Validador determinístico do Departamento | 105/105 PASS | **sim** |
+| Validador determinístico do Departamento | ver selo CONTAGEM-VIGENTE | **sim** |
 | Cadeia integrada da estrutura | ver regressão final | **sim** |
-| Forward comportamental (16 casos) | — | **NÃO — pendente** |
 | Baseline do pacote legado | — | **NÃO — existe no legado, não reproduzido** |
-| Auditoria independente | — | **NÃO — pendente** |
-| Parecer dos Juízes | — | **NÃO — pendente** |
+| Auditoria independente | EXECUTADA 2026-08-03 · NONCOMPLIANT · 4 achados | **sim — ver estado vigente 2026-08-08** |
+| Parecer dos Juízes | EMITIDO 2026-08-03 · REPROVED · min 6 faixa 6–7 | **sim — ver estado vigente 2026-08-08** |
+
+## CRIT-06 — TETO_HONESTO (nao e o catalogo estrutural de 16 casos)
+
+O catalogo em `evals.json` (16 casos PORTAO/OPERACAO, exercitado pelo validador
+na secao "O que o validador prova / Catalogo") **nao** e esta prova.
+
+A prova comportamental dos 16 forwards contra instancia nova e independente:
+**TETO_HONESTO**. Nao rodou. Nao e PASS. Nao fabricar `FORWARD-TEST.md`.
 
 ```bash
 python evals/validate_workflow.py
@@ -138,7 +148,7 @@ o aviso em prosa não previne, e de que a única defesa que funciona é a mecân
 2. **Baseline.** A `lente-dev-senior` tem `placar-baseline.md` e duas rodadas de evals. **Não foram
    reproduzidos**, e os instrumentos não são comparáveis: o legado media orquestração com time
    descoberto em runtime, que este pacote deliberadamente não tem.
-3. **Auditoria independente e parecer dos Juízes.** Pendentes.
+3. **Auditoria independente e parecer dos Juízes.** Não pendentes. Estado vigente em 2026-08-08: Auditoria EXECUTADA NONCOMPLIANT; Juízes EMITIDO REPROVED. Ver a tabela de Resultado vigente.
 4. **R1 — verde não é correto.** A bateria prova que o que foi testado passa, não que o requisito
    foi atendido.
 5. **R2 — cobertura de borda é declarada, não medida.** O schema exige os três estados; não
@@ -148,13 +158,31 @@ o aviso em prosa não previne, e de que a única defesa que funciona é a mecân
    acervo tem cinco. Go, Python, .NET e React Native falham fechados — o que é correto, e é também
    uma limitação a declarar.
 
-## Adendo 2026-08-16 — T71 C10 entrada (cand-B)
+## Adendo 2026-08-16 — T71 C10 entrada (histórico)
 
-O selo de 2026-08-08 (116/116) é registro daquela data. Esta overlay acrescenta
-o `$defs/departmentMissionAdmission` e sete casos: o literal no validador, o
-`find_const` do producer de entrada, três chamadas de `mission_verdict` que
-leem o const do schema, e dois casos de schema (rejeita producer forjado /
-aceita o do Diretor).
+Registro da primeira overlay de entrada. **Não descreve o estado vigente**
+desta overlay r3 e **não rotula este candidato**. Substituído pelo adendo r3.
 
-O caso de saída (`plano com produtor forjado` no `DEV_PLAN`) permanece. CRIT-06
-não entra neste adendo.
+## Adendo 2026-08-21 — T71 C10 r3 (linhagem B)
+
+`mission_verdict` distingue const ausente (`BLOCKED_CONST_AUSENTE`) de
+producer forjado (`BLOCKED_BYPASS_ATTEMPT`). Ausência de `$defs` ou de
+`departmentMissionAdmission` fecha `BLOCKED_BYPASS_ATTEMPT`, nunca exceção.
+`$def` com `additionalProperties` false e os 18 `required` do envelope do
+Diretor. Title/description não chamam `DEPARTMENT_MISSION` de envelope interno.
+`oneOf` e `mission_verdict` são a mesma autoridade.
+
+Tabela Resultado vigente: sem 105/105, sem Juízes/Auditoria pendentes.
+CRIT-06 em seção própria, inconfundível do catálogo estrutural de 16 casos.
+FAIL ambiental T87/T88 leva o rótulo `ENV-T87/T88` no stdout.
+Receita de rollback em `evals/ROLLBACK.md` com hash de origem.
+Sem `FORWARD-TEST.md`.
+
+## Adendo 2026-08-21 — T71 C10 r4 (conserto)
+
+O caso `FAIL ambiental T87/T88 tem rotulo ENV no validador` deixou de
+grep o proprio fonte pelo literal contiguo — o mutador trocava esse
+literal no caso junto com a producao e o caso seguia verde. A assercao
+reconstrói o token em partes e exige o texto de emissao na producao
+(o print). O selo `CONTAGEM-VIGENTE` e a contagem medida desta custodia,
+com o digest normalizado do instrumento, nao a contagem narrada.

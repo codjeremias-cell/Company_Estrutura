@@ -81,8 +81,15 @@ de importar o agente `conselho-planejamento` e vinculá-lo a um cargo, ligue a
 skill ao mesmo cargo (`cargo_skills`) — são os três passos de sempre:
 importar, reapontar, política.
 
-Não reimporte `especialista-planejador` da Estrutura como agente: lá ele tem
+Não reimporte `planejador-estrutura` da Estrutura como agente: lá ele tem
 contrato, no acervo ele é skill, e a espécie não troca.
+
+> **O nome mudou em 2026-09-02, e é por isso que esta frase distingue os dois.** O pacote da
+> Estrutura chamava-se `especialista-planejador` — o mesmo nome da skill do Catálogo que este
+> conselheiro carrega. Enquanto a homonímia existiu, quem invocava o nome recebia **sempre** a do
+> Catálogo, que é o que este arquivo pede: o comportamento aqui não muda. O que muda é que agora
+> os dois nomes são distintos, e a advertência acima deixou de depender de o leitor saber qual das
+> duas o runtime entregaria.
 
 ## Como importar na GradUP
 

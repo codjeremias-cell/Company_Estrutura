@@ -31,6 +31,7 @@ try:
     from _compartilhado.validador_schema import (  # noqa: E402
         digest,
         sha256_file,
+        sha256_texto_normalizado,
         validate_schema,
     )
     from _compartilhado.verificacoes_estrutura import (
@@ -46,6 +47,8 @@ try:
         validate_contagem_ligada_ao_instrumento,
         validate_travas_compartilhadas_com_efeito,
         validate_pendencia_tem_dono,
+        achar_limite_sem_dono,
+        validate_limite_residual_tem_dono,
         validate_sem_check_tautologico,
         validate_trava_de_digest,
     )
@@ -1645,6 +1648,22 @@ def validate_governance_report(
             "governance_report.pending: o TETO R11 não é o texto vigente, byte a"
             " byte — 'R11 ' + qualquer coisa passava por teto",
         )
+    # --- TAREFA 105: O LIMITE RESIDUAL NOMEIA DONO E CONDIÇÃO -------------
+    #
+    # Achado #1 da reconciliação da tarefa 47, e o painel externo de
+    # 2026-08-05 já o tinha pontuado: as declarações de limite "são honestas
+    # e completas, mas majoritariamente NÃO ACIONÁVEIS — ninguém está na
+    # linha por elas". Os quatro limites fixos já eram cobrados por texto
+    # exato acima; o que NADA cobrava era a ressalva de rodada, e são 73
+    # delas nas 126 emissões reais, nenhuma com dono e nenhuma com condição.
+    #
+    # A conferência é repetida aqui, e não só na varredura da árvore, pelo
+    # mesmo motivo de `pending` e da alegação: quem chama
+    # `validate_governance_report` direto não passa pelo schema nem pela
+    # varredura, e exigência que mora num lugar só some para metade dos
+    # consumidores.
+    if isinstance(pendencias, list):
+        errors.extend(achar_limite_sem_dono(pendencias, "governance_report"))
     add_if(
         errors,
         verdict == "COMPLIANT" and report.get("candidate_digest_source") != "RECOMPUTADO",
@@ -3130,6 +3149,250 @@ def _fixture_judge_assignment_canonica() -> dict[str, Any]:
     }
 
 
+
+# --------------------------------------------------------------------------
+# T109 — a trava da T96 esta certa e nao alcanca ninguem
+#
+# `_missao_nao_proibe_dono_de_evidencia` so entra quando a missao declara
+# `forbidden_actors`. Medido em 2026-08-24: das **161 EXECUTIVE_MISSION reais**
+# da arvore (253 no total, 92 sao fixture, overlay, isolamento ou backup),
+# **ZERO** declaram o campo. A trava dispara em 0 de 161 — passa nas proprias
+# amostras sinteticas, que setam o campo, e e inerte na casa.
+#
+# NAO E DEFEITO DELA. O campo nasceu OPCIONAL de proposito, para nao falsificar
+# envelope ja emitido — mesma disciplina do `bloqueada_por`. O que falta e o
+# outro lado: nada obriga uma emissao NOVA a declarar. A missao 46 proibiu
+# atores em PROSA (`stop_when` e um `allowed_tools` restringindo `spawn_agent`),
+# e prosa a T96 recusou cacar, com razao: a proxima escreveria com outras
+# palavras.
+#
+# O QUE NAO FAZER, e esta e a parte cara: NAO derivar a proibicao de
+# `recipients`. Ja foi tentado na T96 e a propria bateria derrubou em duas
+# linhas — o caso canonico `missao executiva admite Evolucao de Skills` tem
+# `judge_gate_required: true` com `recipients` so da Evolucao e e VALIDO,
+# porque nesta casa o parecer chega pela CADEIA DO CEO, nao pelo destinatario.
+# A T109 nasceu pedindo exatamente essa derivacao; o pedido estava errado.
+#
+# ENTAO O CONSERTO E TORNAR A DECLARACAO OBRIGATORIA DAQUI PARA A FRENTE:
+# ausencia deixa de ser silencio e vira declaracao. `[]` diz "esta missao nao
+# proibe ninguem"; campo faltando nao diz nada. As anteriores ao corte sao
+# divida, contada e com catraca dos dois lados.
+# --------------------------------------------------------------------------
+
+CORTE_DECLARACAO_DE_PROIBICAO = "2026-08-25"
+
+# Divida MEDIDA em 2026-08-24 sobre as missoes reais da arvore, nao estimada.
+# Derivada de contagem e nao escrita ao lado dela seria melhor; aqui a lista
+# nomeada teria 161 ids e afogaria o arquivo, entao o numero fica com a receita
+# colada: e `missoes_sem_declaracao_de_proibicao(...)[1]` sobre a arvore real.
+TETO_MISSOES_SEM_DECLARACAO = 161
+
+
+def missoes_sem_declaracao_de_proibicao(
+    missoes: list[dict[str, Any]], corte: str = CORTE_DECLARACAO_DE_PROIBICAO
+) -> tuple[list[str], list[str]]:
+    """Separa quem OMITE `forbidden_actors` em pos-corte (falta) e pre-corte (divida).
+
+    Recebe as missoes ja lidas, e nao o caminho: trava que so sabe ler o disco
+    nao tem como provar que fica vermelha. Mesma disciplina de
+    `retornos_sem_gate`, no `diretor-de-lentes`.
+    """
+    pos: list[str] = []
+    pre: list[str] = []
+    for m in missoes:
+        if not isinstance(m, dict) or m.get("artifact_type") != "EXECUTIVE_MISSION":
+            continue
+        if isinstance(m.get("forbidden_actors"), list):
+            continue  # declarou, ainda que vazio — que e o ponto
+        ident = str(m.get("mission_id") or "SEM-MISSION-ID")
+        quando = str(
+            m.get("issued_at")
+            or m.get("created_at")
+            or (m.get("causal") or {}).get("created_at")
+            or ""
+        )
+        if not quando:
+            pos.append(ident + " (SEM DATA — conta como pos-corte: ausencia nao isenta)")
+        elif quando[:10] >= corte:
+            pos.append(ident)
+        else:
+            pre.append(ident)
+    return pos, pre
+
+
+def validate_declaracao_de_proibicao(missoes: list[dict[str, Any]]) -> list[str]:
+    """Emissao nova declara `forbidden_actors`; a divida antiga so encolhe."""
+    errors: list[str] = []
+    pos, pre = missoes_sem_declaracao_de_proibicao(missoes)
+    if pos:
+        errors.append(
+            "MISSAO_SEM_DECLARACAO_DE_PROIBICAO: emitida em "
+            f"{CORTE_DECLARACAO_DE_PROIBICAO} ou depois e sem `forbidden_actors`, "
+            f"nem vazio: {sorted(pos)[:5]}{'...' if len(pos) > 5 else ''} "
+            f"({len(pos)} no total). Campo faltando nao diz nada; `[]` diz que a "
+            "missao nao proibe ninguem, e e o que torna a trava da T96 alcancavel."
+        )
+    if len(pre) > TETO_MISSOES_SEM_DECLARACAO:
+        errors.append(
+            f"DIVIDA_CRESCEU: {len(pre)} missoes anteriores ao corte sem declaracao, "
+            f"contra teto de {TETO_MISSOES_SEM_DECLARACAO}. A divida so encolhe."
+        )
+    if len(pre) < TETO_MISSOES_SEM_DECLARACAO:
+        errors.append(
+            f"TETO_DESATUALIZADO: a divida caiu para {len(pre)} e o teto ainda diz "
+            f"{TETO_MISSOES_SEM_DECLARACAO}. Baixe o teto no mesmo ato — catraca que "
+            "so aperta de um lado deixa folga silenciosa."
+        )
+    return errors
+
+
+# Pastas que NAO sao emissao real: fixture, candidato, overlay, isolamento e
+# backup. Contar copia como original ja inflou uma cadeia de 16 para 101 nesta
+# casa; o corte e estrutural, e os descartados sao CONTADOS, nunca omitidos.
+_FORA_DA_EMISSAO_REAL = frozenset({
+    "fixtures", "candidatos", "candidatos-r2", "candidatos-r3", "candidatos-r4",
+    "lab", "overlay", "instrumentos", "fontes", "custodia", "isolamento",
+    "isolamento-r2", "isolamento-r3", "isolamento-r4", "__pycache__",
+    "backup-pre-canonizacao-t19",
+})
+
+
+def missoes_reais_em_disco(raiz: Path) -> tuple[list[dict[str, Any]], int]:
+    """As EXECUTIVE_MISSION que sao emissao de verdade, e quantas foram descartadas."""
+    reais: list[dict[str, Any]] = []
+    descartadas = 0
+    for caminho in raiz.rglob("*.json"):
+        try:
+            obj = json.loads(caminho.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if not isinstance(obj, dict) or obj.get("artifact_type") != "EXECUTIVE_MISSION":
+            continue
+        if _FORA_DA_EMISSAO_REAL & set(caminho.parts):
+            descartadas += 1
+            continue
+        reais.append(obj)
+    return reais, descartadas
+
+
+# --------------------------------------------------------------------------
+# T111 — o digest publicado no despacho tem de REPRODUZIR
+#
+# Ate 2026-08-25 os registros de despacho publicavam o sha256 CRU do arquivo da
+# missao. Cru NAO E IDENTIDADE: a raiz do cofre guarda CRLF, todo worktree
+# guarda LF (`.gitattributes` fixa `eol=lf`), e o mesmo conteudo da dois
+# numeros. A barreira que o executor recebia FALHAVA POR CONSTRUCAO em checkout
+# limpo — e falhar por EOL e indistinguivel de falhar por adulteracao para quem
+# so compara strings: a trava contra troca de missao virava alarme falso
+# exatamente onde deveria dar seguranca.
+#
+# Quem apontou foi a ORIGEM INDEPENDENTE da R4, medindo `10bbbb4b` na raiz
+# contra `ac83e39f` no worktree dela. Tres modos de falha coexistiam nos quatro
+# registros reais: digest AUSENTE (o 11, de 2026-08-08), digest CRU que nao
+# reproduz normalizado (o 20), e digest TRUNCADO por defeito do meu script de
+# emissao (o 26, que publicava `4d0b9f3c...`).
+#
+# A regra nao e "use a funcao certa" — isso e verificavel por leitura e portanto
+# fraco. A regra e que o numero publicado RECOMPUTE a partir do arquivo, pela
+# receita nomeada ao lado dele. Digest que nao reproduz nao e identidade,
+# qualquer que seja a funcao que o gerou.
+# --------------------------------------------------------------------------
+
+# Divida MEDIDA em 2026-08-25: as entradas de despacho anteriores a esta trava
+# que nao publicaram digest nenhum. Nao se retro-carimba registro congelado —
+# faze-lo diria que aquele despacho publicou o que nao publicou.
+DIVIDA_DESPACHO_SEM_DIGEST = (
+    "11-DESPACHO-R3.json::08-EXECUTIVE-MISSION-R3.json",
+    "11-DESPACHO-R3.json::09-EXECUTIVE-MISSION-ORIGEM-INDEPENDENTE-R3.json",
+)
+TETO_DESPACHOS_SEM_DIGEST = len(DIVIDA_DESPACHO_SEM_DIGEST)
+
+
+def digests_de_despacho(
+    registros: list[tuple[str, dict[str, Any]]], resolver
+) -> tuple[list[str], list[str]]:
+    """Separa as entradas de despacho em (nao reproduzem, sem digest).
+
+    `registros` chega ja lido e `resolver` devolve o caminho da missao a partir
+    do `mission_ref` — as duas coisas para que a trava possa ser exercitada com
+    amostra. Trava que so sabe ler o disco nao consegue provar que fica vermelha;
+    e a mesma disciplina de `retornos_sem_gate`, no `diretor-de-lentes`.
+    """
+    nao_reproduzem: list[str] = []
+    sem_digest: list[str] = []
+    for nome, reg in registros:
+        if not isinstance(reg, dict):
+            continue
+        for entrada in reg.get("despachos") or []:
+            if not isinstance(entrada, dict):
+                continue
+            ref = entrada.get("mission_ref")
+            chave = f"{nome}::{ref}"
+            publicado = entrada.get("mission_digest")
+            if not isinstance(publicado, str) or not publicado.startswith("sha256:"):
+                sem_digest.append(chave)
+                continue
+            caminho = resolver(nome, ref)
+            if caminho is None or not Path(caminho).is_file():
+                nao_reproduzem.append(chave + " (missao nao encontrada para recomputar)")
+                continue
+            recomputado = sha256_texto_normalizado(Path(caminho))
+            if recomputado != publicado:
+                nao_reproduzem.append(
+                    f"{chave}: publicado {publicado[:22]}... recomputado {recomputado[:22]}..."
+                )
+    return nao_reproduzem, sem_digest
+
+
+def validate_digest_de_despacho_reproduz(
+    registros: list[tuple[str, dict[str, Any]]], resolver
+) -> list[str]:
+    """Digest publicado que nao recompute nao e identidade — e alarme falso."""
+    errors: list[str] = []
+    nao_reproduzem, sem_digest = digests_de_despacho(registros, resolver)
+    if nao_reproduzem:
+        errors.append(
+            "DIGEST_DE_DESPACHO_NAO_REPRODUZ: o numero publicado nao recomputa a "
+            f"partir do arquivo pela receita nomeada: {sorted(nao_reproduzem)[:3]}"
+            f"{'...' if len(nao_reproduzem) > 3 else ''} ({len(nao_reproduzem)} no "
+            "total). Quem confere em worktree limpo nao distingue isso de troca de missao."
+        )
+    if len(sem_digest) > TETO_DESPACHOS_SEM_DIGEST:
+        errors.append(
+            f"DIVIDA_CRESCEU: {len(sem_digest)} entradas de despacho sem digest, contra "
+            f"teto de {TETO_DESPACHOS_SEM_DIGEST}. Despacho novo publica digest que reproduz."
+        )
+    if len(sem_digest) < TETO_DESPACHOS_SEM_DIGEST:
+        errors.append(
+            f"TETO_DESATUALIZADO: a divida caiu para {len(sem_digest)} e o teto ainda diz "
+            f"{TETO_DESPACHOS_SEM_DIGEST}. Baixe o teto no mesmo ato."
+        )
+    return errors
+
+
+def registros_de_despacho_em_disco(raiz: Path):
+    """Os DISPATCH_RECORD que sao registro real, e o resolver do `mission_ref`."""
+    achados: list[tuple[str, dict[str, Any]]] = []
+    onde: dict[str, Path] = {}
+    for caminho in raiz.rglob("*.json"):
+        if _FORA_DA_EMISSAO_REAL & set(caminho.parts):
+            continue
+        try:
+            obj = json.loads(caminho.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if isinstance(obj, dict) and obj.get("artifact_type") == "DISPATCH_RECORD":
+            achados.append((caminho.name, obj))
+            onde[caminho.name] = caminho.parent
+
+    def resolver(nome_registro: str, ref: object):
+        pasta = onde.get(nome_registro)
+        if pasta is None or not isinstance(ref, str) or not ref:
+            return None
+        return pasta / ref
+
+    return achados, resolver
+
 def run() -> int:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     evals = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
@@ -4350,6 +4613,59 @@ def run() -> int:
     cases.append(("a contagem publicada aponta para o digest do instrumento vigente", True, validate_contagem_ligada_ao_instrumento(ROOT.parent)))
     cases.append(("as travas do modulo compartilhado nao estao neutralizadas", True, validate_travas_compartilhadas_com_efeito(ROOT.parent)))
     cases.append(("toda pendencia declarada nomeia quem responde por ela", True, validate_pendencia_tem_dono(ROOT.parent)))
+    # --- TAREFA 105 ------------------------------------------------------
+    cases.append(
+        ("todo limite residual do envelope nomeia dono e condicao de fechamento",
+         True, validate_limite_residual_tem_dono(ROOT.parent))
+    )
+    # UM CASO POR FORMA PROIBIDA. Caso que viola duas condições de uma vez
+    # continua vermelho quando uma é neutralizada, e a mutação sai verde.
+    _sem_dono_nem_condicao = copy.deepcopy(envelope_da_barreira)
+    _sem_dono_nem_condicao["pending"] = list(envelope_da_barreira["pending"]) + [
+        "Ressalva em AUTH: fechar o achado e reexecutar a inspecao"
+    ]
+    cases.append(
+        ("ressalva nova sem dono e sem condicao e rejeitada na barreira",
+         False, validate_governance_report(_sem_dono_nem_condicao,
+                                           valid_normal_submission))
+    )
+    _so_dono = copy.deepcopy(envelope_da_barreira)
+    _so_dono["pending"] = list(envelope_da_barreira["pending"]) + [
+        "Ressalva em AUTH: fechar o achado. dono: ceo-maestro"
+    ]
+    cases.append(
+        ("ressalva nova COM dono e SEM condicao de fechamento e rejeitada",
+         False, validate_governance_report(_so_dono, valid_normal_submission))
+    )
+    _so_condicao = copy.deepcopy(envelope_da_barreira)
+    _so_condicao["pending"] = list(envelope_da_barreira["pending"]) + [
+        "Ressalva em AUTH: fecha quando: a inspecao for reexecutada"
+    ]
+    cases.append(
+        ("ressalva nova COM condicao e SEM dono e rejeitada", False,
+         validate_governance_report(_so_condicao, valid_normal_submission))
+    )
+    # A forma satisfeita sem ninguem nomeado: `dono:` seguido de pontuacao.
+    # Foi o buraco da primeira versao da trava, pego por execucao.
+    _dono_de_mentira = copy.deepcopy(envelope_da_barreira)
+    _dono_de_mentira["pending"] = list(envelope_da_barreira["pending"]) + [
+        "Ressalva em AUTH: x. dono: . fecha quando: reabrir a dimensao"
+    ]
+    cases.append(
+        ("ressalva com `dono:` so de pontuacao e rejeitada", False,
+         validate_governance_report(_dono_de_mentira, valid_normal_submission))
+    )
+    # E o par que impede a trava de virar parede: a forma COMPLETA passa.
+    _ressalva_completa = copy.deepcopy(envelope_da_barreira)
+    _ressalva_completa["pending"] = list(envelope_da_barreira["pending"]) + [
+        "Ressalva em AUTH: o achado segue aberto."
+        " dono: departamento-auditoria-responsabilidades."
+        " fecha quando: a inspecao for reexecutada contra a identidade vigente"
+    ]
+    cases.append(
+        ("ressalva nova COMPLETA passa na barreira", True,
+         validate_governance_report(_ressalva_completa, valid_normal_submission))
+    )
     cases.append(("a fonte normativa confere com o valor declarado em ORIGEM.md", True, validate_fonte_normativa_conferida(ROOT.parent)))
     # GUIA, passo 7: as 12 secoes do contrato de gerente. Estrutura-inteira pelo
     # mesmo motivo da serie de ADR -- em 2026-07-27 a medicao achou 8 de 15
@@ -5064,6 +5380,131 @@ def run() -> int:
     expired = copy.deepcopy(auth)
     expired["issued_at"] = "2026-07-25T10:00:00-03:00"
     expired["expires_at"] = "2026-07-25T12:00:00-03:00"
+    # --- T111: o digest do despacho recomputa? ARVORE REAL ------------------
+    _regs, _resolver = registros_de_despacho_em_disco(ROOT.parent)
+    cases.append(
+        (
+            "T111 a arvore tem registro de despacho para medir",
+            True,
+            [] if _regs else ["nenhum DISPATCH_RECORD real encontrado; zero de "
+                              "varredura e suspeita, nao conformidade"],
+        )
+    )
+    cases.append(
+        (
+            "T111 todo digest de despacho publicado RECOMPUTA (ARVORE REAL)",
+            True,
+            validate_digest_de_despacho_reproduz(_regs, _resolver),
+        )
+    )
+    _amostra_ruim = [("amostra.json", {
+        "artifact_type": "DISPATCH_RECORD",
+        "despachos": [{"mission_ref": "x.json", "mission_digest": "sha256:" + "0" * 64}],
+    })]
+    _resolver_amostra = lambda _n, _r: ROOT / "evals" / "producao-honesta-2026-08-04" / (
+        "14-EXECUTIVE-MISSION-R3-POS-DECISAO-T17.json")
+    cases.append(
+        (
+            "T111 digest que nao recomputa e acusado",
+            False,
+            digests_de_despacho(_amostra_ruim, _resolver_amostra)[0] and ["acusado"] or [],
+        )
+    )
+    _amostra_sem_arquivo = [("amostra.json", {
+        "artifact_type": "DISPATCH_RECORD",
+        "despachos": [{"mission_ref": "nao-existe.json", "mission_digest": "sha256:" + "0" * 64}],
+    })]
+    cases.append(
+        (
+            "T111 missao que nao existe para recomputar nao e isentada",
+            False,
+            digests_de_despacho(_amostra_sem_arquivo, lambda _n, _r: None)[0] and ["acusado"] or [],
+        )
+    )
+    _amostra_cru = [("amostra.json", {
+        "artifact_type": "DISPATCH_RECORD",
+        "despachos": [{"mission_ref": "x.json", "mission_digest": "d246dbc8" + "0" * 56}],
+    })]
+    cases.append(
+        (
+            "T111 digest sem o prefixo da receita nao e aceito como publicado",
+            False,
+            digests_de_despacho(_amostra_cru, _resolver_amostra)[1] and ["contado como sem digest"] or [],
+        )
+    )
+
+    # --- T109: a declaracao de proibicao, medida em MISSAO REAL ------------
+    _missoes_reais, _descartadas = missoes_reais_em_disco(ROOT.parent)
+    _pos, _pre = missoes_sem_declaracao_de_proibicao(_missoes_reais)
+    cases.append(
+        (
+            "T109 a arvore tem missao real para medir",
+            True,
+            [] if _missoes_reais else ["nenhuma EXECUTIVE_MISSION real encontrada; "
+                                       "zero de varredura e suspeita, nao conformidade"],
+        )
+    )
+    cases.append(
+        (
+            "T109 nenhuma missao pos-corte omite forbidden_actors (ARVORE REAL)",
+            True,
+            validate_declaracao_de_proibicao(_missoes_reais),
+        )
+    )
+    # Negativos com amostra, porque hoje NAO existe missao pos-corte na arvore:
+    # a limitacao fica declarada em vez de disfarcada de cobertura.
+    _amostra_pos = {
+        "artifact_type": "EXECUTIVE_MISSION",
+        "mission_id": "AMOSTRA-T109-POS-CORTE",
+        "issued_at": CORTE_DECLARACAO_DE_PROIBICAO + "T00:00:00-03:00",
+    }
+    cases.append(
+        (
+            "T109 missao pos-corte sem o campo e acusada",
+            False,
+            missoes_sem_declaracao_de_proibicao([_amostra_pos])[0] and ["acusada"] or [],
+        )
+    )
+    _amostra_sem_data = {
+        "artifact_type": "EXECUTIVE_MISSION",
+        "mission_id": "AMOSTRA-T109-SEM-DATA",
+    }
+    cases.append(
+        (
+            "T109 missao sem data nao e isentada",
+            False,
+            missoes_sem_declaracao_de_proibicao([_amostra_sem_data])[0] and ["acusada"] or [],
+        )
+    )
+    _amostra_declarada = {
+        "artifact_type": "EXECUTIVE_MISSION",
+        "mission_id": "AMOSTRA-T109-DECLARADA",
+        "issued_at": CORTE_DECLARACAO_DE_PROIBICAO + "T00:00:00-03:00",
+        "forbidden_actors": [],
+    }
+    cases.append(
+        (
+            "T109 declarar lista VAZIA satisfaz a regra",
+            True,
+            missoes_sem_declaracao_de_proibicao([_amostra_declarada])[0] and ["acusada"] or [],
+        )
+    )
+    cases.append(
+        (
+            "T109 a divida medida bate o teto declarado (ARVORE REAL)",
+            True,
+            (
+                []
+                if len(_pre) == TETO_MISSOES_SEM_DECLARACAO
+                else [
+                    f"divida medida {len(_pre)} contra teto "
+                    f"{TETO_MISSOES_SEM_DECLARACAO}; {_descartadas} descartadas por "
+                    "nao serem emissao real"
+                ]
+            ),
+        )
+    )
+
     cases.append(
         (
             "autorização expirada não aprova",

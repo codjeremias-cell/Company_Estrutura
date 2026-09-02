@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import ast
 import json
 import os
 import re
@@ -68,6 +69,7 @@ try:
         recusar_execucao_fora_da_fonte,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         validate_placar_nao_declara_cadeia,
         validate_contagem_ligada_ao_instrumento,
@@ -1313,6 +1315,38 @@ class Results:
         print(f"[WARN] {message}")
 
 
+def _chamada_alimenta_caso(fonte: str, nome: str) -> bool:
+    """A função `nome` é chamada E o retorno dela alimenta um `cases.append`.
+
+    Por AST, não por substring: `# validate_x(...)` num comentário e
+    `validate_x(...)` numa linha solta satisfazem uma busca textual e não
+    decidem nada. O que conta é o retorno virar argumento de um append de
+    caso — que é onde ele vira veredito.
+    """
+    try:
+        arvore = ast.parse(fonte)
+    except SyntaxError:
+        return False
+
+    def eh_a_chamada(no: object) -> bool:
+        return (
+            isinstance(no, ast.Call)
+            and isinstance(no.func, ast.Name)
+            and no.func.id == nome
+        )
+
+    for no in ast.walk(arvore):
+        if not isinstance(no, ast.Call):
+            continue
+        alvo = no.func
+        if not (isinstance(alvo, ast.Attribute) and alvo.attr == "append"):
+            continue
+        for argumento in no.args:
+            for interno in ast.walk(argumento):
+                if eh_a_chamada(interno):
+                    return True
+    return False
+
 def main() -> int:
     results = Results()
 
@@ -1385,6 +1419,18 @@ def main() -> int:
         "todo pacote gerente tem validador que roda a trava global",
         not cobertura_errors,
         " | ".join(cobertura_errors),
+    )
+    contratos_errors = validate_contratos_de_gerente(STRUCTURE_ROOT)
+    results.check(
+        "contratos de gerente na anatomia canônica",
+        not contratos_errors,
+        " | ".join(contratos_errors),
+    )
+    contratos_ausente = validate_contratos_de_gerente(STRUCTURE_ROOT / "pacote-inexistente-t97")
+    results.check(
+        "anatomia de contrato acusa raiz inexistente",
+        bool(contratos_ausente),
+        "trava silenciosa: nao acusou raiz ausente",
     )
     cobertura_errors = validate_trava_de_digest(STRUCTURE_ROOT)
     results.check(
@@ -2342,6 +2388,46 @@ def main() -> int:
             results.check("validador semântico do CEO disponível", False, str(CEO_VALIDATOR_PATH))
     else:
         results.check("schema do CEO disponível", False, str(CEO_SCHEMA_PATH))
+
+    # --- TAREFA 105: A VARREDURA DO LIMITE RESIDUAL É EXIGIDA DE FORA ----
+    #
+    # POR QUE ESTA CHECAGEM MORA AQUI, e não no validador do CEO: a prova de
+    # mutação da T105 mediu que remover a CHAMADA de
+    # `validate_limite_residual_tem_dono` do `run()` do CEO derruba apenas o
+    # caso do selo de digest — o mesmo caso que QUALQUER edição naquele
+    # arquivo derruba. Nada nomeava a varredura ausente, e reselar devolveria
+    # o verde com a trava fora do fluxo.
+    #
+    # É `gate-que-nao-se-autoexige-erode` pela quarta vez nesta casa (T27,
+    # T66, T103, esta), e o remédio é o mesmo das três anteriores: o vigia
+    # não mora no arquivo que vigia, senão sai junto na mesma edição. Este
+    # pacote já lia `CEO_VALIDATOR_PATH` e já roda a regressão do CEO como
+    # subprocesso — é o terceiro que a T105 tinha à mão.
+    #
+    # EFEITO, NÃO CHAMADA: não basta o nome aparecer. O retorno tem de ser o
+    # terceiro elemento de um `cases.append`, que é o que faz o resultado
+    # virar veredito. `validate_limite_residual_tem_dono(...)` numa linha
+    # solta satisfaria uma busca por nome e não decidiria nada — é o terceiro
+    # degrau da progressão que esta casa documenta.
+    if CEO_VALIDATOR_PATH.is_file():
+        fonte_do_ceo = CEO_VALIDATOR_PATH.read_text(encoding="utf-8")
+        chamada_com_efeito = _chamada_alimenta_caso(
+            fonte_do_ceo, "validate_limite_residual_tem_dono"
+        )
+        results.check(
+            "o validador do CEO exerce a varredura de limite residual (T105)",
+            chamada_com_efeito,
+            "a chamada de validate_limite_residual_tem_dono sumiu do run() do"
+            " CEO, ou o retorno dela deixou de alimentar um caso. Sem ela, as"
+            " 73 ressalvas congeladas deixam de ser varridas e a próxima entra"
+            " sem dono em silêncio",
+        )
+        results.check(
+            "a guarda viva do limite residual segue na barreira do CEO (T105)",
+            'achar_limite_sem_dono(pendencias, "governance_report")' in fonte_do_ceo,
+            "a guarda dentro de validate_governance_report sumiu: quem chama a"
+            " barreira direto voltaria a aceitar ressalva sem dono",
+        )
 
     regression_scripts = [
         CEO_ROOT / "evals" / "validate_workflow.py",

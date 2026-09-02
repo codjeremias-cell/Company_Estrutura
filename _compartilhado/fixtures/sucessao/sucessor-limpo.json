@@ -1,0 +1,15 @@
+{
+  "report_id": "FIXTURE-SUCESSAO-02",
+  "verdict": "COMPLIANT",
+  "issued_at": "2026-01-02T00:00:00Z",
+  "pending": [
+    "Ressalva em FIXTURE: o achado segue aberto. dono: departamento-auditoria-responsabilidades. fecha quando: a inspecao for reexecutada contra a identidade vigente"
+  ],
+  "violations": [],
+  "evidence_refs": [],
+  "candidate_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "contract_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "rules_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "auditor_ref": "departamento-auditoria-responsabilidades",
+  "_fixture": "FIXTURE do autoteste de supersessao. NAO e emissao real: vive sob _compartilhado/fixtures/, que a varredura de emissoes exclui por nome. Existe para que a cadeia -- e nao um script avulso -- fique VERMELHA se qualquer condicao de `confere_sucessao` for neutralizada."
+}

@@ -45,6 +45,18 @@ Jeremias
 - O relatório de aprendizagem é requisitado pelo `departamento-evolucao-skills` **através do CEO**:
   este Departamento o produz e o referencia no retorno; nunca o entrega por canal paralelo.
 
+**Por onde essa requisição entra — o salto que fecha a cadeia.** "Através do CEO" **não** é origem de
+missão: pedido que chegue direto do CEO é `BLOCKED_BYPASS_ATTEMPT` como qualquer outro (*Entradas
+aceitas*, abaixo). O caminho tem quatro passos, e só o terceiro toca este Departamento: (1) o
+`departamento-evolucao-skills` requisita a colheita ao `ceo-maestro`; (2) o CEO emite a
+`EXECUTIVE_MISSION` ao `diretor-de-lentes`; (3) o Diretor emite a `DEPARTMENT_MISSION` a este
+Departamento, com a colheita no escopo — e é **essa** missão, e nenhuma outra, que se aceita aqui;
+(4) o `LEARNING_REPORT` é gravado e volta como **referência** no `DEPARTMENT_RETURN` ao Diretor, e é
+por ele que a referência sobe ao CEO e chega a quem encomendou. O envelope do relatório registra a
+missão de origem e a via (`requested_via: ceo-maestro`); campos e travas vivem em
+[references/protocolo-registros.md](references/protocolo-registros.md), §1.5, fonte única — nunca
+relistados aqui.
+
 ## Compromisso obrigatório
 
 Ler sempre [CONTRATO-DE-COMPROMISSO.md](CONTRATO-DE-COMPROMISSO.md). Conflito com esse contrato ou
@@ -73,6 +85,65 @@ com as Regras de Ouro **bloqueia a operação** e volta ao Diretor.
 - Ler [../../../departamento-evolucao-skills/references/mineracao-e-proveniencia.md](../../../departamento-evolucao-skills/references/mineracao-e-proveniencia.md)
   **somente** ao produzir o relatório de aprendizagem, para conferir o que o consumidor lê — e para
   não preencher o que é dele.
+
+## Rota de entrada e mapa de bloqueios
+
+Esta seção é **índice de orientação, não fonte**: cada linha aponta a norma que decide, e o ponteiro
+vence a glosa em toda divergência. Ela existe para quem lê a `description` primeiro e não tem a quem
+perguntar.
+
+### A rota que o consumidor realmente tem
+
+Os gatilhos anunciados na `description` — *"onde a gente parou?"*, *"anota essa decisão"*, *"o que
+ficou pendente?"* — são o que faz a demanda **ser roteada até aqui**; não são uma porta que o
+consumidor abre. Este Departamento **não é acionável direto**:
+
+```text
+Jeremias → ceo-maestro → diretor-de-lentes → departamento-registros
+           porta única    emite a DEPARTMENT_MISSION
+```
+
+- **Quem emite a `DEPARTMENT_MISSION` é o `diretor-de-lentes`** — ele cria "um `DIRECTOR_PLAN` e uma
+  `DEPARTMENT_MISSION` por frente" ([../../SKILL.md](../../SKILL.md), passo 4).
+- **Quem encaminha a frente de registros ao Diretor é o CEO**, pela matriz executiva:
+  "registros ou inovação → `diretor-de-lentes`" ([../../../SKILL.md](../../../SKILL.md)).
+- **Pedir a gravação direto a este Departamento, ou a um agente de `agentes/`, não é caminho mais
+  curto: é `BLOCKED_BYPASS_ATTEMPT`, e nada é lido** — inclusive vindo do CEO, dos Juízes, de outro
+  Departamento ou de Jeremias.
+
+O gatilho não é a porta: é o que faz o CEO achar a porta. E saber a rota **não abre canal** — este
+Departamento continua recebendo e devolvendo só pelo Diretor (Lei de Ferro, acima).
+
+### Catálogo de bloqueios — o que travou, e o que destrava
+
+São **quatro vocabulários distintos**, e confundi-los é metade do tempo perdido no diagnóstico:
+bloqueio de **rodada** (a rodada não existe), estado de **registro** (a rodada existe e um registro
+não pousou), **gate** de integridade (um ato de verificação reprovou) e status do **ledger** (a
+contagem não fechou). O nome que apareceu na saída diz em qual dos quatro procurar.
+
+| Nome | Vocabulário | O que o causou | Condição de retomada, e de quem é o ato |
+|---|---|---|---|
+| `BLOCKED_BYPASS_ATTEMPT` | rodada | `producer` ou `return_to` ≠ `diretor-de-lentes`; invocação direta de agente | a mesma demanda reemitida como `DEPARTMENT_MISSION` **pelo Diretor** — protocolo §1.0 e §5 |
+| `BLOCKED_INVALID_MISSION` | rodada | `recipient` errado; falta `contract_digest`, `inputs`, `done` ou `required_evidence`; `trusted_root` ausente ou não canônico; missão pedindo gravar sem destino, dispensar recontagem, criar natureza ou fechar ledger por confiança | missão corrigida pelo Diretor **no campo nomeado no bloqueio** — protocolo §1.0 |
+| `BLOCKED_CONTRACT_MISMATCH` | rodada | `contract_digest` divergente do contrato vigente da rodada | reemissão com o digest do contrato vigente — protocolo §1.0 |
+| `BLOCKED_SOURCE_MISMATCH` | rodada | material original ausente, entregue só como resumo, ou com digest divergente | o **texto original** preservado, com digest que confere; não se decompõe sobre resumo — protocolo §1.0 |
+| `PENDING_DESTINO` | registro | nenhuma linha de `R1..R8` casou, ou nenhum desempate se aplica; destino do dossiê que não resolve | a resposta do Diretor à **uma** pergunta aberta; nunca o destino "mais parecido" — naturezas §3 |
+| `PENDING_AUTORIZACAO` | registro | ato irreversível sem autorização exata | autorização declarando **ação, alvo, escopo, quem concedeu e quando** — protocolo §2, regra 6 |
+| `LACUNA_CAPACIDADE` | registro | agente `MISSING`, `INVALID`, `CONFLICTED`, `SEM_RETORNO` ou `FALHO`; registro sem recibo válido; `HANDOFF_DECLARADO` sem dono resolvido | o **Diretor** fecha o bloco: a gerente só emite `status: OPEN` e nunca fecha bloco que ela abriu. O conteúdo está em `preserved_inputs`, não perdido — protocolo §1.3, §1.8 e §3 |
+| `ORFAO` | registro | o registro existe e um índice obrigatório não o cita | o índice passa a citá-lo, com entrada de histórico **datada** — naturezas §8 |
+| `INDICE_ADIANTADO` | registro | o índice cita e o artefato não existe em disco | o artefato existe e é testado **por método próprio**; reaproveitar a evidência do sentido inverso deixa este sem ato — naturezas §8 |
+| `BLOQUEADO` | registro | varredura de entrada casou categoria de credencial; ou o agente devolveu `status: BLOCKED` | o **evento nomeado no `blocked_reason`**, que é obrigatório e carrega motivo + dono + evento de retomada — protocolo §1.2 |
+| `RECUSADO_FRONTEIRA` | registro | a fatia não é registro: é trabalho de outra especialidade | **não retoma aqui** — desfecho terminal, com a capacidade adequada nomeada e a prova de que nada foi escrito. Recusar é não escrever — naturezas §4 |
+| `HANDOFF_DECLARADO` | registro | o ato de gravar pertence a outro dono; memória durável é o caso | a **entrega ao dono** registrada — não o byte aparecendo. Sem dono resolvido vira `LACUNA_CAPACIDADE` — naturezas §6 |
+| `CAPTURADO`, `ROTEADO`, `GRAVADO`, `INDEXADO` | registro | estado **em trânsito**: impede fechar o ledger | o gate da transição seguinte, comprovado com método e evidência — naturezas §5 |
+| `CAMINHO_FORA_DA_RAIZ` | gate | o caminho canônico não é descendente da raiz confiável, ou o reparse point de um componente desvia | **só** um destino que resolva dentro da raiz. Não há exceção, ampliação nem autorização que abra este gate; ampliar `write_limits` para fechá-lo é proibido. Fora de alcance sai como `correction_owner: departamento_fora_de_alcance`, com as três provas — protocolo §2, regra 4, e §3, regra 6 |
+| `single_count_unverified` | ledger | `recount_proof: not_verifiable` — não houve segunda contagem sustentada por ato | a recontagem por `independent_capability`, ou por `sealed_prior_count` **só** em `tier: minima`; sem ela nunca vira `closed` — protocolo §1.4 |
+| `bloqueado_conservacao` | ledger | `delta_final != 0`, com a fatia divergente nomeada; a falha é `REGISTRO_PERDIDO` | reconciliação **por fatia**, nunca por total nem por maioria; se as duas leituras nomeiam regra e discordam, **uma** pergunta ao Diretor — protocolo §1.4 |
+
+Os demais gates de integridade e os `partial_reasons` da rodada estão na lista fechada do
+[protocolo](references/protocolo-registros.md), §3 e §4, que é onde eles se enunciam — aqui só se
+aponta. O mapa de cada estado para o contador do ledger é do
+[protocolo](references/protocolo-registros.md), §1.4, e não se repete nesta página.
 
 ## Entradas aceitas
 
@@ -317,6 +388,10 @@ nota não existe aqui. O retorno nomeia `R6` e, por causa dos achados desta roda
 
 ## Evidência de conclusão da própria skill
 
+> **Todo número desta seção carrega a data em que foi medido.** O estado corrente da contagem mora
+> no selo de [evals/PLACAR.md](evals/PLACAR.md) e no adendo datado mais recente; divergindo desta
+> seção, o selo vence e esta seção é que está velha. Última reconciliação: **2026-08-30**.
+
 Esta migração só está pronta quando:
 
 - proveniência, recorte migrado, recorte reescrito e política de rollback estão em
@@ -331,14 +406,49 @@ Esta migração só está pronta quando:
   fonte que resolve;
 - o `DEPARTMENT_RETURN` produzido é aceito pelo schema do `diretor-de-lentes`, executado como
   regressão;
-- `agents/openai.yaml`, os quatro `agentes/` e `evals/` **existem** — a mecânica está executada e
-  relatada em [evals/PLACAR.md](evals/PLACAR.md): 169/169 casos do Departamento, com a cadeia
-  completa em regressão. O que **continua ausente é a prova comportamental**: os 16 prompts de
-  `evals.json` não foram executados contra instância independente, não há baseline do legado e o
-  acionamento por `description` em runtime não foi medido. Estão declarados como `SKIP` com motivo
-  no PLACAR, seção *O que ainda não foi provado* — nenhum `FORWARD-TEST.md` foi escrito, porque
-  escrever um com respostas que ninguém produziu seria fabricar resultado;
-- o `departamento-juizes` emite parecer sobre a qualidade destes registros — **pendente**.
+- `agents/openai.yaml`, os quatro `agentes/` e `evals/` **existem**, e a mecânica está executada e
+  relatada em [evals/PLACAR.md](evals/PLACAR.md). A contagem **própria** deste pacote foi de
+  **186/186 em 2026-08-28**, selada ao instrumento que a produziu e redeclarada no
+  [adendo daquela data](evals/PLACAR-ADENDO-2026-08-28-contagem-do-validador.md). Os `169/169` que
+  esta seção afirmou no presente até 2026-08-29 eram a contagem da **materialização** — o mesmo 169
+  que [`evals/PLACAR.md`](evals/PLACAR.md) registra como parcela da cascata de `429/429` — e
+  envelheceram em seis redeclarações datadas, cada uma no seu adendo: `170/170` em 2026-07-26,
+  `173/174` em 2026-08-05, `176/176` em 2026-08-06, `182/182` e `184/184` em 2026-08-23, `186/186`
+  em 2026-08-28;
+- a **prova comportamental existe** desde 2026-08-27, e o que ela mede vem com limite declarado. A
+  rodada vigente é a **rodada 3, de 2026-08-28**, relatada em
+  `ceo-maestro/evals/medicao-r3-2026-08-28/FORWARD-TEST.md` — julgada no commit `f0f6b0ac`, onde seu
+  digest é `sha256:3fa0c532…64bff`:
+  - **os prompts foram executados contra instância nova e independente.** Dos 16 casos do catálogo,
+    os **15 sintéticos** rodaram na rodada 3, com **15 resultados e zero `NAO_MEDIDO` por falha
+    técnica**; antes disso foram 15 disparados na rodada 1 (2026-08-27) e 7 na rodada 2 (2026-08-27,
+    interrompida). O único caso `origem: real` segue `NAO_MEDIDO` **por contrato**: descreve uma
+    migração já ocorrida e não é reproduzível por prompt em sessão nova;
+  - **os `FORWARD-TEST.md` foram escritos** — um por rodada, em
+    `ceo-maestro/evals/saneamento-c13-c14-2026-08-27/forward-c13/`,
+    `ceo-maestro/evals/medicao-r2-2026-08-27/forward-c13/` e
+    `ceo-maestro/evals/medicao-r3-2026-08-28/`, com prompts literais e respostas cruas em custódia
+    sob `MANIFEST.sha256`;
+  - **o acionamento foi medido, e o resultado virou limite declarado, não pendência.** Em
+    2026-08-27 a medição deu acionamento direto zero, e Jeremias registrou em
+    `DEC-T71-ACIONAMENTO-LIMITE-2026-08-27` que acionamento direto de Departamento é
+    **insatisfazível por construção**: a porta única é `ceo-maestro`, nenhum `departamento-*` se
+    registra como skill, e a `description` deste frontmatter **nunca chega ao roteador**. Sob a
+    régua do próprio catálogo (`criterios_de_leitura` de `evals/evals.json`), a rodada 3 mediu
+    `acionou` **3/15 em 2026-08-28** — dois deles, casos 08 e 11, pela porta única `ceo-maestro`,
+    que roteou até este pacote, e um, o caso 14, por leitura direta do pacote. **Nenhum por
+    invocação do Departamento**, que é o ato impossível;
+  - **`aderiu` foi 0/15 em 2026-08-28, e esse número não se lê sozinho:** em **doze dos quinze**
+    casos o pacote não entrou em cena, e o que se mediu ali é o modelo base sob pressão, não este
+    Departamento. Nos três em que entrou, a resposta passou a citar norma por arquivo e linha;
+  - **continua ausente o baseline do legado:** até 2026-08-30 o `orquestrador-registros` não foi
+    avaliado nos mesmos cenários, e por isso *"esta migração melhora o comportamento"* permanece
+    **não medido**. Das quatro ausências que esta seção declarava, é a única de pé;
+- o `departamento-juizes` emitiu parecer sobre a qualidade destes registros — **emitido e
+  desfavorável**, não pendente: `REPROVED` em 2026-08-03 e de novo em 2026-08-29, no
+  `DJR-T71-C13-R3-2026-08-29`, com nota agregada **6** pela regra `MENOR`, contra o
+  `required_level` **`INTERNO`**. Este pacote está em **REWORK**, e as **17** `required_changes`
+  daquele parecer são o trabalho aberto — trabalho nomeado, não julgamento faltando.
 
 **Trava reflexiva:** este Departamento **não verifica os próprios atos**. Quem confere um registro é
 sempre distinto de quem o gravou, e quem reconta é sempre distinto de quem decompôs. Nunca declarar a
@@ -363,7 +473,11 @@ própria conservação, ocultar divergência de contagem ou inventar recibo de a
   integra**; o CEO **decide o fechamento**; Jeremias **autoriza exceção e cria categoria**. Este
   Departamento **decide o endereço e prova a chegada**, e só isso.
 - **Escada de pegada:** degrau 3, skill migrada, renomeada e recontratada. Editar o antigo
-  `orquestrador-registros` não materializaria a hierarquia, manteria o modo `JULGAR` que o ADR-002 já
-  moveu para os Juízes e não isolaria o rollback legado.
+  `orquestrador-registros` não materializaria a hierarquia, manteria o modo `JULGAR` que o
+  [ADR-002](../../departamento-juizes/references/adr-002-nota-absoluta-e-modo-duplo.md) já moveu para
+  os Juízes e não isolaria o rollback legado. Esse ADR vive no pacote dos Juízes, não neste, e está
+  **aceito por decisão de Jeremias**: a decisão sobre os modos permanece vigente, e só a regra de
+  corte foi emendada pelo
+  [ADR-014](../../departamento-juizes/references/adr-014-dois-niveis-de-veredito.md).
 - **Governada por:** [../../../../regras-de-ouro/REGRAS-DE-OURO.md](../../../../regras-de-ouro/REGRAS-DE-OURO.md),
   fonte normativa única.

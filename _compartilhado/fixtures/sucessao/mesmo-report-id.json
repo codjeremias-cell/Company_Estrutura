@@ -1,0 +1,15 @@
+{
+  "report_id": "FIXTURE-SUCESSAO-01",
+  "verdict": "COMPLIANT",
+  "issued_at": "2026-01-05T00:00:00Z",
+  "pending": [
+    "Ressalva em FIXTURE: o achado segue aberto. dono: departamento-auditoria-responsabilidades. fecha quando: a inspecao for reexecutada contra a identidade vigente"
+  ],
+  "violations": [],
+  "evidence_refs": [],
+  "candidate_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "contract_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "rules_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "auditor_ref": "departamento-auditoria-responsabilidades",
+  "_fixture": "Isola a condicao do `report_id`. Tudo o mais e VALIDO -- limpo, posterior, mesmos campos de ligacao -- para que a unica coisa que possa acusar seja o id repetido. Caso que casa duas condicoes ao mesmo tempo nao mata mutante de nenhuma das duas."
+}

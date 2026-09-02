@@ -36,14 +36,32 @@ param(
 $ErrorActionPreference = "Stop"
 $source = $PSScriptRoot
 
-# O contrato de implantacao, identico ao que o deploy-skills.ps1 do catalogo ja
-# declara em $preservarSempre: `ceo-maestro` e a porta unica -- a unica pasta
-# com SKILL.md na raiz da estrutura, e portanto a unica skill invocavel. As
-# outras tres pastas e os tres arquivos existem no destino porque os caminhos
-# relativos de dentro do pacote sobem ate a RAIZ da estrutura: sem eles,
-# `../../../../regras-de-ouro/REGRAS-DE-OURO.md` e `_compartilhado/` nao
-# resolvem no runtime como resolvem no cofre.
-$componentesPasta = @("ceo-maestro", "regras-de-ouro", "_compartilhado", "registros")
+# O contrato de implantacao. `ceo-maestro` e a porta unica DA CADEIA: nenhum
+# gerente e nenhum agente aninhado vira skill invocavel, e e isso que "porta
+# unica" quer dizer. As outras tres pastas e os tres arquivos existem no destino
+# porque os caminhos relativos de dentro do pacote sobem ate a RAIZ da estrutura:
+# sem eles, `../../../../regras-de-ouro/REGRAS-DE-OURO.md` e `_compartilhado/`
+# nao resolvem no runtime como resolvem no cofre.
+#
+# CORRIGIDO EM 2026-09-02, e a frase anterior era falsa quando foi escrita. Ela
+# dizia que `ceo-maestro` era "a unica pasta com SKILL.md na raiz da estrutura, e
+# portanto a unica skill invocavel". A segunda metade era o contrato; a primeira
+# era uma afirmacao sobre a arvore, e a arvore tinha DUAS -- um comentario 90
+# linhas abaixo neste mesmo arquivo ja reconhecia o `especialista-planejador`
+# como pacote antigo e fora do pre-deploy. Afirmacao sobre a arvore que ninguem
+# executou contra a arvore.
+#
+# `planejador-estrutura` ENTRA como componente em 2026-09-02, por decisao de
+# Jeremias. Ele nao e no de cadeia: e consultor direto, declaradamente FORA da
+# cadeia de comando, sem `return_to` e sem envelope. Publica-lo nao abre porta
+# nenhuma na cadeia -- a porta da cadeia continua sendo uma so.
+#
+# Ele chegou com esse nome, e nao com o antigo, por uma razao medida: sob
+# `especialista-planejador` ele colidia com uma lente homonima do Catalogo, e o
+# `deploy-skills.ps1` do catalogo NAO traz esse nome em $preservarSempre --
+# entao publicar sob o nome antigo seria desfeito, em silencio, no proximo deploy
+# de rotina do catalogo.
+$componentesPasta = @("ceo-maestro", "planejador-estrutura", "regras-de-ouro", "_compartilhado", "registros")
 
 # PLANO-DE-ACAO-*.md fica de fora por decisao: e plano de trabalho de uma
 # frente, nao metodo. O runtime carrega metodo.
@@ -121,15 +139,28 @@ function Invoke-ValidacaoPreDeploy {
     throw "python nao encontrado. Use -SemValidacao apenas se souber o que esta pulando."
   }
 
-  # Executa apenas validadores de pacotes canonicos. Dossies de auditoria,
-  # candidatos e snapshots tambem podem preservar copias sob evals/, mas sao
-  # evidencia imutavel, nao executaveis do pre-deploy.
+  # Pacote gerente e definido AQUI pelo mesmo criterio de
+  # `_pacotes_gerentes` em _compartilhado/verificacoes_estrutura.py: todo
+  # diretorio com SKILL.md fora de `agentes`, `evals` e
+  # `fontes-legadas-pinadas`. Dossies, candidatos e snapshots tambem guardam
+  # copias sob evals/, e por isso a exclusao continua.
+  #
+  # ALINHADO EM 2026-08-27, e a divergencia era real. Ate aqui o deploy exigia
+  # tambem pasta `schemas/`, e a trava nao -- entao o deploy validava 15 pacotes
+  # e a cadeia media 18. Tres ficavam FORA do pre-deploy: os dois da
+  # diretoria-agentica, que chegaram naquele dia e SAIRAM da arvore em
+  # 2026-09-01 por serem do projeto Empresa GradUP, e o planejador (entao
+  # chamado `especialista-planejador`), que nao e novo. Nenhum dos tres publica envelope, e por isso nenhum tem
+  # `schemas/` -- a exigencia media a natureza do pacote, nao a existencia dele.
+  # O efeito era um relatorio que dizia "16 validadores, 0 com falha" sem
+  # cobrir 3 dos 18. Criterio de identidade que diverge entre dois lugares vira
+  # buraco silencioso: quem le o placar do deploy nao tem como saber o que ele
+  # nao olhou.
   $gerentes = @(
     Get-ChildItem -LiteralPath $source -Recurse -File -Filter "SKILL.md" |
       Where-Object {
         $packageRelative = $_.Directory.FullName.Substring($source.Length).TrimStart('\', '/')
-        $packageRelative -notmatch '(^|[\\/])(agentes|evals)([\\/]|$)' -and
-          (Test-Path -LiteralPath (Join-Path $_.Directory.FullName "schemas") -PathType Container)
+        $packageRelative -notmatch '(^|[\\/])(agentes|fontes-legadas-pinadas|evals)([\\/]|$)'
       } |
       ForEach-Object { $_.Directory.FullName } |
       Sort-Object -Unique

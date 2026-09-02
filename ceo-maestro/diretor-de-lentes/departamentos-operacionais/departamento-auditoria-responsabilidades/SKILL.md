@@ -241,8 +241,8 @@ rodada 5 acrescentou quatro. O que mudou foi a frase que descreve o alcance.
 #### O manifesto do candidato descreve o PRÓPRIO candidato
 
 A seção que estava aqui — *"sem origem independente não há `COMPLIANT`"* — **foi
-retirada na rodada 8**, com o gate que ela descrevia. O motivo está em
-`137-RETIRADO-NA-R8-COM-MOTIVO-E-PROVA.md`: o emissor não deriva quem produziu os
+retirada na rodada 8**, com o gate que ela descrevia. O motivo está registrado em
+[`137-RETIRADO-NA-R8-COM-MOTIVO-E-PROVA.md`](../../../evals/compliant-porta-unica-2026-08-01/137-RETIRADO-NA-R8-COM-MOTIVO-E-PROVA.md): o emissor não deriva quem produziu os
 casos; ele lia um `produced_by` digitado por quem depositou a rodada. Alegação
 velha que sobrevive em prosa é o achado `OI5-08`, e retirar o gate sem retirar a
 frase seria repeti-lo.
@@ -315,9 +315,10 @@ pacote, que roda a **mesma** entrada nas duas formas e exige desfechos diferente
 > corrida sai exit 0 e grava os dois arquivos. **As duas versões estavam certas sobre um ramo e
 > erradas sobre o outro.** A correção da rodada 4 é nomear a variável que decide, e descrever os
 > dois. Nas duas vezes a correção tentadora — afrouxar o ramo `COMPLIANT` do ledger para a prosa
-> voltar a ser verdade — **foi recusada**: quem muda é o texto, nunca o gate. Medido em
-> `prova-r3/02-PROVA-DE-MUTACAO-R3.json` (`M20-SEM-CANDIDATE-ROOT`) e em
-> `prova-r4/41-DOIS-RAMOS-DO-PASSO-7.json` (os dois ramos).
+> voltar a ser verdade — **foi recusada**: quem muda é o texto, nunca o gate. Medido e
+> comprovado no caso determinístico `o passo 7 descreve os dois ramos, e os dois acontecem` em
+> `evals/validate_workflow.py` e documentado em
+> [`48-DOIS-RAMOS-DO-PASSO-7.md`](../../../evals/compliant-porta-unica-2026-08-01/48-DOIS-RAMOS-DO-PASSO-7.md).
 
 Ausência de conferência permanece ausência.
 

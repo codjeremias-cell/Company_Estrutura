@@ -182,6 +182,7 @@ try:
         recusar_execucao_fora_da_fonte,
         validate_adr_series,
         validate_cobertura_de_validadores,
+        validate_contratos_de_gerente,
         validate_fonte_normativa_conferida,
         achar_cadeia_no_presente,
         validate_placar_nao_declara_cadeia,
@@ -1685,6 +1686,111 @@ def validate_evals() -> list[str]:
     return errors
 
 
+def _evals_sem(campo: str, dentro: str | None = None) -> dict[str, Any]:
+    """Copia do `evals.json` real com um campo removido de `aderiu`.
+
+    Serve as contraprovas de `validate_criterios_de_leitura`: a bateria so prova
+    que a trava obriga se existir o caso que fica VERMELHO quando o campo sai.
+    Copia profunda de proposito -- mutar o dicionario carregado contaminaria os
+    outros casos da mesma corrida.
+    """
+    evals = copy.deepcopy(json.loads(EVALS_PATH.read_text(encoding="utf-8")))
+    aderiu = evals.get("criterios_de_leitura", {}).get("aderiu", {})
+    if not isinstance(aderiu, dict):
+        return evals
+    if dentro is None:
+        aderiu.pop(campo, None)
+        return evals
+    # Sensível a tipo de propósito: se `dentro` não for dicionário, devolver o
+    # objeto intacto deixa a trava acusar a malformação e produzir um FAIL
+    # contável. Assumir dicionário aqui derrubava a bateria inteira com
+    # AttributeError — e validador que estoura não reprova, some da contagem.
+    alvo = aderiu.get(dentro)
+    if isinstance(alvo, dict):
+        alvo.pop(campo, None)
+    return evals
+
+def validate_criterios_de_leitura(evals: dict[str, Any] | None = None) -> list[str]:
+    """A régua de leitura de `aderiu` e `acionou` mora no catálogo, não no relatório.
+
+    POR QUE ESTA TRAVA EXISTE. O critério de leitura foi declarado no
+    `FORWARD-TEST.md` de quem mediu, e não aqui — apontado na rodada 1 e de novo
+    na rodada 2, sem fecho nas duas. Enquanto a régua viaja no bolso do executor,
+    dois medidores produzem placares diferentes sobre as MESMAS respostas, e a
+    comparação entre rodadas deixa de significar alguma coisa.
+
+    E declarar sem travar não resolve: medido em 2026-08-28, remover o bloco
+    inteiro do `evals.json` deixava esta bateria verde em 184/184. Aviso em prosa
+    não previne erro — o que obriga é o caso vermelho.
+    """
+    if evals is None:
+        evals = json.loads(EVALS_PATH.read_text(encoding="utf-8"))
+    errors: list[str] = []
+    criterios = evals.get("criterios_de_leitura")
+    if not isinstance(criterios, dict):
+        errors.append(
+            "evals: falta o bloco `criterios_de_leitura` — a régua de `aderiu` e "
+            "`acionou` não pode viver só no relatório de quem mede"
+        )
+        return errors
+    exigidos = {
+        "aderiu": ("regra", "conjuncao", "parcial"),
+        "acionou": ("regra", "superficie_varrida", "leitura_no_contexto"),
+    }
+    # Blocos exigidos que sao DICIONARIO, e nao texto. O laco de baixo cobra
+    # `isinstance(valor, str)`; promover um dicionario a ele acusaria "ausente ou
+    # vazio" sobre um campo presente e correto. Por isso o ramo separado.
+    #
+    # `poder_de_discriminacao` entra por exigencia dos Juizes -- required_changes[13]
+    # do DJR-T71-C13-R3-2026-08-29, sob CRIT-R3-INSTRUMENTO. Declarar sem travar era
+    # o defeito que esta mesma docstring ja registrava: exigir aqui e o que faz
+    # apagar o bloco ficar VERMELHO em vez de passar despercebido.
+    exigidos_dicionario = {
+        "aderiu": {
+            "poder_de_discriminacao": (
+                "particao_que_o_agregado_induz",
+                "o_que_ele_nao_separa",
+                "quanto_ele_esconde_na_R3",
+                "o_que_ele_confunde_com_falha",
+                "leitura_obrigatoria",
+                "quando_ele_volta_a_discriminar",
+            ),
+        },
+    }
+    for chave, campos in exigidos.items():
+        bloco = criterios.get(chave)
+        if not isinstance(bloco, dict):
+            errors.append(f"evals: `criterios_de_leitura` sem `{chave}`")
+            continue
+        for campo in campos:
+            valor = bloco.get(campo)
+            if not isinstance(valor, str) or not valor.strip():
+                errors.append(
+                    f"evals: `criterios_de_leitura.{chave}.{campo}` ausente ou vazio"
+                )
+    for chave, blocos in exigidos_dicionario.items():
+        pai = criterios.get(chave)
+        if not isinstance(pai, dict):
+            continue
+        for nome, campos in blocos.items():
+            sub = pai.get(nome)
+            if not isinstance(sub, dict):
+                errors.append(
+                    f"evals: `criterios_de_leitura.{chave}.{nome}` ausente — o "
+                    "agregado precisa declarar o proprio poder de discriminacao, "
+                    "senao o numero de manchete viaja sem a leitura que o sustenta"
+                )
+                continue
+            for campo in campos:
+                valor = sub.get(campo)
+                if not isinstance(valor, str) or not valor.strip():
+                    errors.append(
+                        f"evals: `criterios_de_leitura.{chave}.{nome}.{campo}` "
+                        "ausente ou vazio"
+                    )
+    return errors
+
+
 def validate_learning_return_alignment(schema: dict[str, Any]) -> list[str]:
     """B1 — o §1.5 do protocolo e o schema dizem o mesmo `return_to`."""
     errors: list[str] = []
@@ -1751,6 +1857,8 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
     case("links internos do pacote resolvem", True, validate_links(PACKAGE_ROOT))
     case("série global de ADR é única em toda a estrutura", True, validate_adr_series(STRUCTURE_ROOT))
     case("todo pacote gerente tem validador que roda a trava global", True, validate_cobertura_de_validadores(STRUCTURE_ROOT))
+    case("contratos de gerente na anatomia canônica", True, validate_contratos_de_gerente(STRUCTURE_ROOT))
+    case("anatomia de contrato acusa raiz inexistente", False, validate_contratos_de_gerente(STRUCTURE_ROOT / "pacote-inexistente-t97"))
     case("a recusa de digest() dispara e ninguém tem cópia privada do motor", True, validate_trava_de_digest(STRUCTURE_ROOT))
     case("nenhuma asserção é verdadeira por construção sobre valor produzido", True, validate_sem_check_tautologico(STRUCTURE_ROOT))
     cases.append(("nenhum placar de pacote declara total de cadeia como estado corrente", True, validate_placar_nao_declara_cadeia(STRUCTURE_ROOT)))
@@ -1804,6 +1912,17 @@ def run() -> int:  # noqa: C901 - catálogo linear de casos
     case("schema interno, enums e referências locais", True, validate_schema_shape(schema))
     case("autoridades herdadas do schema do Diretor", True, validate_inherited_authority())
     case("catálogo de evals", True, validate_evals())
+    case("a régua de leitura de `aderiu` e `acionou` mora no catálogo", True,
+         validate_criterios_de_leitura())
+    case("catálogo sem régua de leitura é recusado", False,
+         validate_criterios_de_leitura({"cases": []}))
+    case("`aderiu` declara o próprio poder de discriminação", True,
+         validate_criterios_de_leitura())
+    case("`aderiu` sem poder de discriminação é recusado", False,
+         validate_criterios_de_leitura(_evals_sem("poder_de_discriminacao")))
+    case("poder de discriminação sem o que ele não separa é recusado", False,
+         validate_criterios_de_leitura(
+             _evals_sem("o_que_ele_nao_separa", dentro="poder_de_discriminacao")))
     case("B1: §1.5 e schema alinhados no return_to", True,
          validate_learning_return_alignment(schema))
     case("B3: existence é campo de destination, não de write_target", True,

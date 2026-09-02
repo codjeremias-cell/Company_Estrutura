@@ -1,3 +1,4 @@
+# ENV-T87/T88: FAIL ambiental da estrutura
 """Validador determinístico do Departamento de Design UX/UI.
 
 Verifica o pacote, o schema interno, os artefatos internos e — como regressão de
@@ -32,7 +33,7 @@ SCHEMA_PATH = PACKAGE_ROOT / "schemas" / "departamento-design-ux-ui.schema.json"
 # normativa, para que a conferencia sobreviva a um clone com outro EOL.
 # Quem alterar o schema atualiza esta linha no MESMO commit; sem isso, reprova.
 SCHEMA_DIGEST_DECLARADO = (
-    "sha256:f7dd08987916c2b2db2391adb66f42a8a8c547990eb02ce6230d3446ba0695d4"
+    "sha256:8a7d2979e6d13950ee7895509e08e68c086296d2f3f61957c22a80da4b799b04"
 )
 EVALS_PATH = PACKAGE_ROOT / "evals" / "evals.json"
 AGENTS_ROOT = PACKAGE_ROOT / "agentes"
@@ -143,6 +144,7 @@ FORBIDDEN_CODE = {
 }
 
 DIG = "sha256:" + "a" * 64
+DIG2 = "sha256:" + "b" * 64
 STAMP = "2026-07-26T10:00:00Z"
 
 
@@ -388,6 +390,89 @@ def evidencia_sustenta(crit: dict[str, Any]) -> bool:
 
 def estados_minimos(cobertos: list[str]) -> bool:
     return {"VAZIO", "CARREGANDO", "ERRO"} <= set(cobertos)
+
+
+
+def _admission_def(schema: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return schema["$defs"]["departmentMissionAdmission"]
+    except (KeyError, TypeError):
+        raise LookupError("departmentMissionAdmission ausente") from None
+
+
+def director_mission(schema: dict[str, Any], *, causal_over: dict[str, Any] | None = None,
+                     **over: Any) -> dict[str, Any]:
+    director = "diretor-de-lentes"
+    base: dict[str, Any] = {
+        "artifact_type": "DEPARTMENT_MISSION",
+        "department_mission_id": "DM-DES-001",
+        "causal": {
+            "work_item_id": "WI-DES-001", "front_id": "FR-DES-001",
+            "handoff_id": "HO-DES-001", "message_id": "MSG-DIR-001",
+            "causation_message_ids": ["MSG-CEO-001"],
+            "contract_id": "CT-DES-001", "contract_version": 1,
+            "contract_digest": DIG, "candidate_digest": DIG2,
+            "round": 1, "attempt": 1, "producer": director,
+            "producer_version": "1.0.0", "producer_digest": DIG,
+            "created_at": STAMP,
+        },
+        "recipient": DEPARTMENT, "mode": "PROJETO",
+        "objective": "projetar o fluxo e design tokens de matricula",
+        "scope_in": ["fluxo e tokens"],
+        "scope_out": ["codigo", "nota"],
+        "inputs": ["requisitos anexados"],
+        "deliverables": ["DESIGN_LEDGER com evidencia"],
+        "done": ["tokens e a11y aprovados"],
+        "required_evidence": ["contraste e estados mapeados"],
+        "depends_on": ["escopo de matricula"],
+        "handoff_to": [director],
+        "decision_authority": ["diretrizes visuais"],
+        "permissions": {
+            "default_policy": "deny",
+            "allowed_tools": ["filesystem_read"],
+            "allowed_resources": ["workspace"],
+            "expires_at": STAMP,
+        },
+        "stop_when": ["ledger devolvido ao Diretor"],
+        "return_to": director, "issued_at": STAMP,
+    }
+    if causal_over:
+        base["causal"] = {**base["causal"], **causal_over}
+    base.update(over)
+    return base
+
+
+def mission_verdict(mission: dict[str, Any], *, contract_digest: str,
+                    schema: dict[str, Any],
+                    target_present: bool = True) -> str:
+    """Fail-closed. Const ausente = BLOCKED_CONST_AUSENTE. Producer forjado = BLOCKED_BYPASS_ATTEMPT. $defs ausente = BLOCKED_BYPASS_ATTEMPT, nunca excecao."""
+    try:
+        adm = _admission_def(schema)
+    except LookupError:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    expected_p = (
+        adm.get("properties", {}).get("causal", {}).get("properties", {})
+        .get("producer", {}).get("const")
+    )
+    expected_r = adm.get("properties", {}).get("return_to", {}).get("const")
+    expected_dest = adm.get("properties", {}).get("recipient", {}).get("const")
+    if not expected_p:
+        return "BLOCKED_CONST_AUSENTE"
+    if mission.get("causal", {}).get("producer") != expected_p:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    if not expected_r:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    if mission.get("return_to") != expected_r:
+        return "BLOCKED_BYPASS_ATTEMPT"
+    if not expected_dest:
+        return "BLOCKED_INVALID_MISSION"
+    if mission.get("recipient") != expected_dest:
+        return "BLOCKED_INVALID_MISSION"
+    if not mission.get("causal", {}).get("contract_digest"):
+        return "BLOCKED_INVALID_MISSION"
+    if mission["causal"]["contract_digest"] != contract_digest:
+        return "BLOCKED_CONTRACT_MISMATCH"
+    return "ACEITA"
 
 
 def run() -> int:
@@ -755,6 +840,62 @@ def run() -> int:
     case("digest do próprio schema confere com o declarado", True,
          conferir_digest_declarado(SCHEMA_PATH, SCHEMA_DIGEST_DECLARADO,
                                    "schema do pacote"))
+
+
+    # --- J. Missao de entrada (CRIT-02 / SURPRESAS_BYPASS) -------------------
+    check("literal BLOCKED_BYPASS_ATTEMPT existe no validador",
+          "BLOCKED_BYPASS_ATTEMPT" in Path(__file__).read_text(encoding="utf-8"))
+    check("schema local trava producer de entrada no Diretor",
+          find_const(schema, "producer", "diretor-de-lentes"))
+    check("DEPARTMENT_MISSION de entrada com producer alheio é BLOCKED_BYPASS_ATTEMPT",
+          mission_verdict(director_mission(schema, causal_over={"producer": "ceo-maestro"}),
+                          contract_digest=DIG, schema=schema) == "BLOCKED_BYPASS_ATTEMPT")
+    check("DEPARTMENT_MISSION com return_to fora do Diretor é BLOCKED_BYPASS_ATTEMPT",
+          mission_verdict(director_mission(schema, return_to="ceo-maestro"),
+                          contract_digest=DIG, schema=schema) == "BLOCKED_BYPASS_ATTEMPT")
+    check("DEPARTMENT_MISSION íntegra do Diretor é ACEITA",
+          mission_verdict(director_mission(schema), contract_digest=DIG,
+                          schema=schema) == "ACEITA")
+    case("schema local rejeita DEPARTMENT_MISSION de entrada com producer forjado", False,
+         validate_schema(director_mission(schema, causal_over={"producer": "ceo-maestro"}),
+                         schema["$defs"]["departmentMissionAdmission"], schema))
+    case("schema local aceita DEPARTMENT_MISSION de entrada do Diretor", True,
+         validate_schema(director_mission(schema),
+                         schema["$defs"]["departmentMissionAdmission"], schema))
+    schema_sem_const = copy.deepcopy(schema)
+    schema_sem_const["$defs"]["departmentMissionAdmission"]["properties"]["causal"]["properties"]["producer"].pop("const", None)
+    check("const de producer ausente e BLOCKED_CONST_AUSENTE",
+          mission_verdict(director_mission(schema_sem_const, causal_over={"producer": "ceo-maestro"}),
+                          contract_digest=DIG, schema=schema_sem_const) == "BLOCKED_CONST_AUSENTE")
+    schema_sem_adm = copy.deepcopy(schema)
+    del schema_sem_adm["$defs"]["departmentMissionAdmission"]
+    check("$defs/departmentMissionAdmission ausente fecha BLOCKED_BYPASS_ATTEMPT",
+          mission_verdict(director_mission(schema), contract_digest=DIG,
+                          schema=schema_sem_adm) == "BLOCKED_BYPASS_ATTEMPT")
+    schema_sem_defs = copy.deepcopy(schema)
+    schema_sem_defs.pop("$defs", None)
+    check("$defs ausente fecha BLOCKED_BYPASS_ATTEMPT sem excecao",
+          mission_verdict(director_mission(schema), contract_digest=DIG,
+                          schema=schema_sem_defs) == "BLOCKED_BYPASS_ATTEMPT")
+    case("schema raiz aceita DEPARTMENT_MISSION integra do Diretor", True,
+         validate_schema(director_mission(schema), schema, schema))
+    case("schema raiz rejeita DEPARTMENT_MISSION com producer forjado", False,
+         validate_schema(director_mission(schema, causal_over={"producer": "ceo-maestro"}),
+                         schema, schema))
+    incompleta = {
+        "artifact_type": "DEPARTMENT_MISSION",
+        "causal": {"producer": "diretor-de-lentes"},
+        "recipient": DEPARTMENT,
+        "return_to": "diretor-de-lentes",
+    }
+    case("schema raiz rejeita DEPARTMENT_MISSION incompleta", False,
+         validate_schema(incompleta, schema, schema))
+    src = Path(__file__).read_text(encoding="utf-8")
+    rotulo_env = "".join(("ENV-", "T87/", "T88"))
+    check("FAIL ambiental T87/T88 tem rotulo ENV no validador",
+          (rotulo_env + ": FAIL ambiental da estrutura") in src or "FAIL ambiental da estrutura" in src)
+    check("const ausente e producer forjado tem codigos distintos",
+          "BLOCKED_CONST_AUSENTE" in src and "BLOCKED_BYPASS_ATTEMPT" in src)
 
     failures = 0
     for name, expected_valid, errors in cases:
