@@ -16,9 +16,9 @@ ausência**.
 ## Leia isto antes de tirar conclusão do que está aqui
 
 **Esta é uma cópia parcial, e a palavra é literal.** A fonte é um repositório privado. O que você vê
-são **729 arquivos espelhados** de um total de **18.977** — mais este `README.md` e o `.gitignore`,
-que existem só aqui. A diferença não é curadoria editorial: são **46 pastas de campanha**, com
-**18.248 arquivos**, removidas por um motivo único e verificável — elas carregam **caminhos
+são **729 arquivos espelhados** de um total de **19.001** — mais este `README.md` e o `.gitignore`,
+que existem só aqui. A diferença não é curadoria editorial: são **47 pastas de campanha**, com
+**18.272 arquivos**, removidas por um motivo único e verificável — elas carregam **caminhos
 absolutos da máquina de origem** dentro dos artefatos, e publicá-las exporia o layout de pastas e a
 conta de usuário local.
 
@@ -75,18 +75,18 @@ o preço de não publicar os caminhos.
 Na árvore completa, privada, **os mesmos 16 pacotes fecham `2203/2203`, ZERO FAIL**, no mesmo dia.
 A diferença entre os dois números não é qualidade: é quanto da carga cada árvore tem.
 
-Links quebrados: **18 de 1.329** (1,4%), medido em 2026-09-02. Dezessete são consequência da
+Links quebrados: **20 de 1.331** (1,5%), medido em 2026-09-02. Dezenove são consequência da
 remoção e apontam para `remedicao-dos-sete-2026-08-03`, `forward-test-cadeia-rodada3`,
 `rejulgamento-rodada2-2026-07-31`, `julgamento-nove-departamentos-2026-08-04`,
 `compliant-porta-unica-2026-08-01`, `medicao-comportamental-2026-09-01` e
-`medicao-acionamento-2026-09-02`. O décimo oitavo já estava quebrado na árvore completa — um
+`medicao-acionamento-2026-09-02` e `par-com-sem-rota-2026-09-02`. O vigésimo já estava quebrado na árvore completa — um
 `](alvo)` literal, deixado por engano em
 `ceo-maestro/evals/forward-test-julgamento-rodada3/04-JUDGE_OPINION-robustez-e-evidencia.md`.
 
-Eram 12 de 1.287 em 23/08/2026 e 16 de 1.327 mais cedo em 02/09. **Sobe quando a fonte cresce e
-quando entra campanha nova:** os dois últimos são a medição de acionamento, publicada como texto no
-`PLACAR` do `planejador-estrutura` e excluída como pasta, pelos caminhos absolutos que os brutos
-carregam.
+Eram 12 de 1.287 em 23/08/2026, e 16 de 1.327 e 18 de 1.329 mais cedo em 02/09. **Sobe quando a fonte cresce e
+quando entra campanha nova:** os quatro últimos são as duas medições do `planejador-estrutura` — acionamento e o par
+com/sem a rota —, publicadas como texto no `PLACAR` e excluídas como pasta, pelos caminhos
+absolutos que os brutos carregam.
 
 > **Este par de números passou a ser conferido, e por um motivo específico.** Ele descreve o **custo
 > da parcialidade**, e custo que ninguém mede vira custo que ninguém vê. Mas ele **não reprova**:

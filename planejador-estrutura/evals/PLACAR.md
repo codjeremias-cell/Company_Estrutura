@@ -55,6 +55,7 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
 | 2 | **Jeremias** | **MEDIDO em 2026-09-02, resultado NEGATIVO** — [9 sessões novas, 7 delas limpas no braço A, acionamento zero](medicao-acionamento-2026-09-02/RESULTADO.md). O que resta é decisão dele: se a rota entra no `roteamento-global.md`, que tem teto de 2.048 B |
 | 3 | o próprio Departamento | **FECHADO em 2026-09-02** — `validate_paridade_da_doutrina` compara as duas regiões **vivas**, byte a byte, a cada execução; divergência reprova, e contraparte ausente reprova também |
 | 4 | Jeremias | **FECHADO em 2026-09-02** — publicado nos **três** runtimes (`.claude/skills/`, `.agents/skills/` e o global `~/.claude/skills/`), sob o nome novo, com paridade SHA-256 conferida pelo próprio deploy |
+| 5 | **Jeremias** | **MEDIDO em 2026-09-02** — o [par com/sem a rota](par-com-sem-rota-2026-09-02/RESULTADO.md) mostrou que a rota funciona e consolida a **gêmea**, não o alvo (0/12, e 0 de 20 no total). Fecha quando ele decidir entre: não mexer · dar gatilho **próprio** à variante (não testado, exige prompt novo) · resolver por nome, o que reabre a colisão já registrada |
 
 
 - **MEDIDO em 2026-09-01 — comportamento da skill nesta vertente.** Fecha o SKIP que este item
@@ -110,6 +111,40 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
   0**. Com n=4 isso admitia "azar em quatro sorteios"; com n=8, três destinos e zero acertos, é
   ausência de caminho. E o nome `planejador-estrutura` **não aparece em nenhuma das oito
   respostas** — não é skill preterida na escolha, é skill que não entra na conversa.
+
+- **A rota FOI testada, em par com/sem, no molde da T51 — e a resposta é NÃO.** Relatório e os
+  doze brutos em [`par-com-sem-rota-2026-09-02/`](par-com-sem-rota-2026-09-02/RESULTADO.md).
+  Três braços, quatro rodadas cada, uma condição por braço:
+
+  | braço — linha 13 do `roteamento-global.md` | **alvo** | gêmea | turno da gêmea | destinos |
+  |---|---:|---:|---:|---:|
+  | A — só a gêmea (estado atual) | **0/4** | 2/4 | 6,5 | **3** |
+  | B — os dois, gêmea primeiro | **0/4** | **4/4** | **2,0** | **1** |
+  | C — os dois, alvo primeiro | **0/4** | 4/4 | 7,2 | **1** |
+
+  **A rota funciona, e o efeito é grande:** de 2/4 disperso em três destinos para 4/4 num só, no
+  turno 2. **Só que ela consolida a gêmea.** O alvo ficou em zero nos três braços — mesmo nomeado,
+  mesmo nomeado primeiro, e mesmo **registrado e invocável** (conferido na lista de comandos das
+  doze sessões). Somando as oito rodadas anteriores: **0 de 20**.
+
+  **A explicação fácil foi refutada, não descartada.** O braço C existe para separar *"a rota não
+  alcança"* de *"eu escrevi a gêmea primeiro"* — e com o alvo escrito primeiro o resultado é o
+  mesmo. O que a ordem move é o **custo**: no braço B são quatro rodadas idênticas, turno 2, uma
+  ferramenta; no C, turnos 11/3/5/10 e até oito ferramentas para chegar ao mesmo destino.
+  **Nomear primeiro a variante que o modelo não escolhe é custo puro.**
+
+  **O que sobra é a leitura estrutural:** gatilho compartilhado não distingue gêmeas. As duas
+  skills disputam `custo, prazo, dono, Plano B`, a frase neutra não traz sinal de vertente, e o
+  empate cai sempre do mesmo lado. Se as duas têm de ser alcançáveis, precisam de **gatilhos
+  distintos** — não de um gatilho comum com rótulo de desempate.
+
+  **Não testado, de propósito:** gatilho próprio para a variante da Estrutura. Ele só acionaria com
+  uma frase que mencionasse a cadeia, e aí seria **nulo por construção** contra a frase neutra —
+  exige prompt novo, e portanto outro experimento — **item 5** da tabela de donos.
+
+  **O ambiente foi restaurado e está provado.** A intervenção tocou apenas a cópia
+  `~/.claude/CLAUDE.md`; a fonte no Catálogo nunca foi alterada. Estado final: fonte e cópia
+  idênticas em `sha256:976e685e…`, 1.471 B.
 
   **A causa não é conjectura sobre o modelo: é a tabela de roteamento lida.** A linha 13 do
   `roteamento-global.md` diz `custo, prazo, dono, Plano B → especialista-planejador`, que é
