@@ -1,0 +1,82 @@
+{
+  "motivo_geral": "A vitrine publica a Estrutura MENOS as pastas de campanha. O motivo é único e verificável: elas carregam caminhos absolutos da máquina de origem, e parte delas é registro de custódia com SHA-256 chumbado — reescrever o caminho dentro deles alteraria evidência cujo digest está afirmado em outro lugar.",
+  "arquivos_so_da_vitrine": [
+    "README.md",
+    ".gitignore"
+  ],
+  "pastas": {
+    "ceo-maestro/departamento-evolucao-skills/evals/producao-honesta-2026-08-04": "campanha fora da vitrine: 231 arquivo(s), 555 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/departamento-evolucao-skills/evals/regularizacao-dados7-2026-07-29": "campanha fora da vitrine: 175 arquivo(s), 404 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/departamento-evolucao-skills/evals/retrabalho-c09-c12-2026-07-30": "campanha fora da vitrine: 163 arquivo(s), 206 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-seguranca/evals/forward-2026-08-27": "campanha fora da vitrine: 13 arquivo(s), 4 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/diretor-de-lentes/evals/regularizacao-dados7-2026-07-29": "campanha fora da vitrine: 403 arquivo(s), 28 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/barreiras-em-prosa-2026-08-03": "campanha fora da vitrine: 294 arquivo(s), 760 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/compliant-porta-unica-2026-08-01": "campanha fora da vitrine: 3028 arquivo(s), 102755 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/contagem-exigida-2026-08-05": "campanha fora da vitrine: 79 arquivo(s), 19 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/contrato-analysis-2026-07-31": "campanha fora da vitrine: 1630 arquivo(s), 7210 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/digest-que-nao-reprova-2026-08-04": "campanha fora da vitrine: 941 arquivo(s), 707 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/envelope-por-schema-2026-08-06": "campanha fora da vitrine: 65 arquivo(s), 3 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/envelope-t39-2026-08-07": "campanha fora da vitrine: 172 arquivo(s), 1091 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/forward-test-cadeia-rodada2": "campanha fora da vitrine: 7 arquivo(s), 66 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/forward-test-cadeia-rodada3": "campanha fora da vitrine: 25 arquivo(s), 48 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/forward-test-cadeia-rodada4": "campanha fora da vitrine: 12 arquivo(s), 30 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/forward-test-julgamento-rodada1": "campanha fora da vitrine: 3 arquivo(s), 2 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/forward-test-julgamento-rodada2": "campanha fora da vitrine: 18 arquivo(s), 96 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/julgamento-c13-r3-2026-08-28": "campanha fora da vitrine: 55 arquivo(s), 0 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/julgamento-c13-r4-2026-08-30": "campanha fora da vitrine: 124 arquivo(s), 71 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/julgamento-formal-tres-pacotes-2026-09-01": "campanha fora da vitrine: 47 arquivo(s), 90 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/julgamento-nove-departamentos-2026-08-04": "campanha fora da vitrine: 107 arquivo(s), 47 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/lab": "campanha fora da vitrine: 28 arquivo(s), 0 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/medicao-r2-2026-08-27": "campanha fora da vitrine: 53 arquivo(s), 1946 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/medicao-r3-2026-08-28": "campanha fora da vitrine: 44 arquivo(s), 327 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/medicao-r4-2026-08-30": "campanha fora da vitrine: 67 arquivo(s), 473 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/medicao-r5-2026-08-31": "campanha fora da vitrine: 67 arquivo(s), 3240 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/medida-c07-t88-2026-08-15": "campanha fora da vitrine: 242 arquivo(s), 128 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/metodo-agregacao-2026-07-31": "campanha fora da vitrine: 419 arquivo(s), 2137 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/producao-honesta-2026-08-04": "campanha fora da vitrine: 336 arquivo(s), 375 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/reauditoria-c02-c07-2026-08-11": "campanha fora da vitrine: 42 arquivo(s), 74 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/rejulgamento-c02-c07-r2-2026-08-11": "campanha fora da vitrine: 65 arquivo(s), 2 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/rejulgamento-c11-c08-2026-08-27": "campanha fora da vitrine: 23 arquivo(s), 2 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/rejulgamento-dos-sete-2026-08-11": "campanha fora da vitrine: 163 arquivo(s), 16 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/rejulgamento-planejador-2026-09-01": "campanha fora da vitrine: 16 arquivo(s), 30 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/rejulgamento-rodada2-2026-07-31": "campanha fora da vitrine: 42 arquivo(s), 100 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/remedicao-dos-sete-2026-08-03": "campanha fora da vitrine: 181 arquivo(s), 1101 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/retrabalho-arquitetura-dados-2026-07-29": "campanha fora da vitrine: 6 arquivo(s), 8 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/retrabalho-c07-t71-2026-08-15": "campanha fora da vitrine: 5621 arquivo(s), 9152 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/retrabalho-c09-c12-2026-07-30": "campanha fora da vitrine: 4 arquivo(s), 5 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/retrabalho-c10-t71-2026-08-16": "campanha fora da vitrine: 1247 arquivo(s), 1991 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/rework-c02-t87-2026-08-14": "campanha fora da vitrine: 1527 arquivo(s), 2031 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/runtime-worker-observavel-2026-08-07": "campanha fora da vitrine: 393 arquivo(s), 2437 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "ceo-maestro/evals/saneamento-c13-c14-2026-08-27": "campanha fora da vitrine: 70 arquivo(s), 727 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "planejador-estrutura/evals/custodia-instalacao": "campanha fora da vitrine: 2 arquivo(s), 0 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado.",
+    "planejador-estrutura/evals/medicao-comportamental-2026-09-01": "campanha fora da vitrine: 48 arquivo(s), 15 casamento(s) de caminho absoluto ou conta local — reescrevê-los invalidaria custódia com SHA-256 chumbado."
+  },
+  "isencoes": [
+    {
+      "arquivo": "publicar_vitrine.py",
+      "padrao": "caminho do cofre",
+      "prova": "dentro_de_re_compile",
+      "motivo": "este arquivo DEFINE os padroes da auditoria, entao casa a si mesmo. A isencao nao cobre o arquivo: cobre so os casamentos que caem dentro de um literal de re.compile, conferido por AST. Um caminho de verdade escrito em qualquer outro ponto continua reprovando."
+    },
+    {
+      "arquivo": "publicar_vitrine.py",
+      "padrao": "AppData / Temp local",
+      "prova": "dentro_de_re_compile",
+      "motivo": "mesma razao: o padrao aparece porque este arquivo o define."
+    },
+    {
+      "arquivo": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/fontes-legadas-pinadas/email-marketing-html/referencia/exemplos/exemplo-01-briefing.md",
+      "padrao": "caminho do cofre",
+      "prova": "sha256",
+      "sha256": "4b1dfbe2058829ae513785b34d72ea69980bb67502514541dd2f991a51474eac",
+      "motivo": "os casamentos sao o nome FICTICIO de uma escola de programacao e o slug de um curso de JavaFX num exemplo de briefing de e-mail marketing. Nao e caminho de maquina. Publicado desde 2026-08-23 e auditado entao; a isencao morre se o arquivo mudar."
+    },
+    {
+      "arquivo": "ceo-maestro/diretor-de-lentes/departamentos-operacionais/departamento-conteudo-marketing/fontes-legadas-pinadas/email-marketing-html/referencia/exemplos/exemplo-01-lancamento-curso.html",
+      "padrao": "caminho do cofre",
+      "prova": "sha256",
+      "sha256": "a4944d1436ec38b82f5624d076dbbe0489af15404b1d95c5b3b70f7153377c17",
+      "motivo": "mesmo exemplo, peca HTML: nome ficticio de escola e slug de curso, nao caminho de maquina."
+    }
+  ]
+}

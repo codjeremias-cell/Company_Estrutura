@@ -16,7 +16,7 @@ ausência**.
 ## Leia isto antes de tirar conclusão do que está aqui
 
 **Esta é uma cópia parcial, e a palavra é literal.** A fonte é um repositório privado. O que você vê
-são **726 arquivos espelhados** de um total de **18.957** — mais este `README.md` e o `.gitignore`,
+são **729 arquivos espelhados** de um total de **18.960** — mais este `README.md` e o `.gitignore`,
 que existem só aqui. A diferença não é curadoria editorial: são **45 pastas de campanha**, com
 **18.231 arquivos**, removidas por um motivo único e verificável — elas carregam **caminhos
 absolutos da máquina de origem** dentro dos artefatos, e publicá-las exporia o layout de pastas e a
@@ -29,6 +29,15 @@ entraram **e** sobre uma campanha excluída, como braço de controle. Nos que en
 ocorrências reais**. No braço de controle: **17**, exatamente os caminhos absolutos que a regra
 cita. *Zero dos dois lados seria suspeita de detector cego, não prova de árvore limpa* — por isso o
 controle existe.
+
+**Desde 2026-09-02 esta cópia tem um gerador, e a regra deixou de morar só neste texto.**
+`publicar_vitrine.py` espelha a fonte pela regra declarada em `vitrine-exclusoes.json` e **reprova
+a deriva** em vez de descrevê-la: arquivo da fonte que não esteja publicado **nem** excluído é
+`FALHA`, e foi exatamente esse o buraco por onde 25 arquivos sumiram por dez dias. Ele também
+confere, contra a árvore, os quatro números que este parágrafo declara — se o texto e a medição
+divergirem, `numeros` sai vermelho. As travas têm prova de mutação própria
+(`prova_mutacao_vitrine.py`, **10/10 mutantes mortos**): validador verde não prova que a trava
+funciona, prova que nada a acionou.
 
 **25 arquivos que faltavam sem serem campanha voltaram nesta republicação.** São 18 adendos de
 `PLACAR`, um `ROLLBACK.md` e sete peças da prova de sucessão de envelope. Eles não estavam

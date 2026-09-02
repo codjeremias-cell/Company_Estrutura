@@ -7,11 +7,11 @@
     "estado": "NAO_ASSINADO",
     "motivo": "assinatura exige chave; o caminho previsto é atestação por OIDC no CI (actions/attest-build-provenance), que assina sem que ninguém guarde segredo. Enquanto não existir, este manifesto prova integridade e diferença, não origem."
   },
-  "total_de_arquivos": 18876,
-  "digest_do_inventario": "sha256:0b11c9dbd698ef07205045355beec0bbd5ad1f797da4b3ea30ff12580c98d96b",
+  "total_de_arquivos": 18879,
+  "digest_do_inventario": "sha256:58e86ce0c49095b6c295c59c907a687b2ae8f9cd3e4637ba92a174827651cf61",
   "predecessor": {
     "gerado_em": "2026-09-02",
-    "digest_do_inventario": "sha256:59665f70c3e5cdb40b216ffc078141fdcf371361c450cb734c0e98b0488952fe",
+    "digest_do_inventario": "sha256:0b11c9dbd698ef07205045355beec0bbd5ad1f797da4b3ea30ff12580c98d96b",
     "total_de_arquivos": 18876
   },
   "arquivos": {
@@ -18886,15 +18886,18 @@
     "planejador-estrutura/referencia/origem-e-fundamentacao.md": "sha256:74b8db714907a0b9e1496d30e568072186b9ff26c6864573a12f5973b0122c0c",
     "planejador-estrutura/SKILL.md": "sha256:dc20757a5d7046a7ad41ec46b1ede8e1c52938335e9a6b9c9f8fe7bda5639d4e",
     "PLANO-DE-ACAO-2026-07-27.md": "sha256:09b83bca4cdaf86466f26263bfa308505df9f299276317e215dc4ce36947fee9",
+    "prova_mutacao_vitrine.py": "sha256:992e195a98ac569c832a71884001107bb76876a2407e361526146f795a2f4778",
+    "publicar_vitrine.py": "sha256:c37103ddda43ef5dd7d0781da45a521d3687116b443435f7230fda9afe855c9e",
     "registros/PROPOSTA-GRAO-IDENTIDADE-E-EVOLUCAO-APRENDIZAGEM.md": "sha256:30abb1276d730cc74695ebe149825a0eabd8887ce78a6ca1846c56b31f85af2f",
     "registros/relatorios/aprendizagem/README.md": "sha256:500cad39eccc6a20c4297853cc7c059527c08f8c8af8705fc8d3176453896a8b",
     "regras-de-ouro/ORIGEM.md": "sha256:5dfbbb991f44e3d4b9bd26ab66125638cb9c1899c3cac936a33ea622a462cd8b",
     "regras-de-ouro/REGRAS-DE-OURO.md": "sha256:6429c988e640dcc3c9ce0557e05a6a629e224af97c4c3cba27abd08d4b45bf3d",
-    "RETOMADA-2026-07-29.md": "sha256:4a6f5a2a154e26d3555210ad937c4e19de72ebe3ee9805647355d1b77e0b33b8"
+    "RETOMADA-2026-07-29.md": "sha256:4a6f5a2a154e26d3555210ad937c4e19de72ebe3ee9805647355d1b77e0b33b8",
+    "vitrine-exclusoes.json": "sha256:f3d07330759cc6feeb57d38f7845d43f656f9d8005a1b8a307321f7f52025107"
   },
   "mudancas_desde_o_predecessor": {
-    "acrescentados": 0,
-    "alterados": 1,
+    "acrescentados": 3,
+    "alterados": 0,
     "removidos": []
   }
 }
