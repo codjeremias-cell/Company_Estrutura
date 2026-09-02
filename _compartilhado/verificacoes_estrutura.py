@@ -3953,6 +3953,134 @@ def _emissoes_de_governanca(root: Path) -> list[tuple[str, list, dict]]:
     return achadas
 
 
+# --- NC-R4-04, segunda perna: o `pending` que a FORMA deixava invisivel -------
+#
+# A varredura acima so enxerga nos com forma de `governanceReport`. O
+# `AUDIT-LEDGER.json` da mesma rodada carrega o MESMO `pending`, com as mesmas
+# entradas, e nao e visto -- porque nao tem `verdict` nem `report_id`. Isso ficou
+# declarado como limite residual da propria trava em 2026-09-01, com dono
+# `ceo-maestro`, e e o que esta perna fecha.
+#
+# O QUE A MEDICAO DE 2026-09-02 MOSTROU, e ela mudou o desenho do conserto:
+# 623 nos com `pending` ficam fora da forma; 449 deles tem entrada sem dono, em
+# 447 arquivos, o que daria 1.752 acusacoes. E **todos os 447 estao dentro de uma
+# pasta datada sob algum `evals/`** -- 447 de 447, medido. Nenhum e instrumento
+# vivo.
+#
+# Por isso o conserto NAO e "estender a varredura e consertar 447 arquivos":
+# seria reescrever evidencia de rodada ja julgada para satisfazer trava escrita
+# depois. Tambem nao e isentar em bloco. E separar as duas populacoes por uma
+# propriedade do CAMINHO -- que o artefato nao pode alegar sobre si -- e cobrar
+# de quem e vivo.
+#
+# O saldo vivo hoje e ZERO. A trava nao existe para o passado: existe para que o
+# PRIMEIRO artefato vivo com `pending` sem dono fora da forma reprove na hora,
+# em vez de ficar invisivel como estes ficaram por semanas.
+_DATA_NO_NOME = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def _e_evidencia_de_campanha(relativo: str) -> bool:
+    """O caminho tem pasta datada DEPOIS de um `evals/`? Entao e campanha.
+
+    Duas condicoes, e as duas precisam valer. So `evals/` nao basta -- o
+    `evals/PLACAR.md` de um pacote e instrumento vivo. So data nao basta -- uma
+    pasta datada fora de `evals/` nao e rodada de campanha. Exigir as duas e o
+    que impede que alguem ganhe a isencao batizando uma pasta com a data de hoje
+    em qualquer lugar da arvore.
+    """
+    partes = relativo.split("/")[:-1]
+    for i, segmento in enumerate(partes):
+        if _DATA_NO_NOME.search(segmento) and "evals" in partes[:i]:
+            return True
+    return False
+
+
+def _limites_fora_da_forma(root: Path) -> list[tuple[str, list]]:
+    """Nos com `pending` nao vazio que NAO tem forma de `governanceReport`."""
+    achadas: list[tuple[str, list]] = []
+
+    def tem_forma_de_emissao(no: dict) -> bool:
+        return (
+            isinstance(no.get("report_id"), str)
+            and "auditor_ref" in no
+            and "verdict" in no
+        )
+
+    def andar(no: object, origem: str) -> None:
+        if isinstance(no, dict):
+            pendencias = no.get("pending")
+            if (isinstance(pendencias, list) and pendencias
+                    and not tem_forma_de_emissao(no)):
+                achadas.append((origem, pendencias))
+            for valor in no.values():
+                andar(valor, origem)
+        elif isinstance(no, list):
+            for valor in no:
+                andar(valor, origem)
+
+    for caminho in sorted(root.rglob("*.json")):
+        relativo = caminho.relative_to(root).as_posix()
+        if (
+            "/candidatos/" in "/" + relativo
+            or "/backup-pre-canonizacao" in "/" + relativo
+            or "/fixtures/" in "/" + relativo
+            or "/schemas/" in "/" + relativo
+            or relativo.endswith(".schema.json")
+            or relativo.endswith("SCHEMA.json")
+        ):
+            continue
+        try:
+            conteudo = json.loads(caminho.read_text(encoding="utf-8"))
+        except (OSError, ValueError, UnicodeDecodeError):
+            continue
+        andar(conteudo, relativo)
+    return achadas
+
+
+def _autoteste_de_fora_da_forma() -> list[str]:
+    """Cada caso viola UMA condicao -- senao morre pela vizinha e nao prova nada.
+
+    Foi assim que 3 de 7 mutantes sobreviveram na prova de sucessao, em
+    2026-09-01: o caso violava duas coisas, morria pela outra, e a condicao que
+    ele dizia testar nunca era a que decidia.
+    """
+    erros: list[str] = []
+    sem_dono = ["sobrou um resto de conferencia por fazer"]
+    com_dono = ["dono: ceo-maestro. fecha quando: a varredura alcancar o caso"]
+
+    vivo = "ceo-maestro/evals/PLACAR-ADENDO.json"
+    campanha = "ceo-maestro/evals/rodada-2026-01-01/AUDIT-LEDGER.json"
+    datado_sem_evals = "ceo-maestro/registros/2026-01-01/LEDGER.json"
+
+    if _e_evidencia_de_campanha(vivo):
+        erros.append(
+            "AUTOTESTE FALHOU: caminho vivo sob `evals/` foi classificado como"
+            " campanha -- `evals/` sozinho isentaria o PLACAR de todo pacote"
+        )
+    if not _e_evidencia_de_campanha(campanha):
+        erros.append(
+            "AUTOTESTE FALHOU: pasta datada sob `evals/` NAO foi reconhecida"
+            " como campanha; sem isso a trava acusaria 1.752 vezes evidencia"
+            " que nao se edita"
+        )
+    if _e_evidencia_de_campanha(datado_sem_evals):
+        erros.append(
+            "AUTOTESTE FALHOU: pasta datada FORA de `evals/` isentou -- a data"
+            " sozinha viraria senha, e bastaria batizar a pasta com a data de"
+            " hoje para escapar"
+        )
+    if not achar_limite_sem_dono(sem_dono, vivo):
+        erros.append(
+            "AUTOTESTE FALHOU: entrada sem dono em artefato vivo nao foi acusada"
+        )
+    if achar_limite_sem_dono(com_dono, vivo):
+        erros.append(
+            "AUTOTESTE FALHOU: entrada COM dono e condicao foi acusada; a trava"
+            " estaria cobrando forma, nao responsabilidade"
+        )
+    return erros
+
+
 def _ratchet_da_divida(
     divida: tuple[tuple[str, str, int], ...], vistos: "set[str]"
 ) -> list[str]:
@@ -4314,7 +4442,8 @@ def validate_limite_residual_tem_dono(structure_root: Path) -> list[str]:
             f" {structure_root}"
         ]
 
-    erros = _autoteste_do_limite_residual() + _autoteste_da_catraca()
+    erros = (_autoteste_do_limite_residual() + _autoteste_da_catraca()
+             + _autoteste_de_fora_da_forma())
     root = structure_root.resolve()
 
     vistos: set[str] = set()
@@ -4336,6 +4465,19 @@ def validate_limite_residual_tem_dono(structure_root: Path) -> list[str]:
         for entrada in pendencias:
             if isinstance(entrada, str):
                 vistos.add(_identidade_do_limite(entrada))
+
+    # SEGUNDA PERNA (2026-09-02): o `pending` que a FORMA deixava invisivel.
+    # Evidencia de campanha nao se reescreve para satisfazer trava escrita
+    # depois -- a isencao vem da LOCALIZACAO, propriedade que o artefato nao
+    # pode alegar sobre si mesmo, e nao de nenhuma chave dentro dele. Saldo
+    # vivo medido em 2026-09-02: ZERO. Esta perna existe para o PRIMEIRO caso
+    # vivo reprovar na hora, nao para julgar o passado.
+    for origem, pendencias in _limites_fora_da_forma(root):
+        if _e_evidencia_de_campanha(origem):
+            continue
+        for erro in achar_limite_sem_dono(pendencias, origem):
+            erros.append(erro.replace(
+                "LIMITE_SEM_DONO:", "LIMITE_SEM_DONO_FORA_DA_FORMA:", 1))
 
     erros.extend(_ratchet_da_divida(DIVIDA_HISTORICA_SEM_DONO, vistos))
     return erros

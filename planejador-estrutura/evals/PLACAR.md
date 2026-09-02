@@ -7,7 +7,7 @@
 > mudar e o selo não for refeito. Qualquer outro número deste documento é
 > registro da data em que foi medido — não estado de agora.
 
-CONTAGEM-VIGENTE: 18/18 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:77718faa663f8283480f602284c76de5a2c533245b06cf2b30fffe88aa2ca949` | medido-em: 2026-09-02
+CONTAGEM-VIGENTE: 19/19 | instrumento: `evals/validate_workflow.py` | sha256-normalizado: `sha256:cdc1d825d59dd2890d8125fb157414fa74b5c3faaa71bb4aa9cfa67a40e2f0d2` | medido-em: 2026-09-02
 <!-- /SELO-DE-CONTAGEM -->
 
 **Data da medição: 2026-08-08.** Todo número abaixo carrega a data em que foi medido; nenhum número
@@ -52,8 +52,8 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
 | item | dono | fecha quando |
 |---:|---|---|
 | 1 | o próprio Departamento | **FECHADO em 2026-09-01** — [medição comportamental](medicao-comportamental-2026-09-01/RESULTADO.md) com três braços, correção cega e agregador escrito antes das notas |
-| 2 | o próprio Departamento | houver medição de acionamento em sessão nova com frase neutra, no molde da §1b do `CLAUDE.md` do cofre |
-| 3 | o próprio Departamento | a paridade da região de doutrina virar trava que reprove divergência, em vez de receita executada por quem edita |
+| 2 | **Jeremias** | **MEDIDO em 2026-09-02, resultado NEGATIVO** — [5 sessões novas, acionamento zero](medicao-acionamento-2026-09-02/RESULTADO.md). O que resta é decisão dele: se a rota entra no `roteamento-global.md`, que tem teto de 2.048 B |
+| 3 | o próprio Departamento | **FECHADO em 2026-09-02** — `validate_paridade_da_doutrina` compara as duas regiões **vivas**, byte a byte, a cada execução; divergência reprova, e contraparte ausente reprova também |
 | 4 | Jeremias | **FECHADO em 2026-09-02** — publicado nos **três** runtimes (`.claude/skills/`, `.agents/skills/` e o global `~/.claude/skills/`), sob o nome novo, com paridade SHA-256 conferida pelo próprio deploy |
 
 
@@ -90,14 +90,55 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
   cópias instaladas com este nome são a variante do Catálogo. O braço C também **não é ingênuo**:
   recebe o `CLAUDE.md` do cofre, e os corretores acusaram vocabulário da casa em 3 das suas 6
   respostas. A comparação A−B sobrevive a isso (mesmo ambiente nos dois); o absoluto de C, não.
-- **SKIP — acionamento em sessão nova.** Não foi medido se, com frase neutra, o runtime carrega esta
-  skill em vez de responder direto. O `CLAUDE.md` do cofre documenta que descrição não vence resposta
-  direta; sem instrução explícita, o acionamento é hipótese.
-- **SKIP — paridade automática da doutrina.** A identidade de bytes com o Catálogo é conferida pela
-  receita publicada na `SKILL.md`, executada por quem edita. Não há trava que reprove a divergência:
-  ela é **detectável**, não impedida. Congelar o digest neste validador foi recusado de propósito —
-  número congelado em validador envelhece calado, e o aparato de prova deste pacote foi removido por
-  medição.
+- **~~SKIP — acionamento em sessão nova.~~ MEDIDO em 2026-09-02, e o resultado é NEGATIVO.**
+  O texto anterior dizia: *"Não foi medido se, com frase neutra, o runtime carrega esta skill em vez
+  de responder direto… sem instrução explícita, o acionamento é hipótese."* Deixou de ser hipótese:
+  **em 5 sessões novas, `planejador-estrutura` foi acionada zero vezes.** Relatório e os cinco brutos
+  em [`medicao-acionamento-2026-09-02/`](medicao-acionamento-2026-09-02/RESULTADO.md).
+
+  | | rodadas | acionaram | nomearam |
+  |---|---:|---:|---:|
+  | braço A — frase neutra | 4 | **0** | **0** |
+  | braço B — frase que cita a Estrutura | 1 | **0** | **1** |
+
+  **A mesma frase neutra produziu três rotas diferentes em quatro rodadas** — `ceo-maestro`,
+  `especialista-planejador` e `mapa-de-decisoes` duas vezes. Não há rota estável para relatar: há
+  dispersão. E o nome `planejador-estrutura` **não aparece em nenhuma das quatro respostas** do
+  braço A, nem acionado nem citado.
+
+  **A causa não é conjectura sobre o modelo: é a tabela de roteamento lida.** A linha 13 do
+  `roteamento-global.md` diz `custo, prazo, dono, Plano B → especialista-planejador`, que é
+  exatamente o pedido do braço A — e aponta para a **variante do Catálogo**. Esta variante não tem
+  linha de rota nenhuma, e as duas compartilham a doutrina byte a byte: o texto não as distingue,
+  só o nome, e o nome que está na tabela é o outro. **Segue hipótese** se acrescentar a linha
+  resolveria: não foi testado, e o teto de 2.048 B faz disso decisão com custo.
+
+  **O braço B trouxe um resultado positivo, e ele é do `ceo-maestro`, não desta skill:** chegando
+  pela porta única, o CEO **recusou a si mesmo corretamente**, nomeou `planejador-estrutura`,
+  desenhou a cadeia e explicou por que não consegue despachar — *"não tem `return_to` para mim"*.
+  **Mas nomear não é acionar**, e o método não chegou ao contexto.
+
+  **Correção de erro meu, do mesmo dia:** declarei a rodada A1 inválida por *"não ter evento
+  `result`"*. Ela tem, com `success`, 25 turnos e 393 s — eu li o arquivo enquanto a sessão ainda
+  escrevia. E o erro não ficou no rótulo: por achar que o braço não rodara, relancei a A2 **na mesma
+  arena**, que já tinha o artefato da A1. **A leitura errada contaminou a rodada seguinte**, e a A2
+  está marcada assim em toda linha onde aparece.
+- **~~SKIP — paridade automática da doutrina.~~ FECHADO em 2026-09-02.** O texto anterior dizia:
+  *"A identidade de bytes com o Catálogo é conferida pela receita publicada na `SKILL.md`, executada
+  por quem edita. Não há trava que reprove a divergência: ela é **detectável**, não impedida."*
+  **Receita não recusa nada** — e o `CLAUDE.md` do cofre registra que regra marcada como universal
+  não se propaga sozinha entre as duas cópias, com uma divergência que ficou aberta de 2026-08-08 a
+  2026-08-19 sem ninguém ver.
+  A trava `validate_paridade_da_doutrina` recorta a região dos **dois** arquivos e compara byte a
+  byte, **ao vivo**, a cada execução. **O digest continua não sendo congelado aqui** — a recusa
+  original valia, e vale: número congelado em validador envelhece calado. O que mudou é que a
+  comparação passou a existir.
+  **E a contraparte ausente REPROVA, com mensagem própria.** Passar em silêncio quando não há com
+  quem comparar seria dizer *"tudo certo"* sobre algo que ninguém olhou. Numa cópia parcial isso é
+  verdade sobre a cópia, e a cópia tem de dizê-la.
+  **Provado nos três ramos:** contraparte real → sem erro (13.082 bytes, `sha256:7a3bb3cf`, idêntica
+  dos dois lados); contraparte ausente → reprova; contraparte com **um** caractere diferente dentro
+  da região → reprova nomeando os dois digests.
 - **~~SKIP — deploy para runtime.~~ EXECUTADO em 2026-09-02.** O texto anterior dizia: *"Este
   pacote existe na fonte da verdade. Publicá-lo em `.claude/skills/` ou `.agents/skills/` é ato
   separado, e não foi executado aqui."* Foi executado, por decisão de Jeremias, e nos **três**

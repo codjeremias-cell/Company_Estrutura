@@ -16,28 +16,47 @@ ausência**.
 ## Leia isto antes de tirar conclusão do que está aqui
 
 **Esta é uma cópia parcial, e a palavra é literal.** A fonte é um repositório privado. O que você vê
-são **729 arquivos espelhados** de um total de **18.960** — mais este `README.md` e o `.gitignore`,
-que existem só aqui. A diferença não é curadoria editorial: são **45 pastas de campanha**, com
-**18.231 arquivos**, removidas por um motivo único e verificável — elas carregam **caminhos
+são **729 arquivos espelhados** de um total de **18.972** — mais este `README.md` e o `.gitignore`,
+que existem só aqui. A diferença não é curadoria editorial: são **46 pastas de campanha**, com
+**18.243 arquivos**, removidas por um motivo único e verificável — elas carregam **caminhos
 absolutos da máquina de origem** dentro dos artefatos, e publicá-las exporia o layout de pastas e a
 conta de usuário local.
 
-**A exclusão foi remedida em 2026-09-02, não repetida de memória.** Um detector de 17 padrões
-(caminho absoluto, conta local, e-mail, telefone, CPF/CNPJ, chave PEM, tokens AWS/GitHub/OpenAI,
-`Authorization`, senha atribuída, string de conexão, IP privado…) rodou sobre os arquivos que
-entraram **e** sobre uma campanha excluída, como braço de controle. Nos que entraram: **zero
-ocorrências reais**. No braço de controle: **17**, exatamente os caminhos absolutos que a regra
-cita. *Zero dos dois lados seria suspeita de detector cego, não prova de árvore limpa* — por isso o
-controle existe.
+**A exclusão foi remedida em 2026-09-02, não repetida de memória.** Um detector de **15** padrões
+(caminho absoluto Windows e POSIX, conta local, caminho do cofre, `AppData`/`%TEMP%`, e-mail,
+telefone BR, CPF/CNPJ, chave PEM, tokens AWS/GitHub/Anthropic-OpenAI, `Bearer`/`Authorization`,
+senha atribuída, string de conexão) rodou sobre os arquivos que entraram **e** sobre uma amostra do
+conteúdo excluído, como braço de controle. Nos que entraram:
+**0 ocorrências reais**. No braço de controle, medido em 2026-09-02: **973 achados em 400
+arquivos** — em cheio os caminhos absolutos que a regra cita. *Zero dos dois lados seria suspeita de
+detector cego, não prova de árvore limpa* — por isso o controle existe, e por isso `conferir`
+**reprova** quando o controle vem zerado.
+
+> **A lista do que é conferido cresceu de quatro para oito em 2026-09-02, e cada entrada tem
+> motivo.** `15 padrões` entrou porque este parágrafo dizia **17** enquanto a lista tinha 15, e
+> nenhum dos quatro números anteriores olhava para isso. `0 ocorrências reais` entrou porque ele
+> *tem* de ser zero, e declarar o zero por extenso faz a prosa reprovar junto com a trava no dia em
+> que não for. Os dois de link entraram como custo declarado (abaixo). **Ficam de fora, de
+> propósito, os do braço de controle**: dependem da amostra, e travá-los produziria ruído, não
+> segurança — de o controle vir zerado cuida a trava `DETECTOR_CEGO`, não o texto.
 
 **Desde 2026-09-02 esta cópia tem um gerador, e a regra deixou de morar só neste texto.**
 `publicar_vitrine.py` espelha a fonte pela regra declarada em `vitrine-exclusoes.json` e **reprova
 a deriva** em vez de descrevê-la: arquivo da fonte que não esteja publicado **nem** excluído é
 `FALHA`, e foi exatamente esse o buraco por onde 25 arquivos sumiram por dez dias. Ele também
-confere, contra a árvore, os quatro números que este parágrafo declara — se o texto e a medição
+confere, contra a árvore, **oito** dos números que este texto declara — se o texto e a medição
 divergirem, `numeros` sai vermelho. As travas têm prova de mutação própria
-(`prova_mutacao_vitrine.py`, **10/10 mutantes mortos**): validador verde não prova que a trava
-funciona, prova que nada a acionou.
+(`prova_mutacao_vitrine.py`, **13/13 mutantes mortos** em 2026-09-02): validador verde não prova
+que a trava funciona, prova que nada a acionou.
+
+> **A prova de mutação cresceu de 10 para 13 no mesmo dia, e o motivo é um defeito que ela deixava
+> passar.** Ela só exercitava `conferir` — a perna que mede a árvore. A perna que confere a
+> **prosa** contra a medição não tinha caso nenhum, e foi por aí que este README publicou *"detector
+> de 17 padrões"* com uma lista de 15 sem nada ficar vermelho. Os dois mutantes novos desligam
+> exatamente isso: aceitar uma declaração que sumiu do texto, e aceitar um número declarado
+> diferente do medido; o décimo terceiro faz o contador de links dar por existente um alvo que
+> não existe. **Este `13/13`, porém, não é conferido por máquina** — ele mora na mesma categoria
+> dos números do braço de controle: datado, e verdadeiro na data.
 
 **25 arquivos que faltavam sem serem campanha voltaram nesta republicação.** São 18 adendos de
 `PLACAR`, um `ROLLBACK.md` e sete peças da prova de sucessão de envelope. Eles não estavam
@@ -53,26 +72,42 @@ valida rodadas de julgamento que viviam lá. **As campanhas não eram arquivo mo
 Quem clonar isto e rodar `evals/validate_workflow.py` vai ver vermelho, e o vermelho é honesto — é
 o preço de não publicar os caminhos.
 
-Na árvore completa, privada, **os mesmos 16 pacotes fecham `2202/2202`, ZERO FAIL**, no mesmo dia.
+Na árvore completa, privada, **os mesmos 16 pacotes fecham `2203/2203`, ZERO FAIL**, no mesmo dia.
 A diferença entre os dois números não é qualidade: é quanto da carga cada árvore tem.
 
-**Links internos quebrados: 16 de 1.327 (1,2%) — medido em 2026-09-02.** Quinze são consequência da
+Links quebrados: **18 de 1.329** (1,4%), medido em 2026-09-02. Dezessete são consequência da
 remoção e apontam para `remedicao-dos-sete-2026-08-03`, `forward-test-cadeia-rodada3`,
 `rejulgamento-rodada2-2026-07-31`, `julgamento-nove-departamentos-2026-08-04`,
-`compliant-porta-unica-2026-08-01` e `medicao-comportamental-2026-09-01`. O décimo sexto já estava
-quebrado na árvore completa — um `](alvo)` literal, deixado por engano em
+`compliant-porta-unica-2026-08-01`, `medicao-comportamental-2026-09-01` e
+`medicao-acionamento-2026-09-02`. O décimo oitavo já estava quebrado na árvore completa — um
+`](alvo)` literal, deixado por engano em
 `ceo-maestro/evals/forward-test-julgamento-rodada3/04-JUDGE_OPINION-robustez-e-evidencia.md`.
 
-Eram 12 de 1.287 em 23/08/2026. **Subiu porque a fonte cresceu, e caiu um** quando os adendos de
-`PLACAR` voltaram: o alvo existia e o link não achava.
+Eram 12 de 1.287 em 23/08/2026 e 16 de 1.327 mais cedo em 02/09. **Sobe quando a fonte cresce e
+quando entra campanha nova:** os dois últimos são a medição de acionamento, publicada como texto no
+`PLACAR` do `planejador-estrutura` e excluída como pasta, pelos caminhos absolutos que os brutos
+carregam.
+
+> **Este par de números passou a ser conferido, e por um motivo específico.** Ele descreve o **custo
+> da parcialidade**, e custo que ninguém mede vira custo que ninguém vê. Mas ele **não reprova**:
+> quebrar link é consequência conhecida da regra de exclusão, e reprovar aqui obrigaria a editar a
+> fonte para agradar a vitrine — o inverso de tudo o que esta cópia é. `numeros` apenas impede que
+> o texto acima o declare errado. Só links **relativos** entram: conferir URL externa exigiria rede,
+> e auditoria que depende de estar on-line não é auditoria.
 
 ---
 
 ## O número da cadeia — e a que árvore ele pertence
 
-> **2202/2202, ZERO FAIL, 16 de 16 pacotes limpos. Medido em 2026-09-02, na árvore COMPLETA do
-> repositório privado — não nesta.** O número anterior deste README era `2096/2096 → 2113/2113`,
-> de 2026-08-22, e fica registrado aqui em vez de apagado.
+> **2203/2203, ZERO FAIL, 16 de 16 pacotes limpos. Medido em 2026-09-02, na árvore COMPLETA do
+> repositório privado — não nesta.** Os números anteriores deste README ficam registrados em vez de
+> apagados: `2096/2096 → 2113/2113` em 2026-08-22, e `2202/2202` mais cedo em 02/09.
+>
+> **O `+1` sobre o 2202 não é ruído: é um caso novo.** O `planejador-estrutura` passou de 18 para
+> 19 casos ao ganhar uma trava que compara, byte a byte e a cada execução, a região de doutrina
+> desta variante com a da gêmea que vive no Catálogo. Antes, a identidade era conferida por uma
+> receita publicada, executada por quem editasse — e **receita não recusa nada**. Nenhum outro
+> pacote mexeu um caso.
 
 A data não é enfeite. Este projeto já carregou por semanas um `1531/1531 PASS` **sem data**, e o
 commit anterior desta mesma vitrine ainda o repete no título — em 2026-08-06 mediu-se que **onze dos

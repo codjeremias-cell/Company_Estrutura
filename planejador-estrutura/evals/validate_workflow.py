@@ -170,6 +170,90 @@ def validate_regiao_de_doutrina() -> list[str]:
     return erros
 
 
+# Onde a contraparte do Catalogo pode estar, na ordem em que se procura. Duas
+# arvores reais, nao hipoteses: no cofre ela e irma da Estrutura; no runtime as
+# duas viram pastas de skill lado a lado.
+CANDIDATOS_DA_CONTRAPARTE = (
+    "../../Catalogo-Skills-Unificado/skills/especialista-planejador/SKILL.md",
+    "../especialista-planejador/SKILL.md",
+)
+
+
+def _fatia_de_doutrina(texto: str) -> str | None:
+    """Do `<!-- DOUTRINA:INICIO` ate o `-->` que fecha o `DOUTRINA:FIM`."""
+    ini = MARCA_INICIO.search(texto)
+    fim = MARCA_FIM.search(texto)
+    if not ini or not fim or fim.start() < ini.start():
+        return None
+    fecha = texto.find("-->", fim.start())
+    if fecha < 0:
+        return None
+    return texto[ini.start():fecha + 3]
+
+
+def validate_paridade_da_doutrina() -> list[str]:
+    """A regiao de doutrina bate byte a byte com a do Catalogo.
+
+    FECHA O SKIP declarado no PLACAR desde 2026-08-08: ate 2026-09-02 a
+    identidade era conferida por uma RECEITA publicada na `SKILL.md` e executada
+    por quem edita. Receita nao recusa nada -- a divergencia era detectavel, nao
+    impedida, e o proprio `CLAUDE.md` do cofre registra que regra marcada como
+    universal nao se propaga sozinha entre as duas copias.
+
+    O que esta trava NAO faz, de proposito: congelar o digest aqui. Numero
+    congelado em validador envelhece calado, e foi por isso que o PLACAR recusou
+    essa saida quando o SKIP foi aberto. A comparacao e feita VIVA, contra o
+    arquivo do outro lado, toda vez.
+
+    E o caso em que a contraparte nao existe REPROVA, com mensagem propria. Nao
+    passar em silencio e o ponto: um `if` que so confere quando encontra alguem
+    para conferir e detector cego -- ele diria "tudo certo" numa arvore onde
+    nada foi olhado. Numa copia parcial isso e verdade sobre a copia, e a copia
+    tem de dize-la.
+    """
+    texto = SKILL_PATH.read_text(encoding="utf-8")
+    minha = _fatia_de_doutrina(texto)
+    if minha is None:
+        return [
+            "doutrina: nao consegui recortar a regiao neste arquivo; a forma e"
+            " conferida pelo caso vizinho, e sem ela nao ha o que comparar"
+        ]
+
+    tentados: list[str] = []
+    for relativo in CANDIDATOS_DA_CONTRAPARTE:
+        alvo = (PACKAGE_ROOT / relativo).resolve()
+        tentados.append(relativo)
+        if not alvo.is_file():
+            continue
+        outra = _fatia_de_doutrina(alvo.read_text(encoding="utf-8"))
+        if outra is None:
+            return [
+                f"doutrina: a contraparte em {relativo} nao tem regiao"
+                " delimitada; sem os marcadores dos dois lados a paridade nao"
+                " se prova"
+            ]
+        if outra != minha:
+            import hashlib
+
+            def d(s: str) -> str:
+                return hashlib.sha256(s.encode("utf-8")).hexdigest()[:12]
+
+            return [
+                "doutrina: DIVERGENTE do Catalogo — aqui"
+                f" {len(minha.encode('utf-8'))} bytes sha256:{d(minha)},"
+                f" la {len(outra.encode('utf-8'))} bytes sha256:{d(outra)}"
+                f" ({relativo}). A regiao e fonte unica: edite um lado e"
+                " propague no MESMO ato"
+            ]
+        return []
+
+    return [
+        "doutrina: contraparte do Catalogo nao encontrada em nenhum de"
+        f" {tentados} — a paridade NAO foi conferida. Isto reprova de proposito:"
+        " passar aqui seria dizer 'tudo certo' sobre algo que ninguem olhou"
+    ]
+
+
 def run() -> int:
     casos: list[tuple[str, list[str]]] = []
 
@@ -194,6 +278,7 @@ def run() -> int:
     casos.append(("links internos do pacote resolvem", validate_links(PACKAGE_ROOT)))
     casos.append(("posição fora da cadeia declarada nos dois documentos", validate_fronteira_declarada()))
     casos.append(("região de doutrina delimitada uma única vez", validate_regiao_de_doutrina()))
+    casos.append(("doutrina bate byte a byte com a do Catálogo", validate_paridade_da_doutrina()))
 
     # --- as travas de ESTRUTURA INTEIRA -------------------------------------
     # Replicação é o mecanismo, não desperdício (ADR-015): cada validador varre

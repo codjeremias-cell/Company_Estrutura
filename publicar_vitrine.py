@@ -338,6 +338,9 @@ def conferir(vitrine: Path, verboso: bool = True) -> Relatorio:
                 "suspeita de detector quebrado, não prova de árvore limpa."
                 % len(controle))
 
+    # (6) o custo da parcialidade, contado ------------------------------------
+    links, quebrados = _links_da_vitrine(vitrine)
+
     r.numeros = {
         "fonte": len(fonte),
         "espelhados": len(a_publicar),
@@ -347,11 +350,46 @@ def conferir(vitrine: Path, verboso: bool = True) -> Relatorio:
         "achados_reais": reais,
         "achados_no_controle": n_controle,
         "arquivos_no_controle": len(controle),
+        "padroes": len(PADROES),
+        "links": links,
+        "links_quebrados": quebrados,
     }
 
     if verboso:
         _imprimir(r)
     return r
+
+
+_LINK = re.compile(r"\[[^\]]*\]\(([^)\s#]+)(?:#[^)]*)?\)")
+
+
+def _links_da_vitrine(vitrine: Path) -> tuple[int, int]:
+    """Conta links markdown relativos publicados, e quantos apontam para o nada.
+
+    Este é o **custo declarado da parcialidade**: excluir uma campanha quebra
+    todo link que apontava para dentro dela. O número não é uma falha — é uma
+    consequência conhecida da regra —, então ele **não reprova**: só entra em
+    `numeros`, para que o README não possa declará-lo errado. Reprovar aqui
+    obrigaria a editar a fonte para agradar a vitrine, que é o inverso da regra.
+
+    Só links relativos: URL externa não é conferível sem rede, e conferir com
+    rede tornaria a auditoria dependente de estar on-line.
+    """
+    total = quebrados = 0
+    for base, dirs, arqs in os.walk(vitrine):
+        dirs[:] = [d for d in dirs if d not in IGNORAR_SEMPRE]
+        for a in arqs:
+            if not a.endswith(".md"):
+                continue
+            f = Path(base) / a
+            texto = f.read_text(encoding="utf-8", errors="replace")
+            for alvo in _LINK.findall(texto):
+                if alvo.startswith(("http://", "https://", "mailto:")):
+                    continue
+                total += 1
+                if not (f.parent / alvo.replace("%20", " ")).exists():
+                    quebrados += 1
+    return total, quebrados
 
 
 def _sha_ou_none(p: Path) -> str | None:
@@ -508,6 +546,17 @@ DECLARACOES = [
     ("fonte", re.compile(r"arquivos espelhados\*\* de um total de \*\*([\d.]+)\*\*")),
     ("pastas_excluidas", re.compile(r"são \*\*([\d.]+)\s*\n?pastas de campanha\*\*")),
     ("excluidos", re.compile(r"pastas de campanha\*\*, com\s*\n?\*\*([\d.]+) arquivos\*\*")),
+    # Acrescentados em 2026-09-02. O README dizia "detector de 17 padrões" e a
+    # lista tinha 15 — número em prosa que nenhum dos quatro anteriores conferia.
+    # `achados_reais` entra pelo motivo oposto: ele TEM de ser zero, e declarar o
+    # zero por extenso deixa a prosa reprovar junto com a trava se um dia não for.
+    ("padroes", re.compile(r"detector de \*\*([\d.]+)\*\* padrões")),
+    ("achados_reais",
+     re.compile(r"Nos que entraram:\s*\n?\*\*([\d.]+) ocorrências? reais?\*\*")),
+    # o custo da parcialidade: não reprova por si, mas o README não pode errá-lo
+    ("links_quebrados",
+     re.compile(r"Links quebrados: \*\*([\d.]+) de [\d.]+\*\*")),
+    ("links", re.compile(r"Links quebrados: \*\*[\d.]+ de ([\d.]+)\*\*")),
 ]
 
 

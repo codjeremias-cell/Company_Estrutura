@@ -1,18 +1,18 @@
 {
   "artifact_type": "MANIFESTO_DA_ESTRUTURA",
   "versao_do_formato": 1,
-  "gerado_em": "2026-09-02",
+  "gerado_em": "2026-09-02T18:00:00-03:00",
   "receita": "_compartilhado/validador_schema.py::sha256_texto_normalizado sobre cada arquivo — BOM removido, CRLF trocado por LF, bytes UTF-8. Caminhos relativos à raiz da Estrutura, em POSIX, ordenados. O digest do manifesto cobre o bloco `arquivos`, nunca o arquivo inteiro, para que ele possa carregar o próprio valor sem virar autorreferência.",
   "assinatura": {
     "estado": "NAO_ASSINADO",
     "motivo": "assinatura exige chave; o caminho previsto é atestação por OIDC no CI (actions/attest-build-provenance), que assina sem que ninguém guarde segredo. Enquanto não existir, este manifesto prova integridade e diferença, não origem."
   },
-  "total_de_arquivos": 18879,
-  "digest_do_inventario": "sha256:58e86ce0c49095b6c295c59c907a687b2ae8f9cd3e4637ba92a174827651cf61",
+  "total_de_arquivos": 18891,
+  "digest_do_inventario": "sha256:a99d7878a972880670b30bbf26350fbc5fd23e9af51580d7da75df90ad24ada1",
   "predecessor": {
-    "gerado_em": "2026-09-02",
-    "digest_do_inventario": "sha256:0b11c9dbd698ef07205045355beec0bbd5ad1f797da4b3ea30ff12580c98d96b",
-    "total_de_arquivos": 18876
+    "gerado_em": "2026-09-02T17:00:00-03:00",
+    "digest_do_inventario": "sha256:9c57a04312c085c7cbd935fe366809ee56c0b5e753d41e0f5c0cce3e05c36fa4",
+    "total_de_arquivos": 18891
   },
   "arquivos": {
     "_compartilhado/__init__.py": "sha256:1a68ae24532a7b45087c4b5785f0ba247b4b4359d28b2ec9a95d253af9599a22",
@@ -25,7 +25,7 @@
     "_compartilhado/selar_contagem.py": "sha256:10532c32da106e3de0400aa59173dbe5f10a08bcb1ef67cb87839bd4583c1b68",
     "_compartilhado/teste_validador_schema.py": "sha256:fd2b3ea1ec21a486cbfd59b65b6fc0244921e0d6559aa2f2e626548965afa662",
     "_compartilhado/validador_schema.py": "sha256:2adb5f548ff3e73d23cb107e445bb722f4218873c86779b6bf22cf3494c0dad3",
-    "_compartilhado/verificacoes_estrutura.py": "sha256:1a4bda4a506734dd4c554dd84dde89c23f3234bfbcea8c1d929fd3f77c4a9fd5",
+    "_compartilhado/verificacoes_estrutura.py": "sha256:d908af008c593cfced7ad1212ce8ea085c3bd3260220c427a15372b508e7965f",
     "_compartilhado/verificacoes_pacote.py": "sha256:26b1d768a9d067e288ab9b5687c8717b344a5e93072d9fa2ccceb3369c1481d2",
     "AGENTS.md": "sha256:d0c5f44433d53fce0979e964d0afe9cc7f3edc0416ed8ff36dea6f05ced57f7c",
     "ceo-maestro/agents/openai.yaml": "sha256:bdeb344ca35870959be46b7381f3955987a561aaff3a950d81d3e89d8e5a1a9a",
@@ -18833,6 +18833,18 @@
     "planejador-estrutura/CONTRATO-DE-COMPROMISSO.md": "sha256:3aa9f2df9ce0b75aa9277ee76796d00e85c90b1a062ca437a84c69e948ab1817",
     "planejador-estrutura/evals/custodia-instalacao/VERIFICACAO-CORRENTE-2026-08-25.txt": "sha256:7725d8791d7e7b3a44d6e82a72962777791298edfce71061b19667069f89e99e",
     "planejador-estrutura/evals/custodia-instalacao/VERIFICACAO-CORRENTE-2026-09-01.txt": "sha256:5986a9fc11e7632bd7a1ea3add17f37c5f8b329e3e3ae78ca64f4f03225e85ec",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/A1-artefato-escrito-na-arena.md": "sha256:1fa0d9ef72d3d0708871baac8d6595ebf604acdd065db1403bf860f74d074098",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/CUSTODIA.txt": "sha256:328fa5276da2a1118af714a9dc623d5af7ccc365fdae2645f0b918a7ff26850c",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/PROMPTS.json": "sha256:c8c0ca15207f769fcbccc3b1b9a9b5294c00e40e2d6381293aa2e25dcc5d98e9",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A1.stream.jsonl": "sha256:fda303ebb31e4c044ce8d7365015305d8510cb29e28de0691195d50f07a179bb",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A2.stream.jsonl": "sha256:6556c67bc2e5a2afc8c274534e6cb3dde84f0617a38afdeb380833733630642f",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A3.stream.jsonl": "sha256:9623b8a2fb77714f223ddb3b7278d0debea934d066414129351390d50a2563e5",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/A4.stream.jsonl": "sha256:6a6dde3f08e5ee27426edcac051bb88e0545f4bce1ec08ae21dd22795caf2c28",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/respostas-cruas/B.stream.jsonl": "sha256:7bfcb1bf45c8f2f56ccefa06b613c093903f1198ae02cef4c8cda66d4ecec8ef",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/RESULTADO.json": "sha256:183f115c8b4c2cc0f02d6528a51705f2fa6cfb63a9f5a79fd4f00a900e902dfb",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/RESULTADO.md": "sha256:c3083e2cb2a7569120d17b0d3733736cf64206ca8d70df157dd905b2990d759a",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/scripts/analisar.py": "sha256:4722cf619d424a044eead5b19168db121012cf79c2e6435cd216d3515c1fc0b4",
+    "planejador-estrutura/evals/medicao-acionamento-2026-09-02/scripts/custodiar.py": "sha256:ee9dc99710426b41af9fc988acbbcca48281be93056e71416ac05cc679b3f5ec",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/correcoes/C1.json": "sha256:dc86086b43cdee9b1d4f5b75344ed64ef9c8b73f5cab98aaf9634b4515c465b1",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/correcoes/C2.json": "sha256:07ec990b6273f184aa2fbf8988c7269fd0fa18b71bed7638cbdccc9c73e3a96e",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/correcoes/C3.json": "sha256:d4ee1da3d9b5eee1c79c142f943d5dbecb0b05283c4ee0036162a7f95c8bd57f",
@@ -18881,23 +18893,23 @@
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/sujeitos/S-C-P4/PROMPT.txt": "sha256:8ed9c7f21b53bbc98f297b0b66c2937419502239d88091cb5903c3b0bdb75ca5",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/sujeitos/S-C-P5/PROMPT.txt": "sha256:cef0b5518070bf0725be400c74375dac2a91c10a1c1990cb92eec8549ba9fb1a",
     "planejador-estrutura/evals/medicao-comportamental-2026-09-01/sujeitos/S-C-P6/PROMPT.txt": "sha256:d91ae7da7cc70fe6f42cc676ee6e9139fb6fca5265649258b98178402ebea996",
-    "planejador-estrutura/evals/PLACAR.md": "sha256:24706b118fb5e3c3b1e1c0cadd75ae52fc126de1724b77b6b07eaa5ff9a59e38",
-    "planejador-estrutura/evals/validate_workflow.py": "sha256:77718faa663f8283480f602284c76de5a2c533245b06cf2b30fffe88aa2ca949",
+    "planejador-estrutura/evals/PLACAR.md": "sha256:88b79efbf0a36cdc9f10177a764b92dc96fc7e9b26a74c98705cd727b3746e71",
+    "planejador-estrutura/evals/validate_workflow.py": "sha256:cdc1d825d59dd2890d8125fb157414fa74b5c3faaa71bb4aa9cfa67a40e2f0d2",
     "planejador-estrutura/referencia/origem-e-fundamentacao.md": "sha256:74b8db714907a0b9e1496d30e568072186b9ff26c6864573a12f5973b0122c0c",
     "planejador-estrutura/SKILL.md": "sha256:dc20757a5d7046a7ad41ec46b1ede8e1c52938335e9a6b9c9f8fe7bda5639d4e",
     "PLANO-DE-ACAO-2026-07-27.md": "sha256:09b83bca4cdaf86466f26263bfa308505df9f299276317e215dc4ce36947fee9",
-    "prova_mutacao_vitrine.py": "sha256:992e195a98ac569c832a71884001107bb76876a2407e361526146f795a2f4778",
-    "publicar_vitrine.py": "sha256:c37103ddda43ef5dd7d0781da45a521d3687116b443435f7230fda9afe855c9e",
+    "prova_mutacao_vitrine.py": "sha256:b103b6c7a1b51a5a58b7cb604456ce7cc080056589bbb467032c3e73f2eb7382",
+    "publicar_vitrine.py": "sha256:4e3eac92b72c45dd8103cb6b10ec66befd19b7d3e010c47fe5b58a56292489da",
     "registros/PROPOSTA-GRAO-IDENTIDADE-E-EVOLUCAO-APRENDIZAGEM.md": "sha256:30abb1276d730cc74695ebe149825a0eabd8887ce78a6ca1846c56b31f85af2f",
     "registros/relatorios/aprendizagem/README.md": "sha256:500cad39eccc6a20c4297853cc7c059527c08f8c8af8705fc8d3176453896a8b",
     "regras-de-ouro/ORIGEM.md": "sha256:5dfbbb991f44e3d4b9bd26ab66125638cb9c1899c3cac936a33ea622a462cd8b",
     "regras-de-ouro/REGRAS-DE-OURO.md": "sha256:6429c988e640dcc3c9ce0557e05a6a629e224af97c4c3cba27abd08d4b45bf3d",
     "RETOMADA-2026-07-29.md": "sha256:4a6f5a2a154e26d3555210ad937c4e19de72ebe3ee9805647355d1b77e0b33b8",
-    "vitrine-exclusoes.json": "sha256:f3d07330759cc6feeb57d38f7845d43f656f9d8005a1b8a307321f7f52025107"
+    "vitrine-exclusoes.json": "sha256:2960057de0bfe4b6ebc8d87f7a9d7166a1a945f6b806de4b72db2a6e4486900d"
   },
   "mudancas_desde_o_predecessor": {
-    "acrescentados": 3,
-    "alterados": 0,
+    "acrescentados": 0,
+    "alterados": 2,
     "removidos": []
   }
 }

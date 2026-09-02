@@ -179,6 +179,115 @@ def casos() -> list[tuple[str, callable, str]]:
     ]
 
 
+# ------------------------------------------------------- a perna do `numeros`
+#
+# `conferir` e `numeros` são travas de naturezas diferentes: a primeira mede a
+# árvore, a segunda confere se a PROSA do README bate com a medição. Até
+# 2026-09-02 a bateria só exercitava a primeira — e foi por isso que este
+# repositório publicou "detector de 17 padrões" com uma lista de 15 sem nada
+# ficar vermelho. Prosa que ninguém executa envelhece calada.
+
+def _readme_coerente(mod, vitrine: Path) -> dict[str, int]:
+    """Escreve um README que satisfaz as seis declarações, a partir do MEDIDO.
+
+    Escrever os números à mão aqui seria recriar o defeito que esta perna
+    testa: o texto tem de vir da medição, senão a fixture nasce divergente e
+    nenhum caso isola condição nenhuma.
+    """
+    n = mod.conferir(vitrine, verboso=False).numeros
+    # As frases têm de casar as regex REAIS de DECLARACOES, acentos inclusive —
+    # fixture aproximada faria o positivo reprovar e não sobraria caso isolando
+    # nada. E cada declaração fica na SUA linha: a do detector e a de
+    # `achados_reais` juntas fariam um caso derrubar duas de uma vez.
+    (vitrine / "README.md").write_text(
+        "so da vitrine\n\n"
+        "são **%d arquivos espelhados** de um total de **%d** — mais este README.\n"
+        "são **%d pastas de campanha**, com **%d arquivos**, fora daqui.\n"
+        "Um detector de **%d** padrões rodou sobre o que entraria.\n"
+        "Nos que entraram: **%d ocorrências reais**.\n"
+        "Links quebrados: **%d de %d** nesta cópia.\n"
+        % (n["espelhados"], n["fonte"], n["pastas_excluidas"], n["excluidos"],
+           n["padroes"], n["achados_reais"],
+           n["links_quebrados"], n["links"]),
+        encoding="utf-8", newline="\n")
+    return n
+
+
+def casos_de_numeros() -> list[tuple[str, callable]]:
+    """Cada caso estraga UMA coisa no README e deve fazer `numeros` reprovar."""
+    def declaracao_sumiu(readme: str) -> str:
+        # a linha do detector inteira desaparece: regex que não casa tem de
+        # reprovar, e não passar por ausência de contradição
+        return "\n".join(l for l in readme.splitlines()
+                         if "detector de" not in l) + "\n"
+
+    def numero_diverge(readme: str) -> str:
+        # o número do detector é o único que não depende da forma da fixture,
+        # então é ele que se estraga: 15 medido contra 99 declarado
+        novo = readme.replace("**15** padrões", "**99** padrões")
+        assert novo != readme, "a frase do detector mudou; o caso deixou de estragar algo"
+        return novo
+
+    return [("numeros: declaracao ausente no README", declaracao_sumiu),
+            ("numeros: numero declarado diferente do medido", numero_diverge)]
+
+
+def rodar_bateria_de_numeros(mod) -> tuple[list[str], list[str]]:
+    import contextlib
+    import io as _io
+
+    passaram, falharam = [], []
+    with tempfile.TemporaryDirectory() as tmp:
+        def montar_fixture(sufixo: str):
+            base = Path(tmp) / sufixo
+            f, v, e = base_limpa()
+            fonte, vitrine = montar(base, arquivos_fonte=f, arquivos_vitrine=v,
+                                    exclusoes=e)
+            mod.RAIZ, mod.EXCLUSOES = fonte, fonte / "vitrine-exclusoes.json"
+            _readme_coerente(mod, vitrine)
+            return vitrine
+
+        def rodar(vitrine) -> int:
+            with contextlib.redirect_stdout(_io.StringIO()):
+                return mod.numeros(vitrine)
+
+        vitrine = montar_fixture("num-positivo")
+        if rodar(vitrine) == 0:
+            passaram.append("POSITIVO: README coerente nao acusa")
+        else:
+            falharam.append("POSITIVO de `numeros` acusou README coerente")
+
+        # O contador de links quebrados nao GATEIA nada -- so alimenta uma
+        # declaracao. Entao ele nao pode ser provado pelo README, que e gerado a
+        # partir dele: seria circular, e o mutante sobreviveria escrevendo a
+        # propria resposta. A prova aqui e uma asercao direta sobre o numero,
+        # com um link plantado cujo alvo sabidamente nao existe.
+        base = Path(tmp) / "links"
+        f, v, e = base_limpa()
+        placar = "placar\n\n[ida](campanha-2026-01-01/RESULTADO.md)\n"
+        v["pacote/evals/PLACAR.md"] = placar
+        f["pacote/evals/PLACAR.md"] = placar
+        fonte, vitrine = montar(base, arquivos_fonte=f, arquivos_vitrine=v, exclusoes=e)
+        mod.RAIZ, mod.EXCLUSOES = fonte, fonte / "vitrine-exclusoes.json"
+        n = mod.conferir(vitrine, verboso=False).numeros
+        if (n["links"], n["links_quebrados"]) == (1, 1):
+            passaram.append("links: conta o link plantado e o ve quebrado")
+        else:
+            falharam.append("links: esperava (1 link, 1 quebrado), veio (%s, %s)"
+                            % (n["links"], n["links_quebrados"]))
+
+        for i, (nome, estragar) in enumerate(casos_de_numeros()):
+            vitrine = montar_fixture("num%02d" % i)
+            readme = vitrine / "README.md"
+            readme.write_text(estragar(readme.read_text(encoding="utf-8")),
+                              encoding="utf-8", newline="\n")
+            if rodar(vitrine) != 0:
+                passaram.append(nome)
+            else:
+                falharam.append("%s: `numeros` devolveu 0" % nome)
+    return passaram, falharam
+
+
 # ----------------------------------------------------------------- execução
 
 def rodar_bateria(mod) -> tuple[list[str], list[str]]:
@@ -242,7 +351,21 @@ MUTANTES = [
      'if e["prova"] not in PROVAS:', 'if False:'),
     ("isencao sha256 passa a valer sem conferir o digest",
      'return e["sha256"] == _sha_ou_none(RAIZ / rel)', 'return True'),
+    # os dois da perna do `numeros`, acrescentados em 2026-09-02
+    ("numeros aceita declaracao que sumiu do README",
+     'if not m:', 'if False:'),
+    ("numeros aceita numero declarado diferente do medido",
+     'if declarado == medido:', 'if True:'),
+    ("contador de links da o alvo inexistente como existente",
+     'if not (f.parent / alvo.replace("%20", " ")).exists():', 'if False:'),
 ]
+
+
+def rodar_tudo(mod) -> tuple[list[str], list[str]]:
+    """As duas pernas juntas: a da árvore e a da prosa."""
+    p1, f1 = rodar_bateria(mod)
+    p2, f2 = rodar_bateria_de_numeros(mod)
+    return p1 + p2, f1 + f2
 
 
 def main() -> int:
@@ -250,7 +373,7 @@ def main() -> int:
     print("BATERIA SOBRE O CODIGO INTACTO")
     print("=" * 68)
     mod = carregar()
-    passaram, falharam = rodar_bateria(mod)
+    passaram, falharam = rodar_tudo(mod)
     for p in passaram:
         print("  [ok]    %s" % p)
     for f in falharam:
@@ -273,7 +396,7 @@ def main() -> int:
         mutado = original.replace(velho, novo, 1)
         try:
             mod_mut = carregar(mutado)
-            _, falhou = rodar_bateria(mod_mut)
+            _, falhou = rodar_tudo(mod_mut)
         except Exception as exc:                      # mutante que nem carrega
             falhou = ["mutante nao executa: %s" % exc]
         if falhou:
