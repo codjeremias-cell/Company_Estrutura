@@ -55,7 +55,8 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
 | 2 | **Jeremias** | **MEDIDO em 2026-09-02, resultado NEGATIVO** — [9 sessões novas, 7 delas limpas no braço A, acionamento zero](medicao-acionamento-2026-09-02/RESULTADO.md). O que resta é decisão dele: se a rota entra no `roteamento-global.md`, que tem teto de 2.048 B |
 | 3 | o próprio Departamento | **FECHADO em 2026-09-02** — `validate_paridade_da_doutrina` compara as duas regiões **vivas**, byte a byte, a cada execução; divergência reprova, e contraparte ausente reprova também |
 | 4 | Jeremias | **FECHADO em 2026-09-02** — publicado nos **três** runtimes (`.claude/skills/`, `.agents/skills/` e o global `~/.claude/skills/`), sob o nome novo, com paridade SHA-256 conferida pelo próprio deploy |
-| 5 | **Jeremias** | **MEDIDO em 2026-09-02** — o [par com/sem a rota](par-com-sem-rota-2026-09-02/RESULTADO.md) mostrou que a rota funciona e consolida a **gêmea**, não o alvo (0/12, e 0 de 20 no total). Fecha quando ele decidir entre: não mexer · dar gatilho **próprio** à variante (não testado, exige prompt novo) · resolver por nome, o que reabre a colisão já registrada |
+| 5 | o próprio Departamento | **MEDIDO em 2026-09-02** — o [par com/sem a rota](par-com-sem-rota-2026-09-02/RESULTADO.md) mostrou que gatilho **compartilhado** consolida a **gêmea** e não alcança o alvo (0/12, e 0 de 20 no total). A medição está fechada; o que restou dela é decisão, e virou o item 6 |
+| 6 | **Jeremias** | **MEDIDO em 2026-09-02** — o [gatilho **próprio**](gatilho-proprio-2026-09-02/RESULTADO.md) alcança a variante: alvo **4/4** com o sinal na frase, **0/4** no controle sem a rota, **0/4** de vazamento na frase neutra, e o caso neutro até melhora. Fecha quando ele decidir se a linha entra na **fonte** do Catálogo — com o custo de governança na conta: com ela no ar, o pedido com sinal de empresa deixa de chegar ao `ceo-maestro` (3/4 → 0/4), e o pacote acionado **classifica o regime**, que é função do CEO |
 
 
 - **MEDIDO em 2026-09-01 — comportamento da skill nesta vertente.** Fecha o SKIP que este item
@@ -163,6 +164,61 @@ porque é evidência de uma migração e não do funcionamento corrente da skill
   escrevia. E o erro não ficou no rótulo: por achar que o braço não rodara, relancei a A2 **na mesma
   arena**, que já tinha o artefato da A1. **A leitura errada contaminou a rodada seguinte**, e a A2
   está marcada assim em toda linha onde aparece.
+- **O gatilho PRÓPRIO foi testado, a pedido de Jeremias, e a resposta é SIM.** Relatório e os
+  dezesseis brutos em [`gatilho-proprio-2026-09-02/`](gatilho-proprio-2026-09-02/RESULTADO.md).
+  Desenho 2×2 — rota (com/sem) × frase (neutra/sinal), quatro rodadas cada. A intervenção é **outra**
+  que a da T128: a linha 13 fica **intacta** e o alvo ganha uma linha só dele,
+  `plano dentro da cadeia de comando, com contrato e prova → planejador-estrutura`.
+
+  | braço | **alvo** | gêmea | ceo | destinos | turnos | ferramentas |
+  |---|---:|---:|---:|---:|---:|---:|
+  | N-SEM — neutra, sem rota (base) | 0/4 | 3/4 | 1/4 | 2 | 30 | 14 |
+  | N-COM — neutra, **com** gatilho | **0/4** | 4/4 | 0/4 | **1** | 21 | 6 |
+  | S-SEM — sinal, sem rota (**controle**) | **0/4** | 1/4 | **3/4** | 2 | **64** | **39** |
+  | S-COM — sinal, **com** gatilho | **4/4** | 0/4 | 0/4 | **1** | **16** | **4** |
+
+  **O critério foi commitado antes de existir dado** (`d64a7615`), com as quatro saídas em código —
+  `FUNCIONA`, `CREDITO_DA_FRASE`, `NAO_FUNCIONA`, `NAO_DISCRIMINADO` — avaliadas sobre a grade
+  inteira de 5×5 para provar que são exaustivas e que o vão declarado cai em exatamente uma célula.
+  O veredito saiu do código: **`FUNCIONA`**.
+
+  **Sem o controle isto não seria achado.** `S-COM 4/4` sozinho é indistinguível de *"bastava pedir
+  com as palavras certas"*. O braço `S-SEM` — mesma frase, sem a linha — deu **0/4 no alvo e 3/4 no
+  `ceo-maestro`**. Foi a rota que mudou o destino, não a frase.
+
+  **Eu previ o contrário, por escrito.** O pré-registro diz que eu esperava o alvo em zero e o CEO
+  levando os dois braços de sinal, por um confundimento que declarei antes de medir: o sinal que
+  distingue a variante é o mesmo que roteia para a porta única. **Metade se confirmou** — é
+  exatamente o que o controle mostra — e é o que dá peso ao resto.
+
+  **Não vaza e não cobra da gêmea.** `N-COM` deu 0/4 no alvo: a frase sem sinal de vertente não foi
+  puxada. E o caso neutro **melhorou** — gêmea 3/4 → 4/4, dois destinos → um, 30 turnos → 21. A
+  média do turno da gêmea subiu de 2,3 para 3,2 por **uma** rodada que entrou no turno 7; a
+  **mediana é 2 dos dois lados**, e publicar só a média descreveria um outlier como tendência.
+
+  **A rota apaga a investigação.** O controle gastou 64 turnos e 39 ferramentas; o tratamento, 16 e
+  4 — quatro rodadas **idênticas**, alvo no turno 2 em todas. Mesma assinatura do braço B da T128:
+  rota certa não empurra, **remove** a busca.
+
+  **Custo de governança, dito sem enfeite:** com a linha no ar, o pedido com sinal de empresa
+  **deixa de chegar ao `ceo-maestro`** — 3/4 → 0/4. O que atenua está nas quatro respostas: o pacote
+  acionado **declara a própria fronteira e devolve** — *"no regime empresa a porta é uma, o
+  `ceo-maestro`, e quem leva o plano até lá é você"*. O que **não** atenua: essa fronteira é
+  declarada pelo pacote, não imposta por trava, e na prática ele **classificou o regime**, que é a
+  função que a doutrina atribui ao CEO. A linha não fura a porta única na execução; move a
+  **classificação** para antes dela. **Adotar ou não é decisão de Jeremias.**
+
+  **Acionar e nomear seguem sendo dois eixos, agora no espelho da T128:** aqui o alvo foi acionado
+  4/4 e **nomeado 0/4**; lá, nomeado sem ser acionado.
+
+  **Conferido por instrumento independente:** um `grep` cru sobre `tool_use` de `Skill`, sem passar
+  pelo comparador, devolveu as dezesseis linhas iguais — cada sessão acionou **uma** skill. E o alvo
+  estava **registrado nas dezesseis**, o que descarta critério insatisfazível por construção.
+
+  **Ambiente restaurado e provado**, com a fonte no Catálogo conferida intacta no mesmo script:
+  cópia e fonte em `sha256:976e685e…`, 1.471 B. O arquivo com o gatilho ficou em **1.552 B**, 496
+  sob o teto de 2.048 (E15) — o experimento não podia violar a regra que testava.
+
 - **~~SKIP — paridade automática da doutrina.~~ FECHADO em 2026-09-02.** O texto anterior dizia:
   *"A identidade de bytes com o Catálogo é conferida pela receita publicada na `SKILL.md`, executada
   por quem edita. Não há trava que reprove a divergência: ela é **detectável**, não impedida."*

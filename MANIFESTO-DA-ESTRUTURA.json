@@ -1,17 +1,17 @@
 {
   "artifact_type": "MANIFESTO_DA_ESTRUTURA",
   "versao_do_formato": 1,
-  "gerado_em": "2026-09-03T00:00:00-03:00",
+  "gerado_em": "2026-09-03T15:01:03-03:00",
   "receita": "_compartilhado/validador_schema.py::sha256_texto_normalizado sobre cada arquivo — BOM removido, CRLF trocado por LF, bytes UTF-8. Caminhos relativos à raiz da Estrutura, em POSIX, ordenados. O digest do manifesto cobre o bloco `arquivos`, nunca o arquivo inteiro, para que ele possa carregar o próprio valor sem virar autorreferência.",
   "assinatura": {
     "estado": "NAO_ASSINADO",
     "motivo": "assinatura exige chave; o caminho previsto é atestação por OIDC no CI (actions/attest-build-provenance), que assina sem que ninguém guarde segredo. Enquanto não existir, este manifesto prova integridade e diferença, não origem."
   },
-  "total_de_arquivos": 18920,
-  "digest_do_inventario": "sha256:c3b4585e703a9766817f9fe525426e4293e3dd445664c48a61eb12360b49a6c3",
+  "total_de_arquivos": 18947,
+  "digest_do_inventario": "sha256:b9042d867f7d226e66e07008164bdbdfd474a204b0794fa33f7844783c2d4bc6",
   "predecessor": {
-    "gerado_em": "2026-09-02T23:00:00-03:00",
-    "digest_do_inventario": "sha256:1425235a87bc166bb4d8621e1e144f43f9d1a3cc294d8cdd5a898f0a30534770",
+    "gerado_em": "2026-09-03T00:00:00-03:00",
+    "digest_do_inventario": "sha256:c3b4585e703a9766817f9fe525426e4293e3dd445664c48a61eb12360b49a6c3",
     "total_de_arquivos": 18920
   },
   "arquivos": {
@@ -18833,6 +18833,33 @@
     "planejador-estrutura/CONTRATO-DE-COMPROMISSO.md": "sha256:3aa9f2df9ce0b75aa9277ee76796d00e85c90b1a062ca437a84c69e948ab1817",
     "planejador-estrutura/evals/custodia-instalacao/VERIFICACAO-CORRENTE-2026-08-25.txt": "sha256:7725d8791d7e7b3a44d6e82a72962777791298edfce71061b19667069f89e99e",
     "planejador-estrutura/evals/custodia-instalacao/VERIFICACAO-CORRENTE-2026-09-01.txt": "sha256:5986a9fc11e7632bd7a1ea3add17f37c5f8b329e3e3ae78ca64f4f03225e85ec",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/CUSTODIA.txt": "sha256:5766a786986337b4a18a4ad78ea67f809e6989e25a2faa8ac8728abe5419ebe1",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/intervencao/DIFF-SEM-para-COM.txt": "sha256:80969c26f9b883a022159bcea8a74360748d5ff4818e0e39e00aed743fd0947c",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/intervencao/roteamento-COM.md": "sha256:e34e1be0f944a27e26b5cbbd1fd5af266b9b80811328278f0d7fb3b08aadc255",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/intervencao/roteamento-SEM.md": "sha256:976e685e7e75068a05822350bcfd899ec7fc18d7d5da00cd84decd6c46d5c425",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/PRE-REGISTRO.md": "sha256:7f92bae030bdce229f8811ef4acd16041bf0f87cc54be337c7568a4c08e691b1",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/PROMPTS.json": "sha256:2611edab1b2f7f2330822208ec32a183d005e077460e5a693b7abb495a7214dd",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-COM-1.stream.jsonl": "sha256:86a6efb854dbab56d562d40ccdbd0cee00da3d0600656f47a0bac1fc5d85df4b",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-COM-2.stream.jsonl": "sha256:c1a28f84111df8d8a25088a4136035a050d05f408921d8083d28fb13096ea2c0",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-COM-3.stream.jsonl": "sha256:7b7b68301863be7b441a3c703ee419de50bf404dfc71e42e0ad2c2fa8166d436",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-COM-4.stream.jsonl": "sha256:94a894aa79a54f3206c3d01181b8a04cceb3b80ebb34807d7f9456c05b91ecb7",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-SEM-1.stream.jsonl": "sha256:d47f671638f622b9421210024e2a103a8016225d0992e218ad861c98e5816e2e",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-SEM-2.stream.jsonl": "sha256:f820f97b634eb71f9ba06aa648d6cf9e87a05cf1e0ed71178cfe94921dc435f9",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-SEM-3.stream.jsonl": "sha256:937ba16affdc9936bdea1b7801281ba40a4b65865e9512208a6d059f9a281dc2",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/N-SEM-4.stream.jsonl": "sha256:a982211e4cdf17761220a35585d25643ec422ec8e9315a518bd1544dc8c06fb6",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-COM-1.stream.jsonl": "sha256:86f6bccb6d85e7840d9d450a9be39b7cf2dc0ea0b308bd53c89a85922af3bf08",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-COM-2.stream.jsonl": "sha256:3ebd0a9f4d5b0dce8f635aeb78042943141e5bfc38cdd60517148d87f013059c",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-COM-3.stream.jsonl": "sha256:063bb01e46df1a4626f4c29ded4f0303844f6a0707761e3cb50ced86438634ba",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-COM-4.stream.jsonl": "sha256:2dca4732bdec66e456c20d607c565d8050f163e05f3ddc2b84880c033a0e58dc",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-SEM-1.stream.jsonl": "sha256:09aaa558f51ead0295132f7c348a52f311cc0399577e6cd48575262206e54813",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-SEM-2.stream.jsonl": "sha256:cc9fe477f68dea4bcba49d545f69b45e54dc8288ef8ca08f04a8aadb53dbf191",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-SEM-3.stream.jsonl": "sha256:1227b4e0f78d2f1071bce1fc7b6d746cc4fecf12c0b0fbfb4fe89d51a5f3bba7",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/respostas-cruas/S-SEM-4.stream.jsonl": "sha256:6dfd03495b8a8f12bbdfda61b9e68e5bfc90c37dfe42417210d8479bde78e970",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/RESULTADO.json": "sha256:b6747252b57a7f0092a5f4e87244ddf0e0db031726b3dd148861d016f41baf18",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/RESULTADO.md": "sha256:4673695d1834852538ff31e16f13546c8ac912a75a6fba2dfcdb678493c539d5",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/scripts/comparar.py": "sha256:e44cc8e89b27ba92081fa9e6d035c9e26f34ff7f729a552767d802acdc7a27c6",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/scripts/custodiar.py": "sha256:6baccf145bdda0434b998ba92511ca09c7ef0df0abf633965f6631301a846f25",
+    "planejador-estrutura/evals/gatilho-proprio-2026-09-02/scripts/RESTAURAR.sh": "sha256:7ff7ac6a1ad005c4058aa325b1827b89cfd5cfafbcd5c662c6d3e042bfc64b64",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/A1-artefato-escrito-na-arena.md": "sha256:1fa0d9ef72d3d0708871baac8d6595ebf604acdd065db1403bf860f74d074098",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/A8-artefato-escrito-na-arena.md": "sha256:aa070d6075cbf73db0ca924da9afc896cdc95be9a992fbfd0aad9270cef4faf8",
     "planejador-estrutura/evals/medicao-acionamento-2026-09-02/CUSTODIA.txt": "sha256:2759f2784524e7056b808c6ba77d214e33dbb7aa4b53d9197b15426d6110d3c3",
@@ -18922,7 +18949,7 @@
     "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/scripts/comparar.py": "sha256:77948bd235b36edcaa035a1739f3f3339c60cefe7fd851b3ceec6fb4b131d1d7",
     "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/scripts/custodiar.py": "sha256:f8a9cb106252287891e4d6ca2994973deb45148f7c5fe847caed72f3b91666a9",
     "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/scripts/RESTAURAR.sh": "sha256:0f085aa70b8d4150271eedc2a38f13459f655a211451395e55ca739c716985ed",
-    "planejador-estrutura/evals/PLACAR.md": "sha256:77efb30b4b8db52f4d2be6b6467f68546f5f17ff182abdc2cc171bf7365a018d",
+    "planejador-estrutura/evals/PLACAR.md": "sha256:3cc26f8e8b18ef699f8178b9943d62a5db4f9258469986154232d0de44695a84",
     "planejador-estrutura/evals/validate_workflow.py": "sha256:cdc1d825d59dd2890d8125fb157414fa74b5c3faaa71bb4aa9cfa67a40e2f0d2",
     "planejador-estrutura/referencia/origem-e-fundamentacao.md": "sha256:74b8db714907a0b9e1496d30e568072186b9ff26c6864573a12f5973b0122c0c",
     "planejador-estrutura/SKILL.md": "sha256:dc20757a5d7046a7ad41ec46b1ede8e1c52938335e9a6b9c9f8fe7bda5639d4e",
@@ -18934,38 +18961,11 @@
     "regras-de-ouro/ORIGEM.md": "sha256:5dfbbb991f44e3d4b9bd26ab66125638cb9c1899c3cac936a33ea622a462cd8b",
     "regras-de-ouro/REGRAS-DE-OURO.md": "sha256:6429c988e640dcc3c9ce0557e05a6a629e224af97c4c3cba27abd08d4b45bf3d",
     "RETOMADA-2026-07-29.md": "sha256:4a6f5a2a154e26d3555210ad937c4e19de72ebe3ee9805647355d1b77e0b33b8",
-    "vitrine-exclusoes.json": "sha256:d9984a55dfc588a9a7927d4f128ed6d68a0feac6669e3d6ecc5030f7a01e40e1"
+    "vitrine-exclusoes.json": "sha256:aeb4545f7e2f813cc88ddfe3c8b105e82fc48a2b2fd9c4db25ba034603dec7c3"
   },
   "mudancas_desde_o_predecessor": {
-    "acrescentados": 12,
-    "alterados": 3,
-    "removidos": [
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM1.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM2.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM3.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM4.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV1.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV2.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV3.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV4.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM1.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM2.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM3.stream.jsonl",
-      "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM4.stream.jsonl"
-    ]
-  },
-  "remocoes_declaradas": {
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM1.stream.jsonl": "RENOMEADO para COM-1.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM2.stream.jsonl": "RENOMEADO para COM-2.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM3.stream.jsonl": "RENOMEADO para COM-3.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/COM4.stream.jsonl": "RENOMEADO para COM-4.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV1.stream.jsonl": "RENOMEADO para INV-1.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV2.stream.jsonl": "RENOMEADO para INV-2.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV3.stream.jsonl": "RENOMEADO para INV-3.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/INV4.stream.jsonl": "RENOMEADO para INV-4.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM1.stream.jsonl": "RENOMEADO para SEM-1.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM2.stream.jsonl": "RENOMEADO para SEM-2.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM3.stream.jsonl": "RENOMEADO para SEM-3.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria.",
-    "planejador-estrutura/evals/par-com-sem-rota-2026-09-02/respostas-cruas/SEM4.stream.jsonl": "RENOMEADO para SEM-4.stream.jsonl em 2026-09-02. Nao houve perda: o digest normalizado do destino e igual ao da origem, conferido antes e depois. Motivo: `COM1` é nome de dispositivo reservado no Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), e a API Win32 resolvia `COM1.stream.jsonl` para a porta serial — `git add` devolvia ENOENT num arquivo que o `git status` acabara de listar. O separador foi acrescentado aos doze, por simetria."
+    "acrescentados": 27,
+    "alterados": 2,
+    "removidos": []
   }
 }
